@@ -1,6 +1,5 @@
-#include <boost/regex.hpp>
 #include <iostream>
-#include <string>
+#include "../inc/lexer/category.h"
 
 int main() {
     
