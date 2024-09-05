@@ -1,5 +1,5 @@
-#include <algorithm>  // for using transform
-#include <cctype>     // for using toupper
+#include <algorithm>
+#include <cctype>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -38,7 +38,8 @@ void createHeaderFile(const std::string& classPath = "",
 
 void createImplementationFile(const std::string& classPath = "",
                               const std::string& className = "") {
-  const filesystem::path srcPath{"../src/" + classPath + "/" + className + ".cc"};
+  const filesystem::path srcPath{"../src/" + classPath + "/" + className +
+                                 ".cc"};
   // Ensure that the directory exists, if not create it
   filesystem::create_directories(srcPath.parent_path());
 
@@ -59,17 +60,20 @@ void createClassFiles(const std::string& classPath,
 }
 
 int main(int argc, char* argv[]) {
-  if (argc != 2) {
+  if (argc < 2 || argc > 3) {
     throw std::runtime_error(
         "Invalid number of arguments, just need to specify the name of the "
-        "class and its path as if it started from inc/src");
+        "class and the path where it must be create, example ./a.out "
+        "path(optional)/className.\n Also optionally you can specify the name "
+        "of the class that will be the parent class if already exists, if not "
+        "a exception will be thrown");
   }
 
   // Separate the path and class name (assuming the input is something like
   // "carpeta/className")
   std::string fullPath{argv[1]};
   size_t lastSlash = fullPath.find_last_of('/');
-  std::string classPath = fullPath.substr(0, lastSlash);   // the directory path
+  std::string classPath = fullPath.substr(0, lastSlash);  // the directory path
   if (lastSlash > fullPath.size()) classPath = "";
   std::string className = fullPath.substr(lastSlash + 1);  // the class name
   if (lastSlash > fullPath.size()) className = fullPath;
