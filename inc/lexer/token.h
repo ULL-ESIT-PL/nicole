@@ -1,21 +1,24 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
-#include "tokenType.h"
-using namespace std;
+#include "type.h"
 
 namespace nicole {
-
-class Token {
+class Token final {
  private:
-  TokenType type_{TokenType::UNDEFINED};
-  std::string raw_{};
+  Type type_{""};
+  std::string raw_{""};
+  int row_{-1};
+  int col_{-1};
 
  public:
-  Token(const TokenType& type, const string& raw)
-      : type_{type}, raw_{raw} {};
-  TokenType type() const { return type_; }
+  Token(const Type& type, const std::string& raw, int row, int col)
+      : type_{type}, raw_{raw}, row_{row}, col_{col} {};
+
+  Type type() const { return type_; };
   std::string raw() const { return raw_; }
+  int row() const { return row_; }
+  int col() const { return col_; }
 };
 
 }  // namespace nicole

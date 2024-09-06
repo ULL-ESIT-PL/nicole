@@ -1,21 +1,25 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#include <set>
+#include <fstream>
+#include <map>
 #include <vector>
 #include <filesystem>
 
 #include "category.h"
-using namespace std;
 
 namespace nicole {
-
-class Lexer {
+class Lexer final {
  private:
-  set<Category> categories_{};
+  std::vector<Category> categories_{};
+  Category concatCategories() const;
+  std::string readFile(const std::filesystem::path& fileName) const;
+  void checkUnmatched(const std::vector<Token>& tokens) const;
+
  public:
-  Lexer(const set<Category>& categories): categories_{categories} {};
-  std::vector<Token> run(const filesystem::path& path) const;
+  Lexer(const std::vector<Category>& categories);
+  std::vector<Token> analyze(const std::filesystem::path& fileName,
+                             bool verbose = false) const;
 };
 
 }  // namespace nicole

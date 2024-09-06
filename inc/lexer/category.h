@@ -2,25 +2,30 @@
 #define CATEGORY_H
 
 #include <boost/regex.hpp>
-#include <stdexcept>
+#include <iostream>
+#include <string>
+#include <vector>
 
 #include "token.h"
-using namespace std;
 
 namespace nicole {
 
-class Category {
+class Category final {
  private:
-  TokenType type_{TokenType::UNDEFINED};
-  boost::regex pattern_{};
+  boost::regex pattern_{""};
+  bool skip_{false};
 
  public:
-  Category(const TokenType& type, const string& pattern)
-      : type_{type}, pattern_{pattern, boost::regex_constants::optimize} {};
-  TokenType type() const { return type_; }
+  Category(const std::string& matcher, const bool skip)
+      : pattern_{matcher, boost::regex_constants::optimize}, skip_{skip} {};
+
+  boost::regex pattern() const { return pattern_; }
   std::string rawPattern() const { return pattern_.str(); }
-  bool match(const std::string& str) const { return boost::regex_match(str, pattern_); }
-  bool match(const Token& tk) const { return boost::regex_match(tk.raw(), pattern_); }
+  bool skip() const { return skip_; }
+
+  // defined in CATEGORY.cc
+  std::string name() const;
+  bool matchToken(const Token& token) const;
 };
 
 }  // namespace nicole
