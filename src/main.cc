@@ -12,6 +12,7 @@
 #include <string>
 
 #include "../inc/lexer/lexer.h"
+#include "../inc/parser/nodeBinary.h"
 #include "../inc/parser/nodeLiteral.h"
 using namespace nicole;
 
@@ -89,9 +90,21 @@ int main() {
 
   // My test
   llvm::LLVMContext* contextPtr{&context};
-  shared_ptr<NodeLiteral> lit{make_shared<NodeLiteral>(contextPtr, 10.6)};
-  llvm::Value* retVal = lit->codeGeneration();
-  builder.CreateRet(retVal);
+  NodeLiteral lit1{contextPtr, 10.6};
+  NodeLiteral* left{&lit1};
+
+  //llvm::Value* leftEvaluated = left->codeGeneration();
+  //builder.CreateRet(leftEvaluated);
+
+  NodeLiteral lit2{contextPtr, 30};
+  NodeLiteral* right{&lit2};
+  //llvm::Value* rightEvaluated = right->codeGeneration();
+  //builder.CreateRet(rightEvaluated);
+
+  NodeBinary bii{contextPtr, left, Operator::ADD, right};
+  NodeBinary* result{&bii};
+  llvm::Value* resultEvaluated = result->codeGeneration();
+  builder.CreateRet(resultEvaluated);
 
   // Verificar el módulo y la función main
   llvm::verifyFunction(*mainFunction);

@@ -2,7 +2,6 @@
 #define NODE_LITERAL_H
 
 #include <memory>
-#include <llvm/IR/Value.h>
 
 #include "node.h"
 using namespace std;

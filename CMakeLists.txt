@@ -45,6 +45,7 @@ set(SRC_FILES
     src/main.cc
     src/lexer/lexer.cc
     src/parser/nodeLiteral.cc
+    src/parser/nodeBinary.cc
 )
 
 # Output directories

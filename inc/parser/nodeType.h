@@ -4,9 +4,15 @@
 namespace nicole
 {
     enum class NodeType {
-        LITERAL
+        LITERAL,
+        BINARY
     };
-} // namespace nicole
+
+    enum class Operator {
+        ADD,
+        SUB
+    };
+ } // namespace nicole
 
 
 #endif

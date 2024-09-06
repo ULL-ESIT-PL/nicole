@@ -16,7 +16,7 @@ class Lexer final {
   void checkUnmatched(const std::vector<Token>& tokens) const;
 
  public:
-  Lexer(const std::vector<Category>& categories);
+  Lexer(const std::vector<Category>& categories) : categories_{categories} {};
   std::vector<Token> analyze(const std::filesystem::path& fileName,
                              bool verbose = false) const;
 };
