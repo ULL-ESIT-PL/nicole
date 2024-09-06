@@ -1,19 +1,51 @@
 #ifndef TYPE_H
 #define TYPE_H
 
-#include <iostream>
-#include <string>
-
 namespace nicole {
-class Type final {
- private:
-  std::string type_{""};
 
- public:
-  Type(const std::string& type) : type_{type} {};
-  std::string name() const { return type_; }
+enum class TokenType {
+  SPACE,
+  COMMENT,
+  NUMBER,
+  STRING,
+  TRUE,
+  FALSE,
+  CONST,
+  IMPORT,
+  PRINT,
+  SYSTEM,
+  TYPE,
+  IF,
+  ELSE,
+  WHILE,
+  FOR,
+  STOP,
+  PASS,
+  RETURN,
+  FUNCTION,
+  OR,
+  AND,
+  ID,
+  RP,
+  LP,
+  RB,
+  LB,
+  RC,
+  LC,
+  SEMICOLON,
+  COMMA,
+  TERNARY,
+  DOTDOT,
+  SMALLEREQUAL,
+  BIGGEREQUAL,
+  NOTEQUAL,
+  EQUAL,
+  ASSIGNMENT,
+  INCREMENT,
+  OPERATOR,
+  UNMATCHED,  // Para tokens no reconocidos
+  ALL
 };
-
 }  // namespace nicole
 
 #endif

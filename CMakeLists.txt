@@ -10,14 +10,41 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Compiler flags
 set(CMAKE_CXX_COMPILER "clang++")
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -pedantic -O3 `llvm-config --cxxflags --ldflags --system-libs --libs core`")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -pedantic -O3")
+
+# Get LLVM configuration
+execute_process(
+    COMMAND llvm-config --cxxflags
+    OUTPUT_VARIABLE LLVM_CXX_FLAGS
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+execute_process(
+    COMMAND llvm-config --ldflags
+    OUTPUT_VARIABLE LLVM_LDFLAGS
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+execute_process(
+    COMMAND llvm-config --system-libs
+    OUTPUT_VARIABLE LLVM_SYSTEM_LIBS
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+execute_process(
+    COMMAND llvm-config --libs core
+    OUTPUT_VARIABLE LLVM_LIBS
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# Set compiler and linker flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O3 ${LLVM_CXX_FLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LLVM_LDFLAGS} ${LLVM_SYSTEM_LIBS} ${LLVM_LIBS}")
 
 # Source files
 set(SRC_FILES
     src/main.cc
-    src/lexer/category.cc
     src/lexer/lexer.cc
+    src/parser/nodeLiteral.cc
 )
 
 # Output directories
@@ -25,14 +52,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-# Include directories (if needed)
+# Include directories
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
 # Executable
 add_executable(binaries ${SRC_FILES})
-
-# Link libraries
-target_link_libraries(binaries PRIVATE boost_regex)
 
 # Custom commands
 add_custom_target(run

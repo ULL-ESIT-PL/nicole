@@ -2,12 +2,9 @@
 
 namespace nicole {
 
-Lexer::Lexer(const std::vector<Category>& categories) : categories_{categories} {
-  const int OPTIMIZE = boost::regex_constants::optimize;
-  const boost::regex format{"(?<[a-zA-Z]+>.+)", OPTIMIZE};
-  for (const auto &i : categories_) {
-    if (!boost::regex_match(i.rawPattern(), format)) throw std::runtime_error("Error category format");
-  }
+Lexer::Lexer(const std::vector<Category>& categories)
+    : categories_{categories} {
+  
 }
 
 Category Lexer::concatCategories() const {
@@ -16,26 +13,28 @@ Category Lexer::concatCategories() const {
     pattern += category.rawPattern() + "|";
   }
   pattern.pop_back();
-  return Category{pattern, false};
+  return Category{TokenType::ALL, pattern, false};
 }
 
 void Lexer::checkUnmatched(const std::vector<Token>& tokens) const {
   bool unmatchedFlag{false};
   std::string everyUnmatched{"Unmatched tokens:\n"};
   for (const auto& TOKEN : tokens) {
-    if (TOKEN.type().name() == "UNMATCHED") {
+    if (TOKEN.type() == TokenType::UNMATCHED) {
       everyUnmatched += TOKEN.raw() + "\n";
       unmatchedFlag = true;
     }
   }
   if (unmatchedFlag) {
-    throw std::runtime_error(everyUnmatched);
+    std::abort();
+    // throw std::runtime_error(everyUnmatched);
   }
 }
 
 std::string Lexer::readFile(const std::filesystem::path& fileName) const {
   std::fstream file{fileName};
-  if (!file.is_open()) throw std::runtime_error("The file " + fileName.string() + " is not open");
+  if (!file.is_open()) std::abort();
+  // throw std::runtime_error("The file " + fileName.string() + " is not open");
   std::string text{""};
   std::string line{""};
   while (getline(file, line)) {
@@ -45,7 +44,8 @@ std::string Lexer::readFile(const std::filesystem::path& fileName) const {
   return text;
 }
 
-std::vector<Token> Lexer::analyze(const std::filesystem::path& fileName, bool verbose) const {
+std::vector<Token> Lexer::analyze(const std::filesystem::path& fileName,
+                                  bool verbose) const {
   const std::string TEXT{readFile(fileName)};
   const Category expression{concatCategories()};
   std::vector<Token> result{};
@@ -53,25 +53,23 @@ std::vector<Token> Lexer::analyze(const std::filesystem::path& fileName, bool ve
   start = TEXT.begin();
   end = TEXT.end();
   lastMatchEnd = start;
-  boost::match_results<std::string::const_iterator> what;
-  boost::match_flag_type flags = boost::match_default;
-  while (regex_search(start, end, what, expression.pattern(), flags)) {
+  std::match_results<std::string::const_iterator> what;
+  while (std::regex_search(start, end, what, expression.pattern().pattern())) {
     if (lastMatchEnd != what[0].first) {
       const std::string UNMATCHED{lastMatchEnd, what[0].first};
       if (verbose) {
         std::cout << "Unmatched: " << UNMATCHED << "\n";
       }
-      result.push_back(Token(Type("UNMATCHED"), UNMATCHED, -1, -1));
+      result.push_back(Token{TokenType::UNMATCHED, UNMATCHED, -1, -1});
     }
     for (const auto& category : categories_) {
-      if (what[category.name()].matched) {
+      if (std::regex_match(what[0].str(), category.pattern().pattern())) {
         if (verbose) {
-          std::cout << "Category: " << category.name()
-               << ", Match: " << what[category.name()] << "\n";
+          std::cout << "Category: " << static_cast<int>(category.type())
+                    << ", Match: " << what[0].str() << "\n";
         }
         if (!category.skip()) {
-          result.push_back(
-              Token(Type(category.name()), what[category.name()], -1, -1));
+          result.push_back(Token{category.type(), what[0].str(), -1, -1});
         }
         break;
       }
@@ -85,7 +83,7 @@ std::vector<Token> Lexer::analyze(const std::filesystem::path& fileName, bool ve
     if (verbose) {
       std::cout << "Unmatched: " << UNMATCHED << "\n";
     }
-    result.push_back(Token(Type("UNMATCHED"), UNMATCHED, -1, -1));
+    result.push_back(Token{TokenType::UNMATCHED, UNMATCHED, -1, -1});
   }
   checkUnmatched(result);
   return result;

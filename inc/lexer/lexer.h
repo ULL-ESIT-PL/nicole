@@ -1,10 +1,9 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#include <fstream>
-#include <map>
-#include <vector>
 #include <filesystem>
+#include <fstream>
+#include <vector>
 
 #include "category.h"
 

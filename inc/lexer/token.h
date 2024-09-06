@@ -6,16 +6,16 @@
 namespace nicole {
 class Token final {
  private:
-  Type type_{""};
+  TokenType type_{};
   std::string raw_{""};
   int row_{-1};
   int col_{-1};
 
  public:
-  Token(const Type& type, const std::string& raw, int row, int col)
+  Token(const TokenType& type, const std::string& raw, int row, int col)
       : type_{type}, raw_{raw}, row_{row}, col_{col} {};
 
-  Type type() const { return type_; };
+  TokenType type() const { return type_; };
   std::string raw() const { return raw_; }
   int row() const { return row_; }
   int col() const { return col_; }
