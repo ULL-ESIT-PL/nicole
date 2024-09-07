@@ -17,7 +17,7 @@ using namespace nicole;
 int main() {
   Lexer lexer{NicoleSintax::createLexer()};
   const std::filesystem::path path{"../test/test1.nc"};
-  const auto tokens{lexer.analyze(path, true)};
+  const auto tokens{lexer.analyze(path, false)};
 
   // Start LLVM
   llvm::LLVMContext context;
@@ -28,7 +28,7 @@ int main() {
 
   // Crear una función main y un bloque básico
   llvm::FunctionType* funcType =
-      llvm::FunctionType::get(builder.getInt32Ty(), false);
+      llvm::FunctionType::get(builder.getInt8PtrTy(), false);
   llvm::Function* mainFunction = llvm::Function::Create(
       funcType, llvm::Function::ExternalLinkage, "main", module.get());
   llvm::BasicBlock* entry =
@@ -37,22 +37,21 @@ int main() {
 
   // My test
   llvm::LLVMContext* contextPtr{&context};
-  NodeLiteralString lit1{contextPtr, "HOLA"};
+  NodeLiteralString lit1{contextPtr, module.get(), "HOLA"};
   NodeLiteralString* left{&lit1};
 
-  //llvm::Value* leftEvaluated = left->codeGeneration();
-  //builder.CreateRet(leftEvaluated);
+  llvm::Value* leftEvaluated = left->codeGeneration();
+  builder.CreateRet(leftEvaluated);
 
   NodeLiteralChar lit2{contextPtr, 'k'};
   NodeLiteralChar* right{&lit2};
-  //llvm::Value* rightEvaluated = right->codeGeneration();
-  //builder.CreateRet(rightEvaluated);
+  llvm::Value* rightEvaluated = right->codeGeneration();
+  builder.CreateRet(rightEvaluated);
 
  // NodeBinary bii{contextPtr, left, Operator::ADD, right};
  // NodeBinary* result{&bii};
 //  llvm::Value* resultEvaluated = result->codeGeneration();
-  builder.CreateRet(right->codeGeneration());
-
+  builder.CreateRet(leftEvaluated);
   // Verificar el módulo y la función main
   llvm::verifyFunction(*mainFunction);
   llvm::verifyModule(*module);
@@ -77,9 +76,10 @@ int main() {
   std::vector<llvm::GenericValue> noargs;
   llvm::GenericValue gv = execEngine->runFunction(mainFunction, noargs);
   // Imprime el resultado
-  char resultChar = static_cast<char>(gv.IntVal.getZExtValue());
-
-  std::cout << "Result: " << resultChar << std::endl;
+  //char resultChar = static_cast<std::string>(gv.IntVal.getZExtValue());
+  //std::cout << "Result: " << resultChar << std::endl;
+  char* resultPtr = (char*)gv.PointerVal;
+  std::cout << "Result: " << resultPtr << std::endl;
   delete execEngine;
 
   return 0;
