@@ -4,19 +4,19 @@
 #include <memory>
 #include <string>
 
-#include "nodeLiteral.h"
+#include "node.h"
 using namespace std;
 
 namespace nicole {
 class NodeBinary : public Node {
  private:
-  NodeLiteral* left_;
+  Node* left_;
   Operator operator_;
-  NodeLiteral* right_;
+  Node* right_;
 
  public:
-  NodeBinary(llvm::LLVMContext* context, NodeLiteral* left,
-             const Operator& op, NodeLiteral* right,
+  NodeBinary(llvm::LLVMContext* context, Node* left,
+             const Operator& op, Node* right,
              const shared_ptr<Node>& father = nullptr)
       : Node{context, NodeType::BINARY, father},
         left_{left},

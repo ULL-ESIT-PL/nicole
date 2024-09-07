@@ -11,64 +11,17 @@
 #include <iostream>
 #include <string>
 
-#include "../inc/lexer/lexer.h"
+#include "../inc/lexer/nicoleSintax.h"
 #include "../inc/parser/nodeBinary.h"
-#include "../inc/parser/nodeLiteral.h"
+#include "../inc/parser/nodeLiteralDouble.h"
+#include "../inc/parser/nodeLiteralInt.h"
+#include "../inc/parser/nodeLiteralBool.h"
+#include "../inc/parser/nodeLiteralChar.h"
+#include "../inc/parser/nodeLiteralString.h"
 using namespace nicole;
 
 int main() {
-  const Lexer lexer{std::vector<Category>{
-      Category{TokenType::SPACE, "\\s+", true},
-      Category{TokenType::COMMENT, "\\/\\*(.|\\n)*?\\*\\/", true},
-
-      Category{TokenType::NUMBER, "\\d+(\\.\\d+)?([eE][-]?\\d+)?", false},
-      Category{TokenType::STRING, "\"(?:\\\\.|[^\"\\\\])*\"", false},
-      Category{TokenType::TRUE, "true", false},
-      Category{TokenType::FALSE, "false", false},
-
-      Category{TokenType::CONST, "const", false},
-
-      Category{TokenType::IMPORT, "import", false},
-
-      Category{TokenType::PRINT, "print", false},
-      Category{TokenType::SYSTEM, "system", false},
-      Category{TokenType::TYPE, "type", false},
-
-      Category{TokenType::IF, "if", false},
-      Category{TokenType::ELSE, "else", false},
-      Category{TokenType::WHILE, "while", false},
-      Category{TokenType::FOR, "for", false},
-      Category{TokenType::STOP, "stop", false},
-      Category{TokenType::PASS, "pass", false},
-      Category{TokenType::RETURN, "return", false},
-      Category{TokenType::FUNCTION, "def", false},
-
-      Category{TokenType::OR, "or", false},
-      Category{TokenType::AND, "and", false},
-
-      Category{TokenType::ID, "[a-zA-Z]+[a-zA-Z0-9]*", false},
-
-      Category{TokenType::RP, "\\)", false},
-      Category{TokenType::LP, "\\(", false},
-      Category{TokenType::RB, "\\}", false},
-      Category{TokenType::LB, "\\{", false},
-      Category{TokenType::RC, "\\]", false},
-      Category{TokenType::LC, "\\[", false},
-      Category{TokenType::SEMICOLON, ";", false},
-      Category{TokenType::COMMA, ",", false},
-      Category{TokenType::TERNARY, "\\?", false},
-      Category{TokenType::DOTDOT, ":", false},
-
-      Category{TokenType::SMALLEREQUAL, "<=", false},
-      Category{TokenType::BIGGEREQUAL, ">=", false},
-      Category{TokenType::NOTEQUAL, "!=", false},
-      Category{TokenType::EQUAL, "==", false},
-
-      Category{TokenType::ASSIGNMENT, "=", false},
-
-      Category{TokenType::INCREMENT, "\\+\\+|\\-\\-", false},
-      Category{TokenType::OPERATOR, "[+-/\\*<>!%]", false},
-  }};
+  Lexer lexer{NicoleSintax::createLexer()};
   const std::filesystem::path path{"../test/test1.nc"};
   const auto tokens{lexer.analyze(path, true)};
 
@@ -81,7 +34,7 @@ int main() {
 
   // Crear una función main y un bloque básico
   llvm::FunctionType* funcType =
-      llvm::FunctionType::get(builder.getDoubleTy(), false);
+      llvm::FunctionType::get(builder.getInt32Ty(), false);
   llvm::Function* mainFunction = llvm::Function::Create(
       funcType, llvm::Function::ExternalLinkage, "main", module.get());
   llvm::BasicBlock* entry =
@@ -90,21 +43,21 @@ int main() {
 
   // My test
   llvm::LLVMContext* contextPtr{&context};
-  NodeLiteral lit1{contextPtr, 10.6};
-  NodeLiteral* left{&lit1};
+  NodeLiteralString lit1{contextPtr, "HOLA"};
+  NodeLiteralString* left{&lit1};
 
   //llvm::Value* leftEvaluated = left->codeGeneration();
   //builder.CreateRet(leftEvaluated);
 
-  NodeLiteral lit2{contextPtr, 30};
-  NodeLiteral* right{&lit2};
+  NodeLiteralChar lit2{contextPtr, 'k'};
+  NodeLiteralChar* right{&lit2};
   //llvm::Value* rightEvaluated = right->codeGeneration();
   //builder.CreateRet(rightEvaluated);
 
-  NodeBinary bii{contextPtr, left, Operator::ADD, right};
-  NodeBinary* result{&bii};
-  llvm::Value* resultEvaluated = result->codeGeneration();
-  builder.CreateRet(resultEvaluated);
+ // NodeBinary bii{contextPtr, left, Operator::ADD, right};
+ // NodeBinary* result{&bii};
+//  llvm::Value* resultEvaluated = result->codeGeneration();
+  builder.CreateRet(right->codeGeneration());
 
   // Verificar el módulo y la función main
   llvm::verifyFunction(*mainFunction);
@@ -130,7 +83,9 @@ int main() {
   std::vector<llvm::GenericValue> noargs;
   llvm::GenericValue gv = execEngine->runFunction(mainFunction, noargs);
   // Imprime el resultado
-  std::cout << "Result: " << gv.DoubleVal << std::endl;
+  char resultChar = static_cast<char>(gv.IntVal.getZExtValue());
+
+  std::cout << "Result: " << resultChar << std::endl;
   delete execEngine;
 
   return 0;

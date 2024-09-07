@@ -44,7 +44,11 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LLVM_LDFLAGS} ${LLVM_SYS
 set(SRC_FILES
     src/main.cc
     src/lexer/lexer.cc
-    src/parser/nodeLiteral.cc
+    src/parser/nodeLiteralDouble.cc
+    src/parser/nodeLiteralInt.cc
+    src/parser/nodeLiteralBool.cc
+    src/parser/nodeLiteralChar.cc
+    src/parser/nodeLiteralString.cc
     src/parser/nodeBinary.cc
 )
 

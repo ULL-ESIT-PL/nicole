@@ -1,18 +1,16 @@
 #ifndef NODE_TYPE_H
 #define NODE_TYPE_H
 
-namespace nicole
-{
-    enum class NodeType {
-        LITERAL,
-        BINARY
-    };
+namespace nicole {
+enum class NodeType { CHAR, STRING, INT, DOUBLE, BOOL, BINARY };
 
-    enum class Operator {
-        ADD,
-        SUB
-    };
- } // namespace nicole
-
+enum class Operator {
+  ADD,
+  SUB,
+  MULT,
+  DIV,
+  MODULE,
+};
+}  // namespace nicole
 
 #endif
