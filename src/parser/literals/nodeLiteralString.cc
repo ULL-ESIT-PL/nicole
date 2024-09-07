@@ -1,4 +1,4 @@
-#include "../../inc/parser/nodeLiteralString.h"
+#include "../../../inc/parser/literals/nodeLiteralString.h"
 
 #include <iostream>
 namespace nicole {

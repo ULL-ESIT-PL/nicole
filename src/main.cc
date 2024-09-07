@@ -11,13 +11,7 @@
 #include <iostream>
 #include <string>
 
-#include "../inc/lexer/nicoleSintax.h"
-#include "../inc/parser/nodeBinary.h"
-#include "../inc/parser/nodeLiteralDouble.h"
-#include "../inc/parser/nodeLiteralInt.h"
-#include "../inc/parser/nodeLiteralBool.h"
-#include "../inc/parser/nodeLiteralChar.h"
-#include "../inc/parser/nodeLiteralString.h"
+#include "../inc/parser/parser.h"
 using namespace nicole;
 
 int main() {

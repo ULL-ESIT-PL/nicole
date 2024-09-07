@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-#include "node.h"
+#include "../node.h"
 using namespace std;
 
 namespace nicole {

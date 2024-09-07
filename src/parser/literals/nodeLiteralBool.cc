@@ -1,4 +1,4 @@
-#include "../../inc/parser/nodeLiteralBool.h"
+#include "../../../inc/parser/literals/nodeLiteralBool.h"
 
 namespace nicole {
 llvm::Value* NodeLiteralBool::codeGeneration() const {
