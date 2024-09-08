@@ -1,4 +1,4 @@
-#include "../../inc/lexer/lexer.h"
+#include "../../inc/lexicalAnalysis/lexer.h"
 
 namespace nicole {
 

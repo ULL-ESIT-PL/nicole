@@ -11,7 +11,7 @@
 #include <iostream>
 #include <string>
 
-#include "../inc/parser/parser.h"
+#include "../inc/parsingAnalysis/parsingAlgorithms/parser.h"
 using namespace nicole;
 
 int main() {

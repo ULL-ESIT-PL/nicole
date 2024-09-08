@@ -1,4 +1,4 @@
-#include "../../../inc/parser/literals/nodeLiteralDouble.h"
+#include "../../../inc/parsingAnalysis/literals/nodeLiteralDouble.h"
 
 namespace nicole {
 llvm::Value* NodeLiteralDouble::codeGeneration() const {

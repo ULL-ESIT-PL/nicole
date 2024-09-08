@@ -1,4 +1,4 @@
-#include "../../../inc/parser/operations/nodeBinary.h"
+#include "../../../inc/parsingAnalysis/operations/nodeBinary.h"
 
 namespace nicole {
 llvm::Value* NodeBinary::codeGeneration() const {
