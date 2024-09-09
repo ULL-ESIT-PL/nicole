@@ -43,13 +43,18 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LLVM_LDFLAGS} ${LLVM_SYS
 # Source files
 set(SRC_FILES
     src/main.cc
+
     src/lexicalAnalysis/lexer.cc
+    src/lexicalAnalysis/nicoleSintax.cc
+
     src/parsingAnalysis/literals/nodeLiteralDouble.cc
     src/parsingAnalysis/literals/nodeLiteralInt.cc
     src/parsingAnalysis/literals/nodeLiteralBool.cc
     src/parsingAnalysis/literals/nodeLiteralChar.cc
     src/parsingAnalysis/literals/nodeLiteralString.cc
+
     src/parsingAnalysis/operations/nodeBinary.cc
+    
     src/parsingAnalysis/parsingAlgorithms/parser.cc
 )
 

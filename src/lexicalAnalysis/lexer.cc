@@ -2,6 +2,8 @@
 
 namespace nicole {
 
+Lexer::Lexer(const std::vector<Category>& categories) : categories_{categories} {}
+
 Category Lexer::concatCategories() const {
   std::string pattern{""};
   for (const auto& category : categories_) {

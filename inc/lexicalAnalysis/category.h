@@ -23,8 +23,11 @@ class Category final {
         skip_{skip} {};
 
   TokenType type() const { return type_; }
+
   RegexWrapper pattern() const { return pattern_; }
+
   std::string rawPattern() const { return pattern_.str(); }
+  
   bool skip() const { return skip_; }
 
   bool matchToken(const Token& token) const {

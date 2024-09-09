@@ -16,8 +16,11 @@ class Token final {
       : type_{type}, raw_{raw}, row_{row}, col_{col} {};
 
   TokenType type() const { return type_; };
+
   std::string raw() const { return raw_; }
+
   int row() const { return row_; }
+
   int col() const { return col_; }
 };
 

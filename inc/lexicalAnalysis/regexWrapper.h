@@ -15,8 +15,11 @@ class RegexWrapper {
   RegexWrapper(const std::string& rawPattern)
       : rawPattern_{rawPattern},
         pattern_{rawPattern, std::regex_constants::optimize} {};
+
   std::string str() const { return rawPattern_; }
+
   std::regex pattern() const { return pattern_; }
+  
   bool match(const std::string& str) const { return std::regex_match(str, pattern_); }
 };
 }  // namespace nicole
