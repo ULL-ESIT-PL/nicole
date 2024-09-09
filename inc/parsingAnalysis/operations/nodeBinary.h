@@ -5,7 +5,6 @@
 #include <string>
 
 #include "../node.h"
-using namespace std;
 
 namespace nicole {
 class NodeBinary : public Node {
@@ -17,12 +16,14 @@ class NodeBinary : public Node {
  public:
   NodeBinary(llvm::LLVMContext* context, Node* left,
              const Operator& op, Node* right,
-             const shared_ptr<Node>& father = nullptr)
+             const std::shared_ptr<Node>& father = nullptr)
       : Node{context, NodeType::BINARY, father},
         left_{left},
         operator_{op},
         right_{right} {};
+
   virtual ~NodeBinary() = default;
+  
   llvm::Value* codeGeneration() const override;
 };
 

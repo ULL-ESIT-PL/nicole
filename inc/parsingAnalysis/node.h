@@ -18,21 +18,20 @@
 #include <memory>
 
 #include "nodeType.h"
-using namespace std;
 
 namespace nicole {
 class Node {
  protected:
   NodeType type_;
-  shared_ptr<Node> father_;
+  std::shared_ptr<Node> father_;
   llvm::LLVMContext* context_;
 
  public:
-  Node(llvm::LLVMContext* context, const NodeType& type, const shared_ptr<Node>& father = nullptr)
+  Node(llvm::LLVMContext* context, const NodeType& type, const std::shared_ptr<Node>& father = nullptr)
       : context_{context}, type_{type}, father_{father} {};
   virtual ~Node() = default;
   NodeType type() const { return type_; }
-  shared_ptr<Node> father() const { return father_; }
+  std::shared_ptr<Node> father() const { return father_; }
   virtual llvm::Value* codeGeneration() const = 0;
 };
 
