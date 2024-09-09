@@ -54,8 +54,11 @@ set(SRC_FILES
     src/parsingAnalysis/literals/nodeLiteralString.cc
 
     src/parsingAnalysis/operations/nodeBinary.cc
+
+    src/parsingAnalysis/statements/statement.cc
     
     src/parsingAnalysis/parsingAlgorithms/parser.cc
+    src/parsingAnalysis/parsingAlgorithms/topDown.cc
 )
 
 # Output directories

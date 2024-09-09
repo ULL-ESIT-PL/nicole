@@ -4,15 +4,14 @@
 #include "../node.h"
 
 namespace nicole {
-class NodeLiteralInt : public Node {
+class NodeLiteralInt final : public Node {
  private:
   int value_{};
 
  public:
   NodeLiteralInt(llvm::LLVMContext* context, const int val,
                  std::unique_ptr<Node> father = nullptr)
-      : Node{context, NodeType::INT, std::move(father)},
-        value_{val} {};
+      : Node{context, NodeType::INT, std::move(father)}, value_{val} {};
 
   ~NodeLiteralInt() = default;
 

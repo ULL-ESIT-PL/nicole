@@ -1,7 +1,12 @@
 #include "../../../inc/parsingAnalysis/parsingAlgorithms/parser.h"
 
 namespace nicole {
-void Parser::parse(const std::filesystem::path& path) const {
+void Parser::eat() const {
+  if (currentToke_ < tokens_.size()) ++currentToke_;
+}
 
+Token Parser::getCurrentToke() const {
+  assert(currentToke_ < tokens_.size());
+  return tokens_[currentToke_];
 }
 }  // namespace nicole

@@ -5,7 +5,7 @@
 
 namespace nicole {
 
-class NicoleSintax {
+class NicoleSintax final {
  private:
     NicoleSintax() = delete;
  public:

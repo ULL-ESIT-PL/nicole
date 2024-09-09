@@ -4,13 +4,15 @@
 #include "../node.h"
 
 namespace nicole {
-class NodeLiteralDouble: public Node {
+class NodeLiteralDouble final : public Node {
  private:
-    double value_{};
+  double value_{};
+
  public:
-  NodeLiteralDouble(llvm::LLVMContext*context, const double val, std::unique_ptr<Node> father = nullptr)
+  NodeLiteralDouble(llvm::LLVMContext* context, const double val,
+                    std::unique_ptr<Node> father = nullptr)
       : Node{context, NodeType::DOUBLE, std::move(father)}, value_{val} {};
-  
+
   llvm::Value* codeGeneration() const override;
 };
 

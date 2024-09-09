@@ -12,6 +12,7 @@
 #include <string>
 
 #include "../inc/parsingAnalysis/parsingAlgorithms/parser.h"
+#include "../inc/parsingAnalysis/parsingAlgorithms/topDown.h"
 using namespace nicole;
 
 int main() {
@@ -37,6 +38,7 @@ int main() {
 
   // My test
   llvm::LLVMContext* contextPtr{&context};
+  /*
   NodeLiteralString lit1{contextPtr, module.get(), "HOLA"};
   NodeLiteralString* left{&lit1};
 
@@ -48,10 +50,16 @@ int main() {
   llvm::Value* rightEvaluated = right->codeGeneration();
   builder.CreateRet(rightEvaluated);
 
- // NodeBinary bii{contextPtr, left, Operator::ADD, right};
- // NodeBinary* result{&bii};
-//  llvm::Value* resultEvaluated = result->codeGeneration();
+  // NodeBinary bii{contextPtr, left, Operator::ADD, right};
+  // NodeBinary* result{&bii};
+  //  llvm::Value* resultEvaluated = result->codeGeneration();
   builder.CreateRet(leftEvaluated);
+*/
+  std::unique_ptr<Parser> parser{
+      std::make_unique<TopDown>(contextPtr, module.get())};
+  auto result{parser->parse(path)};
+  builder.CreateRet(result->codeGeneration());
+
   // Verificar el módulo y la función main
   llvm::verifyFunction(*mainFunction);
   llvm::verifyModule(*module);
@@ -76,10 +84,15 @@ int main() {
   std::vector<llvm::GenericValue> noargs;
   llvm::GenericValue gv = execEngine->runFunction(mainFunction, noargs);
   // Imprime el resultado
-  //char resultChar = static_cast<std::string>(gv.IntVal.getZExtValue());
-  //std::cout << "Result: " << resultChar << std::endl;
+  // char resultChar = static_cast<std::string>(gv.IntVal.getZExtValue());
+  // std::cout << "Result: " << resultChar << std::endl;
+
+  /*
+  PARA STRINGS
   char* resultPtr = (char*)gv.PointerVal;
   std::cout << "Result: " << resultPtr << std::endl;
+  */
+  
   delete execEngine;
 
   return 0;

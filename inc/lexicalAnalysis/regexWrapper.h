@@ -5,7 +5,7 @@
 #include <string>
 
 namespace nicole {
-class RegexWrapper {
+class RegexWrapper final {
  private:
   /* data */
   std::string rawPattern_{""};

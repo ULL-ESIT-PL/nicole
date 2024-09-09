@@ -2,7 +2,7 @@
 #define NODE_TYPE_H
 
 namespace nicole {
-enum class NodeType { CHAR, STRING, INT, DOUBLE, BOOL, BINARY };
+enum class NodeType { CHAR, STRING, INT, DOUBLE, BOOL, BINARY, STATEMENT };
 
 enum class Operator {
   ADD,
