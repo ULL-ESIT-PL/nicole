@@ -14,8 +14,6 @@
 #include "../inc/parsingAnalysis/parsingAlgorithms/parser.h"
 using namespace nicole;
 
-// clang -S -emit-llvm -o output.ll prueba.c
-
 int main() {
   Lexer lexer{NicoleSintax::createLexer()};
   const std::filesystem::path path{"../test/test1.nc"};

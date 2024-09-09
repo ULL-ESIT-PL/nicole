@@ -23,15 +23,19 @@ namespace nicole {
 class Node {
  protected:
   NodeType type_;
-  std::shared_ptr<Node> father_;
+  std::unique_ptr<Node> father_;
   llvm::LLVMContext* context_;
 
  public:
-  Node(llvm::LLVMContext* context, const NodeType& type, const std::shared_ptr<Node>& father = nullptr)
-      : context_{context}, type_{type}, father_{father} {};
+  Node(llvm::LLVMContext* context, const NodeType& type, std::unique_ptr<Node> father = nullptr)
+      : context_{context}, type_{type}, father_{std::move(father)} {};
+
   virtual ~Node() = default;
+
   NodeType type() const { return type_; }
-  std::shared_ptr<Node> father() const { return father_; }
+
+  Node* father() const { return father_.get(); }
+
   virtual llvm::Value* codeGeneration() const = 0;
 };
 
