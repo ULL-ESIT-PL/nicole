@@ -21,7 +21,17 @@ class NodeBinary final : public Node {
 
   virtual ~NodeBinary() = default;
 
+  Node* left() const { return left_.get(); }
+
+  Node* right() const { return right_.get(); }
+
+  Operator op() const { return operator_; }
+
   llvm::Value* codeGeneration() const override;
+
+  llvm::Value* accept(const std::unique_ptr<Visitor>& visitor) const override {
+    return visitor->visit(std::make_unique<NodeBinary>(*this));
+  }
 };
 
 }  // namespace nicole

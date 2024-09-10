@@ -17,8 +17,12 @@
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Verifier.h"
 #include "nodeType.h"
+#include "../visitors/visitor.h"
 
 namespace nicole {
+
+class Visitor;
+
 class Node {
  protected:
   NodeType type_;
@@ -38,7 +42,7 @@ class Node {
 
   virtual llvm::Value* codeGeneration() const = 0;
 
-  // virtual llvm::Value* accept(Visitor& visitor) const = 0;
+  virtual llvm::Value* accept(const std::unique_ptr<Visitor>& visitor) const = 0;
 };
 
 }  // namespace nicole

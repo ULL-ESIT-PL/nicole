@@ -19,6 +19,8 @@ class NodeStatement final : public Node {
       : Node{context, NodeType::STATEMENT, std::move(father)},
         expression_{std::move(expression)} {};
   ~NodeStatement() = default;
+
+  Node* expression() const { return expression_.get(); }
   
   llvm::Value* codeGeneration() const override;
 };

@@ -4,6 +4,7 @@
 #include "../node.h"
 
 namespace nicole {
+
 class NodeLiteralInt final : public Node {
  private:
   int value_{};
@@ -13,9 +14,13 @@ class NodeLiteralInt final : public Node {
                  std::unique_ptr<Node> father = nullptr)
       : Node{context, NodeType::INT, std::move(father)}, value_{val} {};
 
-  ~NodeLiteralInt() = default;
+  llvm::Value* accept(const std::unique_ptr<Visitor>& visitor) const override {
+    return visitor->visit(std::make_unique<NodeLiteralInt>(*this));
+  }
 
   llvm::Value* codeGeneration() const override;
+
+  int value() const { return value_; }
 };
 
 }  // namespace nicole
