@@ -16,10 +16,6 @@
 using namespace nicole;
 
 int main() {
-  Lexer lexer{NicoleSintax::createLexer()};
-  const std::filesystem::path path{"../test/test1.nc"};
-  const auto tokens{lexer.analyze(path, false)};
-
   // Start LLVM
   llvm::LLVMContext context;
   llvm::IRBuilder<> builder(context);
@@ -54,10 +50,11 @@ int main() {
   // NodeBinary* result{&bii};
   //  llvm::Value* resultEvaluated = result->codeGeneration();
   builder.CreateRet(leftEvaluated);
-*/
-  std::unique_ptr<Parser> parser{
+  */
+  const std::filesystem::path path{"../test/test1.nc"};
+  const std::unique_ptr<Parser> parser{
       std::make_unique<TopDown>(contextPtr, module.get())};
-  auto result{parser->parse(path)};
+  const auto result{parser->parse(path)};
   builder.CreateRet(result->codeGeneration());
 
   // Verificar el módulo y la función main
@@ -92,7 +89,7 @@ int main() {
   char* resultPtr = (char*)gv.PointerVal;
   std::cout << "Result: " << resultPtr << std::endl;
   */
-  
+
   delete execEngine;
 
   return 0;

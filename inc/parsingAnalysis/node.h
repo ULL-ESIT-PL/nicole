@@ -2,6 +2,9 @@
 #define NODE_H
 
 #include <llvm/IR/Value.h>
+
+#include <memory>
+
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/IR/BasicBlock.h"
@@ -13,10 +16,6 @@
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Verifier.h"
-#include <llvm/IR/Value.h>
-
-#include <memory>
-
 #include "nodeType.h"
 
 namespace nicole {
@@ -27,7 +26,8 @@ class Node {
   llvm::LLVMContext* context_;
 
  public:
-  Node(llvm::LLVMContext* context, const NodeType& type, std::unique_ptr<Node> father = nullptr)
+  Node(llvm::LLVMContext* context, const NodeType& type,
+       std::unique_ptr<Node> father = nullptr)
       : context_{context}, type_{type}, father_{std::move(father)} {};
 
   virtual ~Node() = default;
@@ -37,6 +37,8 @@ class Node {
   Node* father() const { return father_.get(); }
 
   virtual llvm::Value* codeGeneration() const = 0;
+
+  // virtual llvm::Value* accept(Visitor& visitor) const = 0;
 };
 
 }  // namespace nicole
