@@ -11,10 +11,10 @@ class NodeBinary final : public Node {
   std::unique_ptr<Node> right_;
 
  public:
-  NodeBinary(llvm::LLVMContext* context, std::unique_ptr<Node> left,
-             const Operator& op, std::unique_ptr<Node> right,
+  NodeBinary(std::unique_ptr<Node> left, const Operator& op,
+             std::unique_ptr<Node> right,
              std::unique_ptr<Node> father = nullptr)
-      : Node{context, NodeType::BINARY, std::move(father)},
+      : Node{NodeType::BINARY, std::move(father)},
         left_{std::move(left)},
         operator_{op},
         right_{std::move(right)} {};
@@ -27,10 +27,8 @@ class NodeBinary final : public Node {
 
   Operator op() const { return operator_; }
 
-  llvm::Value* codeGeneration() const override;
-
-  llvm::Value* accept(const std::unique_ptr<Visitor>& visitor) const override {
-    return visitor->visit(std::make_unique<NodeBinary>(*this));
+  llvm::Value* accept(const Visitor* visitor) const override {
+    return visitor->visit(this);
   }
 };
 

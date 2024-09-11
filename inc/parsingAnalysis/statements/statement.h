@@ -13,16 +13,18 @@ class NodeStatement final : public Node {
   std::unique_ptr<Node> expression_{};
 
  public:
-  NodeStatement(llvm::LLVMContext* context,
-                std::unique_ptr<Node> expression,
+  NodeStatement(std::unique_ptr<Node> expression,
                 std::unique_ptr<Node> father = nullptr)
-      : Node{context, NodeType::STATEMENT, std::move(father)},
+      : Node{NodeType::STATEMENT, std::move(father)},
         expression_{std::move(expression)} {};
+
   ~NodeStatement() = default;
 
   Node* expression() const { return expression_.get(); }
-  
-  llvm::Value* codeGeneration() const override;
+
+  llvm::Value* accept(const Visitor* visitor) const override {
+    return visitor->visit(this);
+  }
 };
 
 }  // namespace nicole

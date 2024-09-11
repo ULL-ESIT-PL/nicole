@@ -9,11 +9,14 @@ class NodeLiteralChar final : public Node {
   char value_{};
 
  public:
-  NodeLiteralChar(llvm::LLVMContext* context, const char val,
-                  std::unique_ptr<Node> father = nullptr)
-      : Node{context, NodeType::CHAR, std::move(father)}, value_{val} {};
+  NodeLiteralChar(const char val, std::unique_ptr<Node> father = nullptr)
+      : Node{NodeType::CHAR, std::move(father)}, value_{val} {};
 
-  llvm::Value* codeGeneration() const override;
+  llvm::Value* accept(const Visitor* visitor) const override {
+    return visitor->visit(this);
+  }
+
+  char value() const { return value_; }
 };
 
 }  // namespace nicole

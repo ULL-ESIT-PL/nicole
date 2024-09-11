@@ -13,6 +13,7 @@
 
 #include "../inc/parsingAnalysis/parsingAlgorithms/parser.h"
 #include "../inc/parsingAnalysis/parsingAlgorithms/topDown.h"
+#include "../inc/visitors/codeGeneration.h"
 using namespace nicole;
 
 int main() {
@@ -53,9 +54,13 @@ int main() {
   */
   const std::filesystem::path path{"../test/test1.nc"};
   const std::unique_ptr<Parser> parser{
-      std::make_unique<TopDown>(contextPtr, module.get())};
+      std::make_unique<TopDown>()};
   const auto result{parser->parse(path)};
-  builder.CreateRet(result->codeGeneration());
+  CodeGeneration codeGen{contextPtr, module.get()};
+  Visitor* visitor{&codeGen};
+  // builder.CreateRet(result->codeGeneration());
+  auto resultCasted = dynamic_cast<NodeStatement*>(result.get());
+  builder.CreateRet(visitor->visit(resultCasted));
 
   // Verificar el módulo y la función main
   llvm::verifyFunction(*mainFunction);

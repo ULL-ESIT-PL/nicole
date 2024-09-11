@@ -9,11 +9,14 @@ class NodeLiteralBool final : public Node {
   bool value_{};
 
  public:
-  NodeLiteralBool(llvm::LLVMContext* context, const bool val,
-                  std::unique_ptr<Node> father = nullptr)
-      : Node{context, NodeType::BOOL, std::move(father)}, value_{val} {};
+  NodeLiteralBool(const bool val, std::unique_ptr<Node> father = nullptr)
+      : Node{NodeType::BOOL, std::move(father)}, value_{val} {};
 
-  llvm::Value* codeGeneration() const override;
+  llvm::Value* accept(const Visitor* visitor) const override {
+    return visitor->visit(this);
+  }
+
+  bool value() const { return value_; }
 };
 
 }  // namespace nicole
