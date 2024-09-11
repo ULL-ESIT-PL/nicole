@@ -15,6 +15,7 @@
 
 namespace nicole {
 
+enum class TokenType;
 class Node;  // Declaración adelantada
 class NodeLiteralBool;
 class NodeLiteralChar;

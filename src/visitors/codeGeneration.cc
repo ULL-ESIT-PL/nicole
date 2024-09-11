@@ -1,5 +1,6 @@
 #include "../../inc/visitors/codeGeneration.h"
 
+#include "../../inc/lexicalAnalysis/type.h"
 #include "../../inc/parsingAnalysis/literals/nodeLiteralBool.h"
 #include "../../inc/parsingAnalysis/literals/nodeLiteralChar.h"
 #include "../../inc/parsingAnalysis/literals/nodeLiteralDouble.h"
@@ -7,7 +8,6 @@
 #include "../../inc/parsingAnalysis/literals/nodeLiteralString.h"
 #include "../../inc/parsingAnalysis/operations/nodeBinary.h"
 #include "../../inc/parsingAnalysis/statements/statement.h"
-#include <iostream>
 
 namespace nicole {
 llvm::Value* CodeGeneration::visit(const NodeLiteralBool* node) const {
@@ -23,7 +23,6 @@ llvm::Value* CodeGeneration::visit(const NodeLiteralDouble* node) const {
 }
 
 llvm::Value* CodeGeneration::visit(const NodeLiteralInt* node) const {
-  std::cout << "val: " << node->value() << "\n" << std::flush;
   return llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_),
                                 node->value(), true);
 }
@@ -67,13 +66,13 @@ llvm::Value* CodeGeneration::visit(const NodeBinary* node) const {
 
   // Realiza la operación basada en el tipo del operador
   switch (node->op()) {
-    case Operator::ADD:
+    case TokenType::OPERATOR_ADD:
       if (leftEvaluated->getType()->isFloatingPointTy()) {
         return builder.CreateFAdd(leftEvaluated, rightEvaluated, "addtmp");
       } else {
         return builder.CreateAdd(leftEvaluated, rightEvaluated, "addtmp");
       }
-    case Operator::SUB:
+    case TokenType::OPERATOR_SUB:
       if (leftEvaluated->getType()->isFloatingPointTy()) {
         return builder.CreateFSub(leftEvaluated, rightEvaluated, "subtmp");
       } else {

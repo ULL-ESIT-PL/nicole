@@ -7,11 +7,11 @@ namespace nicole {
 class NodeBinary final : public Node {
  private:
   std::unique_ptr<Node> left_;
-  Operator operator_;
+  TokenType operator_;
   std::unique_ptr<Node> right_;
 
  public:
-  NodeBinary(std::unique_ptr<Node> left, const Operator& op,
+  NodeBinary(std::unique_ptr<Node> left, const TokenType& op,
              std::unique_ptr<Node> right,
              std::unique_ptr<Node> father = nullptr)
       : Node{NodeType::BINARY, std::move(father)},
@@ -25,7 +25,7 @@ class NodeBinary final : public Node {
 
   Node* right() const { return right_.get(); }
 
-  Operator op() const { return operator_; }
+  TokenType op() const { return operator_; }
 
   llvm::Value* accept(const Visitor* visitor) const override {
     return visitor->visit(this);

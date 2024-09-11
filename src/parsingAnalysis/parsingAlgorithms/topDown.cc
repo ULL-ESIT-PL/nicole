@@ -13,13 +13,26 @@ std::unique_ptr<Node> TopDown::parseStart() const {
   auto left{parseFactor()};
 
   while (std::size_t(currentToke_) < tokens_.size() &&
-         (getCurrentToke().type() == TokenType::OPERATOR)) {
-    // std::string op{getCurrentToke().raw()};
+         (getCurrentToke().type() == TokenType::OPERATOR_ADD ||
+          getCurrentToke().type() == TokenType::OPERATOR_SUB)) {
+    const Token token{getCurrentToke()};
     eat();
-    // recursively goes down in the second e
     auto right{parseFactor()};
-    left = std::make_unique<NodeBinary>(std::move(left), Operator::ADD,
-                                        std::move(right));
+    switch (token.type()) {
+      case TokenType::OPERATOR_ADD:
+        left = std::make_unique<NodeBinary>(
+            std::move(left), TokenType::OPERATOR_ADD, std::move(right));
+        break;
+      case TokenType::OPERATOR_SUB:
+        left = std::make_unique<NodeBinary>(
+            std::move(left), TokenType::OPERATOR_SUB, std::move(right));
+        break;
+      default:
+        assert(1 > 2 && "Boo");
+    }
+    // recursively goes down in the second e
+    // left = std::make_unique<NodeBinary>(std::move(left), Operator::ADD,
+    //                                   std::move(right));
   }
 
   return left;

@@ -59,7 +59,7 @@ int main() {
   CodeGeneration codeGen{contextPtr, module.get()};
   Visitor* visitor{&codeGen};
   // builder.CreateRet(result->codeGeneration());
-  auto resultCasted = dynamic_cast<NodeStatement*>(result.get());
+  auto resultCasted {dynamic_cast<NodeStatement*>(result.get())};
   builder.CreateRet(visitor->visit(resultCasted));
 
   // Verificar el módulo y la función main
