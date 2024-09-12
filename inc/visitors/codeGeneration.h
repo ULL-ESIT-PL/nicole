@@ -26,6 +26,8 @@ class CodeGeneration final : public Visitor {
   llvm::Value* visit(const NodeBinaryOp* node) const override;
 
   llvm::Value* visit(const NodeStatement* node) const override;
+
+  llvm::Value* visit(const NodeStatementList* node) const override;
 };
 
 }  // namespace nicole

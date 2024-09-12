@@ -2,7 +2,6 @@
 #define NODE_STATEMENT_H
 
 #include <memory>
-#include <vector>
 
 #include "../node.h"
 using namespace std;

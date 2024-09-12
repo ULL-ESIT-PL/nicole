@@ -24,6 +24,7 @@ class NodeLiteralInt;
 class NodeLiteralString;
 class NodeBinaryOp;
 class NodeStatement;
+class NodeStatementList;
 
 class Visitor {
  public:
@@ -43,6 +44,8 @@ class Visitor {
   virtual llvm::Value* visit(const NodeBinaryOp* node) const = 0;
 
   virtual llvm::Value* visit(const NodeStatement* node) const = 0;
+
+  virtual llvm::Value* visit(const NodeStatementList* node) const = 0;
 };
 
 }  // namespace nicole

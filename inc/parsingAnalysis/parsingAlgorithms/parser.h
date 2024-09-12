@@ -9,6 +9,7 @@
 #include "../literals/nodeLiteralString.h"
 #include "../operations/nodeBinaryOp.h"
 #include "../statements/statement.h"
+#include "../statements/statementList.h"
 
 namespace nicole {
 class Parser {

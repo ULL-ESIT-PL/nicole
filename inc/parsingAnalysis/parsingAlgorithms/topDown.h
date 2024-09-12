@@ -9,6 +9,7 @@ class TopDown final : public Parser {
   mutable std::unique_ptr<NodeStatement> root_{nullptr};
 
   std::unique_ptr<Node> parseStart() const;
+  
   std::unique_ptr<Node> parseFactor() const;
 
  public:

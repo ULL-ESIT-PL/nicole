@@ -8,6 +8,7 @@
 #include "../../inc/parsingAnalysis/literals/nodeLiteralString.h"
 #include "../../inc/parsingAnalysis/operations/nodeBinaryOp.h"
 #include "../../inc/parsingAnalysis/statements/statement.h"
+#include "../../inc/parsingAnalysis/statements/statementList.h"
 
 namespace nicole {
 llvm::Value* CodeGeneration::visit(const NodeLiteralBool* node) const {
@@ -87,4 +88,21 @@ llvm::Value* CodeGeneration::visit(const NodeStatement* node) const {
   // not using expression leads to infinite loop
   return node->expression()->accept(this);
 }
+
+llvm::Value* CodeGeneration::visit(const NodeStatementList* node) const {
+  llvm::IRBuilder<> builder(*context_);  // Crear un IRBuilder
+  llvm::Value* lastValue = nullptr;  // Para almacenar el valor devuelto por la última declaración
+  // Recorrer todas las declaraciones en el NodeStatementList
+  for (const auto& statement : *node) {
+    // Generar el código de la declaración actual
+    llvm::Value* value = statement->accept(this);
+    if (!value) {
+      return nullptr;  // Si hay un error en una de las declaraciones, se detiene la generación de código
+    }
+    // Actualizar el valor devuelto por la última declaración
+    lastValue = value;
+  }
+  return lastValue;  // Devolver el valor de la última declaración
+}
+
 }  // namespace nicole
