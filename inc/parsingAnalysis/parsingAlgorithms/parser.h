@@ -13,7 +13,7 @@
 namespace nicole {
 class Parser {
  protected:
-  Lexer lexer_{NicoleSintax::createLexer()};
+  Lexer lexer_;
   mutable std::vector<Token> tokens_{};
   mutable std::size_t currentToke_{0};
 
@@ -21,8 +21,12 @@ class Parser {
   Token getCurrentToke() const;
 
  public:
+  Parser(std::unique_ptr<Sintax> sintax) : lexer_{sintax->createLexer()} {}
+
   virtual ~Parser() = default;
-  virtual std::unique_ptr<Node> parse(const std::filesystem::path& path) const = 0;
+
+  virtual std::unique_ptr<Node> parse(
+      const std::filesystem::path& path) const = 0;
 };
 }  // namespace nicole
 

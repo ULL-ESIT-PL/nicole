@@ -1,15 +1,16 @@
 #ifndef NICOLE_SINTAX_H
 #define NICOLE_SINTAX_H
 
-#include "lexer.h"
+#include "sintax.h"
 
 namespace nicole {
 
-class NicoleSintax final {
+class NicoleSintax final : public Sintax {
  private:
-    NicoleSintax() = delete;
  public:
-  static Lexer createLexer();
+  NicoleSintax() = default;
+
+  Lexer createLexer() const override;
 };
 
 }  // namespace nicole

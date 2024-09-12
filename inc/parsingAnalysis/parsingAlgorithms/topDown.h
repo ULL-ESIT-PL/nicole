@@ -12,6 +12,8 @@ class TopDown final : public Parser {
   std::unique_ptr<Node> parseFactor() const;
 
  public:
+  TopDown(std::unique_ptr<Sintax> sintax): Parser{std::move(sintax)} {}
+
   ~TopDown() = default;
 
   std::unique_ptr<Node> parse(const std::filesystem::path& path) const override;

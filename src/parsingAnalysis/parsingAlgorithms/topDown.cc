@@ -39,12 +39,31 @@ std::unique_ptr<Node> TopDown::parseStart() const {
 }
 
 std::unique_ptr<Node> TopDown::parseFactor() const {
-  if (getCurrentToke().type() == TokenType::NUMBER_INT) {
-    const int value{std::stoi(getCurrentToke().raw())};
-    eat();
-    return std::make_unique<NodeLiteralInt>(value);
+  switch (getCurrentToke().type()) {
+    case TokenType::NUMBER_INT: {
+      const int value{std::stoi(getCurrentToke().raw())};
+      eat();
+      return std::make_unique<NodeLiteralInt>(value);
+    }
+    case TokenType::NUMBER_DOUBLE: {
+      const double value{std::stod(getCurrentToke().raw())};
+      eat();
+      return std::make_unique<NodeLiteralDouble>(value);
+    }
+    case TokenType::LP: {
+      eat();
+      auto expression{parseStart()};
+      if (getCurrentToke().type() == TokenType::RP) {
+        eat();
+      } else {
+        assert(1 < 0 && "Unkow token2");
+      }
+      return expression;
+    }
+    default:
+      std::cout << getCurrentToke().raw() << std::flush;
+      assert(1 < 0 && "Unkow token");
+      break;
   }
-  std::cout << getCurrentToke().raw() << std::flush;
-  assert(1 < 0 && "Unkow token");
 }
 }  // namespace nicole

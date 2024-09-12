@@ -2,7 +2,7 @@
 
 namespace nicole {
 
-Lexer NicoleSintax::createLexer() {
+Lexer NicoleSintax::createLexer() const {
   return Lexer{std::vector<Category>{
       Category{TokenType::SPACE, "\\s+", true},
       Category{TokenType::COMMENT, "\\/\\*(.|\\n)*?\\*\\/", true},

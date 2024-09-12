@@ -53,8 +53,9 @@ int main() {
   builder.CreateRet(leftEvaluated);
   */
   const std::filesystem::path path{"../test/test1.nc"};
+  std::unique_ptr<Sintax> sintax{std::make_unique<NicoleSintax>()};
   const std::unique_ptr<Parser> parser{
-      std::make_unique<TopDown>()};
+      std::make_unique<TopDown>(std::move(sintax))};
   const auto result{parser->parse(path)};
   CodeGeneration codeGen{contextPtr, module.get()};
   Visitor* visitor{&codeGen};
