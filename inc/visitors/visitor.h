@@ -22,7 +22,7 @@ class NodeLiteralChar;
 class NodeLiteralDouble;
 class NodeLiteralInt;
 class NodeLiteralString;
-class NodeBinary;
+class NodeBinaryOp;
 class NodeStatement;
 
 class Visitor {
@@ -40,7 +40,7 @@ class Visitor {
 
   virtual llvm::Value* visit(const NodeLiteralString* node) const = 0;
 
-  virtual llvm::Value* visit(const NodeBinary* node) const = 0;
+  virtual llvm::Value* visit(const NodeBinaryOp* node) const = 0;
 
   virtual llvm::Value* visit(const NodeStatement* node) const = 0;
 };

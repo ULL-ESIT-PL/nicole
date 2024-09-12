@@ -3,7 +3,6 @@
 namespace nicole {
 std::unique_ptr<Node> TopDown::parse(const std::filesystem::path& path) const {
   tokens_ = lexer_.analyze(path);
-  std::cout << "Size: " << tokens_.size() << '\n';
   root_ = std::make_unique<NodeStatement>(std::move(parseStart()));
   return std::move(root_);
 }
@@ -20,11 +19,11 @@ std::unique_ptr<Node> TopDown::parseStart() const {
     auto right{parseFactor()};
     switch (token.type()) {
       case TokenType::OPERATOR_ADD:
-        left = std::make_unique<NodeBinary>(
+        left = std::make_unique<NodeBinaryOp>(
             std::move(left), TokenType::OPERATOR_ADD, std::move(right));
         break;
       case TokenType::OPERATOR_SUB:
-        left = std::make_unique<NodeBinary>(
+        left = std::make_unique<NodeBinaryOp>(
             std::move(left), TokenType::OPERATOR_SUB, std::move(right));
         break;
       default:

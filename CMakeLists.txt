@@ -53,7 +53,7 @@ set(SRC_FILES
     src/parsingAnalysis/literals/nodeLiteralChar.cc
     src/parsingAnalysis/literals/nodeLiteralString.cc
 
-    src/parsingAnalysis/operations/nodeBinary.cc
+    src/parsingAnalysis/operations/nodeBinaryOp.cc
 
     src/parsingAnalysis/statements/statement.cc
     

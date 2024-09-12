@@ -1,17 +1,17 @@
-#ifndef NODE_BINARY_H
-#define NODE_BINARY_H
+#ifndef NODE_BINARY_OP_H
+#define NODE_BINARY_OP_H
 
 #include "../node.h"
 
 namespace nicole {
-class NodeBinary final : public Node {
+class NodeBinaryOp final : public Node {
  private:
   std::unique_ptr<Node> left_;
   TokenType operator_;
   std::unique_ptr<Node> right_;
 
  public:
-  NodeBinary(std::unique_ptr<Node> left, const TokenType& op,
+  NodeBinaryOp(std::unique_ptr<Node> left, const TokenType& op,
              std::unique_ptr<Node> right,
              std::unique_ptr<Node> father = nullptr)
       : Node{NodeType::BINARY, std::move(father)},
@@ -19,7 +19,7 @@ class NodeBinary final : public Node {
         operator_{op},
         right_{std::move(right)} {};
 
-  virtual ~NodeBinary() = default;
+  virtual ~NodeBinaryOp() = default;
 
   Node* left() const { return left_.get(); }
 

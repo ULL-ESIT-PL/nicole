@@ -7,7 +7,7 @@
 #include "../literals/nodeLiteralDouble.h"
 #include "../literals/nodeLiteralInt.h"
 #include "../literals/nodeLiteralString.h"
-#include "../operations/nodeBinary.h"
+#include "../operations/nodeBinaryOp.h"
 #include "../statements/statement.h"
 
 namespace nicole {

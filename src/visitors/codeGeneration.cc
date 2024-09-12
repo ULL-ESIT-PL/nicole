@@ -6,7 +6,7 @@
 #include "../../inc/parsingAnalysis/literals/nodeLiteralDouble.h"
 #include "../../inc/parsingAnalysis/literals/nodeLiteralInt.h"
 #include "../../inc/parsingAnalysis/literals/nodeLiteralString.h"
-#include "../../inc/parsingAnalysis/operations/nodeBinary.h"
+#include "../../inc/parsingAnalysis/operations/nodeBinaryOp.h"
 #include "../../inc/parsingAnalysis/statements/statement.h"
 
 namespace nicole {
@@ -33,7 +33,7 @@ llvm::Value* CodeGeneration::visit(const NodeLiteralString* node) const {
   return builder.CreatePointerCast(str, builder.getInt8PtrTy());
 }
 
-llvm::Value* CodeGeneration::visit(const NodeBinary* node) const {
+llvm::Value* CodeGeneration::visit(const NodeBinaryOp* node) const {
   Node* left{node->left()};
   Node* right{node->right()};
 

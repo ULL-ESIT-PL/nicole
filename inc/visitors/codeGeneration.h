@@ -23,7 +23,7 @@ class CodeGeneration final : public Visitor {
 
   llvm::Value* visit(const NodeLiteralString* node) const override;
 
-  llvm::Value* visit(const NodeBinary* node) const override;
+  llvm::Value* visit(const NodeBinaryOp* node) const override;
 
   llvm::Value* visit(const NodeStatement* node) const override;
 };
