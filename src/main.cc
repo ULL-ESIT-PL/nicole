@@ -26,7 +26,7 @@ int main() {
 
   // Crear una función main y un bloque básico
   llvm::FunctionType* funcType =
-      llvm::FunctionType::get(builder.getInt8PtrTy(), false);
+      llvm::FunctionType::get(builder.getDoubleTy(), false);
   llvm::Function* mainFunction = llvm::Function::Create(
       funcType, llvm::Function::ExternalLinkage, "main", module.get());
   llvm::BasicBlock* entry =

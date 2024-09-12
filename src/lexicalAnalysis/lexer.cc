@@ -2,7 +2,8 @@
 
 namespace nicole {
 
-Lexer::Lexer(const std::vector<Category>& categories) : categories_{categories} {}
+Lexer::Lexer(const std::vector<Category>& categories)
+    : categories_{categories} {}
 
 Category Lexer::concatCategories() const {
   std::string pattern{""};
@@ -23,15 +24,16 @@ void Lexer::checkUnmatched(const std::vector<Token>& tokens) const {
     }
   }
   if (unmatchedFlag) {
-    std::abort();
-    // throw std::runtime_error(everyUnmatched);
+    llvm::report_fatal_error(everyUnmatched.c_str());
   }
 }
 
 std::string Lexer::readFile(const std::filesystem::path& fileName) const {
   std::fstream file{fileName};
-  if (!file.is_open()) std::abort();
-  // throw std::runtime_error("The file " + fileName.string() + " is not open");
+  if (!file.is_open()) {
+    const std::string strErr{"The file " + fileName.string() + " is not open"};
+    llvm::report_fatal_error(strErr.c_str());
+  }
   std::string text{""};
   std::string line{""};
   while (getline(file, line)) {

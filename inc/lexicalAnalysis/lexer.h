@@ -1,6 +1,8 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+#include <llvm/Support/ErrorHandling.h>
+
 #include <filesystem>
 #include <fstream>
 #include <vector>
@@ -15,7 +17,7 @@ class Lexer final {
   Category concatCategories() const;
 
   std::string readFile(const std::filesystem::path& fileName) const;
-  
+
   void checkUnmatched(const std::vector<Token>& tokens) const;
 
  public:

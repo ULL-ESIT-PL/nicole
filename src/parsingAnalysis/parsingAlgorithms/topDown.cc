@@ -28,11 +28,8 @@ std::unique_ptr<Node> TopDown::parseStart() const {
             std::move(left), TokenType::OPERATOR_SUB, std::move(right));
         break;
       default:
-        assert(1 > 2 && "Boo");
+        llvm::report_fatal_error("Error: invalid token type at parsing + or -");
     }
-    // recursively goes down in the second e
-    // left = std::make_unique<NodeBinary>(std::move(left), Operator::ADD,
-    //                                   std::move(right));
   }
 
   return left;
@@ -56,14 +53,16 @@ std::unique_ptr<Node> TopDown::parseFactor() const {
       if (getCurrentToke().type() == TokenType::RP) {
         eat();
       } else {
-        assert(1 < 0 && "Unkow token2");
+        const std::string strErr{"Error: missing right parenthesis, found " +
+                                 getCurrentToke().raw()};
+        llvm::report_fatal_error(strErr.c_str());
       }
       return expression;
     }
     default:
-      std::cout << getCurrentToke().raw() << std::flush;
-      assert(1 < 0 && "Unkow token");
-      break;
+      const std::string strErr{"Error: unknown token found " +
+                               getCurrentToke().raw()};
+      llvm::report_fatal_error(strErr.c_str());
   }
 }
 }  // namespace nicole
