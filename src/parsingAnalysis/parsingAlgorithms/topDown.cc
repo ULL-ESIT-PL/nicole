@@ -1,20 +1,37 @@
 #include "../../../inc/parsingAnalysis/parsingAlgorithms/topDown.h"
 
 namespace nicole {
-std::unique_ptr<Node> TopDown::parse(const std::filesystem::path& path) const {
+std::unique_ptr<Tree> TopDown::parse(const std::filesystem::path& path) const {
   tokens_ = lexer_.analyze(path);
-  root_ = std::make_unique<NodeStatement>(std::move(parseStart()));
-  return std::move(root_);
+  root_ = parseStart();
+  return std::make_unique<Tree>(std::move(root_));
 }
 
-std::unique_ptr<Node> TopDown::parseStart() const {
+std::unique_ptr<NodeStatementList> TopDown::parseStart() const {
+  std::vector<std::unique_ptr<NodeStatement>> gloablScopeStatements;
+  while (std::size_t(currentToken_) < tokens_.size()) {
+    gloablScopeStatements.push_back(std::move(parseStatement()));
+    if (std::size_t(currentToken_) < tokens_.size() &&
+        isTokenType(TokenType::SEMICOLON)) {
+      eat();
+    }
+  }
+
+  return std::make_unique<NodeStatementList>(std::move(gloablScopeStatements));
+}
+
+std::unique_ptr<NodeStatement> TopDown::parseStatement() const {
+  return std::make_unique<NodeStatement>(parseAdd_Sub());
+}
+
+std::unique_ptr<Node> TopDown::parseAdd_Sub() const {
   // equivalent to the first e + e in Jison recursively goes down
   auto left{parseFactor()};
 
-  while (std::size_t(currentToke_) < tokens_.size() &&
-         (getCurrentToke().type() == TokenType::OPERATOR_ADD ||
-          getCurrentToke().type() == TokenType::OPERATOR_SUB)) {
-    const Token token{getCurrentToke()};
+  while (std::size_t(currentToken_) < tokens_.size() &&
+         (getCurrentToken().type() == TokenType::OPERATOR_ADD ||
+          getCurrentToken().type() == TokenType::OPERATOR_SUB)) {
+    const Token token{getCurrentToken()};
     eat();
     auto right{parseFactor()};
     switch (token.type()) {
@@ -35,32 +52,32 @@ std::unique_ptr<Node> TopDown::parseStart() const {
 }
 
 std::unique_ptr<Node> TopDown::parseFactor() const {
-  switch (getCurrentToke().type()) {
+  switch (getCurrentToken().type()) {
     case TokenType::NUMBER_INT: {
-      const int value{std::stoi(getCurrentToke().raw())};
+      const int value{std::stoi(getCurrentToken().raw())};
       eat();
       return std::make_unique<NodeLiteralInt>(value);
     }
     case TokenType::NUMBER_DOUBLE: {
-      const double value{std::stod(getCurrentToke().raw())};
+      const double value{std::stod(getCurrentToken().raw())};
       eat();
       return std::make_unique<NodeLiteralDouble>(value);
     }
     case TokenType::LP: {
       eat();
-      auto expression{parseStart()};
-      if (getCurrentToke().type() == TokenType::RP) {
+      auto expression{parseAdd_Sub()};
+      if (getCurrentToken().type() == TokenType::RP) {
         eat();
       } else {
         const std::string strErr{"Error: missing right parenthesis, found " +
-                                 getCurrentToke().raw()};
+                                 getCurrentToken().raw()};
         llvm::report_fatal_error(strErr.c_str());
       }
       return expression;
     }
     default:
       const std::string strErr{"Error: unknown token found " +
-                               getCurrentToke().raw()};
+                               getCurrentToken().raw()};
       llvm::report_fatal_error(strErr.c_str());
   }
 }

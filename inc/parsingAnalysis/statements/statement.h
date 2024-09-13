@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "../node.h"
-using namespace std;
 
 namespace nicole {
 class NodeStatement final : public Node {

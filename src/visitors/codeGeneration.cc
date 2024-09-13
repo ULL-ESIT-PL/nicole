@@ -9,6 +9,7 @@
 #include "../../inc/parsingAnalysis/operations/nodeBinaryOp.h"
 #include "../../inc/parsingAnalysis/statements/statement.h"
 #include "../../inc/parsingAnalysis/statements/statementList.h"
+#include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
 
 namespace nicole {
 llvm::Value* CodeGeneration::visit(const NodeLiteralBool* node) const {
@@ -90,19 +91,29 @@ llvm::Value* CodeGeneration::visit(const NodeStatement* node) const {
 }
 
 llvm::Value* CodeGeneration::visit(const NodeStatementList* node) const {
-  llvm::IRBuilder<> builder(*context_);  // Crear un IRBuilder
-  llvm::Value* lastValue = nullptr;  // Para almacenar el valor devuelto por la última declaración
-  // Recorrer todas las declaraciones en el NodeStatementList
+  llvm::IRBuilder<> builder{*context_};  
+  llvm::BasicBlock* currentBlock{builder.GetInsertBlock()};
+
+  llvm::Value* lastValue{nullptr};  // Almacena el resultado de la última declaración
+
   for (const auto& statement : *node) {
-    // Generar el código de la declaración actual
-    llvm::Value* value = statement->accept(this);
+    llvm::Value* value = statement->accept(this);  // Genera el código para cada declaración
     if (!value) {
-      return nullptr;  // Si hay un error en una de las declaraciones, se detiene la generación de código
+      return nullptr;  // Si hay un error, detiene la generación de código
     }
-    // Actualizar el valor devuelto por la última declaración
-    lastValue = value;
+    lastValue = value;  // Actualiza el valor al último ejecutado
   }
-  return lastValue;  // Devolver el valor de la última declaración
+
+  // Aquí no creamos un `ret` porque el retorno se manejará fuera de esta función
+
+  return lastValue; 
+}
+
+
+
+llvm::Value* CodeGeneration::visit(const Tree* node) const {
+  // not using expression leads to infinite loop
+  return node->root()->accept(this);
 }
 
 }  // namespace nicole

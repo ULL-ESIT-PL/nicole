@@ -6,9 +6,13 @@
 namespace nicole {
 class TopDown final : public Parser {
  private:
-  mutable std::unique_ptr<NodeStatement> root_{nullptr};
+  mutable std::unique_ptr<NodeStatementList> root_{nullptr};
 
-  std::unique_ptr<Node> parseStart() const;
+  std::unique_ptr<NodeStatementList> parseStart() const;
+
+  std::unique_ptr<NodeStatement> parseStatement() const;
+
+  std::unique_ptr<Node> parseAdd_Sub() const;
   
   std::unique_ptr<Node> parseFactor() const;
 
@@ -17,7 +21,7 @@ class TopDown final : public Parser {
 
   ~TopDown() = default;
 
-  std::unique_ptr<Node> parse(const std::filesystem::path& path) const override;
+  std::unique_ptr<Tree> parse(const std::filesystem::path& path) const override;
 };
 }  // namespace nicole
 

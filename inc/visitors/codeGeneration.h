@@ -2,6 +2,7 @@
 #define CODE_GENERATION_H
 
 #include "visitor.h"
+#include <iostream>
 
 namespace nicole {
 class CodeGeneration final : public Visitor {
@@ -28,6 +29,8 @@ class CodeGeneration final : public Visitor {
   llvm::Value* visit(const NodeStatement* node) const override;
 
   llvm::Value* visit(const NodeStatementList* node) const override;
+
+  llvm::Value* visit(const Tree* tr) const override;
 };
 
 }  // namespace nicole

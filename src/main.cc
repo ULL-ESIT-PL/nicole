@@ -19,14 +19,14 @@ using namespace nicole;
 int main() {
   // Start LLVM
   llvm::LLVMContext context;
-  llvm::IRBuilder<> builder(context);
+  llvm::IRBuilder<> builder{context};
   std::unique_ptr<llvm::Module> module =
       std::make_unique<llvm::Module>("my_module", context);
   std::map<std::string, llvm::Value*> namedValues;
 
   // Crear una función main y un bloque básico
   llvm::FunctionType* funcType =
-      llvm::FunctionType::get(builder.getDoubleTy(), false);
+      llvm::FunctionType::get(builder.getInt32Ty(), false);
   llvm::Function* mainFunction = llvm::Function::Create(
       funcType, llvm::Function::ExternalLinkage, "main", module.get());
   llvm::BasicBlock* entry =
@@ -35,33 +35,34 @@ int main() {
 
   // My test
   llvm::LLVMContext* contextPtr{&context};
-  /*
-  NodeLiteralString lit1{contextPtr, module.get(), "HOLA"};
-  NodeLiteralString* left{&lit1};
 
-  llvm::Value* leftEvaluated = left->codeGeneration();
-  builder.CreateRet(leftEvaluated);
-
-  NodeLiteralChar lit2{contextPtr, 'k'};
-  NodeLiteralChar* right{&lit2};
-  llvm::Value* rightEvaluated = right->codeGeneration();
-  builder.CreateRet(rightEvaluated);
-
-  // NodeBinary bii{contextPtr, left, Operator::ADD, right};
-  // NodeBinary* result{&bii};
-  //  llvm::Value* resultEvaluated = result->codeGeneration();
-  builder.CreateRet(leftEvaluated);
-  */
   const std::filesystem::path path{"../test/test1.nc"};
   std::unique_ptr<Sintax> sintax{std::make_unique<NicoleSintax>()};
   const std::unique_ptr<Parser> parser{
       std::make_unique<TopDown>(std::move(sintax))};
   const auto result{parser->parse(path)};
+
   CodeGeneration codeGen{contextPtr, module.get()};
   Visitor* visitor{&codeGen};
-  // builder.CreateRet(result->codeGeneration());
-  auto resultCasted {dynamic_cast<NodeStatement*>(result.get())};
-  builder.CreateRet(visitor->visit(resultCasted));
+  auto tree {result.get()};
+  llvm::Value* returnValue = visitor->visit(tree);
+
+  if (!returnValue) {
+    std::cerr << "Error: No return value generated." << std::endl;
+    return 1;
+  }
+/*
+  llvm::Value* constVal1 = llvm::ConstantInt::get(builder.getInt32Ty(), 10);
+  llvm::Value* constVal2 = llvm::ConstantInt::get(builder.getInt32Ty(), 20);
+  llvm::Value* sum = builder.CreateAdd(constVal1, constVal2, "sum");
+  // Imprimir el resultado de la suma (puedes usar printf o una función personalizada)
+  llvm::FunctionType* printfType = llvm::FunctionType::get(builder.getInt32Ty(), builder.getInt8PtrTy(), true);
+  llvm::Function* printfFunc = llvm::Function::Create(printfType, llvm::Function::ExternalLinkage, "printf", module.get());
+
+  llvm::Value* formatStr = builder.CreateGlobalStringPtr("Sum is %d\n");
+  builder.CreateCall(printfFunc, {formatStr, sum});
+  */
+  builder.CreateRet(returnValue);
 
   // Verificar el módulo y la función main
   llvm::verifyFunction(*mainFunction);
