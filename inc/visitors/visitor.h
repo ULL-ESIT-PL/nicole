@@ -25,6 +25,7 @@ class NodeLiteralString;
 class NodeBinaryOp;
 class NodeStatement;
 class NodeStatementList;
+class NodeVariableDeclaration;
 class Tree;
 
 class Visitor {
@@ -47,6 +48,8 @@ class Visitor {
   virtual llvm::Value* visit(const NodeStatement* node) const = 0;
 
   virtual llvm::Value* visit(const NodeStatementList* node) const = 0;
+
+  virtual llvm::Value* visit(const NodeVariableDeclaration* node) const = 0;
 
   virtual llvm::Value* visit(const Tree* tr) const = 0;
 };

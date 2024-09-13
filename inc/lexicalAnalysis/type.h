@@ -12,6 +12,7 @@ enum class TokenType {
   STRING,
   TRUE,
   FALSE,
+  LET,
   CONST,
   IMPORT,
   PRINT,

@@ -10,6 +10,7 @@
 #include "../operations/nodeBinaryOp.h"
 #include "../statements/statement.h"
 #include "../statements/statementList.h"
+#include "../declaration/varDeclaration.h"
 #include "tree.h"
 
 namespace nicole {

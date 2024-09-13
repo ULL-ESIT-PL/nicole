@@ -21,7 +21,25 @@ std::unique_ptr<NodeStatementList> TopDown::parseStart() const {
 }
 
 std::unique_ptr<NodeStatement> TopDown::parseStatement() const {
-  return std::make_unique<NodeStatement>(parseAdd_Sub());
+  return std::make_unique<NodeStatement>(parseVarDeclaration());
+}
+
+std::unique_ptr<Node> TopDown::parseVarDeclaration() const {
+  Token token{getCurrentToken()};
+  if (token.type() == TokenType::LET) {
+    eat();
+    token = getCurrentToken();
+    if (token.type() == TokenType::ID) {
+      const std::string id{token.raw()};
+      eat();
+      if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
+        eat();
+        auto value{parseAdd_Sub()};
+        return std::make_unique<NodeVariableDeclaration>(id, std::move(value));
+      }
+    }
+  }
+  return parseAdd_Sub();
 }
 
 std::unique_ptr<Node> TopDown::parseAdd_Sub() const {

@@ -9,6 +9,7 @@
 #include "../../inc/parsingAnalysis/operations/nodeBinaryOp.h"
 #include "../../inc/parsingAnalysis/statements/statement.h"
 #include "../../inc/parsingAnalysis/statements/statementList.h"
+#include "../../inc/parsingAnalysis/declaration/varDeclaration.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
 
 namespace nicole {
@@ -91,25 +92,25 @@ llvm::Value* CodeGeneration::visit(const NodeStatement* node) const {
 }
 
 llvm::Value* CodeGeneration::visit(const NodeStatementList* node) const {
-  llvm::IRBuilder<> builder{*context_};  
-  llvm::BasicBlock* currentBlock{builder.GetInsertBlock()};
-
   llvm::Value* lastValue{nullptr};  // Almacena el resultado de la última declaración
-
   for (const auto& statement : *node) {
-    llvm::Value* value = statement->accept(this);  // Genera el código para cada declaración
+    llvm::Value* value{statement->accept(this)};  // Genera el código para cada declaración
     if (!value) {
       return nullptr;  // Si hay un error, detiene la generación de código
     }
     lastValue = value;  // Actualiza el valor al último ejecutado
   }
-
   // Aquí no creamos un `ret` porque el retorno se manejará fuera de esta función
-
   return lastValue; 
 }
 
-
+llvm::Value* CodeGeneration::visit(const NodeVariableDeclaration* node) const {
+  llvm::IRBuilder<> builder{*context_}; 
+  std::cout << "VAR: " << node->id() << "\n" << std::flush;
+  llvm::AllocaInst* variable{builder.CreateAlloca(llvm::Type::getInt32Ty(*context_), nullptr, "node->id()")};
+  std::cout << "hola" << std::flush;
+  return builder.CreateStore(node->expression()->accept(this), variable);;
+}
 
 llvm::Value* CodeGeneration::visit(const Tree* node) const {
   // not using expression leads to infinite loop

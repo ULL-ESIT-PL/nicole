@@ -12,6 +12,8 @@ class TopDown final : public Parser {
 
   std::unique_ptr<NodeStatement> parseStatement() const;
 
+  std::unique_ptr<Node> parseVarDeclaration() const;
+
   std::unique_ptr<Node> parseAdd_Sub() const;
   
   std::unique_ptr<Node> parseFactor() const;
