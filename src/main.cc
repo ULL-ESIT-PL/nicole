@@ -20,17 +20,19 @@ int main() {
   // Start LLVM
   llvm::LLVMContext context;
   llvm::IRBuilder<> builder{context};
-  std::unique_ptr<llvm::Module> module =
-      std::make_unique<llvm::Module>("my_module", context);
-  std::map<std::string, llvm::Value*> namedValues;
+  std::unique_ptr<llvm::Module> module{
+      std::make_unique<llvm::Module>("my_module", context)};
 
   // Crear una función main y un bloque básico
   llvm::FunctionType* funcType =
       llvm::FunctionType::get(builder.getInt32Ty(), false);
+
   llvm::Function* mainFunction = llvm::Function::Create(
       funcType, llvm::Function::ExternalLinkage, "main", module.get());
+
   llvm::BasicBlock* entry =
       llvm::BasicBlock::Create(context, "entry", mainFunction);
+
   builder.SetInsertPoint(entry);
 
   // My test
@@ -42,26 +44,28 @@ int main() {
       std::make_unique<TopDown>(std::move(sintax))};
   const auto result{parser->parse(path)};
 
-  CodeGeneration codeGen{contextPtr, module.get()};
+  CodeGeneration codeGen{contextPtr, module.get(), entry};
   Visitor* visitor{&codeGen};
-  auto tree {result.get()};
+  auto tree{result.get()};
   llvm::Value* returnValue = visitor->visit(tree);
 
   if (!returnValue) {
     std::cerr << "Error: No return value generated." << std::endl;
     return 1;
   }
-/*
-  llvm::Value* constVal1 = llvm::ConstantInt::get(builder.getInt32Ty(), 10);
-  llvm::Value* constVal2 = llvm::ConstantInt::get(builder.getInt32Ty(), 20);
-  llvm::Value* sum = builder.CreateAdd(constVal1, constVal2, "sum");
-  // Imprimir el resultado de la suma (puedes usar printf o una función personalizada)
-  llvm::FunctionType* printfType = llvm::FunctionType::get(builder.getInt32Ty(), builder.getInt8PtrTy(), true);
-  llvm::Function* printfFunc = llvm::Function::Create(printfType, llvm::Function::ExternalLinkage, "printf", module.get());
+  /*
+    llvm::Value* constVal1 = llvm::ConstantInt::get(builder.getInt32Ty(), 10);
+    llvm::Value* constVal2 = llvm::ConstantInt::get(builder.getInt32Ty(), 20);
+    llvm::Value* sum = builder.CreateAdd(constVal1, constVal2, "sum");
+    // Imprimir el resultado de la suma (puedes usar printf o una función
+    personalizada) llvm::FunctionType* printfType =
+    llvm::FunctionType::get(builder.getInt32Ty(), builder.getInt8PtrTy(), true);
+    llvm::Function* printfFunc = llvm::Function::Create(printfType,
+    llvm::Function::ExternalLinkage, "printf", module.get());
 
-  llvm::Value* formatStr = builder.CreateGlobalStringPtr("Sum is %d\n");
-  builder.CreateCall(printfFunc, {formatStr, sum});
-  */
+    llvm::Value* formatStr = builder.CreateGlobalStringPtr("Sum is %d\n");
+    builder.CreateCall(printfFunc, {formatStr, sum});
+    */
   builder.CreateRet(returnValue);
 
   // Verificar el módulo y la función main

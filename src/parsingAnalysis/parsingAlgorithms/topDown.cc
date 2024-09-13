@@ -81,6 +81,11 @@ std::unique_ptr<Node> TopDown::parseFactor() const {
       eat();
       return std::make_unique<NodeLiteralDouble>(value);
     }
+    case TokenType::STRING: {
+      const std::string value{getCurrentToken().raw()};
+      eat();
+      return std::make_unique<NodeLiteralString>(value);
+    }
     case TokenType::LP: {
       eat();
       auto expression{parseAdd_Sub()};

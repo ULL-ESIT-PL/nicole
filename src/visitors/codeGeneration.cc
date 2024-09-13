@@ -1,24 +1,26 @@
 #include "../../inc/visitors/codeGeneration.h"
 
 #include "../../inc/lexicalAnalysis/type.h"
+#include "../../inc/parsingAnalysis/declaration/varDeclaration.h"
 #include "../../inc/parsingAnalysis/literals/nodeLiteralBool.h"
 #include "../../inc/parsingAnalysis/literals/nodeLiteralChar.h"
 #include "../../inc/parsingAnalysis/literals/nodeLiteralDouble.h"
 #include "../../inc/parsingAnalysis/literals/nodeLiteralInt.h"
 #include "../../inc/parsingAnalysis/literals/nodeLiteralString.h"
 #include "../../inc/parsingAnalysis/operations/nodeBinaryOp.h"
+#include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
 #include "../../inc/parsingAnalysis/statements/statement.h"
 #include "../../inc/parsingAnalysis/statements/statementList.h"
-#include "../../inc/parsingAnalysis/declaration/varDeclaration.h"
-#include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
 
 namespace nicole {
 llvm::Value* CodeGeneration::visit(const NodeLiteralBool* node) const {
-  return llvm::ConstantInt::get(llvm::Type::getInt1Ty(*context_), node->value());
+  return llvm::ConstantInt::get(llvm::Type::getInt1Ty(*context_),
+                                node->value());
 }
 
 llvm::Value* CodeGeneration::visit(const NodeLiteralChar* node) const {
-  return llvm::ConstantInt::get(llvm::Type::getInt8Ty(*context_), node->value());
+  return llvm::ConstantInt::get(llvm::Type::getInt8Ty(*context_),
+                                node->value());
 }
 
 llvm::Value* CodeGeneration::visit(const NodeLiteralDouble* node) const {
@@ -32,7 +34,8 @@ llvm::Value* CodeGeneration::visit(const NodeLiteralInt* node) const {
 
 llvm::Value* CodeGeneration::visit(const NodeLiteralString* node) const {
   llvm::IRBuilder<> builder{*context_};
-  llvm::Value* str{builder.CreateGlobalString(llvm::StringRef{node->value()}, "str", 0U, module_)};
+  llvm::Value* str{builder.CreateGlobalString(llvm::StringRef{node->value()},
+                                              "str", 0U, module_)};
   return builder.CreatePointerCast(str, builder.getInt8PtrTy());
 }
 
@@ -92,25 +95,38 @@ llvm::Value* CodeGeneration::visit(const NodeStatement* node) const {
 }
 
 llvm::Value* CodeGeneration::visit(const NodeStatementList* node) const {
-  llvm::Value* lastValue{nullptr};  // Almacena el resultado de la última declaración
+  llvm::Value* lastValue{
+      nullptr};  // Almacena el resultado de la última declaración
   for (const auto& statement : *node) {
-    llvm::Value* value{statement->accept(this)};  // Genera el código para cada declaración
+    llvm::Value* value{
+        statement->accept(this)};  // Genera el código para cada declaración
     if (!value) {
       return nullptr;  // Si hay un error, detiene la generación de código
     }
     lastValue = value;  // Actualiza el valor al último ejecutado
   }
-  // Aquí no creamos un `ret` porque el retorno se manejará fuera de esta función
-  return lastValue; 
+  // Aquí no creamos un `ret` porque el retorno se manejará fuera de esta
+  // función
+  return lastValue;
 }
 
 llvm::Value* CodeGeneration::visit(const NodeVariableDeclaration* node) const {
-  llvm::IRBuilder<> builder{*context_}; 
-  std::cout << "VAR: " << node->id() << "\n" << std::flush;
-  llvm::AllocaInst* variable{builder.CreateAlloca(llvm::Type::getInt32Ty(*context_), nullptr, "node->id()")};
-  std::cout << "hola" << std::flush;
-  return builder.CreateStore(node->expression()->accept(this), variable);;
+  llvm::IRBuilder<> builder{entry_};  // Obtener el contexto del módulo
+  llvm::Type* Int32Type = llvm::Type::getInt32Ty(*context_);  // Tipo de la variable (int32)
+
+  // Crear la instrucción 'alloca' para reservar espacio para la variable
+  llvm::AllocaInst* alloca = builder.CreateAlloca(Int32Type, nullptr, node->id());
+
+  // Crear el valor constante 60
+  llvm::Value* value = llvm::ConstantInt::get(Int32Type, 60);
+
+  // Almacenar el valor en la variable
+  builder.CreateStore(node->expression()->accept(this), alloca);
+
+  // Devolver el valor almacenado
+  return alloca;
 }
+
 
 llvm::Value* CodeGeneration::visit(const Tree* node) const {
   // not using expression leads to infinite loop
