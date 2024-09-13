@@ -4,6 +4,7 @@
 namespace nicole {
 
 enum class NodeType {
+  LITERAL,
   CHAR,
   STRING,
   INT,

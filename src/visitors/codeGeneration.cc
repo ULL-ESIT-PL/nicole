@@ -95,30 +95,27 @@ llvm::Value* CodeGeneration::visit(const NodeStatement* node) const {
 }
 
 llvm::Value* CodeGeneration::visit(const NodeStatementList* node) const {
-  llvm::Value* lastValue{
-      nullptr};  // Almacena el resultado de la última declaración
+  llvm::Value* lastValue{nullptr};
   for (const auto& statement : *node) {
-    llvm::Value* value{
-        statement->accept(this)};  // Genera el código para cada declaración
+    llvm::Value* value{statement->accept(this)};
     if (!value) {
-      return nullptr;  // Si hay un error, detiene la generación de código
+      return nullptr;
     }
-    lastValue = value;  // Actualiza el valor al último ejecutado
+    lastValue = value;
   }
-  // Aquí no creamos un `ret` porque el retorno se manejará fuera de esta
-  // función
   return lastValue;
 }
 
 llvm::Value* CodeGeneration::visit(const NodeVariableDeclaration* node) const {
   llvm::IRBuilder<> builder{entry_};  // Obtener el contexto del módulo
-  llvm::Type* Int32Type = llvm::Type::getInt32Ty(*context_);  // Tipo de la variable (int32)
+
+  llvm::Value* value{node->expression()->accept(this)};
+
+  llvm::Type* valueType{value->getType()};  // Tipo de la variable (int32)
 
   // Crear la instrucción 'alloca' para reservar espacio para la variable
-  llvm::AllocaInst* alloca = builder.CreateAlloca(Int32Type, nullptr, node->id());
-
-  // Crear el valor constante 60
-  llvm::Value* value = llvm::ConstantInt::get(Int32Type, 60);
+  llvm::AllocaInst* alloca{
+      builder.CreateAlloca(valueType, nullptr, node->id())};
 
   // Almacenar el valor en la variable
   builder.CreateStore(node->expression()->accept(this), alloca);
@@ -126,7 +123,6 @@ llvm::Value* CodeGeneration::visit(const NodeVariableDeclaration* node) const {
   // Devolver el valor almacenado
   return alloca;
 }
-
 
 llvm::Value* CodeGeneration::visit(const Tree* node) const {
   // not using expression leads to infinite loop
