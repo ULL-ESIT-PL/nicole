@@ -1,10 +1,12 @@
 #ifndef CODE_GENERATION_H
 #define CODE_GENERATION_H
 
-#include "visitor.h"
 #include <iostream>
 
+#include "visitor.h"
+
 namespace nicole {
+
 class CodeGeneration final : public Visitor {
  private:
   llvm::LLVMContext* context_;
@@ -12,7 +14,8 @@ class CodeGeneration final : public Visitor {
   llvm::BasicBlock* entry_;
 
  public:
-  CodeGeneration(llvm::LLVMContext* context, llvm::Module* module, llvm::BasicBlock* entry)
+  CodeGeneration(llvm::LLVMContext* context, llvm::Module* module,
+                 llvm::BasicBlock* entry)
       : context_{context}, module_{module}, entry_{entry} {}
 
   llvm::Value* visit(const NodeLiteralBool* node) const override;

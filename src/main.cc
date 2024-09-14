@@ -14,6 +14,7 @@
 #include "../inc/parsingAnalysis/parsingAlgorithms/parser.h"
 #include "../inc/parsingAnalysis/parsingAlgorithms/topDown.h"
 #include "../inc/visitors/codeGeneration.h"
+
 using namespace nicole;
 
 int main() {

@@ -4,11 +4,12 @@
 #include "../node.h"
 
 namespace nicole {
+
 class NodeVariableDeclaration : public Node {
  private:
   /* data */
   std::string id_{""};
-  // type
+  
   std::unique_ptr<Node> expression_;
 
  public:
@@ -27,6 +28,7 @@ class NodeVariableDeclaration : public Node {
     return visitor->visit(this);
   }
 };
+
 }  // namespace nicole
 
 #endif

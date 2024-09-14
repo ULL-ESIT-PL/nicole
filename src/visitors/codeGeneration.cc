@@ -13,6 +13,7 @@
 #include "../../inc/parsingAnalysis/statements/statementList.h"
 
 namespace nicole {
+
 llvm::Value* CodeGeneration::visit(const NodeLiteralBool* node) const {
   return llvm::ConstantInt::get(llvm::Type::getInt1Ty(*context_),
                                 node->value());

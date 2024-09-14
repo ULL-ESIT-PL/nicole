@@ -2,6 +2,7 @@
 #define PARSER_H
 
 #include "../..//lexicalAnalysis/nicoleSintax.h"
+#include "../declaration/varDeclaration.h"
 #include "../literals/nodeLiteralBool.h"
 #include "../literals/nodeLiteralChar.h"
 #include "../literals/nodeLiteralDouble.h"
@@ -10,10 +11,10 @@
 #include "../operations/nodeBinaryOp.h"
 #include "../statements/statement.h"
 #include "../statements/statementList.h"
-#include "../declaration/varDeclaration.h"
 #include "tree.h"
 
 namespace nicole {
+
 class Parser {
  protected:
   Lexer lexer_;
@@ -21,7 +22,9 @@ class Parser {
   mutable std::size_t currentToken_{0};
 
   void eat() const;
+
   Token getCurrentToken() const;
+
   bool isTokenType(const TokenType& type) const;
 
  public:
@@ -32,6 +35,7 @@ class Parser {
   virtual std::unique_ptr<Tree> parse(
       const std::filesystem::path& path) const = 0;
 };
+
 }  // namespace nicole
 
 #endif

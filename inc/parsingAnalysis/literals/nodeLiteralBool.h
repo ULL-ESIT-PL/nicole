@@ -4,6 +4,7 @@
 #include "../node.h"
 
 namespace nicole {
+
 class NodeLiteralBool final : public Node {
  private:
   bool value_{};

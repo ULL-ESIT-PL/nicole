@@ -6,6 +6,7 @@
 #include "../node.h"
 
 namespace nicole {
+
 class NodeStatement final : public Node {
  private:
   std::unique_ptr<Node> expression_{};

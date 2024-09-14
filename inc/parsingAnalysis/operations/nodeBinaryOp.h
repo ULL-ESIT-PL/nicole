@@ -4,6 +4,7 @@
 #include "../node.h"
 
 namespace nicole {
+
 class NodeBinaryOp final : public Node {
  private:
   std::unique_ptr<Node> left_;
@@ -12,8 +13,8 @@ class NodeBinaryOp final : public Node {
 
  public:
   NodeBinaryOp(std::unique_ptr<Node> left, const TokenType& op,
-             std::unique_ptr<Node> right,
-             std::unique_ptr<Node> father = nullptr)
+               std::unique_ptr<Node> right,
+               std::unique_ptr<Node> father = nullptr)
       : Node{NodeType::BINARY, std::move(father)},
         left_{std::move(left)},
         operator_{op},

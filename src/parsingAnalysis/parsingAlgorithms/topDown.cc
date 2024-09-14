@@ -1,6 +1,7 @@
 #include "../../../inc/parsingAnalysis/parsingAlgorithms/topDown.h"
 
 namespace nicole {
+
 std::unique_ptr<Tree> TopDown::parse(const std::filesystem::path& path) const {
   tokens_ = lexer_.analyze(path);
   root_ = parseStart();
@@ -117,4 +118,5 @@ std::unique_ptr<Node> TopDown::parseFactor() const {
       llvm::report_fatal_error(strErr.c_str());
   }
 }
+
 }  // namespace nicole

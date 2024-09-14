@@ -4,6 +4,7 @@
 #include "../node.h"
 
 namespace nicole {
+
 class NodeLiteralDouble final : public Node {
  private:
   double value_{};

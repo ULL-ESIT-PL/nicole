@@ -10,6 +10,7 @@
 #include "category.h"
 
 namespace nicole {
+
 class Lexer final {
  private:
   std::vector<Category> categories_{};

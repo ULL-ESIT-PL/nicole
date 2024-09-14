@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
-#include "token.h"
 #include "regexWrapper.h"
+#include "token.h"
 
 namespace nicole {
 
@@ -18,16 +18,14 @@ class Category final {
 
  public:
   Category(const TokenType& type, const std::string& matcher, const bool skip)
-      : type_{type},
-        pattern_{matcher},
-        skip_{skip} {};
+      : type_{type}, pattern_{matcher}, skip_{skip} {};
 
   TokenType type() const { return type_; }
 
   RegexWrapper pattern() const { return pattern_; }
 
   std::string rawPattern() const { return pattern_.str(); }
-  
+
   bool skip() const { return skip_; }
 
   bool matchToken(const Token& token) const {

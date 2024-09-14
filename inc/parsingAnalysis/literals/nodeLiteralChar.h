@@ -4,6 +4,7 @@
 #include "../node.h"
 
 namespace nicole {
+
 class NodeLiteralChar final : public Node {
  private:
   char value_{};

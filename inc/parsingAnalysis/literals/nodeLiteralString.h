@@ -4,6 +4,7 @@
 #include "../node.h"
 
 namespace nicole {
+
 class NodeLiteralString final : public Node {
  private:
   std::string value_{};

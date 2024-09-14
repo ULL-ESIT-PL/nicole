@@ -5,6 +5,7 @@
 #include <string>
 
 namespace nicole {
+
 class RegexWrapper final {
  private:
   /* data */
@@ -19,9 +20,12 @@ class RegexWrapper final {
   std::string str() const { return rawPattern_; }
 
   std::regex pattern() const { return pattern_; }
-  
-  bool match(const std::string& str) const { return std::regex_match(str, pattern_); }
+
+  bool match(const std::string& str) const {
+    return std::regex_match(str, pattern_);
+  }
 };
+
 }  // namespace nicole
 
 #endif

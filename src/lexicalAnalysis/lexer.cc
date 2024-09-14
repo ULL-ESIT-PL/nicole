@@ -87,4 +87,5 @@ std::vector<Token> Lexer::analyze(const std::filesystem::path& fileName,
   checkUnmatched(result);
   return result;
 }
+
 }  // namespace nicole

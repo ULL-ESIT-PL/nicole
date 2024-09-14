@@ -4,6 +4,7 @@
 #include "type.h"
 
 namespace nicole {
+
 class Token final {
  private:
   TokenType type_{};

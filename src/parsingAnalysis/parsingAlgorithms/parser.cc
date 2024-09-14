@@ -1,6 +1,7 @@
 #include "../../../inc/parsingAnalysis/parsingAlgorithms/parser.h"
 
 namespace nicole {
+
 void Parser::eat() const {
   if (!(currentToken_ < tokens_.size()))
     llvm::report_fatal_error("Error: invalid access to tokens while eating");
@@ -17,4 +18,5 @@ bool Parser::isTokenType(const TokenType& type) const {
     return tokens_[currentToken_].type() == type;
   llvm::report_fatal_error("Error: invalid access to tokens");
 }
+
 }  // namespace nicole

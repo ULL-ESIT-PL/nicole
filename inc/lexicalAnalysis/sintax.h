@@ -7,9 +7,9 @@ namespace nicole {
 
 class Sintax {
  public:
-   virtual ~Sintax() = default;
+  virtual ~Sintax() = default;
 
-   virtual Lexer createLexer() const = 0;
+  virtual Lexer createLexer() const = 0;
 };
 
 }  // namespace nicole

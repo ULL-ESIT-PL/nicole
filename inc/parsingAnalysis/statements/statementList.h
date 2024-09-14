@@ -7,17 +7,18 @@
 #include "statement.h"
 
 namespace nicole {
+
 class NodeStatementList final : public Node {
  private:
   std::vector<std::unique_ptr<NodeStatement>> statements_{};
 
  public:
-   NodeStatementList(
-      std::vector<std::unique_ptr<NodeStatement>>&& statements,
-      std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::STATEMENT_LIST, std::move(father)}, 
+  NodeStatementList(std::vector<std::unique_ptr<NodeStatement>>&& statements,
+                    std::unique_ptr<Node> father = nullptr)
+      : Node{NodeType::STATEMENT_LIST, std::move(father)},
         statements_(std::move(statements)) {
-    // No need to move the elements individually anymore, as std::move handles it
+    // No need to move the elements individually anymore, as std::move handles
+    // it
   }
 
   ~NodeStatementList() = default;

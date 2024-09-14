@@ -6,7 +6,6 @@
 namespace nicole {
 
 class NicoleSintax final : public Sintax {
- private:
  public:
   NicoleSintax() = default;
 
