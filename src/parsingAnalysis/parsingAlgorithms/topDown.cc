@@ -4,6 +4,7 @@ namespace nicole {
 
 std::unique_ptr<Tree> TopDown::parse(const std::filesystem::path& path) const {
   tokens_ = lexer_.analyze(path);
+  globalScope_ = std::make_unique<VariableTable>(nullptr);
   root_ = parseStart();
   return std::make_unique<Tree>(std::move(root_));
 }

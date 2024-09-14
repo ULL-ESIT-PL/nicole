@@ -3,6 +3,7 @@
 
 #include "../..//lexicalAnalysis/nicoleSintax.h"
 #include "../declaration/varDeclaration.h"
+#include "../declaration/varTable.h"
 #include "../literals/nodeLiteralBool.h"
 #include "../literals/nodeLiteralChar.h"
 #include "../literals/nodeLiteralDouble.h"
@@ -20,6 +21,7 @@ class Parser {
   Lexer lexer_;
   mutable std::vector<Token> tokens_{};
   mutable std::size_t currentToken_{0};
+  mutable std::unique_ptr<VariableTable> globalScope_{};
 
   void eat() const;
 
