@@ -109,17 +109,20 @@ llvm::Value* CodeGeneration::visit(const NodeStatementList* node) const {
 
 llvm::Value* CodeGeneration::visit(const NodeVariableDeclaration* node) const {
   llvm::IRBuilder<> builder{entry_};  // Obtener el contexto del módulo
+  // Here the attributes of node should be null except currentScope due being
+  // owned by its attribute currentScope
+  llvm::Value* value{node->table()->variableValue(node->id())->accept(this)};
 
-  llvm::Value* value{node->expression()->accept(this)};
-
-  llvm::Type* valueType{value->getType()};  // Tipo de la variable (int32)
+  llvm::Type* valueType{value->getType()};  // Tipo de la variable
 
   // Crear la instrucción 'alloca' para reservar espacio para la variable
   llvm::AllocaInst* alloca{
       builder.CreateAlloca(valueType, nullptr, node->id())};
 
+  std::cout << node->table()->variableType(node->id())->name();
+
   // Almacenar el valor en la variable
-  builder.CreateStore(node->expression()->accept(this), alloca);
+  builder.CreateStore(value, alloca);
 
   // Devolver el valor almacenado
   return alloca;

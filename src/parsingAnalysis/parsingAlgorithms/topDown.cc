@@ -4,15 +4,16 @@ namespace nicole {
 
 std::unique_ptr<Tree> TopDown::parse(const std::filesystem::path& path) const {
   tokens_ = lexer_.analyze(path);
-  globalScope_ = std::make_unique<VariableTable>(nullptr);
+  globalScope_ = std::make_shared<VariableTable>(nullptr);
   root_ = parseStart();
+  std::cout << *globalScope_;
   return std::make_unique<Tree>(std::move(root_));
 }
 
 std::unique_ptr<NodeStatementList> TopDown::parseStart() const {
   std::vector<std::unique_ptr<NodeStatement>> gloablScopeStatements;
   while (std::size_t(currentToken_) < tokens_.size()) {
-    gloablScopeStatements.push_back(std::move(parseStatement()));
+    gloablScopeStatements.push_back(std::move(parseStatement(globalScope_)));
     if (std::size_t(currentToken_) < tokens_.size() &&
         isTokenType(TokenType::SEMICOLON)) {
       eat();
@@ -22,11 +23,11 @@ std::unique_ptr<NodeStatementList> TopDown::parseStart() const {
   return std::make_unique<NodeStatementList>(std::move(gloablScopeStatements));
 }
 
-std::unique_ptr<NodeStatement> TopDown::parseStatement() const {
-  return std::make_unique<NodeStatement>(parseVarDeclaration());
+std::unique_ptr<NodeStatement> TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope) const {
+  return std::make_unique<NodeStatement>(parseVarDeclaration(currentScope));
 }
 
-std::unique_ptr<Node> TopDown::parseVarDeclaration() const {
+std::unique_ptr<Node> TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope) const {
   Token token{getCurrentToken()};
   if (token.type() == TokenType::LET) {
     eat();
@@ -34,26 +35,48 @@ std::unique_ptr<Node> TopDown::parseVarDeclaration() const {
     if (token.type() == TokenType::ID) {
       const std::string id{token.raw()};
       eat();
-      if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
+      if (getCurrentToken().type() == TokenType::DOTDOT) {
         eat();
-        auto value{parseAdd_Sub()};
-        return std::make_unique<NodeVariableDeclaration>(id, std::move(value));
+      } else {
+        const std::string strErr{"Error missing \':\' after " + id};
+        llvm::report_fatal_error(strErr.c_str());
+      }
+      token = getCurrentToken();
+      if (token.type() == TokenType::ID) {
+        const std::string idTypeStr{token.raw()};
+        std::unique_ptr<GenericType> idType{
+            std::make_unique<GenericType>(idTypeStr)};
+        eat();
+        if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
+          eat();
+          auto value{parseAdd_Sub(currentScope)};
+          if (!currentScope) llvm::report_fatal_error("ADIOS");
+          return std::make_unique<NodeVariableDeclaration>(
+              id, std::move(idType), std::move(value), currentScope);
+        } else {
+          const std::string strErr{"Error missing value of " + id};
+          llvm::report_fatal_error(strErr.c_str());
+        }
+
+      } else {
+        const std::string strErr{"Error missing type of " + id};
+        llvm::report_fatal_error(strErr.c_str());
       }
     }
   }
-  return parseAdd_Sub();
+  return parseAdd_Sub(currentScope);
 }
 
-std::unique_ptr<Node> TopDown::parseAdd_Sub() const {
+std::unique_ptr<Node> TopDown::parseAdd_Sub(std::shared_ptr<VariableTable> currentScope) const {
   // equivalent to the first e + e in Jison recursively goes down
-  auto left{parseFactor()};
+  auto left{parseFactor(currentScope)};
 
   while (std::size_t(currentToken_) < tokens_.size() &&
          (getCurrentToken().type() == TokenType::OPERATOR_ADD ||
           getCurrentToken().type() == TokenType::OPERATOR_SUB)) {
     const Token token{getCurrentToken()};
     eat();
-    auto right{parseFactor()};
+    auto right{parseFactor(currentScope)};
     switch (token.type()) {
       case TokenType::OPERATOR_ADD:
         left = std::make_unique<NodeBinaryOp>(
@@ -71,7 +94,7 @@ std::unique_ptr<Node> TopDown::parseAdd_Sub() const {
   return left;
 }
 
-std::unique_ptr<Node> TopDown::parseFactor() const {
+std::unique_ptr<Node> TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope) const {
   switch (getCurrentToken().type()) {
     case TokenType::NUMBER_INT: {
       const int value{std::stoi(getCurrentToken().raw())};
@@ -103,7 +126,7 @@ std::unique_ptr<Node> TopDown::parseFactor() const {
     }
     case TokenType::LP: {
       eat();
-      auto expression{parseAdd_Sub()};
+      auto expression{parseAdd_Sub(currentScope)};
       if (getCurrentToken().type() == TokenType::RP) {
         eat();
       } else {

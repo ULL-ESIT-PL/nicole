@@ -21,7 +21,7 @@ class Parser {
   Lexer lexer_;
   mutable std::vector<Token> tokens_{};
   mutable std::size_t currentToken_{0};
-  mutable std::unique_ptr<VariableTable> globalScope_{};
+  mutable std::shared_ptr<VariableTable> globalScope_{};
 
   void eat() const;
 

@@ -13,7 +13,7 @@ class GenericType {
   std::unique_ptr<GenericType> father_;
 
  public:
-  GenericType(const std::string& name, std::unique_ptr<GenericType> father)
+  GenericType(const std::string& name, std::unique_ptr<GenericType> father = nullptr)
       : name_{name}, father_{std::move(father)} {};
 
   virtual ~GenericType() = default;
