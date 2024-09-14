@@ -14,7 +14,10 @@ void VariableTable::addVariable(const std::string& id,
                                 const bool isConst) {
   if (!hasVariable(id)) {
     table_[id] = std::make_tuple(std::move(idType), std::move(value), isConst);
+    return;
   }
+  const std::string strErr{"The variable " + id + " already exist"};
+  llvm::report_fatal_error(strErr.c_str());
 }
 
 void VariableTable::setVariable(const std::string& id,
