@@ -5,7 +5,7 @@
 
 #include <memory>
 
-#include "../visitors/visitor.h"
+#include "../../visitors/visitor.h"
 #include "nodeType.h"
 
 namespace nicole {

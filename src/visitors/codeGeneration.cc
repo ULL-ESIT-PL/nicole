@@ -1,16 +1,18 @@
 #include "../../inc/visitors/codeGeneration.h"
 
 #include "../../inc/lexicalAnalysis/type.h"
-#include "../../inc/parsingAnalysis/declaration/varDeclaration.h"
-#include "../../inc/parsingAnalysis/literals/nodeLiteralBool.h"
-#include "../../inc/parsingAnalysis/literals/nodeLiteralChar.h"
-#include "../../inc/parsingAnalysis/literals/nodeLiteralDouble.h"
-#include "../../inc/parsingAnalysis/literals/nodeLiteralInt.h"
-#include "../../inc/parsingAnalysis/literals/nodeLiteralString.h"
-#include "../../inc/parsingAnalysis/operations/nodeBinaryOp.h"
+#include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
+#include "../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
+#include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
+#include "../../inc/parsingAnalysis/ast/literals/nodeLiteralBool.h"
+#include "../../inc/parsingAnalysis/ast/literals/nodeLiteralChar.h"
+#include "../../inc/parsingAnalysis/ast/literals/nodeLiteralDouble.h"
+#include "../../inc/parsingAnalysis/ast/literals/nodeLiteralInt.h"
+#include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
+#include "../../inc/parsingAnalysis/ast/operations/nodeBinaryOp.h"
+#include "../../inc/parsingAnalysis/ast/statements/statement.h"
+#include "../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
-#include "../../inc/parsingAnalysis/statements/statement.h"
-#include "../../inc/parsingAnalysis/statements/statementList.h"
 
 namespace nicole {
 
@@ -99,6 +101,11 @@ llvm::Value* CodeGeneration::visit(const NodeStatementList* node) const {
   llvm::Value* lastValue{nullptr};
   for (const auto& statement : *node) {
     llvm::Value* value{statement->accept(this)};
+    if (statement->expression()->type() == NodeType::VAR_DECL ||
+        statement->expression()->type() == NodeType::VAR_REG) {
+      std::cout << "hola\n" << std::flush;
+      continue;
+    }
     if (!value) {
       return nullptr;
     }
@@ -119,13 +126,57 @@ llvm::Value* CodeGeneration::visit(const NodeVariableDeclaration* node) const {
   llvm::AllocaInst* alloca{
       builder.CreateAlloca(valueType, nullptr, node->id())};
 
-  std::cout << node->table()->variableType(node->id())->name();
+  // std::cout << node->table()->variableType(node->id())->name();
 
   // Almacenar el valor en la variable
   builder.CreateStore(value, alloca);
 
   // Devolver el valor almacenado
   return alloca;
+}
+
+llvm::Value* CodeGeneration::visit(const NodeVariableCall* node) const {
+  llvm::IRBuilder<> builder{entry_};  // Obtener el contexto del bloque actual
+
+  // Paso 1: Buscar la variable en la tabla de símbolos actual (currentScope_)
+  llvm::Value* variable =
+      node->table()->variableValue(node->id())->accept(this);
+
+  // Verificar si la variable fue encontrada
+  if (!variable) {
+    std::cerr << "Error: Variable '" << node->id() << "' no encontrada."
+              << std::endl;
+    return nullptr;
+  }
+
+  // Paso 2: Cargar el valor almacenado en la variable
+  llvm::Type* varType = variable->getType();
+  llvm::Value* loadedValue = builder.CreateLoad(varType, variable, "loadtmp");
+
+  // Paso 3: Devolver el valor cargado
+  return loadedValue;
+}
+
+llvm::Value* CodeGeneration::visit(const NodeVariableReassignment* node) const {
+  llvm::IRBuilder<> builder{entry_};  // Get the context of the current block
+
+  // Retrieve the memory address (alloca) of the variable from the variable
+  // table
+  llvm::Value* varAddress{
+      node->table()->variableValue(node->id())->accept(this)};
+
+  std::unique_ptr<Node> expression{node->expression()};
+  node->table()->setVariable(node->id(), std::move(expression));
+
+  llvm::Value* newValue{
+      node->table()->variableValue(node->id())->accept(this)};
+
+  // Store the new value in the variable's existing memory location
+  builder.CreateStore(newValue, varAddress);
+
+  // Return the new value (not strictly necessary, but can be useful for further
+  // operations)
+  return nullptr;
 }
 
 llvm::Value* CodeGeneration::visit(const Tree* node) const {

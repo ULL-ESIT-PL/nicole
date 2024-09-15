@@ -124,6 +124,16 @@ std::unique_ptr<Node> TopDown::parseFactor(std::shared_ptr<VariableTable> curren
       eat();
       return std::make_unique<NodeLiteralBool>(false);
     }
+    case TokenType::ID: {
+      const std::string id{getCurrentToken().raw()};
+      eat();
+      if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
+        eat();
+        auto expression{parseAdd_Sub(currentScope)};
+        return std::make_unique<NodeVariableReassignment>(id, std::move(expression), currentScope);
+      }
+      return std::make_unique<NodeVariableCall>(id, currentScope);
+    }
     case TokenType::LP: {
       eat();
       auto expression{parseAdd_Sub(currentScope)};

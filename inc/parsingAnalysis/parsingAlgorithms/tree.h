@@ -1,7 +1,7 @@
 #ifndef TREE_H
 #define TREE_H
 
-#include "../statements/statementList.h"
+#include "../ast/statements/statementList.h"
 
 namespace nicole {
 

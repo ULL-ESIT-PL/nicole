@@ -1,17 +1,19 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "../..//lexicalAnalysis/nicoleSintax.h"
-#include "../declaration/varDeclaration.h"
-#include "../declaration/varTable.h"
-#include "../literals/nodeLiteralBool.h"
-#include "../literals/nodeLiteralChar.h"
-#include "../literals/nodeLiteralDouble.h"
-#include "../literals/nodeLiteralInt.h"
-#include "../literals/nodeLiteralString.h"
-#include "../operations/nodeBinaryOp.h"
-#include "../statements/statement.h"
-#include "../statements/statementList.h"
+#include "../../lexicalAnalysis/nicoleSintax.h"
+#include "../ast/calls/variableCall.h"
+#include "../ast/declaration/varDeclaration.h"
+#include "../ast/declaration/varTable.h"
+#include "../ast/declaration/varReassignment.h"
+#include "../ast/literals/nodeLiteralBool.h"
+#include "../ast/literals/nodeLiteralChar.h"
+#include "../ast/literals/nodeLiteralDouble.h"
+#include "../ast/literals/nodeLiteralInt.h"
+#include "../ast/literals/nodeLiteralString.h"
+#include "../ast/operations/nodeBinaryOp.h"
+#include "../ast/statements/statement.h"
+#include "../ast/statements/statementList.h"
 #include "tree.h"
 
 namespace nicole {

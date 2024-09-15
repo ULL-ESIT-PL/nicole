@@ -1,4 +1,4 @@
-#include "../../../inc/parsingAnalysis/declaration/varTable.h"
+#include "../../../../inc/parsingAnalysis/ast/declaration/varTable.h"
 
 namespace nicole {
 

@@ -7,8 +7,8 @@
 #include <tuple>
 #include <unordered_map>
 
+#include "../../types/genericType.h"
 #include "../node.h"
-#include "../types/genericType.h"
 
 namespace nicole {
 

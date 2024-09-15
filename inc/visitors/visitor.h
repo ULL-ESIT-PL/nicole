@@ -26,6 +26,8 @@ class NodeBinaryOp;
 class NodeStatement;
 class NodeStatementList;
 class NodeVariableDeclaration;
+class NodeVariableCall;
+class NodeVariableReassignment;
 class Tree;
 
 class Visitor {
@@ -50,6 +52,10 @@ class Visitor {
   virtual llvm::Value* visit(const NodeStatementList* node) const = 0;
 
   virtual llvm::Value* visit(const NodeVariableDeclaration* node) const = 0;
+
+  virtual llvm::Value* visit(const NodeVariableCall* node) const = 0;
+
+  virtual llvm::Value* visit(const NodeVariableReassignment* node) const = 0;
 
   virtual llvm::Value* visit(const Tree* tr) const = 0;
 };
