@@ -111,6 +111,7 @@ llvm::Value* CodeGeneration::visit(const NodeStatementList* node) const {
     }
     lastValue = value;
   }
+  
   return lastValue;
 }
 
@@ -134,24 +135,7 @@ llvm::Value* CodeGeneration::visit(const NodeVariableDeclaration* node) const {
 }
 
 llvm::Value* CodeGeneration::visit(const NodeVariableCall* node) const {
-  llvm::IRBuilder<> builder{entry_};  // Obtener el contexto del bloque actual
-                                      /*
-                                        llvm::Value* variable =
-                                            node->table()->variableValue(node->id())->accept(this);
-                                    
-                                        if (!variable) {
-                                          std::cerr << "Error: Variable '" << node->id() << "' no encontrada."
-                                                    << std::endl;
-                                          return nullptr;
-                                        }
-                                    
-                                        llvm::Type* varType = variable->getType();
-                                        llvm::Value* loadedValue = builder.CreateLoad(varType, variable, "loadtmp");
-                                    
-                                        // Paso 3: Devolver el valor cargado
-                                        return loadedValue;
-                                        */
-  return nullptr;
+  return node->table()->variableValue(node->id());
 }
 
 llvm::Value* CodeGeneration::visit(const NodeVariableReassignment* node) const {
@@ -160,7 +144,8 @@ llvm::Value* CodeGeneration::visit(const NodeVariableReassignment* node) const {
   llvm::AllocaInst* varAddress{node->table()->variableAdress(node->id())};
   llvm::Value* newValue{node->expression()->accept(this)};
   builder.CreateStore(newValue, varAddress);
-  
+  node->table()->setVariable(node->id(), newValue);
+
   return nullptr;
 }
 
