@@ -15,7 +15,7 @@ class Tree {
 
   NodeStatementList* root() const { return root_.get(); }
 
-  llvm::Value* accept(const Visitor* visitor) const {
+  llvm::Value* accept(std::unique_ptr<Visitor> visitor) const {
     return visitor->visit(this);
   }
 };

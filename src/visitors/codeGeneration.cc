@@ -111,7 +111,6 @@ llvm::Value* CodeGeneration::visit(const NodeStatementList* node) const {
     }
     lastValue = value;
   }
-  
   return lastValue;
 }
 
@@ -127,7 +126,7 @@ llvm::Value* CodeGeneration::visit(const NodeVariableDeclaration* node) const {
 
   // Almacenar el valor en la variable y tambien en la tabla
   builder.CreateStore(value, alloca);
-  std::unique_ptr<GenericType> varType(node->type());
+  std::unique_ptr<GenericType> varType(std::move(node->varType()));
   node->table()->addVariable(node->id(), std::move(varType), value, alloca);
 
   // Devolver el valor almacenado

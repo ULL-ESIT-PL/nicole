@@ -50,7 +50,6 @@ std::unique_ptr<Node> TopDown::parseVarDeclaration(std::shared_ptr<VariableTable
         if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
           eat();
           auto value{parseAdd_Sub(currentScope)};
-          if (!currentScope) llvm::report_fatal_error("ADIOS");
           return std::make_unique<NodeVariableDeclaration>(
               id, std::move(idType), std::move(value), currentScope);
         } else {

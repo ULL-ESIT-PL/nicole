@@ -11,7 +11,7 @@ class NodeVariableDeclaration : public Node {
  private:
   /* data */
   std::string id_{""};
-  std::unique_ptr<GenericType> varType_;
+  mutable std::unique_ptr<GenericType> varType_;
   std::unique_ptr<Node> expression_;
   std::shared_ptr<VariableTable> currentScope_;
 
@@ -24,12 +24,12 @@ class NodeVariableDeclaration : public Node {
       : Node{NodeType::VAR_DECL, std::move(father)},
         id_{id},
         varType_{std::move(varType)},
-        currentScope_{currentScope},
-        expression_{std::move(expression)} {};
+        expression_{std::move(expression)},
+        currentScope_{currentScope} {};
 
   std::string id() const { return id_; }
 
-  GenericType* type() const { return varType_.get(); }
+  std::unique_ptr<GenericType> varType() const { return std::move(varType_); }
 
   Node* expression() const { return expression_.get(); }
 

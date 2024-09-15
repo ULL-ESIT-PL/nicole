@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "GDB Debug",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/bin/binaries",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/gdb",
+        "internalConsoleOptions": "openOnSessionStart",
+        "logging": {
+          "moduleLoad": false,
+          "trace": false,
+          "engineLogging": false,
+          "programOutput": true,
+          "exceptions": false
+        }
+      }
+    ]
+  }
+  
