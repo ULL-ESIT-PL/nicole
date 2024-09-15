@@ -25,10 +25,7 @@ class NodeVariableDeclaration : public Node {
         id_{id},
         varType_{std::move(varType)},
         currentScope_{currentScope},
-        expression_{std::move(expression)} {
-    // ONLY currentScope_ is owned by this node, the rest are owned by the scope
-    currentScope_->addVariable(id, std::move(varType_), std::move(expression_));
-  };
+        expression_{std::move(expression)} {};
 
   std::string id() const { return id_; }
 

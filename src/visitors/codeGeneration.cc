@@ -116,66 +116,51 @@ llvm::Value* CodeGeneration::visit(const NodeStatementList* node) const {
 
 llvm::Value* CodeGeneration::visit(const NodeVariableDeclaration* node) const {
   llvm::IRBuilder<> builder{entry_};  // Obtener el contexto del módulo
-  // Here the attributes of node should be null except currentScope due being
-  // owned by its attribute currentScope
-  llvm::Value* value{node->table()->variableValue(node->id())->accept(this)};
 
+  llvm::Value* value{node->expression()->accept(this)};
   llvm::Type* valueType{value->getType()};  // Tipo de la variable
 
   // Crear la instrucción 'alloca' para reservar espacio para la variable
   llvm::AllocaInst* alloca{
       builder.CreateAlloca(valueType, nullptr, node->id())};
 
-  // std::cout << node->table()->variableType(node->id())->name();
-
-  // Almacenar el valor en la variable
+  // Almacenar el valor en la variable y tambien en la tabla
   builder.CreateStore(value, alloca);
+  std::unique_ptr<GenericType> varType(node->type());
+  node->table()->addVariable(node->id(), std::move(varType), value, alloca);
 
   // Devolver el valor almacenado
-  return alloca;
+  return nullptr;
 }
 
 llvm::Value* CodeGeneration::visit(const NodeVariableCall* node) const {
   llvm::IRBuilder<> builder{entry_};  // Obtener el contexto del bloque actual
-
-  // Paso 1: Buscar la variable en la tabla de símbolos actual (currentScope_)
-  llvm::Value* variable =
-      node->table()->variableValue(node->id())->accept(this);
-
-  // Verificar si la variable fue encontrada
-  if (!variable) {
-    std::cerr << "Error: Variable '" << node->id() << "' no encontrada."
-              << std::endl;
-    return nullptr;
-  }
-
-  // Paso 2: Cargar el valor almacenado en la variable
-  llvm::Type* varType = variable->getType();
-  llvm::Value* loadedValue = builder.CreateLoad(varType, variable, "loadtmp");
-
-  // Paso 3: Devolver el valor cargado
-  return loadedValue;
+                                      /*
+                                        llvm::Value* variable =
+                                            node->table()->variableValue(node->id())->accept(this);
+                                    
+                                        if (!variable) {
+                                          std::cerr << "Error: Variable '" << node->id() << "' no encontrada."
+                                                    << std::endl;
+                                          return nullptr;
+                                        }
+                                    
+                                        llvm::Type* varType = variable->getType();
+                                        llvm::Value* loadedValue = builder.CreateLoad(varType, variable, "loadtmp");
+                                    
+                                        // Paso 3: Devolver el valor cargado
+                                        return loadedValue;
+                                        */
+  return nullptr;
 }
 
 llvm::Value* CodeGeneration::visit(const NodeVariableReassignment* node) const {
   llvm::IRBuilder<> builder{entry_};  // Get the context of the current block
 
-  // Retrieve the memory address (alloca) of the variable from the variable
-  // table
-  llvm::Value* varAddress{
-      node->table()->variableValue(node->id())->accept(this)};
-
-  std::unique_ptr<Node> expression{node->expression()};
-  node->table()->setVariable(node->id(), std::move(expression));
-
-  llvm::Value* newValue{
-      node->table()->variableValue(node->id())->accept(this)};
-
-  // Store the new value in the variable's existing memory location
+  llvm::AllocaInst* varAddress{node->table()->variableAdress(node->id())};
+  llvm::Value* newValue{node->expression()->accept(this)};
   builder.CreateStore(newValue, varAddress);
-
-  // Return the new value (not strictly necessary, but can be useful for further
-  // operations)
+  
   return nullptr;
 }
 

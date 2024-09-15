@@ -15,8 +15,9 @@ namespace nicole {
 class VariableTable final {
  private:
   std::unique_ptr<VariableTable> father_;
-  std::unordered_map<std::string, std::tuple<std::unique_ptr<GenericType>,
-                                             std::unique_ptr<Node>, bool>>
+  std::unordered_map<
+      std::string, std::tuple<std::unique_ptr<GenericType>,
+                              std::pair<llvm::Value*, llvm::AllocaInst*>, bool>>
       table_{};
 
  public:
@@ -32,11 +33,13 @@ class VariableTable final {
   bool hasVariable(const std::string& id);
 
   void addVariable(const std::string& id, std::unique_ptr<GenericType> idType,
-                   std::unique_ptr<Node> value, const bool = false);
+                   llvm::Value* value, llvm::AllocaInst* alloca, const bool = false);
 
-  void setVariable(const std::string& id, std::unique_ptr<Node> value);
+  void setVariable(const std::string& id, llvm::Value* value);
 
-  Node* variableValue(const std::string& id);
+  llvm::Value* variableValue(const std::string& id);
+
+  llvm::AllocaInst* variableAdress(const std::string& id);
 
   GenericType* variableType(const std::string& id);
 

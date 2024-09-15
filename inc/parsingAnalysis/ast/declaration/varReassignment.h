@@ -16,16 +16,13 @@ class NodeVariableReassignment : public Node {
 
  public:
   NodeVariableReassignment(const std::string& id,
-                          std::unique_ptr<Node> expression,
-                          std::shared_ptr<VariableTable> currentScope,
-                          std::unique_ptr<Node> father = nullptr)
+                           std::unique_ptr<Node> expression,
+                           std::shared_ptr<VariableTable> currentScope,
+                           std::unique_ptr<Node> father = nullptr)
       : Node{NodeType::VAR_REG, std::move(father)},
         id_{id},
         currentScope_{currentScope},
-        expression_{std::move(expression)} {
-    // ONLY currentScope_ is owned by this node, the rest are owned by the scope
-    // currentScope_->setVariable(id, std::move(expression_));
-  };
+        expression_{std::move(expression)} {};
 
   std::string id() const { return id_; }
 

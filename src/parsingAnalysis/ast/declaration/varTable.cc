@@ -10,36 +10,43 @@ bool VariableTable::hasVariable(const std::string& id) {
 
 void VariableTable::addVariable(const std::string& id,
                                 std::unique_ptr<GenericType> idType,
-                                std::unique_ptr<Node> value,
+                                llvm::Value* value, llvm::AllocaInst* alloca,
                                 const bool isConst) {
   if (!hasVariable(id)) {
-    table_[id] = std::make_tuple(std::move(idType), std::move(value), isConst);
+    table_[id] =
+        std::make_tuple(std::move(idType), std::pair{value, alloca}, isConst);
     return;
   }
   const std::string strErr{"The variable " + id + " already exist"};
   llvm::report_fatal_error(strErr.c_str());
 }
 
-void VariableTable::setVariable(const std::string& id,
-                                std::unique_ptr<Node> value) {
+void VariableTable::setVariable(const std::string& id, llvm::Value* value) {
   if (table_.count(id)) {
     if (get<2>(table_[id])) {
       const std::string strErr{"Cannot modify the variable " + id +
                                " due being const"};
       llvm::report_fatal_error(strErr.c_str());
     }
-    get<1>(table_[id]) = std::move(value);
+    get<1>(table_[id]).first = value;
   } else if (father_) {
-    father_->setVariable(id, std::move(value));
+    father_->setVariable(id, value);
   } else {
     const std::string strErr{"The variable " + id + " does not exist"};
     llvm::report_fatal_error(strErr.c_str());
   }
 }
 
-Node* VariableTable::variableValue(const std::string& id) {
-  if (table_.count(id)) return get<1>(table_.at(id)).get();
+llvm::Value* VariableTable::variableValue(const std::string& id) {
+  if (table_.count(id)) return get<1>(table_.at(id)).first;
   if (father_) return father_->variableValue(id);
+  const std::string strErr{"The variable " + id + " does not exist"};
+  llvm::report_fatal_error(strErr.c_str());
+}
+
+llvm::AllocaInst* VariableTable::variableAdress(const std::string& id) {
+  if (table_.count(id)) return get<1>(table_.at(id)).second;
+  if (father_) return father_->variableAdress(id);
   const std::string strErr{"The variable " + id + " does not exist"};
   llvm::report_fatal_error(strErr.c_str());
 }
