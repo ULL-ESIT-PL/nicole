@@ -2,6 +2,7 @@
 
 #include "../../inc/lexicalAnalysis/type.h"
 #include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
+#include "../../inc/parsingAnalysis/ast/conditionals/NodeIfStatetement.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralBool.h"
@@ -98,20 +99,23 @@ llvm::Value* CodeGeneration::visit(const NodeStatement* node) const {
 }
 
 llvm::Value* CodeGeneration::visit(const NodeStatementList* node) const {
+  llvm::IRBuilder<> builder{entry_};
   llvm::Value* lastValue{nullptr};
   for (const auto& statement : *node) {
     llvm::Value* value{statement->accept(this)};
     if (statement->expression()->type() == NodeType::VAR_DECL ||
         statement->expression()->type() == NodeType::VAR_REG) {
-      std::cout << "hola\n" << std::flush;
       continue;
     }
+    /*
     if (!value) {
       return nullptr;
     }
+    */
     lastValue = value;
   }
-  return lastValue;
+  // return lastValue;
+  return builder.CreateRetVoid();
 }
 
 llvm::Value* CodeGeneration::visit(const NodeVariableDeclaration* node) const {
@@ -144,6 +148,44 @@ llvm::Value* CodeGeneration::visit(const NodeVariableReassignment* node) const {
   llvm::Value* newValue{node->expression()->accept(this)};
   builder.CreateStore(newValue, varAddress);
   node->table()->setVariable(node->id(), newValue);
+
+  return nullptr;
+}
+
+llvm::Value* CodeGeneration::visit(const NodeIfStatement* node) const {
+  llvm::IRBuilder<> builder{entry_};  // Get the context of the current block
+
+  llvm::Value* condition{node->condition()->accept(this)};
+  // Convertir la condición a booleano (int1 en LLVM)
+  condition = builder.CreateICmpNE(
+      condition, llvm::ConstantInt::get(condition->getType(), 0), "ifcond");
+
+  // === 2. Crear bloques para 'then', 'else' y 'merge' ===
+  llvm::Function* parentFunction = builder.GetInsertBlock()->getParent();
+  
+  llvm::BasicBlock* thenBlock = llvm::BasicBlock::Create(*context_, "then", parentFunction);
+  llvm::BasicBlock* elseBlock = llvm::BasicBlock::Create(*context_, "else");
+  llvm::BasicBlock* mergeBlock = llvm::BasicBlock::Create(*context_, "ifcont");
+
+  // === 3. Crear la instrucción condicional de salto ===
+  builder.CreateCondBr(condition, thenBlock, elseBlock);
+
+  // === 4. Generar el cuerpo 'then' ===
+  builder.SetInsertPoint(thenBlock);
+  node->body()->accept(this);  // Generar el código del cuerpo del 'then'
+  builder.CreateBr(mergeBlock);  // Saltar al bloque 'merge' después del 'then'
+
+  // Añadir el bloque 'else' a la función y generar el código para el cuerpo 'else'
+  parentFunction->getBasicBlockList().push_back(elseBlock);
+  builder.SetInsertPoint(elseBlock);
+  if (node->elseBody()) {
+    node->elseBody()->accept(this);  // Generar el código del cuerpo del 'else'
+  }
+  builder.CreateBr(mergeBlock);  // Saltar al bloque 'merge' después del 'else'
+
+  // === 5. Unir los bloques en 'merge' ===
+  parentFunction->getBasicBlockList().push_back(mergeBlock);
+  builder.SetInsertPoint(mergeBlock);
 
   return nullptr;
 }

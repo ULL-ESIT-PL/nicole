@@ -40,6 +40,8 @@ class CodeGeneration final : public Visitor {
 
   llvm::Value* visit(const NodeVariableReassignment* node) const override;
 
+  llvm::Value* visit(const NodeIfStatement* node) const override;
+
   llvm::Value* visit(const Tree* tr) const override;
 };
 

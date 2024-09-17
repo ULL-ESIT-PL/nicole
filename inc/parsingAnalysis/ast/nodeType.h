@@ -15,7 +15,8 @@ enum class NodeType {
   STATEMENT_LIST,
   VAR_DECL,
   VAR_REG,
-  CALL_VAR
+  CALL_VAR,
+  IF
 };
 
 }  // namespace nicole

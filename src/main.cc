@@ -22,7 +22,7 @@ int main() {
 
   // Crear una función main y un bloque básico
   llvm::FunctionType* funcType{
-      llvm::FunctionType::get(builder.getInt32Ty(), false)};
+      llvm::FunctionType::get(builder.getVoidTy(), false)};
 
   llvm::Function* mainFunction{llvm::Function::Create(
       funcType, llvm::Function::ExternalLinkage, "main", module.get())};
@@ -45,14 +45,14 @@ int main() {
   Visitor* visitor{&codeGen};
   auto tree{result.get()};
   llvm::Value* returnValue{visitor->visit(tree)};
-
+/*
   if (!returnValue) {
     std::cerr << "Error: No return value generated." << std::endl;
     return 1;
   }
 
   builder.CreateRet(returnValue);
-
+*/
   // Verificar el módulo y la función main
   llvm::verifyFunction(*mainFunction);
   llvm::verifyModule(*module);

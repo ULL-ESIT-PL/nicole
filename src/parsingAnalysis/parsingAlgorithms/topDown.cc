@@ -23,11 +23,73 @@ std::unique_ptr<NodeStatementList> TopDown::parseStart() const {
   return std::make_unique<NodeStatementList>(std::move(gloablScopeStatements));
 }
 
-std::unique_ptr<NodeStatement> TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope) const {
-  return std::make_unique<NodeStatement>(parseVarDeclaration(currentScope));
+std::shared_ptr<NodeStatementList> TopDown::parseBody(
+    std::shared_ptr<VariableTable>& bodyScope) const {
+  std::vector<std::unique_ptr<NodeStatement>> body;
+  auto body{std::make_unique<NodeStatementList>(nullptr)};
+  if (getCurrentToken().type() == TokenType::LB) {
+    eat();
+  } else {
+    const std::string strErr{"Error: missing left bracket, found " +
+                             getCurrentToken().raw()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  std::vector<std::unique_ptr<NodeStatement>> body;
+  while (std::size_t(currentToken_) < tokens_.size() && !isTokenType(TokenType::RB)) {
+    body.push_back(std::move(parseStatement(bodyScope)));
+    if (std::size_t(currentToken_) < tokens_.size() &&
+        isTokenType(TokenType::SEMICOLON)) {
+      eat();
+    }
+  }
+  eat();  // Consume el token "}"
+  return std::make_unique<NodeStatementList>(std::move(body));
 }
 
-std::unique_ptr<Node> TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope) const {
+std::unique_ptr<NodeStatement> TopDown::parseStatement(
+    std::shared_ptr<VariableTable> currentScope) const {
+  switch (getCurrentToken().type()) {
+    case TokenType::IF:
+      return std::make_unique<NodeStatement>(parseIfStatement(currentScope));
+    default:
+      return std::make_unique<NodeStatement>(parseVarDeclaration(currentScope));
+  }
+}
+
+std::unique_ptr<NodeIfStatement> TopDown::parseIfStatement(
+    std::shared_ptr<VariableTable> currentScope) const {
+  eat();
+  if (getCurrentToken().type() == TokenType::LP) {
+    eat();
+  } else {
+    const std::string strErr{"Error: missing left parenthesis, found " +
+                             getCurrentToken().raw()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  if (getCurrentToken().type() == TokenType::RP) {
+    const std::string strErr{"Error: empty if condition, found " +
+                             getCurrentToken().raw()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  auto condition{parseAdd_Sub(currentScope)};
+  if (getCurrentToken().type() == TokenType::RP) {
+    eat();
+  } else {
+    const std::string strErr{"Error: missing right parenthesis, found " +
+                             getCurrentToken().raw()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  auto ifBody{parseBody(currentScope)};
+  std::unique_ptr<NodeStatementList> elseBody{};
+  if (getCurrentToken().type() == TokenType::ELSE) {
+    eat();
+   // elseBody = std::move(parseBody(currentScope));
+  }
+  return std::make_unique<NodeIfStatement>(std::move(condition), std::move(ifBody), std::move(elseBody));
+}
+
+std::unique_ptr<Node> TopDown::parseVarDeclaration(
+    std::shared_ptr<VariableTable> currentScope) const {
   Token token{getCurrentToken()};
   if (token.type() == TokenType::LET) {
     eat();
@@ -66,7 +128,8 @@ std::unique_ptr<Node> TopDown::parseVarDeclaration(std::shared_ptr<VariableTable
   return parseAdd_Sub(currentScope);
 }
 
-std::unique_ptr<Node> TopDown::parseAdd_Sub(std::shared_ptr<VariableTable> currentScope) const {
+std::unique_ptr<Node> TopDown::parseAdd_Sub(
+    std::shared_ptr<VariableTable> currentScope) const {
   // equivalent to the first e + e in Jison recursively goes down
   auto left{parseFactor(currentScope)};
 
@@ -93,7 +156,8 @@ std::unique_ptr<Node> TopDown::parseAdd_Sub(std::shared_ptr<VariableTable> curre
   return left;
 }
 
-std::unique_ptr<Node> TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope) const {
+std::unique_ptr<Node> TopDown::parseFactor(
+    std::shared_ptr<VariableTable> currentScope) const {
   switch (getCurrentToken().type()) {
     case TokenType::NUMBER_INT: {
       const int value{std::stoi(getCurrentToken().raw())};
@@ -129,7 +193,8 @@ std::unique_ptr<Node> TopDown::parseFactor(std::shared_ptr<VariableTable> curren
       if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
         eat();
         auto expression{parseAdd_Sub(currentScope)};
-        return std::make_unique<NodeVariableReassignment>(id, std::move(expression), currentScope);
+        return std::make_unique<NodeVariableReassignment>(
+            id, std::move(expression), currentScope);
       }
       return std::make_unique<NodeVariableCall>(id, currentScope);
     }

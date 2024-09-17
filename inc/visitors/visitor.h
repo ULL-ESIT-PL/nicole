@@ -28,6 +28,7 @@ class NodeStatementList;
 class NodeVariableDeclaration;
 class NodeVariableCall;
 class NodeVariableReassignment;
+class NodeIfStatement;
 class Tree;
 
 class Visitor {
@@ -56,6 +57,8 @@ class Visitor {
   virtual llvm::Value* visit(const NodeVariableCall* node) const = 0;
 
   virtual llvm::Value* visit(const NodeVariableReassignment* node) const = 0;
+
+  virtual llvm::Value* visit(const NodeIfStatement* node) const = 0;
 
   virtual llvm::Value* visit(const Tree* tr) const = 0;
 };

@@ -7,6 +7,6 @@ x = 100 + 5;
 /*
   store i32 105, i32* %x, align 4
 */
-let y: int = x;
+let y: int = x + 5;
 
 y;
