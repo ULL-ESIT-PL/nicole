@@ -154,12 +154,12 @@ TopDown::parseLogicalOr(std::shared_ptr<VariableTable> currentScope) const {
 std::unique_ptr<Node>
 TopDown::parseLogicalAnd(std::shared_ptr<VariableTable> currentScope) const {
   // equivalent to the first e + e in Jison recursively goes down
-  auto left{parseCompare(currentScope)};
+  auto left{parseLogicalEqual(currentScope)};
 
   while (std::size_t(currentToken_) < tokens_.size() &&
          getCurrentToken().type() == TokenType::AND) {
     eat();
-    auto right{parseCompare(currentScope)};
+    auto right{parseLogicalEqual(currentScope)};
     left = std::make_unique<NodeBinaryOp>(std::move(left), TokenType::AND,
                                           std::move(right));
   }
@@ -333,7 +333,7 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope) const {
   }
   case TokenType::LP: {
     eat();
-    auto expression{parseAdd_Sub(currentScope)};
+    auto expression{parseLogicalOr(currentScope)};
     if (getCurrentToken().type() == TokenType::RP) {
       eat();
     } else {
