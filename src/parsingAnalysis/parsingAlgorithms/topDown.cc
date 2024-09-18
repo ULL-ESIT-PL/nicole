@@ -118,7 +118,7 @@ std::unique_ptr<Node> TopDown::parseVarDeclaration(
         eat();
         if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
           eat();
-          auto value{parseAdd_Sub(currentScope)};
+          auto value{parseLogicalOr(currentScope)};
           return std::make_unique<NodeVariableDeclaration>(
               id, std::move(idType), std::move(value), currentScope);
         } else {
@@ -132,7 +132,105 @@ std::unique_ptr<Node> TopDown::parseVarDeclaration(
       }
     }
   }
-  return parseAdd_Sub(currentScope);
+  return parseLogicalOr(currentScope);
+}
+
+std::unique_ptr<Node>
+TopDown::parseLogicalOr(std::shared_ptr<VariableTable> currentScope) const {
+  // equivalent to the first e + e in Jison recursively goes down
+  auto left{parseLogicalAnd(currentScope)};
+
+  while (std::size_t(currentToken_) < tokens_.size() &&
+         getCurrentToken().type() == TokenType::OR) {
+    eat();
+    auto right{parseLogicalAnd(currentScope)};
+    left = std::make_unique<NodeBinaryOp>(std::move(left), TokenType::OR,
+                                          std::move(right));
+  }
+
+  return left;
+}
+
+std::unique_ptr<Node>
+TopDown::parseLogicalAnd(std::shared_ptr<VariableTable> currentScope) const {
+  // equivalent to the first e + e in Jison recursively goes down
+  auto left{parseCompare(currentScope)};
+
+  while (std::size_t(currentToken_) < tokens_.size() &&
+         getCurrentToken().type() == TokenType::AND) {
+    eat();
+    auto right{parseCompare(currentScope)};
+    left = std::make_unique<NodeBinaryOp>(std::move(left), TokenType::AND,
+                                          std::move(right));
+  }
+
+  return left;
+}
+
+std::unique_ptr<Node>
+TopDown::parseLogicalEqual(std::shared_ptr<VariableTable> currentScope) const {
+  // equivalent to the first e + e in Jison recursively goes down
+  auto left{parseCompare(currentScope)};
+
+  while (std::size_t(currentToken_) < tokens_.size() &&
+         (getCurrentToken().type() == TokenType::EQUAL ||
+          getCurrentToken().type() == TokenType::NOTEQUAL)) {
+    const Token token{getCurrentToken()};
+    eat();
+    auto right{parseCompare(currentScope)};
+    switch (token.type()) {
+    case TokenType::EQUAL:
+      left = std::make_unique<NodeBinaryOp>(std::move(left), TokenType::EQUAL,
+                                            std::move(right));
+      break;
+    case TokenType::NOTEQUAL:
+      left = std::make_unique<NodeBinaryOp>(
+          std::move(left), TokenType::NOTEQUAL, std::move(right));
+      break;
+    default:
+      llvm::report_fatal_error("Error: invalid token type at parsing + or -");
+    }
+  }
+
+  return left;
+}
+
+std::unique_ptr<Node>
+TopDown::parseCompare(std::shared_ptr<VariableTable> currentScope) const {
+  // equivalent to the first e + e in Jison recursively goes down
+  auto left{parseAdd_Sub(currentScope)};
+
+  while (std::size_t(currentToken_) < tokens_.size() &&
+         (getCurrentToken().type() == TokenType::OPERATOR_SMALLER ||
+          getCurrentToken().type() == TokenType::SMALLEREQUAL ||
+          getCurrentToken().type() == TokenType::OPERATOR_GREATER ||
+          getCurrentToken().type() == TokenType::BIGGEREQUAL)) {
+    const Token token{getCurrentToken()};
+    eat();
+    auto right{parseAdd_Sub(currentScope)};
+    switch (token.type()) {
+    case TokenType::OPERATOR_SMALLER:
+      left = std::make_unique<NodeBinaryOp>(
+          std::move(left), TokenType::OPERATOR_SMALLER, std::move(right));
+      break;
+    case TokenType::SMALLEREQUAL:
+      left = std::make_unique<NodeBinaryOp>(
+          std::move(left), TokenType::SMALLEREQUAL, std::move(right));
+      break;
+    case TokenType::OPERATOR_GREATER:
+      left = std::make_unique<NodeBinaryOp>(
+          std::move(left), TokenType::OPERATOR_GREATER, std::move(right));
+      break;
+    case TokenType::BIGGEREQUAL:
+      left = std::make_unique<NodeBinaryOp>(
+          std::move(left), TokenType::BIGGEREQUAL, std::move(right));
+      break;
+    default:
+      llvm::report_fatal_error("Error: invalid token type at parsing + or -");
+    }
+  }
+
+  return left;
 }
 
 std::unique_ptr<Node>

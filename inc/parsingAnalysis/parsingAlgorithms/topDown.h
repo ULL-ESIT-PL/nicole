@@ -24,6 +24,20 @@ private:
   parseVarDeclaration(std::shared_ptr<VariableTable> currentScope) const;
 
   std::unique_ptr<Node>
+  parseLogicalOr(std::shared_ptr<VariableTable> currentScope) const;
+
+  std::unique_ptr<Node>
+  parseLogicalAnd(std::shared_ptr<VariableTable> currentScope) const;
+
+  // equal not
+  std::unique_ptr<Node>
+  parseLogicalEqual(std::shared_ptr<VariableTable> currentScope) const;
+  
+  // < <=...
+  std::unique_ptr<Node>
+  parseCompare(std::shared_ptr<VariableTable> currentScope) const;
+
+  std::unique_ptr<Node>
   parseAdd_Sub(std::shared_ptr<VariableTable> currentScope) const;
 
   std::unique_ptr<Node>

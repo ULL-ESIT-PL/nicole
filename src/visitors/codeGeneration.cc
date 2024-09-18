@@ -14,8 +14,6 @@
 #include "../../inc/parsingAnalysis/ast/statements/statement.h"
 #include "../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
-#include "llvm/IR/Value.h"
-#include "llvm/Support/ErrorHandling.h"
 
 namespace nicole {
 
@@ -120,6 +118,42 @@ llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node,
     } else {
       return builder.CreateSDiv(leftEvaluated, rightEvaluated, "divtmp");
     }
+  case TokenType::EQUAL:
+    if (leftEvaluated->getType()->isFloatingPointTy()) {
+      return builder.CreateFCmpOEQ(leftEvaluated, rightEvaluated, "divmp");
+    } else {
+      return builder.CreateICmpEQ(leftEvaluated, rightEvaluated, "divtmp");
+    }
+  case TokenType::NOTEQUAL:
+    if (leftEvaluated->getType()->isFloatingPointTy()) {
+      return builder.CreateFCmpONE(leftEvaluated, rightEvaluated, "divmp");
+    } else {
+      return builder.CreateICmpNE(leftEvaluated, rightEvaluated, "divtmp");
+    }
+  case TokenType::OPERATOR_SMALLER:
+    if (leftEvaluated->getType()->isFloatingPointTy()) {
+      return builder.CreateFCmpOLT(leftEvaluated, rightEvaluated, "divmp");
+    } else {
+      return builder.CreateICmpSLT(leftEvaluated, rightEvaluated, "divtmp");
+    }
+  case TokenType::SMALLEREQUAL:
+    if (leftEvaluated->getType()->isFloatingPointTy()) {
+      return builder.CreateFCmpOLE(leftEvaluated, rightEvaluated, "divmp");
+    } else {
+      return builder.CreateICmpSLE(leftEvaluated, rightEvaluated, "divtmp");
+    }
+  case TokenType::OPERATOR_GREATER:
+    if (leftEvaluated->getType()->isFloatingPointTy()) {
+      return builder.CreateFCmpOGT(leftEvaluated, rightEvaluated, "divmp");
+    } else {
+      return builder.CreateICmpSGT(leftEvaluated, rightEvaluated, "divtmp");
+    }
+  case TokenType::BIGGEREQUAL:
+    if (leftEvaluated->getType()->isFloatingPointTy()) {
+      return builder.CreateFCmpOGE(leftEvaluated, rightEvaluated, "divmp");
+    } else {
+      return builder.CreateICmpSGE(leftEvaluated, rightEvaluated, "divtmp");
+    }
   default:
     return nullptr;
   }
@@ -138,7 +172,8 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node,
                                    llvm::Module *currentModule) const {
   llvm::IRBuilder<> builder{currentEntry}; // Obtener el contexto del módulo
 
-  llvm::Value *value{node->expression()->accept(this, currentEntry, currentModule)};
+  llvm::Value *value{
+      node->expression()->accept(this, currentEntry, currentModule)};
   llvm::Type *valueType{value->getType()}; // Tipo de la variable
 
   // Crear la instrucción 'alloca' para reservar espacio para la variable
@@ -164,10 +199,12 @@ llvm::Value *CodeGeneration::visit(const NodeVariableCall *node,
 llvm::Value *CodeGeneration::visit(const NodeVariableReassignment *node,
                                    llvm::BasicBlock *currentEntry,
                                    llvm::Module *currentModule) const {
-  llvm::IRBuilder<> builder{currentEntry}; // Get the context of the current block
+  llvm::IRBuilder<> builder{
+      currentEntry}; // Get the context of the current block
 
   llvm::AllocaInst *varAddress{node->table()->variableAdress(node->id())};
-  llvm::Value *newValue{node->expression()->accept(this, currentEntry, currentModule)};
+  llvm::Value *newValue{
+      node->expression()->accept(this, currentEntry, currentModule)};
   builder.CreateStore(newValue, varAddress);
   node->table()->setVariable(node->id(), newValue);
 
@@ -178,7 +215,8 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node,
                                    llvm::BasicBlock *currentEntry,
                                    llvm::Module *currentModule) const {
   llvm::IRBuilder<> builder{currentEntry};
-  llvm::Value *condition{node->condition()->accept(this, currentEntry, currentModule)};
+  llvm::Value *condition{
+      node->condition()->accept(this, currentEntry, currentModule)};
   if (!condition) {
     return nullptr;
   }
@@ -252,15 +290,14 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node,
               << std::flush;
     lastValue = value;
   }
-  if (!lastValue) {
-    llvm::report_fatal_error("lastvalll");
-  }
+
   return lastValue;
 }
 
-llvm::Value *CodeGeneration::visit(const Tree *node, llvm::BasicBlock *currentEntry,
+llvm::Value *CodeGeneration::visit(const Tree *node,
+                                   llvm::BasicBlock *currentEntry,
                                    llvm::Module *currentModule) const {
-  llvm::IRBuilder<> builder{entry_};
+  llvm::IRBuilder<> builder{currentEntry};
   llvm::Value *val{node->root()->accept(this, currentEntry, currentModule)};
   return builder.CreateRetVoid();
 }
