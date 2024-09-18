@@ -1,6 +1,6 @@
-#include <llvm/Support/Error.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <iostream>
+#include <llvm/Support/Error.h>
 
 llvm::Expected<int> bar(int x) {
     if (x < 0) {

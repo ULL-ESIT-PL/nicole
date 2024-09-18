@@ -1,6 +1,7 @@
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
 #include <llvm/ExecutionEngine/GenericValue.h>
 #include <llvm/ExecutionEngine/MCJIT.h>
+#include <llvm/IR/Function.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
@@ -45,15 +46,15 @@ int main() {
   Visitor* visitor{&codeGen};
   auto tree{result.get()};
   llvm::Value* returnValue{visitor->visit(tree)};
-  
-/*
-  if (!returnValue) {
-    std::cerr << "Error: No return value generated." << std::endl;
-    return 1;
-  }
 
-  builder.CreateRet(returnValue);
-*/
+  /*
+    if (!returnValue) {
+      std::cerr << "Error: No return value generated." << std::endl;
+      return 1;
+    }
+
+    builder.CreateRet(returnValue);
+  */
   // Verificar el módulo y la función main
   llvm::verifyFunction(*mainFunction);
   llvm::verifyModule(*module);
@@ -65,10 +66,11 @@ int main() {
   llvm::InitializeNativeTargetAsmPrinter();
   llvm::InitializeNativeTargetAsmParser();
   std::string errStr;
-  llvm::ExecutionEngine* execEngine = llvm::EngineBuilder(std::move(module))
-                                          .setErrorStr(&errStr)
-                                          .setOptLevel(llvm::CodeGenOpt::None)
-                                          .create();
+  llvm::ExecutionEngine* execEngine =
+      llvm::EngineBuilder(std::move(module))
+          .setErrorStr(&errStr)
+          .setOptLevel(llvm::CodeGenOptLevel::Default)
+          .create();
   if (!execEngine) {
     std::cerr << "Failed to create ExecutionEngine: " << errStr << std::endl;
     return 1;
@@ -86,7 +88,6 @@ int main() {
   char* resultPtr = (char*)gv.PointerVal;
   std::cout << "Result: " << resultPtr << std::endl;
   */
-  
 
   delete execEngine;
 

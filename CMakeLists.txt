@@ -8,10 +8,12 @@ project(MyProject LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Compiler flags
-set(CMAKE_CXX_COMPILER "clang++")
+# Check if Clang is being used, and if not, set it as the default
+if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(CMAKE_CXX_COMPILER "clang++")
+endif()
 
-# Get LLVM configuration
+# Get LLVM configuration using llvm-config
 execute_process(
     COMMAND llvm-config --cxxflags
     OUTPUT_VARIABLE LLVM_CXX_FLAGS
@@ -43,25 +45,19 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LLVM_LDFLAGS} ${LLVM_SYS
 # Source files
 set(SRC_FILES
     src/main.cc
-
+    src/lexicalAnalysis/type.cc
     src/lexicalAnalysis/lexer.cc
     src/lexicalAnalysis/nicoleSintax.cc
-
     src/parsingAnalysis/ast/declaration/varTable.cc
-
     src/parsingAnalysis/ast/literals/nodeLiteralDouble.cc
     src/parsingAnalysis/ast/literals/nodeLiteralInt.cc
     src/parsingAnalysis/ast/literals/nodeLiteralBool.cc
     src/parsingAnalysis/ast/literals/nodeLiteralChar.cc
     src/parsingAnalysis/ast/literals/nodeLiteralString.cc
-
     src/parsingAnalysis/ast/operations/nodeBinaryOp.cc
-
     src/parsingAnalysis/ast/statements/statement.cc
-    
     src/parsingAnalysis/parsingAlgorithms/parser.cc
     src/parsingAnalysis/parsingAlgorithms/topDown.cc
-
     src/visitors/codeGeneration.cc
 )
 
@@ -76,7 +72,10 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 # Executable
 add_executable(binaries ${SRC_FILES})
 
-# Custom commands
+# Link LLVM libraries
+target_link_libraries(binaries ${LLVM_LIBS} ${LLVM_SYSTEM_LIBS})
+
+# Custom targets
 add_custom_target(run
     COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/binaries
     DEPENDS binaries

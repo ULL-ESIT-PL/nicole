@@ -23,12 +23,12 @@ void VariableTable::addVariable(const std::string& id,
 
 void VariableTable::setVariable(const std::string& id, llvm::Value* value) {
   if (table_.count(id)) {
-    if (get<2>(table_[id])) {
+    if (std::get<2>(table_[id])) {
       const std::string strErr{"Cannot modify the variable " + id +
                                " due being const"};
       llvm::report_fatal_error(strErr.c_str());
     }
-    get<1>(table_[id]).first = value;
+    std::get<1>(table_[id]).first = value;
   } else if (father_) {
     father_->setVariable(id, value);
   } else {
@@ -38,21 +38,21 @@ void VariableTable::setVariable(const std::string& id, llvm::Value* value) {
 }
 
 llvm::Value* VariableTable::variableValue(const std::string& id) {
-  if (table_.count(id)) return get<1>(table_.at(id)).first;
+  if (table_.count(id)) return std::get<1>(table_.at(id)).first;
   if (father_) return father_->variableValue(id);
   const std::string strErr{"The variable " + id + " does not exist"};
   llvm::report_fatal_error(strErr.c_str());
 }
 
 llvm::AllocaInst* VariableTable::variableAdress(const std::string& id) {
-  if (table_.count(id)) return get<1>(table_.at(id)).second;
+  if (table_.count(id)) return std::get<1>(table_.at(id)).second;
   if (father_) return father_->variableAdress(id);
   const std::string strErr{"The variable " + id + " does not exist"};
   llvm::report_fatal_error(strErr.c_str());
 }
 
 GenericType* VariableTable::variableType(const std::string& id) {
-  if (table_.count(id)) return get<0>(table_.at(id)).get();
+  if (table_.count(id)) return std::get<0>(table_.at(id)).get();
   if (father_) return father_->variableType(id);
   const std::string strErr{"The variable " + id + " does not exist"};
   llvm::report_fatal_error(strErr.c_str());

@@ -1,6 +1,8 @@
 #ifndef TYPE_H
 #define TYPE_H
 
+#include <string>
+
 namespace nicole {
 
 enum class TokenType {
@@ -56,6 +58,8 @@ enum class TokenType {
   UNMATCHED,  // Para tokens no reconocidos
   ALL
 };
+
+std::string tokenTypeToString(const TokenType& tk);
 }  // namespace nicole
 
 #endif

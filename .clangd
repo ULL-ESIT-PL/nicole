@@ -1,0 +1,4 @@
+CompileFlags:
+  Add: 
+    - "-I/usr/include/llvm-18"      # Ruta de los encabezados de LLVM
+    - "-I/usr/include/llvm-c-18"    # Ruta de los encabezados de la API C de LLVM
