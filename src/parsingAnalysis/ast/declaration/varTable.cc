@@ -62,7 +62,7 @@ std::ostream& operator<<(std::ostream& os, const VariableTable& scope) {
   if (scope.father_) {
     os << *scope.father_;
   }
-  os << "Table:\n";
+  os << "Table size: " + std::to_string(scope.table_.size()) + "\n";
   for (auto&& variable : scope) {
     os << "Var: " << variable.first << "\n";
   }

@@ -16,7 +16,9 @@ class CodeGeneration final : public Visitor {
  public:
   CodeGeneration(llvm::LLVMContext* context, llvm::Module* module,
                  llvm::BasicBlock* entry)
-      : context_{context}, module_{module}, entry_{entry} {}
+      : context_{context}, module_{module}, entry_{entry} {
+        
+      }
 
   llvm::Value* visit(const NodeLiteralBool* node) const override;
 

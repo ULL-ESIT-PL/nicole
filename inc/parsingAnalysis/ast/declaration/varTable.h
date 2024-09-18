@@ -14,17 +14,17 @@ namespace nicole {
 
 class VariableTable final {
  private:
-  std::unique_ptr<VariableTable> father_;
+  std::shared_ptr<VariableTable> father_;
   std::unordered_map<
       std::string, std::tuple<std::unique_ptr<GenericType>,
                               std::pair<llvm::Value*, llvm::AllocaInst*>, bool>>
       table_{};
 
  public:
-  VariableTable(std::unique_ptr<VariableTable> father = nullptr)
-      : father_{std::move(father)} {};
+  VariableTable(std::shared_ptr<VariableTable> father = nullptr)
+      : father_{father} {};
 
-  VariableTable* father() { return father_.get(); }
+  std::shared_ptr<VariableTable> father() { return father_; }
 
   auto begin() const { return table_.begin(); }
 

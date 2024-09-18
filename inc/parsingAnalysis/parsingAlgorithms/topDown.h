@@ -11,7 +11,7 @@ class TopDown final : public Parser {
 
   std::unique_ptr<NodeStatementList> parseStart() const;
 
-  std::shared_ptr<NodeStatementList> parseBody(
+  std::unique_ptr<NodeStatementList> parseBody(
       std::shared_ptr<VariableTable>& bodyScope) const;
 
   std::unique_ptr<NodeStatement> parseStatement(

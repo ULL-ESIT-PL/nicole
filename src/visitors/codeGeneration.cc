@@ -104,7 +104,8 @@ llvm::Value* CodeGeneration::visit(const NodeStatementList* node) const {
   for (const auto& statement : *node) {
     llvm::Value* value{statement->accept(this)};
     if (statement->expression()->type() == NodeType::VAR_DECL ||
-        statement->expression()->type() == NodeType::VAR_REG) {
+        statement->expression()->type() == NodeType::VAR_REG ||
+        statement->expression()->type() == NodeType::IF) {
       continue;
     }
     /*
@@ -138,6 +139,7 @@ llvm::Value* CodeGeneration::visit(const NodeVariableDeclaration* node) const {
 }
 
 llvm::Value* CodeGeneration::visit(const NodeVariableCall* node) const {
+  std::cout << "---------\n" << *node->table() << std::flush;
   return node->table()->variableValue(node->id());
 }
 
@@ -162,8 +164,9 @@ llvm::Value* CodeGeneration::visit(const NodeIfStatement* node) const {
 
   // === 2. Crear bloques para 'then', 'else' y 'merge' ===
   llvm::Function* parentFunction = builder.GetInsertBlock()->getParent();
-  
-  llvm::BasicBlock* thenBlock = llvm::BasicBlock::Create(*context_, "then", parentFunction);
+
+  llvm::BasicBlock* thenBlock =
+      llvm::BasicBlock::Create(*context_, "then", parentFunction);
   llvm::BasicBlock* elseBlock = llvm::BasicBlock::Create(*context_, "else");
   llvm::BasicBlock* mergeBlock = llvm::BasicBlock::Create(*context_, "ifcont");
 
@@ -172,10 +175,11 @@ llvm::Value* CodeGeneration::visit(const NodeIfStatement* node) const {
 
   // === 4. Generar el cuerpo 'then' ===
   builder.SetInsertPoint(thenBlock);
-  node->body()->accept(this);  // Generar el código del cuerpo del 'then'
+  node->body()->accept(this);    // Generar el código del cuerpo del 'then'
   builder.CreateBr(mergeBlock);  // Saltar al bloque 'merge' después del 'then'
 
-  // Añadir el bloque 'else' a la función y generar el código para el cuerpo 'else'
+  // Añadir el bloque 'else' a la función y generar el código para el cuerpo
+  // 'else'
   parentFunction->getBasicBlockList().push_back(elseBlock);
   builder.SetInsertPoint(elseBlock);
   if (node->elseBody()) {

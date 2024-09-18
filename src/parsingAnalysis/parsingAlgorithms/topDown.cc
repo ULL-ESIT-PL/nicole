@@ -6,7 +6,7 @@ std::unique_ptr<Tree> TopDown::parse(const std::filesystem::path& path) const {
   tokens_ = lexer_.analyze(path);
   globalScope_ = std::make_shared<VariableTable>(nullptr);
   root_ = parseStart();
-  std::cout << *globalScope_;
+  // std::cout << *globalScope_;
   return std::make_unique<Tree>(std::move(root_));
 }
 
@@ -23,10 +23,8 @@ std::unique_ptr<NodeStatementList> TopDown::parseStart() const {
   return std::make_unique<NodeStatementList>(std::move(gloablScopeStatements));
 }
 
-std::shared_ptr<NodeStatementList> TopDown::parseBody(
+std::unique_ptr<NodeStatementList> TopDown::parseBody(
     std::shared_ptr<VariableTable>& bodyScope) const {
-  std::vector<std::unique_ptr<NodeStatement>> body;
-  auto body{std::make_unique<NodeStatementList>(nullptr)};
   if (getCurrentToken().type() == TokenType::LB) {
     eat();
   } else {
@@ -35,7 +33,8 @@ std::shared_ptr<NodeStatementList> TopDown::parseBody(
     llvm::report_fatal_error(strErr.c_str());
   }
   std::vector<std::unique_ptr<NodeStatement>> body;
-  while (std::size_t(currentToken_) < tokens_.size() && !isTokenType(TokenType::RB)) {
+  while (std::size_t(currentToken_) < tokens_.size() &&
+         !isTokenType(TokenType::RB)) {
     body.push_back(std::move(parseStatement(bodyScope)));
     if (std::size_t(currentToken_) < tokens_.size() &&
         isTokenType(TokenType::SEMICOLON)) {
@@ -71,7 +70,9 @@ std::unique_ptr<NodeIfStatement> TopDown::parseIfStatement(
                              getCurrentToken().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
+
   auto condition{parseAdd_Sub(currentScope)};
+
   if (getCurrentToken().type() == TokenType::RP) {
     eat();
   } else {
@@ -79,13 +80,17 @@ std::unique_ptr<NodeIfStatement> TopDown::parseIfStatement(
                              getCurrentToken().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
-  auto ifBody{parseBody(currentScope)};
+  auto ifScope{std::make_shared<VariableTable>(currentScope)};
+  auto ifBody{parseBody(ifScope)};
   std::unique_ptr<NodeStatementList> elseBody{};
-  if (getCurrentToken().type() == TokenType::ELSE) {
+  if (currentToken_ < tokens_.size() and
+      getCurrentToken().type() == TokenType::ELSE) {
     eat();
-   // elseBody = std::move(parseBody(currentScope));
+    auto elseScope{std::make_shared<VariableTable>(currentScope)};
+    elseBody = std::move(parseBody(elseScope));
   }
-  return std::make_unique<NodeIfStatement>(std::move(condition), std::move(ifBody), std::move(elseBody));
+  return std::make_unique<NodeIfStatement>(
+      std::move(condition), std::move(ifBody), std::move(elseBody));
 }
 
 std::unique_ptr<Node> TopDown::parseVarDeclaration(
