@@ -6,20 +6,21 @@
 namespace nicole {
 
 class NodeLiteralDouble final : public Node {
- private:
+private:
   double value_{};
 
- public:
+public:
   NodeLiteralDouble(const double val, std::unique_ptr<Node> father = nullptr)
       : Node{NodeType::DOUBLE, std::move(father)}, value_{val} {};
 
-  llvm::Value* accept(const Visitor* visitor) const override {
-    return visitor->visit(this);
+  llvm::Value *accept(const Visitor *visitor, llvm::BasicBlock *currentEntry,
+                      llvm::Module *currentModule) const override {
+    return visitor->visit(this, currentEntry, currentModule);
   }
 
   double value() const { return value_; }
 };
 
-}  // namespace nicole
+} // namespace nicole
 
 #endif

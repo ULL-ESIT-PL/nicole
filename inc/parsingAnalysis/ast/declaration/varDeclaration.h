@@ -8,38 +8,37 @@
 namespace nicole {
 
 class NodeVariableDeclaration : public Node {
- private:
+private:
   /* data */
   std::string id_{""};
   mutable std::unique_ptr<GenericType> varType_;
   std::unique_ptr<Node> expression_;
   std::shared_ptr<VariableTable> currentScope_;
 
- public:
-  NodeVariableDeclaration(const std::string& id,
+public:
+  NodeVariableDeclaration(const std::string &id,
                           std::unique_ptr<GenericType> varType,
                           std::unique_ptr<Node> expression,
                           std::shared_ptr<VariableTable> currentScope,
                           std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::VAR_DECL, std::move(father)},
-        id_{id},
-        varType_{std::move(varType)},
-        expression_{std::move(expression)},
+      : Node{NodeType::VAR_DECL, std::move(father)}, id_{id},
+        varType_{std::move(varType)}, expression_{std::move(expression)},
         currentScope_{currentScope} {};
 
   std::string id() const { return id_; }
 
   std::unique_ptr<GenericType> varType() const { return std::move(varType_); }
 
-  Node* expression() const { return expression_.get(); }
+  Node *expression() const { return expression_.get(); }
 
   std::shared_ptr<VariableTable> table() const { return currentScope_; }
 
-  llvm::Value* accept(const Visitor* visitor) const override {
-    return visitor->visit(this);
+  llvm::Value *accept(const Visitor *visitor, llvm::BasicBlock *currentEntry,
+                      llvm::Module *currentModule) const override {
+    return visitor->visit(this, currentEntry, currentModule);
   }
 };
 
-}  // namespace nicole
+} // namespace nicole
 
 #endif

@@ -48,6 +48,7 @@ set(SRC_FILES
     src/lexicalAnalysis/type.cc
     src/lexicalAnalysis/lexer.cc
     src/lexicalAnalysis/nicoleSintax.cc
+    src/parsingAnalysis/ast/nodeType.cc
     src/parsingAnalysis/ast/declaration/varTable.cc
     src/parsingAnalysis/ast/literals/nodeLiteralDouble.cc
     src/parsingAnalysis/ast/literals/nodeLiteralInt.cc

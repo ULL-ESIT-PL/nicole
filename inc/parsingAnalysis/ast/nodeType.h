@@ -1,6 +1,8 @@
 #ifndef NODE_TYPE_H
 #define NODE_TYPE_H
 
+#include <string>
+
 namespace nicole {
 
 enum class NodeType {
@@ -18,6 +20,8 @@ enum class NodeType {
   CALL_VAR,
   IF
 };
+
+std::string nodeTypeToString(const NodeType& nt);
 
 }  // namespace nicole
 

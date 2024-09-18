@@ -8,33 +8,32 @@
 namespace nicole {
 
 class NodeVariableReassignment : public Node {
- private:
+private:
   /* data */
   std::string id_{""};
   std::unique_ptr<Node> expression_;
   std::shared_ptr<VariableTable> currentScope_;
 
- public:
-  NodeVariableReassignment(const std::string& id,
+public:
+  NodeVariableReassignment(const std::string &id,
                            std::unique_ptr<Node> expression,
                            std::shared_ptr<VariableTable> currentScope,
                            std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::VAR_REG, std::move(father)},
-        id_{id},
-        currentScope_{currentScope},
-        expression_{std::move(expression)} {};
+      : Node{NodeType::VAR_REG, std::move(father)}, id_{id},
+        currentScope_{currentScope}, expression_{std::move(expression)} {};
 
   std::string id() const { return id_; }
 
-  Node* expression() const { return expression_.get(); }
+  Node *expression() const { return expression_.get(); }
 
   std::shared_ptr<VariableTable> table() const { return currentScope_; }
 
-  llvm::Value* accept(const Visitor* visitor) const override {
-    return visitor->visit(this);
+  llvm::Value *accept(const Visitor *visitor, llvm::BasicBlock *currentEntry,
+                      llvm::Module *currentModule) const override {
+    return visitor->visit(this, currentEntry, currentModule);
   }
 };
 
-}  // namespace nicole
+} // namespace nicole
 
 #endif

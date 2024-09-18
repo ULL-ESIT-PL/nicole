@@ -6,20 +6,21 @@
 namespace nicole {
 
 class Tree {
- private:
+private:
   /* data */
   std::unique_ptr<NodeStatementList> root_{};
 
- public:
+public:
   Tree(std::unique_ptr<NodeStatementList> root) : root_{std::move(root)} {};
 
-  NodeStatementList* root() const { return root_.get(); }
+  NodeStatementList *root() const { return root_.get(); }
 
-  llvm::Value* accept(std::unique_ptr<Visitor> visitor) const {
-    return visitor->visit(this);
+  llvm::Value *accept(std::unique_ptr<Visitor> visitor, llvm::BasicBlock *currentEntry,
+                      llvm::Module *currentModule) const {
+    return visitor->visit(this, currentEntry, currentModule);
   }
 };
 
-}  // namespace nicole
+} // namespace nicole
 
 #endif

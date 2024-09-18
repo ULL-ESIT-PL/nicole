@@ -14,37 +14,47 @@
 #include "../../inc/parsingAnalysis/ast/statements/statement.h"
 #include "../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
-#include "llvm/IR/Instructions.h"
+#include "llvm/IR/Value.h"
 #include "llvm/Support/ErrorHandling.h"
 
 namespace nicole {
 
-llvm::Value *CodeGeneration::visit(const NodeLiteralBool *node) const {
+llvm::Value *CodeGeneration::visit(const NodeLiteralBool *node,
+                                   llvm::BasicBlock *currentEntry,
+                                   llvm::Module *currentModule) const {
   return llvm::ConstantInt::get(llvm::Type::getInt1Ty(*context_),
                                 node->value());
 }
 
-llvm::Value *CodeGeneration::visit(const NodeLiteralChar *node) const {
+llvm::Value *CodeGeneration::visit(const NodeLiteralChar *node,
+                                   llvm::BasicBlock *currentEntry,
+                                   llvm::Module *currentModule) const {
   return llvm::ConstantInt::get(llvm::Type::getInt8Ty(*context_),
                                 node->value());
 }
 
-llvm::Value *CodeGeneration::visit(const NodeLiteralDouble *node) const {
+llvm::Value *CodeGeneration::visit(const NodeLiteralDouble *node,
+                                   llvm::BasicBlock *currentEntry,
+                                   llvm::Module *currentModule) const {
   return llvm::ConstantFP::get(*context_, llvm::APFloat(node->value()));
 }
 
-llvm::Value *CodeGeneration::visit(const NodeLiteralInt *node) const {
+llvm::Value *CodeGeneration::visit(const NodeLiteralInt *node,
+                                   llvm::BasicBlock *currentEntry,
+                                   llvm::Module *currentModule) const {
   return llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_),
                                 node->value(), true);
 }
 
-llvm::Value *CodeGeneration::visit(const NodeLiteralString *node) const {
+llvm::Value *CodeGeneration::visit(const NodeLiteralString *node,
+                                   llvm::BasicBlock *currentEntry,
+                                   llvm::Module *currentModule) const {
   llvm::IRBuilder<> builder{*context_};
   llvm::Constant *strConst = llvm::ConstantDataArray::getString(
       *context_, node->value(), /*AddNull=*/true);
 
   llvm::Value *globalString{builder.CreateGlobalString(
-      llvm::StringRef{node->value()}, "str", 0U, module_)};
+      llvm::StringRef{node->value()}, "str", 0U, currentModule)};
   // Obtener el puntero al string global
   llvm::Value *globalStrPtr = builder.CreatePointerCast(
       globalString, llvm::PointerType::getUnqual(strConst->getType()));
@@ -52,12 +62,14 @@ llvm::Value *CodeGeneration::visit(const NodeLiteralString *node) const {
   return globalStrPtr;
 }
 
-llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node) const {
+llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node,
+                                   llvm::BasicBlock *currentEntry,
+                                   llvm::Module *currentModule) const {
   Node *left{node->left()};
   Node *right{node->right()};
 
-  llvm::Value *leftEvaluated{left->accept(this)};
-  llvm::Value *rightEvaluated{right->accept(this)};
+  llvm::Value *leftEvaluated{left->accept(this, currentEntry, currentModule)};
+  llvm::Value *rightEvaluated{right->accept(this, currentEntry, currentModule)};
   if (!leftEvaluated || !rightEvaluated) {
     return nullptr;
   }
@@ -113,15 +125,20 @@ llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node) const {
   }
 }
 
-llvm::Value *CodeGeneration::visit(const NodeStatement *node) const {
+llvm::Value *CodeGeneration::visit(const NodeStatement *node,
+                                   llvm::BasicBlock *currentEntry,
+                                   llvm::Module *currentModule) const {
   // not using expression leads to infinite loop
-  return node->expression()->accept(this);
+  return node->expression()->accept(this, currentEntry, currentModule);
 }
 
-llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
-  llvm::IRBuilder<> builder{entry_}; // Obtener el contexto del módulo
+llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node,
+                                   llvm::BasicBlock *currentEntry,
 
-  llvm::Value *value{node->expression()->accept(this)};
+                                   llvm::Module *currentModule) const {
+  llvm::IRBuilder<> builder{currentEntry}; // Obtener el contexto del módulo
+
+  llvm::Value *value{node->expression()->accept(this, currentEntry, currentModule)};
   llvm::Type *valueType{value->getType()}; // Tipo de la variable
 
   // Crear la instrucción 'alloca' para reservar espacio para la variable
@@ -137,108 +154,115 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
   return nullptr;
 }
 
-llvm::Value *CodeGeneration::visit(const NodeVariableCall *node) const {
+llvm::Value *CodeGeneration::visit(const NodeVariableCall *node,
+                                   llvm::BasicBlock *currentEntry,
+                                   llvm::Module *currentModule) const {
   std::cout << "---------\n" << *node->table() << std::flush;
   return node->table()->variableValue(node->id());
 }
 
-llvm::Value *CodeGeneration::visit(const NodeVariableReassignment *node) const {
-  llvm::IRBuilder<> builder{entry_}; // Get the context of the current block
+llvm::Value *CodeGeneration::visit(const NodeVariableReassignment *node,
+                                   llvm::BasicBlock *currentEntry,
+                                   llvm::Module *currentModule) const {
+  llvm::IRBuilder<> builder{currentEntry}; // Get the context of the current block
 
   llvm::AllocaInst *varAddress{node->table()->variableAdress(node->id())};
-  llvm::Value *newValue{node->expression()->accept(this)};
+  llvm::Value *newValue{node->expression()->accept(this, currentEntry, currentModule)};
   builder.CreateStore(newValue, varAddress);
   node->table()->setVariable(node->id(), newValue);
 
   return nullptr;
 }
 
-llvm::Value *CodeGeneration::visit(const NodeIfStatement *node) const {
-  llvm::IRBuilder<> builder{entry_};
-  llvm::Value *condition = node->condition()->accept(this);
-  if (!condition)
+llvm::Value *CodeGeneration::visit(const NodeIfStatement *node,
+                                   llvm::BasicBlock *currentEntry,
+                                   llvm::Module *currentModule) const {
+  llvm::IRBuilder<> builder{currentEntry};
+  llvm::Value *condition{node->condition()->accept(this, currentEntry, currentModule)};
+  if (!condition) {
     return nullptr;
-  // Convertir la condición a un valor booleano (si es necesario)
-  condition = builder.CreateICmpNE(
-      condition, llvm::ConstantInt::get(llvm::Type::getInt1Ty(*context_), 0),
+  }
+  condition = builder.CreateFCmpONE(
+      condition, llvm::ConstantFP::get(*context_, llvm::APFloat(0.0)),
       "ifcond");
-  llvm::Function *parentFunction = builder.GetInsertBlock()->getParent();
-  // Crear los bloques básicos para 'then', 'else' (si existe) y 'merge'
-  llvm::BasicBlock *thenBlock =
-      llvm::BasicBlock::Create(*context_, "then", parentFunction);
-  llvm::BasicBlock *elseBlock =
-      node->elseBody() ? llvm::BasicBlock::Create(*context_, "else") : nullptr;
-  llvm::BasicBlock *mergeBlock = llvm::BasicBlock::Create(*context_, "ifcont");
-  // Crear la rama condicional
-  if (elseBlock) {
-    builder.CreateCondBr(condition, thenBlock, elseBlock);
-  } else {
-    builder.CreateCondBr(condition, thenBlock, mergeBlock);
-  }
-  // Generar el código para el bloque 'then'
-  builder.SetInsertPoint(thenBlock);
-  llvm::Value *thenValue = node->body()->accept(this);
-  if (!thenValue)
+
+  llvm::Function *TheFunction = builder.GetInsertBlock()->getParent();
+
+  llvm::BasicBlock *ThenBB =
+      llvm::BasicBlock::Create(*context_, "then", TheFunction);
+  llvm::BasicBlock *ElseBB = llvm::BasicBlock::Create(*context_, "else");
+  llvm::BasicBlock *MergeBB = llvm::BasicBlock::Create(*context_, "ifcont");
+
+  builder.CreateCondBr(condition, ThenBB, ElseBB);
+
+  builder.SetInsertPoint(ThenBB);
+
+  llvm::Value *ThenV = node->body()->accept(this, ThenBB, currentModule);
+  if (!ThenV) {
+    llvm::report_fatal_error("thennnnn");
     return nullptr;
-  builder.CreateBr(mergeBlock); // Saltar al bloque de 'merge' después de 'then'
-  // Actualizar el bloque de 'then'
-  thenBlock = builder.GetInsertBlock();
-  // Generar el código para el bloque 'else' si existe
-  llvm::Value *elseValue = nullptr;
-  if (elseBlock) {
-    parentFunction->insert(parentFunction->end(), elseBlock);
-    builder.SetInsertPoint(elseBlock);
-    elseValue = node->elseBody()->accept(this);
-    if (!elseValue)
-      return nullptr;
-    builder.CreateBr(
-        mergeBlock); // Saltar al bloque de 'merge' después de 'else'
-    // Actualizar el bloque de 'else'
-    elseBlock = builder.GetInsertBlock();
   }
-  // Insertar el bloque de 'merge'
-  parentFunction->insert(parentFunction->end(), mergeBlock);
-  builder.SetInsertPoint(mergeBlock);
-  // Si el 'if' produce un valor, debemos crear un PHI node para unir las dos
-  // ramas
-  if (thenValue || elseValue) {
-    llvm::PHINode *phiNode =
-        builder.CreatePHI(thenValue->getType(), 2, "iftmp");
-    phiNode->addIncoming(thenValue, thenBlock);
-    if (elseBlock) {
-      phiNode->addIncoming(elseValue, elseBlock);
-    } else {
-      // Si no hay 'else', el 'then' es el único valor
-      phiNode->addIncoming(llvm::UndefValue::get(thenValue->getType()),
-                           thenBlock);
-    }
-    return phiNode; // Retornar el valor combinado del 'if'
+
+  builder.CreateBr(MergeBB);
+
+  ThenBB = builder.GetInsertBlock();
+
+  TheFunction->insert(TheFunction->end(), ElseBB);
+  builder.SetInsertPoint(ElseBB);
+
+  llvm::Value *ElseV = node->elseBody()->accept(this, ElseBB, currentModule);
+  if (!ElseV) {
+    llvm::report_fatal_error("elseeeee");
+    return nullptr;
   }
-  // Si no produce un valor, retornar nullptr
-  return nullptr;
+
+  builder.CreateBr(MergeBB);
+
+  ElseBB = builder.GetInsertBlock();
+
+  TheFunction->insert(TheFunction->end(), MergeBB);
+  builder.SetInsertPoint(MergeBB);
+  llvm::PHINode *PN =
+      builder.CreatePHI(llvm::Type::getDoubleTy(*context_), 2, "iftmp");
+
+  PN->addIncoming(ThenV, ThenBB);
+  PN->addIncoming(ElseV, ElseBB);
+  return PN;
 }
 
-llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
+llvm::Value *CodeGeneration::visit(const NodeStatementList *node,
+                                   llvm::BasicBlock *currentEntry,
+                                   llvm::Module *currentModule) const {
   llvm::IRBuilder<> builder{entry_};
   llvm::Value *lastValue{nullptr};
   for (const auto &statement : *node) {
-    llvm::Value *value{statement->accept(this)};
+    llvm::Value *value{statement->accept(this, currentEntry, currentModule)};
     if (statement->expression()->type() == NodeType::VAR_DECL ||
         statement->expression()->type() == NodeType::VAR_REG) {
+      std::cout << "SKIPPED->>>"
+                << nodeTypeToString(statement->expression()->type()) + "\n"
+                << std::flush;
       continue;
     }
     if (!value) {
       return nullptr;
     }
+    std::cout << "NOT SKIPPED->>>"
+              << nodeTypeToString(statement->expression()->type()) + "\n"
+              << std::flush;
     lastValue = value;
   }
-  // return lastValue;
-  return builder.CreateRetVoid();
+  if (!lastValue) {
+    llvm::report_fatal_error("lastvalll");
+  }
+  return lastValue;
 }
 
-llvm::Value *CodeGeneration::visit(const Tree *node) const {
-  // not using expression leads to infinite loop
-  return node->root()->accept(this);
+llvm::Value *CodeGeneration::visit(const Tree *node, llvm::BasicBlock *currentEntry,
+                                   llvm::Module *currentModule) const {
+  llvm::IRBuilder<> builder{entry_};
+  llvm::Value *val{node->root()->accept(this, currentEntry, currentModule)};
+  return builder.CreateRetVoid();
 }
 
 } // namespace nicole

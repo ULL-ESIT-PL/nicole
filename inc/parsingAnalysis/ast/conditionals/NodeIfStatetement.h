@@ -7,32 +7,33 @@
 namespace nicole {
 
 class NodeIfStatement final : public Node {
- private:
+private:
   mutable std::unique_ptr<Node> condition_;
   mutable std::unique_ptr<NodeStatementList> body_;
   mutable std::unique_ptr<NodeStatementList> elseBody_;
 
- public:
+public:
   NodeIfStatement(std::unique_ptr<Node> condition,
                   std::unique_ptr<NodeStatementList> body,
                   std::unique_ptr<NodeStatementList> elseBody = nullptr,
                   std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::IF, std::move(father)},
-        condition_{std::move(condition)},
-        body_{std::move(body)},
-        elseBody_{std::move(elseBody)} {};
+      : Node{NodeType::IF, std::move(father)}, condition_{std::move(condition)},
+        body_{std::move(body)}, elseBody_{std::move(elseBody)} {};
 
   std::unique_ptr<Node> condition() const { return std::move(condition_); }
 
   std::unique_ptr<NodeStatementList> body() const { return std::move(body_); }
 
-  std::unique_ptr<NodeStatementList> elseBody() const { return std::move(elseBody_); }
+  std::unique_ptr<NodeStatementList> elseBody() const {
+    return std::move(elseBody_);
+  }
 
-  llvm::Value* accept(const Visitor* visitor) const override {
-    return visitor->visit(this);
+  llvm::Value *accept(const Visitor *visitor, llvm::BasicBlock *currentEntry,
+                      llvm::Module *currentModule) const override {
+    return visitor->visit(this, currentEntry, currentModule);
   }
 };
 
-}  // namespace nicole
+} // namespace nicole
 
 #endif

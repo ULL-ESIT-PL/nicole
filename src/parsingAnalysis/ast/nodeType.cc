@@ -1,0 +1,34 @@
+#include "../../../inc/parsingAnalysis/ast/nodeType.h"
+
+namespace nicole {
+std::string nodeTypeToString(const NodeType &nt) {
+  switch (nt) {
+  case NodeType::LITERAL:
+    return "LITERAL";
+  case NodeType::CHAR:
+    return "CHAR";
+  case NodeType::STRING:
+    return "STRING";
+  case NodeType::INT:
+    return "INT";
+  case NodeType::DOUBLE:
+    return "DOUBLE";
+  case NodeType::BOOL:
+    return "BOOL";
+  case NodeType::BINARY:
+    return "BINARY";
+  case NodeType::STATEMENT:
+    return "STATEMENT";
+  case NodeType::STATEMENT_LIST:
+    return "STATEMENT_LIST";
+  case NodeType::VAR_DECL:
+    return "VAR_DECL";
+  case NodeType::VAR_REG:
+    return "VAR_REG";
+  case NodeType::CALL_VAR:
+    return "CALL_VAR";
+  case NodeType::IF:
+    return "IF";
+  }
+}
+} // namespace nicole

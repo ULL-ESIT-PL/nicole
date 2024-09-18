@@ -41,11 +41,11 @@ int main() {
   const std::unique_ptr<Parser> parser{
       std::make_unique<TopDown>(std::move(sintax))};
   const auto result{parser->parse(path)};
+  auto tree{result.get()};
 
   CodeGeneration codeGen{contextPtr, module.get(), entry};
   Visitor* visitor{&codeGen};
-  auto tree{result.get()};
-  llvm::Value* returnValue{visitor->visit(tree)};
+  llvm::Value* returnValue{visitor->visit(tree, entry,  module.get())};
 
   /*
     if (!returnValue) {

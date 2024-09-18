@@ -8,10 +8,10 @@
 namespace nicole {
 
 class NodeStatement final : public Node {
- private:
+private:
   std::unique_ptr<Node> expression_{};
 
- public:
+public:
   NodeStatement(std::unique_ptr<Node> expression,
                 std::unique_ptr<Node> father = nullptr)
       : Node{NodeType::STATEMENT, std::move(father)},
@@ -19,13 +19,14 @@ class NodeStatement final : public Node {
 
   ~NodeStatement() = default;
 
-  Node* expression() const { return expression_.get(); }
+  Node *expression() const { return expression_.get(); }
 
-  llvm::Value* accept(const Visitor* visitor) const override {
-    return visitor->visit(this);
+  llvm::Value *accept(const Visitor *visitor, llvm::BasicBlock *currentEntry,
+                      llvm::Module *currentModule) const override {
+    return visitor->visit(this, currentEntry, currentModule);
   }
 };
 
-}  // namespace nicole
+} // namespace nicole
 
 #endif

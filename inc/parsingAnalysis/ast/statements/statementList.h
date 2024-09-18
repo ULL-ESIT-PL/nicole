@@ -9,11 +9,11 @@
 namespace nicole {
 
 class NodeStatementList final : public Node {
- private:
+private:
   std::vector<std::unique_ptr<NodeStatement>> statements_{};
 
- public:
-  NodeStatementList(std::vector<std::unique_ptr<NodeStatement>>&& statements,
+public:
+  NodeStatementList(std::vector<std::unique_ptr<NodeStatement>> &&statements,
                     std::unique_ptr<Node> father = nullptr)
       : Node{NodeType::STATEMENT_LIST, std::move(father)},
         statements_(std::move(statements)) {
@@ -23,7 +23,7 @@ class NodeStatementList final : public Node {
 
   ~NodeStatementList() = default;
 
-  const std::vector<std::unique_ptr<NodeStatement>>& statements() const {
+  const std::vector<std::unique_ptr<NodeStatement>> &statements() const {
     return statements_;
   }
 
@@ -35,11 +35,12 @@ class NodeStatementList final : public Node {
 
   auto end() const { return statements_.end(); }
 
-  llvm::Value* accept(const Visitor* visitor) const override {
-    return visitor->visit(this);
+  llvm::Value *accept(const Visitor *visitor, llvm::BasicBlock *currentEntry,
+                      llvm::Module *currentModule) const override {
+    return visitor->visit(this, currentEntry, currentModule);
   }
 };
 
-}  // namespace nicole
+} // namespace nicole
 
 #endif
