@@ -223,6 +223,45 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node,
                                    llvm::BasicBlock *currentEntry,
                                    llvm::Module *currentModule) const {
   llvm::IRBuilder<> builder{currentEntry};
+  llvm::Value *condition = node->condition()->accept(this, currentEntry, currentModule);
+  if (!condition) {
+    return nullptr;
+  }
+
+  llvm::Function *TheFunction = builder.GetInsertBlock()->getParent();
+  llvm::BasicBlock *ThenBB = llvm::BasicBlock::Create(*context_, "then", TheFunction);
+  llvm::BasicBlock *ElseBB = llvm::BasicBlock::Create(*context_, "else");
+  llvm::BasicBlock *MergeBB = llvm::BasicBlock::Create(*context_, "ifcont");
+
+  // Crear la instrucción condicional
+  builder.CreateCondBr(condition, ThenBB, ElseBB);
+
+  // Insertar el bloque 'then'
+  builder.SetInsertPoint(ThenBB);
+  node->body()->accept(this, ThenBB, currentModule); // Ejecutar el cuerpo del 'then'
+  builder.CreateBr(MergeBB); // Unir con MergeBB
+
+  // Insertar el bloque 'else'
+  TheFunction->insert(TheFunction->end(), ElseBB);
+  builder.SetInsertPoint(ElseBB);
+  node->elseBody()->accept(this, ElseBB, currentModule); // Ejecutar el cuerpo del 'else'
+  builder.CreateBr(MergeBB); // Unir con MergeBB
+
+  // Insertar el bloque 'merge'
+  TheFunction->insert(TheFunction->end(), MergeBB);
+  builder.SetInsertPoint(MergeBB);
+
+  currentEntry = MergeBB;
+  // No devolver valor ya que el 'if' solo controla el flujo
+  return builder.CreateRetVoid();
+}
+
+
+/*
+llvm::Value *CodeGeneration::visit(const NodeIfStatement *node,
+                                   llvm::BasicBlock *currentEntry,
+                                   llvm::Module *currentModule) const {
+  llvm::IRBuilder<> builder{currentEntry};
   llvm::Value *condition{
       node->condition()->accept(this, currentEntry, currentModule)};
   if (!condition) {
@@ -245,11 +284,12 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node,
 
   llvm::Value *ThenV = node->body()->accept(this, ThenBB, currentModule);
   if (!ThenV) {
-    llvm::report_fatal_error("thennnnn");
-    return nullptr;
+    builder.CreateBr(MergeBB); // Ir directamente a MergeBB
+  } else {
+    builder.CreateBr(MergeBB); // Ir a MergeBB después del cuerpo de ThenBB
   }
 
-  builder.CreateBr(MergeBB);
+ // builder.CreateBr(MergeBB);
 
   ThenBB = builder.GetInsertBlock();
 
@@ -258,24 +298,25 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node,
 
   llvm::Value *ElseV = node->elseBody()->accept(this, ElseBB, currentModule);
   if (!ElseV) {
-    llvm::report_fatal_error("elseeeee");
-    return nullptr;
+    builder.CreateBr(MergeBB); // Ir directamente a MergeBB
+  } else {
+    builder.CreateBr(MergeBB); // Ir a MergeBB después del cuerpo de ElseBB
   }
 
-  builder.CreateBr(MergeBB);
+  // builder.CreateBr(MergeBB);
 
   ElseBB = builder.GetInsertBlock();
 
   TheFunction->insert(TheFunction->end(), MergeBB);
   builder.SetInsertPoint(MergeBB);
   llvm::PHINode *PN =
-      builder.CreatePHI(llvm::Type::getDoubleTy(*context_), 2, "iftmp");
+      builder.CreatePHI(llvm::Type::getVoidTy(*context_), 2, "iftmp");
 
   PN->addIncoming(ThenV, ThenBB);
   PN->addIncoming(ElseV, ElseBB);
   return PN;
 }
-
+*/
 llvm::Value *CodeGeneration::visit(const NodeStatementList *node,
                                    llvm::BasicBlock *currentEntry,
                                    llvm::Module *currentModule) const {
@@ -305,9 +346,9 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node,
 llvm::Value *CodeGeneration::visit(const Tree *node,
                                    llvm::BasicBlock *currentEntry,
                                    llvm::Module *currentModule) const {
-  llvm::IRBuilder<> builder{currentEntry};
   llvm::Value *val{node->root()->accept(this, currentEntry, currentModule)};
-  return builder.CreateRetVoid();
+  llvm::IRBuilder<> builder{currentEntry};
+  return nullptr;
 }
 
 } // namespace nicole

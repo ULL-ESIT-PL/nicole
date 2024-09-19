@@ -1,1 +1,5 @@
-let x: bool = (4.58 != 4.8) and (4.58 != 4.8);
+if (true) {
+  let x: int = 10;
+} else {
+  let y: int = 10;  
+}
