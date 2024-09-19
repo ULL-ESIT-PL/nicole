@@ -24,6 +24,8 @@ public:
 
   std::unique_ptr<NodeStatementList> body() const { return std::move(body_); }
 
+  bool hasElse() const { return elseBody_ != nullptr; }
+
   std::unique_ptr<NodeStatementList> elseBody() const {
     return std::move(elseBody_);
   }

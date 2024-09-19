@@ -84,7 +84,7 @@ TopDown::parseIfStatement(std::shared_ptr<VariableTable> currentScope) const {
   }
   auto ifScope{std::make_shared<VariableTable>(currentScope)};
   auto ifBody{parseBody(ifScope)};
-  std::unique_ptr<NodeStatementList> elseBody{};
+  std::unique_ptr<NodeStatementList> elseBody{nullptr};
   if (currentToken_ < tokens_.size() and
       getCurrentToken().type() == TokenType::ELSE) {
     eat();

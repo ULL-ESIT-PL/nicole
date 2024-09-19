@@ -14,6 +14,7 @@
 #include "../../inc/parsingAnalysis/ast/statements/statement.h"
 #include "../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
+#include <memory>
 
 namespace nicole {
 
@@ -121,11 +122,11 @@ llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node,
   case TokenType::OR:
     if (leftEvaluated->getType()->isIntegerTy()) {
       return builder.CreateOr(leftEvaluated, rightEvaluated, "divmp");
-    } 
+    }
   case TokenType::AND:
     if (leftEvaluated->getType()->isIntegerTy()) {
       return builder.CreateAnd(leftEvaluated, rightEvaluated, "divmp");
-    } 
+    }
   case TokenType::EQUAL:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
       return builder.CreateFCmpOEQ(leftEvaluated, rightEvaluated, "divmp");
@@ -223,29 +224,42 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node,
                                    llvm::BasicBlock *currentEntry,
                                    llvm::Module *currentModule) const {
   llvm::IRBuilder<> builder{currentEntry};
-  llvm::Value *condition = node->condition()->accept(this, currentEntry, currentModule);
+  llvm::Value *condition =
+      node->condition()->accept(this, currentEntry, currentModule);
   if (!condition) {
     return nullptr;
   }
 
   llvm::Function *TheFunction = builder.GetInsertBlock()->getParent();
-  llvm::BasicBlock *ThenBB = llvm::BasicBlock::Create(*context_, "then", TheFunction);
-  llvm::BasicBlock *ElseBB = llvm::BasicBlock::Create(*context_, "else");
+  llvm::BasicBlock *ThenBB =
+      llvm::BasicBlock::Create(*context_, "then", TheFunction);
+  llvm::BasicBlock *ElseBB = nullptr;
   llvm::BasicBlock *MergeBB = llvm::BasicBlock::Create(*context_, "ifcont");
 
-  // Crear la instrucción condicional
-  builder.CreateCondBr(condition, ThenBB, ElseBB);
+  if (node->hasElse()) {
+    // Crear la instrucción condicional con 'then' y 'else'
+    ElseBB = llvm::BasicBlock::Create(*context_, "else");
+    builder.CreateCondBr(condition, ThenBB, ElseBB);
+  } else {
+    // Crear la instrucción condicional con solo 'then'
+    builder.CreateCondBr(condition, ThenBB, MergeBB);
+  }
 
   // Insertar el bloque 'then'
   builder.SetInsertPoint(ThenBB);
-  node->body()->accept(this, ThenBB, currentModule); // Ejecutar el cuerpo del 'then'
-  builder.CreateBr(MergeBB); // Unir con MergeBB
+  node->body()->accept(this, ThenBB,
+                       currentModule); // Ejecutar el cuerpo del 'then'
+  builder.CreateBr(MergeBB);           // Unir con MergeBB
 
-  // Insertar el bloque 'else'
-  TheFunction->insert(TheFunction->end(), ElseBB);
-  builder.SetInsertPoint(ElseBB);
-  node->elseBody()->accept(this, ElseBB, currentModule); // Ejecutar el cuerpo del 'else'
-  builder.CreateBr(MergeBB); // Unir con MergeBB
+  if (ElseBB) {
+    // Insertar el bloque 'else'
+    TheFunction->insert(TheFunction->end(), ElseBB);
+    builder.SetInsertPoint(ElseBB);
+
+    node->elseBody()->accept(this, ElseBB,
+                             currentModule); // Ejecutar el cuerpo del 'else'
+    builder.CreateBr(MergeBB);               // Unir con MergeBB
+  }
 
   // Insertar el bloque 'merge'
   TheFunction->insert(TheFunction->end(), MergeBB);
@@ -255,7 +269,6 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node,
   // No devolver valor ya que el 'if' solo controla el flujo
   return builder.CreateRetVoid();
 }
-
 
 /*
 llvm::Value *CodeGeneration::visit(const NodeIfStatement *node,
