@@ -118,6 +118,14 @@ llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node,
     } else {
       return builder.CreateSDiv(leftEvaluated, rightEvaluated, "divtmp");
     }
+  case TokenType::OR:
+    if (leftEvaluated->getType()->isIntegerTy()) {
+      return builder.CreateOr(leftEvaluated, rightEvaluated, "divmp");
+    } 
+  case TokenType::AND:
+    if (leftEvaluated->getType()->isIntegerTy()) {
+      return builder.CreateAnd(leftEvaluated, rightEvaluated, "divmp");
+    } 
   case TokenType::EQUAL:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
       return builder.CreateFCmpOEQ(leftEvaluated, rightEvaluated, "divmp");
