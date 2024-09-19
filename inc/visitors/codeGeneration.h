@@ -12,7 +12,7 @@ class CodeGeneration final : public Visitor {
 private:
   llvm::LLVMContext *context_;
   llvm::Module *module_;
-  llvm::BasicBlock *entry_;
+  mutable llvm::BasicBlock *entry_;
 
 public:
   CodeGeneration(llvm::LLVMContext *context, llvm::Module *module,

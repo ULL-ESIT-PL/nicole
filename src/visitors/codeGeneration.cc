@@ -255,7 +255,6 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node,
     // Insertar el bloque 'else'
     TheFunction->insert(TheFunction->end(), ElseBB);
     builder.SetInsertPoint(ElseBB);
-
     node->elseBody()->accept(this, ElseBB,
                              currentModule); // Ejecutar el cuerpo del 'else'
     builder.CreateBr(MergeBB);               // Unir con MergeBB
@@ -265,9 +264,9 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node,
   TheFunction->insert(TheFunction->end(), MergeBB);
   builder.SetInsertPoint(MergeBB);
 
-  currentEntry = MergeBB;
+  entry_ = MergeBB;
   // No devolver valor ya que el 'if' solo controla el flujo
-  return builder.CreateRetVoid();
+  return nullptr;
 }
 
 /*
@@ -333,12 +332,12 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node,
 llvm::Value *CodeGeneration::visit(const NodeStatementList *node,
                                    llvm::BasicBlock *currentEntry,
                                    llvm::Module *currentModule) const {
-  llvm::IRBuilder<> builder{entry_};
   llvm::Value *lastValue{nullptr};
   for (const auto &statement : *node) {
     llvm::Value *value{statement->accept(this, currentEntry, currentModule)};
     if (statement->expression()->type() == NodeType::VAR_DECL ||
-        statement->expression()->type() == NodeType::VAR_REG) {
+        statement->expression()->type() == NodeType::VAR_REG ||
+        statement->expression()->type() == NodeType::IF) {
       std::cout << "SKIPPED->>>"
                 << nodeTypeToString(statement->expression()->type()) + "\n"
                 << std::flush;
@@ -360,8 +359,9 @@ llvm::Value *CodeGeneration::visit(const Tree *node,
                                    llvm::BasicBlock *currentEntry,
                                    llvm::Module *currentModule) const {
   llvm::Value *val{node->root()->accept(this, currentEntry, currentModule)};
-  llvm::IRBuilder<> builder{currentEntry};
-  return nullptr;
+  llvm::IRBuilder<> builder{entry_};
+  
+  return builder.CreateRetVoid();
 }
 
 } // namespace nicole
