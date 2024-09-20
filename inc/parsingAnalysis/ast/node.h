@@ -28,8 +28,7 @@ public:
   Node *father() const { return father_.get(); }
 
   virtual llvm::Value *accept(const Visitor *visitor,
-                              llvm::BasicBlock *currentEntry,
-                              llvm::Module *currentModule) const = 0;
+                              llvm::BasicBlock *currentEntry) const = 0;
 };
 
 } // namespace nicole

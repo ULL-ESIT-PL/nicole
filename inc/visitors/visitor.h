@@ -37,53 +37,40 @@ public:
 
   // Métodos específicos para los diferentes tipos de nodos
   virtual llvm::Value *visit(const NodeLiteralBool *node,
-                             llvm::BasicBlock *currentEntry,
-                             llvm::Module *currentModule) const = 0;
+                             llvm::BasicBlock *currentEntry) const = 0;
 
   virtual llvm::Value *visit(const NodeLiteralChar *node,
-                             llvm::BasicBlock *currentEntry,
-                             llvm::Module *currentModule) const = 0;
+                             llvm::BasicBlock *currentEntry) const = 0;
 
   virtual llvm::Value *visit(const NodeLiteralDouble *node,
-                             llvm::BasicBlock *currentEntry,
-                             llvm::Module *currentModule) const = 0;
+                             llvm::BasicBlock *currentEntry) const = 0;
 
   virtual llvm::Value *visit(const NodeLiteralInt *node,
-                             llvm::BasicBlock *currentEntry,
-                             llvm::Module *currentModule) const = 0;
+                             llvm::BasicBlock *currentEntry) const = 0;
 
   virtual llvm::Value *visit(const NodeLiteralString *node,
-                             llvm::BasicBlock *currentEntry,
-                             llvm::Module *currentModule) const = 0;
+                             llvm::BasicBlock *currentEntry) const = 0;
 
-  virtual llvm::Value *visit(const NodeBinaryOp *node, llvm::BasicBlock *currentEntry,
-                             llvm::Module *currentModule) const = 0;
+  virtual llvm::Value *visit(const NodeBinaryOp *node, llvm::BasicBlock *currentEntry) const = 0;
 
-  virtual llvm::Value *visit(const NodeStatement *node, llvm::BasicBlock *currentEntry,
-                             llvm::Module *currentModule) const = 0;
+  virtual llvm::Value *visit(const NodeStatement *node, llvm::BasicBlock *currentEntry) const = 0;
 
   virtual llvm::Value *visit(const NodeStatementList *node,
-                             llvm::BasicBlock *currentEntry,
-                             llvm::Module *currentModule) const = 0;
+                             llvm::BasicBlock *currentEntry) const = 0;
 
   virtual llvm::Value *visit(const NodeVariableDeclaration *node,
-                             llvm::BasicBlock *currentEntry,
-                             llvm::Module *currentModule) const = 0;
+                             llvm::BasicBlock *currentEntry) const = 0;
 
   virtual llvm::Value *visit(const NodeVariableCall *node,
-                             llvm::BasicBlock *currentEntry,
-                             llvm::Module *currentModule) const = 0;
+                             llvm::BasicBlock *currentEntry) const = 0;
 
   virtual llvm::Value *visit(const NodeVariableReassignment *node,
-                             llvm::BasicBlock *currentEntry,
-                             llvm::Module *currentModule) const = 0;
+                             llvm::BasicBlock *currentEntry) const = 0;
 
   virtual llvm::Value *visit(const NodeIfStatement *node,
-                             llvm::BasicBlock *currentEntry,
-                             llvm::Module *currentModule) const = 0;
+                             llvm::BasicBlock *currentEntry) const = 0;
 
-  virtual llvm::Value *visit(const Tree *tr, llvm::BasicBlock *currentEntry,
-                             llvm::Module *currentModule) const = 0;
+  virtual llvm::Value *visit(const Tree *tr, llvm::BasicBlock *currentEntry) const = 0;
 };
 
 } // namespace nicole

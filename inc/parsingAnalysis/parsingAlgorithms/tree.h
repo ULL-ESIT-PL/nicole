@@ -15,9 +15,8 @@ public:
 
   NodeStatementList *root() const { return root_.get(); }
 
-  llvm::Value *accept(std::unique_ptr<Visitor> visitor, llvm::BasicBlock *currentEntry,
-                      llvm::Module *currentModule) const {
-    return visitor->visit(this, currentEntry, currentModule);
+  llvm::Value *accept(std::unique_ptr<Visitor> visitor, llvm::BasicBlock *currentEntry) const {
+    return visitor->visit(this, currentEntry);
   }
 };
 

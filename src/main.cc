@@ -44,8 +44,7 @@ int main() {
   auto tree{result.get()};
 
   CodeGeneration codeGen{contextPtr, module.get(), entry};
-  Visitor* visitor{&codeGen};
-  llvm::Value* returnValue{visitor->visit(tree, entry,  module.get())};
+  llvm::Value* returnValue{codeGen.generate(tree)};
 
   /*
     if (!returnValue) {

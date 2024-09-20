@@ -14,9 +14,8 @@ public:
                     std::unique_ptr<Node> father = nullptr)
       : Node{NodeType::STRING, std::move(father)}, value_{val} {};
 
-  llvm::Value *accept(const Visitor *visitor, llvm::BasicBlock *currentEntry,
-                      llvm::Module *currentModule) const override {
-    return visitor->visit(this, currentEntry, currentModule);
+  llvm::Value *accept(const Visitor *visitor, llvm::BasicBlock *currentEntry) const override {
+    return visitor->visit(this, currentEntry);
   }
 
   std::string value() const { return value_; }

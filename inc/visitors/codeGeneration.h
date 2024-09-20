@@ -19,46 +19,35 @@ public:
                  llvm::BasicBlock *entry)
       : context_{context}, module_{module}, entry_{entry} {}
 
-  llvm::Value *visit(const NodeLiteralBool *node, llvm::BasicBlock *currentEntry,
-                     llvm::Module *currentModule) const override;
+  llvm::Value *visit(const NodeLiteralBool *node, llvm::BasicBlock *currentEntry) const override;
 
-  llvm::Value *visit(const NodeLiteralChar *node, llvm::BasicBlock *currentEntry,
-                     llvm::Module *currentModule) const override;
+  llvm::Value *visit(const NodeLiteralChar *node, llvm::BasicBlock *currentEntry) const override;
 
-  llvm::Value *visit(const NodeLiteralDouble *node, llvm::BasicBlock *currentEntry,
-                     llvm::Module *currentModule) const override;
+  llvm::Value *visit(const NodeLiteralDouble *node, llvm::BasicBlock *currentEntry) const override;
 
-  llvm::Value *visit(const NodeLiteralInt *node, llvm::BasicBlock *currentEntry,
-                     llvm::Module *currentModule) const override;
+  llvm::Value *visit(const NodeLiteralInt *node, llvm::BasicBlock *currentEntry) const override;
 
-  llvm::Value *visit(const NodeLiteralString *node, llvm::BasicBlock *currentEntry,
-                     llvm::Module *currentModule) const override;
+  llvm::Value *visit(const NodeLiteralString *node, llvm::BasicBlock *currentEntry) const override;
 
-  llvm::Value *visit(const NodeBinaryOp *node, llvm::BasicBlock *currentEntry,
-                     llvm::Module *currentModule) const override;
+  llvm::Value *visit(const NodeBinaryOp *node, llvm::BasicBlock *currentEntry) const override;
 
-  llvm::Value *visit(const NodeStatement *node, llvm::BasicBlock *currentEntry,
-                     llvm::Module *currentModule) const override;
+  llvm::Value *visit(const NodeStatement *node, llvm::BasicBlock *currentEntry) const override;
 
-  llvm::Value *visit(const NodeStatementList *node, llvm::BasicBlock *currentEntry,
-                     llvm::Module *currentModule) const override;
+  llvm::Value *visit(const NodeStatementList *node, llvm::BasicBlock *currentEntry) const override;
 
   llvm::Value *visit(const NodeVariableDeclaration *node,
-                     llvm::BasicBlock *currentEntry,
-                     llvm::Module *currentModule) const override;
+                     llvm::BasicBlock *currentEntry) const override;
 
-  llvm::Value *visit(const NodeVariableCall *node, llvm::BasicBlock *currentEntry,
-                     llvm::Module *currentModule) const override;
+  llvm::Value *visit(const NodeVariableCall *node, llvm::BasicBlock *currentEntry) const override;
 
   llvm::Value *visit(const NodeVariableReassignment *node,
-                     llvm::BasicBlock *currentEntry,
-                     llvm::Module *currentModule) const override;
+                     llvm::BasicBlock *currentEntry) const override;
 
-  llvm::Value *visit(const NodeIfStatement *node, llvm::BasicBlock *currentEntry,
-                     llvm::Module *currentModule) const override;
+  llvm::Value *visit(const NodeIfStatement *node, llvm::BasicBlock *currentEntry) const override;
 
-  llvm::Value *visit(const Tree *tr, llvm::BasicBlock *currentEntry,
-                     llvm::Module *currentModule) const override;
+  llvm::Value *visit(const Tree *tr, llvm::BasicBlock *currentEntry) const override;
+
+  llvm::Value* generate(const Tree *tr) const;
 };
 
 } // namespace nicole
