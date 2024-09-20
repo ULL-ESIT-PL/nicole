@@ -15,6 +15,7 @@
 #include "../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
 #include "llvm/IR/Instruction.h"
+#include "llvm/Support/ErrorHandling.h"
 #include <memory>
 
 namespace nicole {
@@ -108,6 +109,13 @@ llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node) const {
     } else {
       return builder.CreateSDiv(leftEvaluated, rightEvaluated, "divtmp");
     }
+  case TokenType::OPERATOR_MODULE:
+    if (leftEvaluated->getType()->isFloatingPointTy()) {
+      llvm::report_fatal_error(
+          "Cannot calculate the module with decimal numbers");
+    } else {
+      return builder.CreateURem(leftEvaluated, rightEvaluated, "divtmp");
+    }
   case TokenType::OR:
     if (leftEvaluated->getType()->isIntegerTy()) {
       return builder.CreateOr(leftEvaluated, rightEvaluated, "divmp");
@@ -163,7 +171,7 @@ llvm::Value *CodeGeneration::visit(const NodeStatement *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
-  //llvm::IRBuilder<> builder{entry_}; // Obtener el contexto del módulo
+  // llvm::IRBuilder<> builder{entry_}; // Obtener el contexto del módulo
 
   llvm::Value *value{node->expression()->accept(this)};
   llvm::Type *valueType{value->getType()}; // Tipo de la variable
@@ -186,7 +194,7 @@ llvm::Value *CodeGeneration::visit(const NodeVariableCall *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeVariableReassignment *node) const {
-  //llvm::IRBuilder<> builder{entry_}; // Get the context of the current block
+  // llvm::IRBuilder<> builder{entry_}; // Get the context of the current block
 
   llvm::AllocaInst *varAddress{node->table()->variableAdress(node->id())};
   llvm::Value *newValue{node->expression()->accept(this)};
@@ -197,7 +205,7 @@ llvm::Value *CodeGeneration::visit(const NodeVariableReassignment *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeIfStatement *node) const {
-  //llvm::IRBuilder<> builder{entry_};
+  // llvm::IRBuilder<> builder{entry_};
   llvm::Value *condition = node->condition()->accept(this);
   if (!condition) {
     return nullptr;
@@ -228,7 +236,7 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node) const {
     TheFunction->insert(TheFunction->end(), ElseBB);
     builder_.SetInsertPoint(ElseBB);
     node->elseBody()->accept(this); // Ejecutar el cuerpo del 'else'
-    builder_.CreateBr(MergeBB);         // Unir con MergeBB
+    builder_.CreateBr(MergeBB);     // Unir con MergeBB
   }
 
   // Insertar el bloque 'merge'
@@ -273,9 +281,11 @@ llvm::Value *CodeGeneration::visit(const Tree *node) const {
 }
 
 llvm::Value *CodeGeneration::generate(const Tree *tr) const {
-  std::cout << "Generate--> " << builder_.GetInsertBlock()->getName().str() << "\n";
+  std::cout << "Generate--> " << builder_.GetInsertBlock()->getName().str()
+            << "\n";
   auto val{visit(tr)};
-  std::cout << "Generate--> " << builder_.GetInsertBlock()->getName().str() << "\n";
+  std::cout << "Generate--> " << builder_.GetInsertBlock()->getName().str()
+            << "\n";
   return val;
 }
 } // namespace nicole

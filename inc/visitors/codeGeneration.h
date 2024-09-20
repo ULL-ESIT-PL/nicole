@@ -13,7 +13,6 @@ private:
   llvm::LLVMContext *context_;
   llvm::Module *module_;
   mutable llvm::IRBuilder<> builder_;
-  mutable llvm::BasicBlock *aux;
 
   llvm::Value *visit(const NodeLiteralBool *node) const override;
 

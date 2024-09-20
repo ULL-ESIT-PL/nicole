@@ -268,7 +268,8 @@ TopDown::parseMult_Div(std::shared_ptr<VariableTable> currentScope) const {
 
   while (std::size_t(currentToken_) < tokens_.size() &&
          (getCurrentToken().type() == TokenType::OPERATOR_MULT ||
-          getCurrentToken().type() == TokenType::OPERATOR_DIV)) {
+          getCurrentToken().type() == TokenType::OPERATOR_DIV ||
+          getCurrentToken().type() == TokenType::OPERATOR_MODULE)) {
     const Token token{getCurrentToken()};
     eat();
     auto right{parseFactor(currentScope)};
@@ -280,6 +281,10 @@ TopDown::parseMult_Div(std::shared_ptr<VariableTable> currentScope) const {
     case TokenType::OPERATOR_DIV:
       left = std::make_unique<NodeBinaryOp>(
           std::move(left), TokenType::OPERATOR_DIV, std::move(right));
+      break;
+    case TokenType::OPERATOR_MODULE:
+      left = std::make_unique<NodeBinaryOp>(
+          std::move(left), TokenType::OPERATOR_MODULE, std::move(right));
       break;
     default:
       llvm::report_fatal_error("Error: invalid token type at parsing + or -");

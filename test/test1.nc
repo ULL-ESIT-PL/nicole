@@ -1,10 +1,1 @@
-let y : oo = 10;
-if (true) {
-  if (true) {
-    
-  }
-}
-if (true) {
-  
-}
-let x : oo = 10;
+let x: int = (10 % 3) == 0;
