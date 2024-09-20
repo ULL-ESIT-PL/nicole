@@ -13,8 +13,8 @@ public:
   NodeLiteralDouble(const double val, std::unique_ptr<Node> father = nullptr)
       : Node{NodeType::DOUBLE, std::move(father)}, value_{val} {};
 
-  llvm::Value *accept(const Visitor *visitor, llvm::BasicBlock *currentEntry) const override {
-    return visitor->visit(this, currentEntry);
+  llvm::Value *accept(const Visitor *visitor) const override {
+    return visitor->visit(this);
   }
 
   double value() const { return value_; }

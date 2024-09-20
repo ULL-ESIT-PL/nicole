@@ -21,8 +21,8 @@ public:
 
   Node *expression() const { return expression_.get(); }
 
-  llvm::Value *accept(const Visitor *visitor, llvm::BasicBlock *currentEntry) const override {
-    return visitor->visit(this, currentEntry);
+  llvm::Value *accept(const Visitor *visitor) const override {
+    return visitor->visit(this);
   }
 };
 

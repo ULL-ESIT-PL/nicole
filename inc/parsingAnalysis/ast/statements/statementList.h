@@ -35,8 +35,8 @@ public:
 
   auto end() const { return statements_.end(); }
 
-  llvm::Value *accept(const Visitor *visitor, llvm::BasicBlock *currentEntry) const override {
-    return visitor->visit(this, currentEntry);
+  llvm::Value *accept(const Visitor *visitor) const override {
+    return visitor->visit(this);
   }
 };
 
