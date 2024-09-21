@@ -6,6 +6,7 @@
 #include "../ast/declaration/varDeclaration.h"
 #include "../ast/declaration/varTable.h"
 #include "../ast/declaration/varReassignment.h"
+#include "../ast/declaration/constDeclaration.h"
 #include "../ast/literals/nodeLiteralBool.h"
 #include "../ast/literals/nodeLiteralChar.h"
 #include "../ast/literals/nodeLiteralDouble.h"

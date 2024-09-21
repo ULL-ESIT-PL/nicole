@@ -131,6 +131,39 @@ std::unique_ptr<Node> TopDown::parseVarDeclaration(
         llvm::report_fatal_error(strErr.c_str());
       }
     }
+  } else if (token.type() == TokenType::CONST) {
+    eat();
+    token = getCurrentToken();
+    if (token.type() == TokenType::ID) {
+      const std::string id{token.raw()};
+      eat();
+      if (getCurrentToken().type() == TokenType::DOTDOT) {
+        eat();
+      } else {
+        const std::string strErr{"Error missing \':\' after " + id};
+        llvm::report_fatal_error(strErr.c_str());
+      }
+      token = getCurrentToken();
+      if (token.type() == TokenType::ID) {
+        const std::string idTypeStr{token.raw()};
+        std::unique_ptr<GenericType> idType{
+            std::make_unique<GenericType>(idTypeStr)};
+        eat();
+        if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
+          eat();
+          auto value{parseLogicalOr(currentScope)};
+          return std::make_unique<NodeConstDeclaration>(
+              id, std::move(idType), std::move(value), currentScope);
+        } else {
+          const std::string strErr{"Error missing value of " + id};
+          llvm::report_fatal_error(strErr.c_str());
+        }
+
+      } else {
+        const std::string strErr{"Error missing type of " + id};
+        llvm::report_fatal_error(strErr.c_str());
+      }
+    }
   }
   return parseLogicalOr(currentScope);
 }

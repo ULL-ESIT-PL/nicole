@@ -4,6 +4,7 @@
 #include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
 #include "../../inc/parsingAnalysis/ast/conditionals/NodeIfStatetement.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
+#include "../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralBool.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralChar.h"
@@ -184,6 +185,24 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
   builder_.CreateStore(value, alloca);
   std::unique_ptr<GenericType> varType(std::move(node->varType()));
   node->table()->addVariable(node->id(), std::move(varType), value, alloca);
+  // Devolver el valor almacenado
+  return nullptr;
+}
+
+llvm::Value *CodeGeneration::visit(const NodeConstDeclaration *node) const {
+  // llvm::IRBuilder<> builder{entry_}; // Obtener el contexto del módulo
+
+  llvm::Value *value{node->expression()->accept(this)};
+  llvm::Type *valueType{value->getType()}; // Tipo de la variable
+
+  // Crear la instrucción 'alloca' para reservar espacio para la variable
+  llvm::AllocaInst *alloca{
+      builder_.CreateAlloca(valueType, nullptr, node->id())};
+
+  // Almacenar el valor en la variable y tambien en la tabla
+  builder_.CreateStore(value, alloca);
+  std::unique_ptr<GenericType> varType(std::move(node->varType()));
+  node->table()->addVariable(node->id(), std::move(varType), value, alloca, true);
   // Devolver el valor almacenado
   return nullptr;
 }

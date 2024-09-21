@@ -26,6 +26,7 @@ class NodeBinaryOp;
 class NodeStatement;
 class NodeStatementList;
 class NodeVariableDeclaration;
+class NodeConstDeclaration;
 class NodeVariableCall;
 class NodeVariableReassignment;
 class NodeIfStatement;
@@ -55,6 +56,8 @@ public:
   virtual llvm::Value *visit(const NodeStatementList *node) const = 0;
 
   virtual llvm::Value *visit(const NodeVariableDeclaration *node) const = 0;
+
+  virtual llvm::Value *visit(const NodeConstDeclaration *node) const = 0;
 
   virtual llvm::Value *visit(const NodeVariableCall *node) const = 0;
 

@@ -32,6 +32,8 @@ private:
 
   llvm::Value *visit(const NodeVariableDeclaration *node) const override;
 
+  llvm::Value *visit(const NodeConstDeclaration *node) const override;
+
   llvm::Value *visit(const NodeVariableCall *node) const override;
 
   llvm::Value *visit(const NodeVariableReassignment *node) const override;
