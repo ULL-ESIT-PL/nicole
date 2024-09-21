@@ -1,0 +1,48 @@
+#ifndef PRINT_TREE_H
+#define PRINT_TREE_H
+
+#include <iostream>
+
+#include "visitor.h"
+
+namespace nicole {
+
+class PrintTree final : public Visitor<std::string> {
+private:
+  int spaces_{1};
+
+public:
+  std::string visit(const NodeLiteralBool *node) const override;
+
+  std::string visit(const NodeLiteralChar *node) const override;
+
+  std::string visit(const NodeLiteralDouble *node) const override;
+
+  std::string visit(const NodeLiteralInt *node) const override;
+
+  std::string visit(const NodeLiteralString *node) const override;
+
+  std::string visit(const NodeBinaryOp *node) const override;
+
+  std::string visit(const NodeStatement *node) const override;
+
+  std::string visit(const NodeStatementList *node) const override;
+
+  std::string visit(const NodeVariableDeclaration *node) const override;
+
+  std::string visit(const NodeConstDeclaration *node) const override;
+
+  std::string visit(const NodeVariableCall *node) const override;
+
+  std::string visit(const NodeVariableReassignment *node) const override;
+
+  std::string visit(const NodeIfStatement *node) const override;
+
+  std::string visit(const Tree *tr) const override;
+
+  std::string print(const Tree *tr) const;
+};
+
+} // namespace nicole
+
+#endif

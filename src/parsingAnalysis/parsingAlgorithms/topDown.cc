@@ -73,7 +73,7 @@ TopDown::parseIfStatement(std::shared_ptr<VariableTable> currentScope) const {
     llvm::report_fatal_error(strErr.c_str());
   }
 
-  auto condition{parseAdd_Sub(currentScope)};
+  auto condition{parseLogicalOr(currentScope)};
 
   if (getCurrentToken().type() == TokenType::RP) {
     eat();

@@ -9,7 +9,7 @@ namespace nicole {
 
 class NodeStatement final : public Node {
 private:
-  std::unique_ptr<Node> expression_{};
+  mutable std::unique_ptr<Node> expression_{};
 
 public:
   NodeStatement(std::unique_ptr<Node> expression,
@@ -21,7 +21,13 @@ public:
 
   Node *expression() const { return expression_.get(); }
 
-  llvm::Value *accept(const Visitor *visitor) const override {
+  const Node *expressionReadOnly() const { return expression_.get(); }
+
+  llvm::Value *accept(const CodeGeneration *visitor) const override {
+    return visitor->visit(this);
+  }
+
+  std::string accept(const PrintTree *visitor) const override {
     return visitor->visit(this);
   }
 };

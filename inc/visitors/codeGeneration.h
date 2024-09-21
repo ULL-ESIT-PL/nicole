@@ -8,12 +8,17 @@
 
 namespace nicole {
 
-class CodeGeneration final : public Visitor {
+class CodeGeneration final : public Visitor<llvm::Value *> {
 private:
   llvm::LLVMContext *context_;
   llvm::Module *module_;
   mutable llvm::IRBuilder<> builder_;
 
+public:
+  CodeGeneration(llvm::LLVMContext *context, llvm::Module *module,
+                 llvm::BasicBlock *entry)
+      : context_{context}, module_{module}, builder_{entry} {}
+      
   llvm::Value *visit(const NodeLiteralBool *node) const override;
 
   llvm::Value *visit(const NodeLiteralChar *node) const override;
@@ -41,11 +46,6 @@ private:
   llvm::Value *visit(const NodeIfStatement *node) const override;
 
   llvm::Value *visit(const Tree *tr) const override;
-
-public:
-  CodeGeneration(llvm::LLVMContext *context, llvm::Module *module,
-                 llvm::BasicBlock *entry)
-      : context_{context}, module_{module}, builder_{entry} {}
 
   llvm::Value *generate(const Tree *tr) const;
 };

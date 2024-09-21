@@ -24,7 +24,11 @@ class NodeVariableCall : public Node {
 
   std::shared_ptr<VariableTable> table() const { return currentScope_; }
 
-  llvm::Value* accept(const Visitor* visitor) const override {
+  llvm::Value *accept(const CodeGeneration *visitor) const override {
+    return visitor->visit(this);
+  }
+
+  std::string accept(const PrintTree *visitor) const override {
     return visitor->visit(this);
   }
 };

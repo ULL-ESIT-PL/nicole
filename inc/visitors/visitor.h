@@ -32,40 +32,39 @@ class NodeVariableReassignment;
 class NodeIfStatement;
 class Tree;
 
+template<class T>
 class Visitor {
-protected:
-
 public:
   virtual ~Visitor() = default;
 
   // Métodos específicos para los diferentes tipos de nodos
-  virtual llvm::Value *visit(const NodeLiteralBool *node) const = 0;
+  virtual T visit(const NodeLiteralBool *node) const = 0;
 
-  virtual llvm::Value *visit(const NodeLiteralChar *node) const = 0;
+  virtual T visit(const NodeLiteralChar *node) const = 0;
 
-  virtual llvm::Value *visit(const NodeLiteralDouble *node) const = 0;
+  virtual T visit(const NodeLiteralDouble *node) const = 0;
 
-  virtual llvm::Value *visit(const NodeLiteralInt *node) const = 0;
+  virtual T visit(const NodeLiteralInt *node) const = 0;
 
-  virtual llvm::Value *visit(const NodeLiteralString *node) const = 0;
+  virtual T visit(const NodeLiteralString *node) const = 0;
 
-  virtual llvm::Value *visit(const NodeBinaryOp *node) const = 0;
+  virtual T visit(const NodeBinaryOp *node) const = 0;
 
-  virtual llvm::Value *visit(const NodeStatement *node) const = 0;
+  virtual T visit(const NodeStatement *node) const = 0;
 
-  virtual llvm::Value *visit(const NodeStatementList *node) const = 0;
+  virtual T visit(const NodeStatementList *node) const = 0;
 
-  virtual llvm::Value *visit(const NodeVariableDeclaration *node) const = 0;
+  virtual T visit(const NodeVariableDeclaration *node) const = 0;
 
-  virtual llvm::Value *visit(const NodeConstDeclaration *node) const = 0;
+  virtual T visit(const NodeConstDeclaration *node) const = 0;
 
-  virtual llvm::Value *visit(const NodeVariableCall *node) const = 0;
+  virtual T visit(const NodeVariableCall *node) const = 0;
 
-  virtual llvm::Value *visit(const NodeVariableReassignment *node) const = 0;
+  virtual T visit(const NodeVariableReassignment *node) const = 0;
 
-  virtual llvm::Value *visit(const NodeIfStatement *node) const = 0;
+  virtual T visit(const NodeIfStatement *node) const = 0;
 
-  virtual llvm::Value *visit(const Tree *tr) const = 0;
+  virtual T visit(const Tree *tr) const = 0;
 };
 
 } // namespace nicole

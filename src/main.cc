@@ -11,10 +11,11 @@
 
 #include "../inc/parsingAnalysis/parsingAlgorithms/topDown.h"
 #include "../inc/visitors/codeGeneration.h"
+#include "../inc/visitors/printTree.h"
 
 using namespace nicole;
 
-int main() {
+int main(int argc, char* argv[]) {
   // Start LLVM
   llvm::LLVMContext context;
   llvm::IRBuilder<> builder{context};
@@ -22,19 +23,19 @@ int main() {
       std::make_unique<llvm::Module>("my_module", context)};
 
   // Crear una función main y un bloque básico
-  llvm::FunctionType* funcType{
+  llvm::FunctionType *funcType{
       llvm::FunctionType::get(builder.getVoidTy(), false)};
 
-  llvm::Function* mainFunction{llvm::Function::Create(
+  llvm::Function *mainFunction{llvm::Function::Create(
       funcType, llvm::Function::ExternalLinkage, "main", module.get())};
 
-  llvm::BasicBlock* entry{
+  llvm::BasicBlock *entry{
       llvm::BasicBlock::Create(context, "entry", mainFunction)};
 
   builder.SetInsertPoint(entry);
 
   // My test
-  llvm::LLVMContext* contextPtr{&context};
+  llvm::LLVMContext *contextPtr{&context};
 
   const std::filesystem::path path{"../test/test1.nc"};
   std::unique_ptr<Sintax> sintax{std::make_unique<NicoleSintax>()};
@@ -42,9 +43,13 @@ int main() {
       std::make_unique<TopDown>(std::move(sintax))};
   const auto result{parser->parse(path)};
   auto tree{result.get()};
-
+  if (argc > 1) {
+    PrintTree printer{};
+    std::cout << printer.print(tree) << "\n";
+    return 0;
+  }
   CodeGeneration codeGen{contextPtr, module.get(), entry};
-  llvm::Value* returnValue{codeGen.generate(tree)};
+  llvm::Value *returnValue{codeGen.generate(tree)};
 
   /*
     if (!returnValue) {
@@ -65,7 +70,7 @@ int main() {
   llvm::InitializeNativeTargetAsmPrinter();
   llvm::InitializeNativeTargetAsmParser();
   std::string errStr;
-  llvm::ExecutionEngine* execEngine =
+  llvm::ExecutionEngine *execEngine =
       llvm::EngineBuilder(std::move(module))
           .setErrorStr(&errStr)
           .setOptLevel(llvm::CodeGenOptLevel::Default)

@@ -21,7 +21,7 @@ public:
                           std::unique_ptr<Node> expression,
                           std::shared_ptr<VariableTable> currentScope,
                           std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::VAR_DECL, std::move(father)}, id_{id},
+      : Node{NodeType::CONST_DECL, std::move(father)}, id_{id},
         varType_{std::move(varType)}, expression_{std::move(expression)},
         currentScope_{currentScope} {};
 
@@ -33,7 +33,11 @@ public:
 
   std::shared_ptr<VariableTable> table() const { return currentScope_; }
 
-  llvm::Value *accept(const Visitor *visitor) const override {
+  llvm::Value *accept(const CodeGeneration *visitor) const override {
+    return visitor->visit(this);
+  }
+
+  std::string accept(const PrintTree *visitor) const override {
     return visitor->visit(this);
   }
 };

@@ -14,7 +14,11 @@ public:
                     std::unique_ptr<Node> father = nullptr)
       : Node{NodeType::STRING, std::move(father)}, value_{val} {};
 
-  llvm::Value *accept(const Visitor *visitor) const override {
+  llvm::Value *accept(const CodeGeneration *visitor) const override {
+    return visitor->visit(this);
+  }
+
+  std::string accept(const PrintTree *visitor) const override {
     return visitor->visit(this);
   }
 

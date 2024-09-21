@@ -3,8 +3,8 @@
 #include "../../inc/lexicalAnalysis/type.h"
 #include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
 #include "../../inc/parsingAnalysis/ast/conditionals/NodeIfStatetement.h"
-#include "../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
+#include "../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralBool.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralChar.h"
@@ -41,14 +41,13 @@ llvm::Value *CodeGeneration::visit(const NodeLiteralInt *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeLiteralString *node) const {
-  llvm::IRBuilder<> builder{*context_};
   llvm::Constant *strConst = llvm::ConstantDataArray::getString(
       *context_, node->value(), /*AddNull=*/true);
 
   llvm::Value *globalString{
-      builder.CreateGlobalString(llvm::StringRef{node->value()}, "str", 0U)};
+      builder_.CreateGlobalString(llvm::StringRef{node->value()}, "str", 0U)};
   // Obtener el puntero al string global
-  llvm::Value *globalStrPtr = builder.CreatePointerCast(
+  llvm::Value *globalStrPtr = builder_.CreatePointerCast(
       globalString, llvm::PointerType::getUnqual(strConst->getType()));
 
   return globalStrPtr;
@@ -63,7 +62,6 @@ llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node) const {
   if (!leftEvaluated || !rightEvaluated) {
     return nullptr;
   }
-  llvm::IRBuilder<> builder(*context_);
   // Convertir tipos si son diferentes (int a double)
   llvm::Type *leftType = leftEvaluated->getType();
   llvm::Type *rightType = rightEvaluated->getType();
@@ -71,12 +69,12 @@ llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node) const {
   // Si left es int y right es double, convierte left a double
   if (leftType->isIntegerTy() && rightType->isFloatingPointTy()) {
     leftEvaluated =
-        builder.CreateSIToFP(leftEvaluated, rightType, "intToDouble");
+        builder_.CreateSIToFP(leftEvaluated, rightType, "intToDouble");
   }
   // Si left es double y right es int, convierte right a double
   else if (leftType->isFloatingPointTy() && rightType->isIntegerTy()) {
     rightEvaluated =
-        builder.CreateSIToFP(rightEvaluated, leftType, "intToDouble");
+        builder_.CreateSIToFP(rightEvaluated, leftType, "intToDouble");
   }
 
   // Asegúrate de que ambos operandos tengan el mismo tipo ahora (ambos double o
@@ -88,78 +86,78 @@ llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node) const {
   switch (node->op()) {
   case TokenType::OPERATOR_ADD:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
-      return builder.CreateFAdd(leftEvaluated, rightEvaluated, "addtmp");
+      return builder_.CreateFAdd(leftEvaluated, rightEvaluated, "addtmp");
     } else {
-      return builder.CreateAdd(leftEvaluated, rightEvaluated, "addtmp");
+      return builder_.CreateAdd(leftEvaluated, rightEvaluated, "addtmp");
     }
   case TokenType::OPERATOR_SUB:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
-      return builder.CreateFSub(leftEvaluated, rightEvaluated, "subtmp");
+      return builder_.CreateFSub(leftEvaluated, rightEvaluated, "subtmp");
     } else {
-      return builder.CreateSub(leftEvaluated, rightEvaluated, "subtmp");
+      return builder_.CreateSub(leftEvaluated, rightEvaluated, "subtmp");
     }
   case TokenType::OPERATOR_MULT:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
-      return builder.CreateFMul(leftEvaluated, rightEvaluated, "multmp");
+      return builder_.CreateFMul(leftEvaluated, rightEvaluated, "multmp");
     } else {
-      return builder.CreateMul(leftEvaluated, rightEvaluated, "multmp");
+      return builder_.CreateMul(leftEvaluated, rightEvaluated, "multmp");
     }
   case TokenType::OPERATOR_DIV:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
-      return builder.CreateFDiv(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateFDiv(leftEvaluated, rightEvaluated, "divmp");
     } else {
-      return builder.CreateSDiv(leftEvaluated, rightEvaluated, "divtmp");
+      return builder_.CreateSDiv(leftEvaluated, rightEvaluated, "divtmp");
     }
   case TokenType::OPERATOR_MODULE:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
       llvm::report_fatal_error(
           "Cannot calculate the module with decimal numbers");
     } else {
-      return builder.CreateURem(leftEvaluated, rightEvaluated, "divtmp");
+      return builder_.CreateURem(leftEvaluated, rightEvaluated, "divtmp");
     }
   case TokenType::OR:
     if (leftEvaluated->getType()->isIntegerTy()) {
-      return builder.CreateOr(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateOr(leftEvaluated, rightEvaluated, "divmp");
     }
   case TokenType::AND:
     if (leftEvaluated->getType()->isIntegerTy()) {
-      return builder.CreateAnd(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateAnd(leftEvaluated, rightEvaluated, "divmp");
     }
   case TokenType::EQUAL:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
-      return builder.CreateFCmpOEQ(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateFCmpOEQ(leftEvaluated, rightEvaluated, "divmp");
     } else {
-      return builder.CreateICmpEQ(leftEvaluated, rightEvaluated, "divtmp");
+      return builder_.CreateICmpEQ(leftEvaluated, rightEvaluated, "divtmp");
     }
   case TokenType::NOTEQUAL:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
-      return builder.CreateFCmpONE(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateFCmpONE(leftEvaluated, rightEvaluated, "divmp");
     } else {
-      return builder.CreateICmpNE(leftEvaluated, rightEvaluated, "divtmp");
+      return builder_.CreateICmpNE(leftEvaluated, rightEvaluated, "divtmp");
     }
   case TokenType::OPERATOR_SMALLER:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
-      return builder.CreateFCmpOLT(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateFCmpOLT(leftEvaluated, rightEvaluated, "divmp");
     } else {
-      return builder.CreateICmpSLT(leftEvaluated, rightEvaluated, "divtmp");
+      return builder_.CreateICmpSLT(leftEvaluated, rightEvaluated, "divtmp");
     }
   case TokenType::SMALLEREQUAL:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
-      return builder.CreateFCmpOLE(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateFCmpOLE(leftEvaluated, rightEvaluated, "divmp");
     } else {
-      return builder.CreateICmpSLE(leftEvaluated, rightEvaluated, "divtmp");
+      return builder_.CreateICmpSLE(leftEvaluated, rightEvaluated, "divtmp");
     }
   case TokenType::OPERATOR_GREATER:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
-      return builder.CreateFCmpOGT(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateFCmpOGT(leftEvaluated, rightEvaluated, "divmp");
     } else {
-      return builder.CreateICmpSGT(leftEvaluated, rightEvaluated, "divtmp");
+      return builder_.CreateICmpSGT(leftEvaluated, rightEvaluated, "divtmp");
     }
   case TokenType::BIGGEREQUAL:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
-      return builder.CreateFCmpOGE(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateFCmpOGE(leftEvaluated, rightEvaluated, "divmp");
     } else {
-      return builder.CreateICmpSGE(leftEvaluated, rightEvaluated, "divtmp");
+      return builder_.CreateICmpSGE(leftEvaluated, rightEvaluated, "divtmp");
     }
   default:
     return nullptr;
@@ -172,8 +170,6 @@ llvm::Value *CodeGeneration::visit(const NodeStatement *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
-  // llvm::IRBuilder<> builder{entry_}; // Obtener el contexto del módulo
-
   llvm::Value *value{node->expression()->accept(this)};
   llvm::Type *valueType{value->getType()}; // Tipo de la variable
 
@@ -190,8 +186,6 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeConstDeclaration *node) const {
-  // llvm::IRBuilder<> builder{entry_}; // Obtener el contexto del módulo
-
   llvm::Value *value{node->expression()->accept(this)};
   llvm::Type *valueType{value->getType()}; // Tipo de la variable
 
@@ -202,7 +196,8 @@ llvm::Value *CodeGeneration::visit(const NodeConstDeclaration *node) const {
   // Almacenar el valor en la variable y tambien en la tabla
   builder_.CreateStore(value, alloca);
   std::unique_ptr<GenericType> varType(std::move(node->varType()));
-  node->table()->addVariable(node->id(), std::move(varType), value, alloca, true);
+  node->table()->addVariable(node->id(), std::move(varType), value, alloca,
+                             true);
   // Devolver el valor almacenado
   return nullptr;
 }
@@ -213,8 +208,6 @@ llvm::Value *CodeGeneration::visit(const NodeVariableCall *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeVariableReassignment *node) const {
-  // llvm::IRBuilder<> builder{entry_}; // Get the context of the current block
-
   llvm::AllocaInst *varAddress{node->table()->variableAdress(node->id())};
   llvm::Value *newValue{node->expression()->accept(this)};
   builder_.CreateStore(newValue, varAddress);
@@ -224,7 +217,6 @@ llvm::Value *CodeGeneration::visit(const NodeVariableReassignment *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeIfStatement *node) const {
-  // llvm::IRBuilder<> builder{entry_};
   llvm::Value *condition = node->condition()->accept(this);
   if (!condition) {
     return nullptr;
@@ -270,6 +262,7 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
   for (const auto &statement : *node) {
     llvm::Value *value{statement->accept(this)};
     if (statement->expression()->type() == NodeType::VAR_DECL ||
+        statement->expression()->type() == NodeType::CONST_DECL ||
         statement->expression()->type() == NodeType::VAR_REG ||
         statement->expression()->type() == NodeType::IF) {
       // std::cout << "SKIPPED->>>"
@@ -291,12 +284,7 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
 
 llvm::Value *CodeGeneration::visit(const Tree *node) const {
   llvm::Value *val{node->root()->accept(this)};
-  auto block{builder_.GetInsertBlock()};
-  while (block->getNextNode()) {
-    block = block->getNextNode();
-  }
-  llvm::IRBuilder<> builder{block};
-  return builder.CreateRetVoid();
+  return builder_.CreateRetVoid();
 }
 
 llvm::Value *CodeGeneration::generate(const Tree *tr) const {

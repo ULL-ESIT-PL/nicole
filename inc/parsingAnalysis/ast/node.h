@@ -4,13 +4,13 @@
 #include <llvm/IR/Value.h>
 
 #include <memory>
+#include <string>
 
-#include "../../visitors/visitor.h"
+#include "../../visitors/codeGeneration.h"
+#include "../../visitors/printTree.h"
 #include "nodeType.h"
 
 namespace nicole {
-
-class Visitor;
 
 class Node {
 protected:
@@ -27,7 +27,9 @@ public:
 
   Node *father() const { return father_.get(); }
 
-  virtual llvm::Value *accept(const Visitor *visitor) const = 0;
+  virtual llvm::Value *accept(const CodeGeneration *visitor) const = 0;
+
+  virtual std::string accept(const PrintTree *visitor) const = 0;
 };
 
 } // namespace nicole

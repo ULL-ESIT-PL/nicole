@@ -15,7 +15,11 @@ public:
 
   NodeStatementList *root() const { return root_.get(); }
 
-  llvm::Value *accept(std::unique_ptr<Visitor> visitor) const {
+  llvm::Value *accept(std::unique_ptr<CodeGeneration> visitor) const {
+    return visitor->visit(this);
+  }
+
+  std::string accept(std::unique_ptr<PrintTree> visitor) const {
     return visitor->visit(this);
   }
 };

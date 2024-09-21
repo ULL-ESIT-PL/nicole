@@ -23,6 +23,8 @@ std::string nodeTypeToString(const NodeType &nt) {
     return "STATEMENT_LIST";
   case NodeType::VAR_DECL:
     return "VAR_DECL";
+  case NodeType::CONST_DECL:
+    return "CONST_DECL";
   case NodeType::VAR_REG:
     return "VAR_REG";
   case NodeType::CALL_VAR:

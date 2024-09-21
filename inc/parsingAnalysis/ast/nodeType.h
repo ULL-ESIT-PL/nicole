@@ -15,6 +15,7 @@ enum class NodeType {
   BINARY,
   STATEMENT,
   STATEMENT_LIST,
+  CONST_DECL,
   VAR_DECL,
   VAR_REG,
   CALL_VAR,

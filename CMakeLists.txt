@@ -60,6 +60,7 @@ set(SRC_FILES
     src/parsingAnalysis/parsingAlgorithms/parser.cc
     src/parsingAnalysis/parsingAlgorithms/topDown.cc
     src/visitors/codeGeneration.cc
+    src/visitors/printTree.cc
 )
 
 # Output directories
