@@ -20,15 +20,13 @@ public:
       : Node{NodeType::IF, std::move(father)}, condition_{std::move(condition)},
         body_{std::move(body)}, elseBody_{std::move(elseBody)} {};
 
-  std::unique_ptr<Node> condition() const { return std::move(condition_); }
+  const Node* condition() const { return condition_.get(); }
 
-  std::unique_ptr<NodeStatementList> body() const { return std::move(body_); }
+  const NodeStatementList *body() const { return body_.get(); }
 
   bool hasElse() const { return elseBody_ != nullptr; }
 
-  std::unique_ptr<NodeStatementList> elseBody() const {
-    return std::move(elseBody_);
-  }
+  const NodeStatementList *elseBody() const { return elseBody_.get(); }
 
   llvm::Value *accept(const CodeGeneration *visitor) const override {
     return visitor->visit(this);

@@ -43,11 +43,11 @@ int main(int argc, char* argv[]) {
       std::make_unique<TopDown>(std::move(sintax))};
   const auto result{parser->parse(path)};
   auto tree{result.get()};
-  if (argc > 1) {
+  //if (argc > 1) {
     PrintTree printer{};
     std::cout << printer.print(tree) << "\n";
-    return 0;
-  }
+  //  return 0;
+  // }
   CodeGeneration codeGen{contextPtr, module.get(), entry};
   llvm::Value *returnValue{codeGen.generate(tree)};
 

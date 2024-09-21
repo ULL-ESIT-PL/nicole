@@ -13,7 +13,7 @@ private:
 public:
   Tree(std::unique_ptr<NodeStatementList> root) : root_{std::move(root)} {};
 
-  NodeStatementList *root() const { return root_.get(); }
+  const NodeStatementList *root() const { return root_.get(); }
 
   llvm::Value *accept(std::unique_ptr<CodeGeneration> visitor) const {
     return visitor->visit(this);

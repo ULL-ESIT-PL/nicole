@@ -19,7 +19,7 @@ public:
 
   ~NodeStatement() = default;
 
-  Node *expression() const { return expression_.get(); }
+  const Node *expression() const { return expression_.get(); }
 
   const Node *expressionReadOnly() const { return expression_.get(); }
 

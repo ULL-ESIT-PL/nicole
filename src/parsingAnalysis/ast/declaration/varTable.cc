@@ -9,7 +9,7 @@ bool VariableTable::hasVariable(const std::string& id) {
 }
 
 void VariableTable::addVariable(const std::string& id,
-                                std::unique_ptr<GenericType> idType,
+                                const GenericType* idType,
                                 llvm::Value* value, llvm::AllocaInst* alloca,
                                 const bool isConst) {
   if (!hasVariable(id)) {
@@ -51,8 +51,8 @@ llvm::AllocaInst* VariableTable::variableAdress(const std::string& id) {
   llvm::report_fatal_error(strErr.c_str());
 }
 
-GenericType* VariableTable::variableType(const std::string& id) {
-  if (table_.count(id)) return std::get<0>(table_.at(id)).get();
+const GenericType* VariableTable::variableType(const std::string& id) {
+  if (table_.count(id)) return std::get<0>(table_.at(id));
   if (father_) return father_->variableType(id);
   const std::string strErr{"The variable " + id + " does not exist"};
   llvm::report_fatal_error(strErr.c_str());

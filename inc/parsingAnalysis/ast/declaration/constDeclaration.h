@@ -27,9 +27,9 @@ public:
 
   std::string id() const { return id_; }
 
-  std::unique_ptr<GenericType> varType() const { return std::move(varType_); }
+  const GenericType* varType() const { return varType_.get(); }
 
-  Node *expression() const { return expression_.get(); }
+  const Node *expression() const { return expression_.get(); }
 
   std::shared_ptr<VariableTable> table() const { return currentScope_; }
 

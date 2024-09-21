@@ -9,7 +9,7 @@ namespace nicole {
 
 class PrintTree final : public Visitor<std::string> {
 private:
-  int spaces_{1};
+  mutable std::string spaces_{" "};
 
 public:
   std::string visit(const NodeLiteralBool *node) const override;

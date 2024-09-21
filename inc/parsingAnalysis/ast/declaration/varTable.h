@@ -16,7 +16,7 @@ class VariableTable final {
  private:
   std::shared_ptr<VariableTable> father_;
   std::unordered_map<
-      std::string, std::tuple<std::unique_ptr<GenericType>,
+      std::string, std::tuple<const GenericType*,
                               std::pair<llvm::Value*, llvm::AllocaInst*>, bool>>
       table_{};
 
@@ -32,7 +32,7 @@ class VariableTable final {
 
   bool hasVariable(const std::string& id);
 
-  void addVariable(const std::string& id, std::unique_ptr<GenericType> idType,
+  void addVariable(const std::string& id, const GenericType* idType,
                    llvm::Value* value, llvm::AllocaInst* alloca, const bool = false);
 
   void setVariable(const std::string& id, llvm::Value* value);
@@ -41,7 +41,7 @@ class VariableTable final {
 
   llvm::AllocaInst* variableAdress(const std::string& id);
 
-  GenericType* variableType(const std::string& id);
+  const GenericType* variableType(const std::string& id);
 
   friend std::ostream& operator<<(std::ostream& os, const VariableTable& scope);
 };

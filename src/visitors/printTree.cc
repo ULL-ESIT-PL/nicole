@@ -40,8 +40,8 @@ std::string PrintTree::visit(const NodeLiteralString *node) const {
 }
 
 std::string PrintTree::visit(const NodeBinaryOp *node) const {
-  Node *left{node->left()};
-  Node *right{node->right()};
+  const Node *left{node->left()};
+  const Node *right{node->right()};
   std::string result{"BINARY OP:\n"};
   result += "Left:\n" + left->accept(this) + "\n";
   result += "Right:\n" + right->accept(this) + "\n";
@@ -92,9 +92,10 @@ std::string PrintTree::visit(const NodeIfStatement *node) const {
 std::string PrintTree::visit(const NodeStatementList *node) const {
   std::string result{"[\n"};
   for (const auto &statement : *node) {
-    result += statement->accept(this) + "\n";
+    result += spaces_ + statement->accept(this) + "\n";
   }
-  return result + "]";
+  spaces_ += " ";
+  return spaces_ + result + "]";
 }
 
 std::string PrintTree::visit(const Tree *node) const {

@@ -54,8 +54,8 @@ llvm::Value *CodeGeneration::visit(const NodeLiteralString *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node) const {
-  Node *left{node->left()};
-  Node *right{node->right()};
+  const Node *left{node->left()};
+  const Node *right{node->right()};
 
   llvm::Value *leftEvaluated{left->accept(this)};
   llvm::Value *rightEvaluated{right->accept(this)};
@@ -179,8 +179,8 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
 
   // Almacenar el valor en la variable y tambien en la tabla
   builder_.CreateStore(value, alloca);
-  std::unique_ptr<GenericType> varType(std::move(node->varType()));
-  node->table()->addVariable(node->id(), std::move(varType), value, alloca);
+  const GenericType* varType{node->varType()};
+  node->table()->addVariable(node->id(), varType, value, alloca);
   // Devolver el valor almacenado
   return nullptr;
 }
@@ -195,8 +195,8 @@ llvm::Value *CodeGeneration::visit(const NodeConstDeclaration *node) const {
 
   // Almacenar el valor en la variable y tambien en la tabla
   builder_.CreateStore(value, alloca);
-  std::unique_ptr<GenericType> varType(std::move(node->varType()));
-  node->table()->addVariable(node->id(), std::move(varType), value, alloca,
+  const GenericType* varType{node->varType()};
+  node->table()->addVariable(node->id(), varType, value, alloca,
                              true);
   // Devolver el valor almacenado
   return nullptr;

@@ -20,9 +20,9 @@ public:
 
   virtual ~NodeBinaryOp() = default;
 
-  Node *left() const { return left_.get(); }
+  const Node *left() const { return left_.get(); }
 
-  Node *right() const { return right_.get(); }
+  const Node *right() const { return right_.get(); }
 
   TokenType op() const { return operator_; }
 
