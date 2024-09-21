@@ -2,14 +2,20 @@
 #define PRINT_TREE_H
 
 #include <iostream>
-
+#include <sstream>
 #include "visitor.h"
 
 namespace nicole {
 
 class PrintTree final : public Visitor<std::string> {
 private:
-  mutable std::string spaces_{" "};
+  mutable std::string indent_; // Indentación actual
+
+  // Función auxiliar para aumentar la indentación
+  void increaseIndent() const { indent_ += "  "; }
+
+  // Función auxiliar para disminuir la indentación
+  void decreaseIndent() const;
 
 public:
   std::string visit(const NodeLiteralBool *node) const override;
