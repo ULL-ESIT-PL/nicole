@@ -50,13 +50,6 @@ set(SRC_FILES
     src/lexicalAnalysis/nicoleSintax.cc
     src/parsingAnalysis/ast/nodeType.cc
     src/parsingAnalysis/ast/declaration/varTable.cc
-    src/parsingAnalysis/ast/literals/nodeLiteralDouble.cc
-    src/parsingAnalysis/ast/literals/nodeLiteralInt.cc
-    src/parsingAnalysis/ast/literals/nodeLiteralBool.cc
-    src/parsingAnalysis/ast/literals/nodeLiteralChar.cc
-    src/parsingAnalysis/ast/literals/nodeLiteralString.cc
-    src/parsingAnalysis/ast/operations/nodeBinaryOp.cc
-    src/parsingAnalysis/ast/statements/statement.cc
     src/parsingAnalysis/parsingAlgorithms/parser.cc
     src/parsingAnalysis/parsingAlgorithms/topDown.cc
     src/visitors/codeGeneration.cc
