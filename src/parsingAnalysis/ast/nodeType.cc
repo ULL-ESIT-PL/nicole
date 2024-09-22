@@ -17,6 +17,8 @@ std::string nodeTypeToString(const NodeType &nt) {
     return "BOOL";
   case NodeType::BINARY:
     return "BINARY";
+  case NodeType::UNARY:
+    return "UNARY";
   case NodeType::STATEMENT:
     return "STATEMENT";
   case NodeType::STATEMENT_LIST:

@@ -13,6 +13,7 @@
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeWhileStatement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeBinaryOp.h"
+#include "../../inc/parsingAnalysis/ast/operations/nodeUnaryOp.h"
 #include "../../inc/parsingAnalysis/ast/statements/statement.h"
 #include "../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
@@ -171,6 +172,45 @@ llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node) const {
   default:
     return nullptr;
   }
+}
+
+llvm::Value *CodeGeneration::visit(const NodeUnaryOp *node) const {
+  const Node *expression{node->expression()};
+
+  llvm::Value *expressionEvaluated{expression->accept(this)};
+  if (!expressionEvaluated) {
+    return nullptr;
+  }
+  llvm::Type *expressionType = expressionEvaluated->getType();
+  switch (node->op()) {
+  case TokenType::OPERATOR_NOT:
+    if (expressionType->isIntegerTy()) {
+      return builder_.CreateNot(expressionEvaluated, "notTemp");
+    } else {
+      llvm::report_fatal_error("Can only use not operator with booleans");
+    }
+  case TokenType::INCREMENT:
+    if (expressionType->isIntegerTy()) {
+      return builder_.CreateAdd(
+          expressionEvaluated,
+          llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 1),
+          "increTemp");
+    } else {
+      llvm::report_fatal_error("Can only use ++ operator with booleans");
+    }
+  case TokenType::DECREMENT:
+    if (expressionType->isIntegerTy()) {
+      return builder_.CreateSub(
+          expressionEvaluated,
+          llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 1),
+          "decreTemp");
+    } else {
+      llvm::report_fatal_error("Can only use -- operator with booleans");
+    }
+  default:
+    llvm::llvm_unreachable_internal("Operator not supported");
+  }
+  return nullptr;
 }
 
 llvm::Value *CodeGeneration::visit(const NodeStatement *node) const {

@@ -55,7 +55,8 @@ Lexer NicoleSintax::createLexer() const {
 
       Category{TokenType::ASSIGNMENT, "=", false},
 
-      Category{TokenType::INCREMENT, "\\+\\+|\\-\\-", false},
+      Category{TokenType::INCREMENT, "\\+\\+", false},
+      Category{TokenType::DECREMENT, "\\-\\-", false},
       Category{TokenType::OPERATOR_ADD, "[+]", false},
       Category{TokenType::OPERATOR_SUB, "[-]", false},
       Category{TokenType::OPERATOR_MULT, "[\\*]", false},

@@ -13,6 +13,7 @@
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeWhileStatement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeBinaryOp.h"
+#include "../../inc/parsingAnalysis/ast/operations/nodeUnaryOp.h"
 #include "../../inc/parsingAnalysis/ast/statements/statement.h"
 #include "../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
@@ -51,6 +52,16 @@ std::string PrintTree::visit(const NodeBinaryOp *node) const {
   result << indent_ << "Left:\n" << node->left()->accept(this);
   result << indent_ << "Operand: " << tokenTypeToString(node->op()) << "\n";
   result << indent_ << "Right:\n" << node->right()->accept(this);
+  decreaseIndent();
+  return result.str();
+}
+
+std::string PrintTree::visit(const NodeUnaryOp *node) const {
+  std::ostringstream result;
+  result << indent_ << "Unary Operation:\n";
+  increaseIndent();
+  result << indent_ << "Operand: " << tokenTypeToString(node->op()) << "\n";
+  result << indent_ << "Expression:\n" << node->expression()->accept(this);
   decreaseIndent();
   return result.str();
 }

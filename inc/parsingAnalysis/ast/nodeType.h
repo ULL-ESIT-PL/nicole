@@ -13,6 +13,7 @@ enum class NodeType {
   DOUBLE,
   BOOL,
   BINARY,
+  UNARY,
   STATEMENT,
   STATEMENT_LIST,
   CONST_DECL,

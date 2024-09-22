@@ -86,6 +86,8 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "ASSIGNMENT"; // '='
   case TokenType::INCREMENT:
     return "INCREMENT"; // '++'
+  case TokenType::DECREMENT:
+    return "DECREMENT"; // '--'
   case TokenType::OPERATOR_ADD:
     return "OPERATOR_ADD"; // '+'
   case TokenType::OPERATOR_SUB:

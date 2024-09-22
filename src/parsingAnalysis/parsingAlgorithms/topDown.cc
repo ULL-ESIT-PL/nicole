@@ -391,6 +391,21 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope) const {
     eat();
     return std::make_unique<NodeLiteralBool>(false);
   }
+  case TokenType::OPERATOR_NOT: {
+    eat();
+    return std::make_unique<NodeUnaryOp>(TokenType::OPERATOR_NOT,
+                                         parseLogicalOr(currentScope));
+  }
+  case TokenType::INCREMENT: {
+    eat();
+    return std::make_unique<NodeUnaryOp>(TokenType::INCREMENT,
+                                         parseLogicalOr(currentScope));
+  }
+  case TokenType::DECREMENT: {
+    eat();
+    return std::make_unique<NodeUnaryOp>(TokenType::DECREMENT,
+                                         parseLogicalOr(currentScope));
+  }
   case TokenType::ID: {
     const std::string id{getCurrentToken().raw()};
     eat();

@@ -30,6 +30,8 @@ public:
 
   std::string visit(const NodeBinaryOp *node) const override;
 
+  std::string visit(const NodeUnaryOp *node) const override;
+
   std::string visit(const NodeStatement *node) const override;
 
   std::string visit(const NodeStatementList *node) const override;

@@ -31,6 +31,8 @@ public:
 
   llvm::Value *visit(const NodeBinaryOp *node) const override;
 
+  llvm::Value *visit(const NodeUnaryOp *node) const override;
+
   llvm::Value *visit(const NodeStatement *node) const override;
 
   llvm::Value *visit(const NodeStatementList *node) const override;
