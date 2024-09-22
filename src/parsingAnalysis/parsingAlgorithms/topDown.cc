@@ -403,12 +403,12 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope) const {
   case TokenType::INCREMENT: {
     eat();
     return std::make_unique<NodeIncrement>(TokenType::INCREMENT,
-                                         parseLogicalOr(currentScope));
+                                         parseLogicalOr(currentScope), currentScope);
   }
   case TokenType::DECREMENT: {
     eat();
     return std::make_unique<NodeIncrement>(TokenType::DECREMENT,
-                                         parseLogicalOr(currentScope));
+                                         parseLogicalOr(currentScope), currentScope);
   }
   case TokenType::ID: {
     const std::string id{getCurrentToken().raw()};

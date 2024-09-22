@@ -13,12 +13,14 @@
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeWhileStatement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeBinaryOp.h"
-#include "../../inc/parsingAnalysis/ast/operations/nodeUnaryOp.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeIncrement.h"
+#include "../../inc/parsingAnalysis/ast/operations/nodeUnaryOp.h"
 #include "../../inc/parsingAnalysis/ast/statements/statement.h"
 #include "../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
 #include "llvm/IR/Instruction.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/Value.h"
 #include "llvm/Support/ErrorHandling.h"
 #include <memory>
 
@@ -197,7 +199,8 @@ llvm::Value *CodeGeneration::visit(const NodeUnaryOp *node) const {
     } else if (expressionType->isDoubleTy()) {
       return builder_.CreateFNeg(expressionEvaluated, "arithNegTemp");
     } else {
-      llvm::report_fatal_error("Can only use arithmetic negation operator with int or double");
+      llvm::report_fatal_error(
+          "Can only use arithmetic negation operator with int or double");
     }
   }
   default:
@@ -208,26 +211,39 @@ llvm::Value *CodeGeneration::visit(const NodeUnaryOp *node) const {
 
 llvm::Value *CodeGeneration::visit(const NodeIncrement *node) const {
   const Node *expression{node->expression()};
-
+  if (expression->type() != NodeType::CALL_VAR) {
+    llvm::report_fatal_error(
+        "Can only use ++ operator with variables of type int");
+  }
+  const NodeVariableCall *castedExpression{
+      dynamic_cast<const NodeVariableCall *>(expression)};
   llvm::Value *expressionEvaluated{expression->accept(this)};
   if (!expressionEvaluated) {
     return nullptr;
   }
   llvm::Type *expressionType = expressionEvaluated->getType();
+  if (!expressionType->isIntegerTy(32)) {
+    llvm::report_fatal_error(
+        "Can only use ++ operator with variables of type int");
+  }
+  llvm::Value *one{
+      llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 1)};
   switch (node->op()) {
   case TokenType::INCREMENT: {
-    if (expressionType->isIntegerTy(32)) {
-      return builder_.CreateNot(expressionEvaluated, "notTemp");
-    } else {
-      llvm::report_fatal_error("Can only use ++ operator with variables of type int");
-    }
+    llvm::Value *newValue{builder_.CreateAdd(expressionEvaluated, one, "increTemp")};
+    llvm::AllocaInst *varAddress{
+        castedExpression->table()->variableAddress(castedExpression->id())};
+    builder_.CreateStore(newValue, varAddress);
+    node->table()->setVariable(castedExpression->id(), newValue);
+    return nullptr;
   }
   case TokenType::DECREMENT: {
-    if (expressionType->isIntegerTy(32)) {
-      return builder_.CreateNeg(expressionEvaluated, "arithNegTemp");
-    } else {
-      llvm::report_fatal_error("Can only use -- operator with variables of type int");
-    }
+    llvm::Value *newValue{builder_.CreateSub(expressionEvaluated, one, "decreTemp")};
+    llvm::AllocaInst *varAddress{
+        castedExpression->table()->variableAddress(castedExpression->id())};
+    builder_.CreateStore(newValue, varAddress);
+    node->table()->setVariable(castedExpression->id(), newValue);
+    return nullptr;
   }
   default:
     llvm::llvm_unreachable_internal("Operator not supported");
@@ -380,6 +396,7 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
     if (statement->expression()->type() == NodeType::VAR_DECL ||
         statement->expression()->type() == NodeType::CONST_DECL ||
         statement->expression()->type() == NodeType::VAR_REG ||
+        statement->expression()->type() == NodeType::INCREMENT ||
         statement->expression()->type() == NodeType::IF ||
         statement->expression()->type() == NodeType::WHILE) {
       // std::cout << "SKIPPED->>>"
