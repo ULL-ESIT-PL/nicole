@@ -234,7 +234,7 @@ llvm::Value *CodeGeneration::visit(const NodeIncrement *node) const {
     llvm::AllocaInst *varAddress{
         castedExpression->table()->variableAddress(castedExpression->id())};
     builder_.CreateStore(newValue, varAddress);
-    node->table()->setVariable(castedExpression->id(), newValue);
+    castedExpression->table()->setVariable(castedExpression->id(), newValue);
     return nullptr;
   }
   case TokenType::DECREMENT: {
@@ -242,7 +242,7 @@ llvm::Value *CodeGeneration::visit(const NodeIncrement *node) const {
     llvm::AllocaInst *varAddress{
         castedExpression->table()->variableAddress(castedExpression->id())};
     builder_.CreateStore(newValue, varAddress);
-    node->table()->setVariable(castedExpression->id(), newValue);
+    castedExpression->table()->setVariable(castedExpression->id(), newValue);
     return nullptr;
   }
   default:
