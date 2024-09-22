@@ -24,6 +24,7 @@ class NodeLiteralInt;
 class NodeLiteralString;
 class NodeBinaryOp;
 class NodeUnaryOp;
+class NodeIncrement;
 class NodeStatement;
 class NodeStatementList;
 class NodeVariableDeclaration;
@@ -53,6 +54,8 @@ public:
   virtual T visit(const NodeBinaryOp *node) const = 0;
 
   virtual T visit(const NodeUnaryOp *node) const = 0;
+
+  virtual T visit(const NodeIncrement *node) const = 0;
 
   virtual T visit(const NodeStatement *node) const = 0;
 

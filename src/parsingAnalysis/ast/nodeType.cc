@@ -19,6 +19,8 @@ std::string nodeTypeToString(const NodeType &nt) {
     return "BINARY";
   case NodeType::UNARY:
     return "UNARY";
+  case NodeType::INCREMENT:
+    return "INCREMENT";
   case NodeType::STATEMENT:
     return "STATEMENT";
   case NodeType::STATEMENT_LIST:

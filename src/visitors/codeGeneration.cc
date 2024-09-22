@@ -14,6 +14,7 @@
 #include "../../inc/parsingAnalysis/ast/loops/nodeWhileStatement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeBinaryOp.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeUnaryOp.h"
+#include "../../inc/parsingAnalysis/ast/operations/nodeIncrement.h"
 #include "../../inc/parsingAnalysis/ast/statements/statement.h"
 #include "../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
@@ -190,11 +191,43 @@ llvm::Value *CodeGeneration::visit(const NodeUnaryOp *node) const {
       llvm::report_fatal_error("Can only use not operator with booleans");
     }
   }
-  case TokenType::INCREMENT: {
+  case TokenType::OPERATOR_SUB: {
+    if (expressionType->isIntegerTy()) {
+      return builder_.CreateNeg(expressionEvaluated, "arithNegTemp");
+    } else if (expressionType->isDoubleTy()) {
+      return builder_.CreateFNeg(expressionEvaluated, "arithNegTemp");
+    } else {
+      llvm::report_fatal_error("Can only use arithmetic negation operator with int or double");
+    }
+  }
+  default:
+    llvm::llvm_unreachable_internal("Operator not supported");
+  }
+  return nullptr;
+}
+
+llvm::Value *CodeGeneration::visit(const NodeIncrement *node) const {
+  const Node *expression{node->expression()};
+
+  llvm::Value *expressionEvaluated{expression->accept(this)};
+  if (!expressionEvaluated) {
     return nullptr;
   }
+  llvm::Type *expressionType = expressionEvaluated->getType();
+  switch (node->op()) {
+  case TokenType::INCREMENT: {
+    if (expressionType->isIntegerTy(32)) {
+      return builder_.CreateNot(expressionEvaluated, "notTemp");
+    } else {
+      llvm::report_fatal_error("Can only use ++ operator with variables of type int");
+    }
+  }
   case TokenType::DECREMENT: {
-    return nullptr;
+    if (expressionType->isIntegerTy(32)) {
+      return builder_.CreateNeg(expressionEvaluated, "arithNegTemp");
+    } else {
+      llvm::report_fatal_error("Can only use -- operator with variables of type int");
+    }
   }
   default:
     llvm::llvm_unreachable_internal("Operator not supported");

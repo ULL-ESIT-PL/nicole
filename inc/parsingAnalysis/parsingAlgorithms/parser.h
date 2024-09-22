@@ -14,6 +14,7 @@
 #include "../ast/literals/nodeLiteralString.h"
 #include "../ast/operations/nodeBinaryOp.h"
 #include "../ast/operations/nodeUnaryOp.h"
+#include "../ast/operations/nodeIncrement.h"
 #include "../ast/statements/statement.h"
 #include "../ast/statements/statementList.h"
 #include "../ast/conditionals/nodeIfStatement.h"

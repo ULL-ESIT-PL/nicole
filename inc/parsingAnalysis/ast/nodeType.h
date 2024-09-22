@@ -14,6 +14,7 @@ enum class NodeType {
   BOOL,
   BINARY,
   UNARY,
+  INCREMENT,
   STATEMENT,
   STATEMENT_LIST,
   CONST_DECL,
