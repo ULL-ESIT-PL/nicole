@@ -40,6 +40,8 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "WHILE";
   case TokenType::FOR:
     return "FOR";
+  case TokenType::DO:
+    return "DO";
   case TokenType::STOP:
     return "STOP";
   case TokenType::PASS:

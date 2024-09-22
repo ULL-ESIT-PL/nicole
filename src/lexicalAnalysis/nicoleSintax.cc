@@ -27,6 +27,7 @@ Lexer NicoleSintax::createLexer() const {
       Category{TokenType::ELSE, "else", false},
       Category{TokenType::WHILE, "while", false},
       Category{TokenType::FOR, "for", false},
+      Category{TokenType::DO, "do", false},
       Category{TokenType::STOP, "stop", false},
       Category{TokenType::PASS, "pass", false},
       Category{TokenType::RETURN, "return", false},
@@ -68,4 +69,4 @@ Lexer NicoleSintax::createLexer() const {
   }};
 };
 
-}  // namespace nicole
+} // namespace nicole

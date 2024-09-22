@@ -35,6 +35,10 @@ std::string nodeTypeToString(const NodeType &nt) {
     return "IF";
   case NodeType::WHILE:
     return "WHILE";
+  case NodeType::FOR:
+    return "FOR";
+  case NodeType::DO_WHILE:
+    return "DO_WHILE";
   }
 }
 } // namespace nicole

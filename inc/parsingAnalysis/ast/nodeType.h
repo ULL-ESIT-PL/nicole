@@ -21,7 +21,9 @@ enum class NodeType {
   VAR_REG,
   CALL_VAR,
   IF,
-  WHILE
+  WHILE,
+  FOR,
+  DO_WHILE
 };
 
 std::string nodeTypeToString(const NodeType& nt);

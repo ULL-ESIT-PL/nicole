@@ -24,6 +24,7 @@ enum class TokenType {
   ELSE,
   WHILE,
   FOR,
+  DO,
   STOP,
   PASS,
   RETURN,

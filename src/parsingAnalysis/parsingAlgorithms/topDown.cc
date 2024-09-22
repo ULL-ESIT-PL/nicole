@@ -8,12 +8,11 @@ std::unique_ptr<Tree> TopDown::parse(const std::filesystem::path &path) const {
   tokens_ = lexer_.analyze(path);
   globalScope_ = std::make_shared<VariableTable>(nullptr);
   root_ = parseStart();
-  // std::cout << *globalScope_;
   return std::make_unique<Tree>(std::move(root_));
 }
 
 std::unique_ptr<NodeStatementList> TopDown::parseStart() const {
-  std::vector<std::unique_ptr<NodeStatement>> gloablScopeStatements;
+  std::vector<std::unique_ptr<NodeStatement>> gloablScopeStatements{};
   while (std::size_t(currentToken_) < tokens_.size()) {
     gloablScopeStatements.push_back(std::move(parseStatement(globalScope_)));
     if (std::size_t(currentToken_) < tokens_.size() &&
@@ -411,7 +410,7 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope) const {
     eat();
     if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
       eat();
-      auto expression{parseAdd_Sub(currentScope)};
+      auto expression{parseLogicalOr(currentScope)};
       return std::make_unique<NodeVariableReassignment>(
           id, std::move(expression), currentScope);
     }
