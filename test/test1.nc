@@ -1,8 +1,3 @@
-let i: int = 5;
---i;
-
-if (i == 5) {
-    while (true) {
-
-    }
-}
+let x: int = 10.0;
+print(10.0 + x);
+print("\n");

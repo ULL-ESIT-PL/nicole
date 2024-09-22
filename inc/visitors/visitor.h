@@ -33,6 +33,7 @@ class NodeVariableCall;
 class NodeVariableReassignment;
 class NodeIfStatement;
 class NodeWhileStatement;
+class NodePrint;
 class Tree;
 
 template<class T>
@@ -72,6 +73,8 @@ public:
   virtual T visit(const NodeIfStatement *node) const = 0;
 
   virtual T visit(const NodeWhileStatement *node) const = 0;
+
+  virtual T visit(const NodePrint *node) const = 0;
 
   virtual T visit(const Tree *tr) const = 0;
 };

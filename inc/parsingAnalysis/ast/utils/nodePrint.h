@@ -1,5 +1,5 @@
-#ifndef NODE_STATEMENT_H
-#define NODE_STATEMENT_H
+#ifndef NODE_PRINT_H
+#define NODE_PRINT_H
 
 #include <memory>
 
@@ -7,17 +7,17 @@
 
 namespace nicole {
 
-class NodeStatement final : public Node {
+class NodePrint final : public Node {
 private:
   mutable std::unique_ptr<Node> expression_{};
 
 public:
-  NodeStatement(std::unique_ptr<Node> expression,
+  NodePrint(std::unique_ptr<Node> expression,
                 std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::STATEMENT, std::move(father)},
+      : Node{NodeType::PRINT, std::move(father)},
         expression_{std::move(expression)} {};
 
-  ~NodeStatement() = default;
+  ~NodePrint() = default;
 
   const Node *expression() const { return expression_.get(); }
 

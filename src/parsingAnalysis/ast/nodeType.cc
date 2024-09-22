@@ -41,6 +41,8 @@ std::string nodeTypeToString(const NodeType &nt) {
     return "FOR";
   case NodeType::DO_WHILE:
     return "DO_WHILE";
+  case NodeType::PRINT:
+    return "PRINT";
   }
 }
 } // namespace nicole

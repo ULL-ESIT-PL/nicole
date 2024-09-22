@@ -19,6 +19,7 @@
 #include "../ast/statements/statementList.h"
 #include "../ast/conditionals/nodeIfStatement.h"
 #include "../ast/loops/nodeWhileStatement.h"
+#include "../ast/utils/nodePrint.h"
 #include "tree.h"
 
 namespace nicole {

@@ -13,10 +13,11 @@
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeWhileStatement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeBinaryOp.h"
-#include "../../inc/parsingAnalysis/ast/operations/nodeUnaryOp.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeIncrement.h"
+#include "../../inc/parsingAnalysis/ast/operations/nodeUnaryOp.h"
 #include "../../inc/parsingAnalysis/ast/statements/statement.h"
 #include "../../inc/parsingAnalysis/ast/statements/statementList.h"
+#include "../../inc/parsingAnalysis/ast/utils/nodePrint.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
 
 namespace nicole {
@@ -145,6 +146,17 @@ std::string PrintTree::visit(const NodeStatementList *node) const {
   for (const auto &statement : *node) {
     result << statement->accept(this);
   }
+  decreaseIndent();
+  return result.str();
+}
+
+std::string PrintTree::visit(const NodePrint *node) const {
+  std::ostringstream result;
+  result << indent_ << "Print Statement:\n";
+  increaseIndent();
+  increaseIndent();
+  result << indent_ << "Expression:\n" << node->expression()->accept(this);
+  decreaseIndent();
   decreaseIndent();
   return result.str();
 }

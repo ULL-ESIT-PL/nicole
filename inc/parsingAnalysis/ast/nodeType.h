@@ -24,7 +24,8 @@ enum class NodeType {
   IF,
   WHILE,
   FOR,
-  DO_WHILE
+  DO_WHILE,
+  PRINT
 };
 
 std::string nodeTypeToString(const NodeType& nt);

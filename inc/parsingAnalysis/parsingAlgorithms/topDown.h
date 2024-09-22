@@ -23,6 +23,9 @@ private:
   std::unique_ptr<NodeWhileStatement>
   parseWhileStatement(std::shared_ptr<VariableTable> currentScope) const;
 
+  std::unique_ptr<NodePrint>
+  parsePrintStatement(std::shared_ptr<VariableTable> currentScope) const;
+
   std::unique_ptr<Node>
   parseVarDeclaration(std::shared_ptr<VariableTable> currentScope) const;
 
