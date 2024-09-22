@@ -15,7 +15,8 @@
 #include "../ast/operations/nodeBinaryOp.h"
 #include "../ast/statements/statement.h"
 #include "../ast/statements/statementList.h"
-#include "../ast/conditionals/NodeIfStatetement.h"
+#include "../ast/conditionals/nodeIfStatement.h"
+#include "../ast/loops/nodeWhileStatement.h"
 #include "tree.h"
 
 namespace nicole {

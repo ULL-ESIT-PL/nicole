@@ -39,7 +39,7 @@ class VariableTable final {
 
   llvm::Value* variableValue(const std::string& id);
 
-  llvm::AllocaInst* variableAdress(const std::string& id);
+  llvm::AllocaInst* variableAddress(const std::string& id);
 
   const GenericType* variableType(const std::string& id);
 

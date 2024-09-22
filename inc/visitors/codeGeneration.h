@@ -45,6 +45,8 @@ public:
 
   llvm::Value *visit(const NodeIfStatement *node) const override;
 
+  llvm::Value *visit(const NodeWhileStatement *node) const override;
+
   llvm::Value *visit(const Tree *tr) const override;
 
   llvm::Value *generate(const Tree *tr) const;

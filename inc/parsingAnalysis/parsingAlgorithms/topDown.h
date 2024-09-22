@@ -20,6 +20,9 @@ private:
   std::unique_ptr<NodeIfStatement>
   parseIfStatement(std::shared_ptr<VariableTable> currentScope) const;
 
+  std::unique_ptr<NodeWhileStatement>
+  parseWhileStatement(std::shared_ptr<VariableTable> currentScope) const;
+
   std::unique_ptr<Node>
   parseVarDeclaration(std::shared_ptr<VariableTable> currentScope) const;
 

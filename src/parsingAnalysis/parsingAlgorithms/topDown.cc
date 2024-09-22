@@ -52,6 +52,8 @@ TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope) const {
   switch (getCurrentToken().type()) {
   case TokenType::IF:
     return std::make_unique<NodeStatement>(parseIfStatement(currentScope));
+  case TokenType::WHILE:
+    return std::make_unique<NodeStatement>(parseWhileStatement(currentScope));
   default:
     return std::make_unique<NodeStatement>(parseVarDeclaration(currentScope));
   }
@@ -93,6 +95,37 @@ TopDown::parseIfStatement(std::shared_ptr<VariableTable> currentScope) const {
   }
   return std::make_unique<NodeIfStatement>(
       std::move(condition), std::move(ifBody), std::move(elseBody));
+}
+
+std::unique_ptr<NodeWhileStatement> TopDown::parseWhileStatement(
+    std::shared_ptr<VariableTable> currentScope) const {
+  eat();
+  if (getCurrentToken().type() == TokenType::LP) {
+    eat();
+  } else {
+    const std::string strErr{"Error: missing left parenthesis, found " +
+                             getCurrentToken().raw()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  if (getCurrentToken().type() == TokenType::RP) {
+    const std::string strErr{"Error: empty while condition, found " +
+                             getCurrentToken().raw()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+
+  auto condition{parseLogicalOr(currentScope)};
+
+  if (getCurrentToken().type() == TokenType::RP) {
+    eat();
+  } else {
+    const std::string strErr{"Error: missing right parenthesis, found " +
+                             getCurrentToken().raw()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  auto whileScope{std::make_shared<VariableTable>(currentScope)};
+  auto whileBody{parseBody(whileScope)};
+  return std::make_unique<NodeWhileStatement>(std::move(condition),
+                                              std::move(whileBody));
 }
 
 std::unique_ptr<Node> TopDown::parseVarDeclaration(

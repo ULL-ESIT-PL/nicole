@@ -1,8 +1,7 @@
-if (true) {
-    const x: int = (10 % 3) == 0;
-    if (true == true) {
-        let w: int = x;
+let i: int = 0;
+while (i < 10) {
+    if (i < 10) {
+        
     }
+    i = i + 1;
 }
-
-let y: int = 10;

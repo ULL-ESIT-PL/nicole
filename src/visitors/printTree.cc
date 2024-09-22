@@ -2,7 +2,7 @@
 
 #include "../../inc/lexicalAnalysis/type.h"
 #include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
-#include "../../inc/parsingAnalysis/ast/conditionals/NodeIfStatetement.h"
+#include "../../inc/parsingAnalysis/ast/conditionals/nodeIfStatement.h"
 #include "../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
@@ -11,12 +11,11 @@
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralDouble.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralInt.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
+#include "../../inc/parsingAnalysis/ast/loops/nodeWhileStatement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeBinaryOp.h"
 #include "../../inc/parsingAnalysis/ast/statements/statement.h"
 #include "../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
-#include <memory>
-#include <string>
 
 namespace nicole {
 
@@ -88,6 +87,7 @@ std::string PrintTree::visit(const NodeVariableReassignment *node) const {
   std::ostringstream result;
   result << indent_ << "Variable Reassignment:\n";
   increaseIndent();
+  result << indent_ << "Var: " << node->id() << "\n";
   result << indent_ << "Value:\n" << node->expression()->accept(this);
   decreaseIndent();
   return result.str();
@@ -102,6 +102,16 @@ std::string PrintTree::visit(const NodeIfStatement *node) const {
   if (node->hasElse()) {
     result << indent_ << "Else Body:\n" << node->elseBody()->accept(this);
   }
+  decreaseIndent();
+  return result.str();
+}
+
+std::string PrintTree::visit(const NodeWhileStatement *node) const {
+  std::ostringstream result;
+  result << indent_ << "While Statement:\n";
+  increaseIndent();
+  result << indent_ << "Condition:\n" << node->condition()->accept(this);
+  result << indent_ << "Body:\n" << node->body()->accept(this);
   decreaseIndent();
   return result.str();
 }

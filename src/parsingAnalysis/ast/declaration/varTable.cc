@@ -44,9 +44,9 @@ llvm::Value* VariableTable::variableValue(const std::string& id) {
   llvm::report_fatal_error(strErr.c_str());
 }
 
-llvm::AllocaInst* VariableTable::variableAdress(const std::string& id) {
+llvm::AllocaInst* VariableTable::variableAddress(const std::string& id) {
   if (table_.count(id)) return std::get<1>(table_.at(id)).second;
-  if (father_) return father_->variableAdress(id);
+  if (father_) return father_->variableAddress(id);
   const std::string strErr{"The variable " + id + " does not exist"};
   llvm::report_fatal_error(strErr.c_str());
 }

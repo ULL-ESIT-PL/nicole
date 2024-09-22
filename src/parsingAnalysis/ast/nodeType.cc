@@ -31,6 +31,8 @@ std::string nodeTypeToString(const NodeType &nt) {
     return "CALL_VAR";
   case NodeType::IF:
     return "IF";
+  case NodeType::WHILE:
+    return "WHILE";
   }
 }
 } // namespace nicole

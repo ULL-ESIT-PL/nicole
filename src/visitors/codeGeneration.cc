@@ -2,7 +2,7 @@
 
 #include "../../inc/lexicalAnalysis/type.h"
 #include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
-#include "../../inc/parsingAnalysis/ast/conditionals/NodeIfStatetement.h"
+#include "../../inc/parsingAnalysis/ast/conditionals/nodeIfStatement.h"
 #include "../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
@@ -11,6 +11,7 @@
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralDouble.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralInt.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
+#include "../../inc/parsingAnalysis/ast/loops/nodeWhileStatement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeBinaryOp.h"
 #include "../../inc/parsingAnalysis/ast/statements/statement.h"
 #include "../../inc/parsingAnalysis/ast/statements/statementList.h"
@@ -113,51 +114,59 @@ llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node) const {
       llvm::report_fatal_error(
           "Cannot calculate the module with decimal numbers");
     } else {
-      return builder_.CreateURem(leftEvaluated, rightEvaluated, "divtmp");
+      return builder_.CreateURem(leftEvaluated, rightEvaluated, "modtmp");
     }
   case TokenType::OR:
     if (leftEvaluated->getType()->isIntegerTy()) {
-      return builder_.CreateOr(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateOr(leftEvaluated, rightEvaluated, "ormp");
     }
   case TokenType::AND:
     if (leftEvaluated->getType()->isIntegerTy()) {
-      return builder_.CreateAnd(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateAnd(leftEvaluated, rightEvaluated, "andmp");
     }
   case TokenType::EQUAL:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
-      return builder_.CreateFCmpOEQ(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateFCmpOEQ(leftEvaluated, rightEvaluated, "equalmp");
     } else {
-      return builder_.CreateICmpEQ(leftEvaluated, rightEvaluated, "divtmp");
+      return builder_.CreateICmpEQ(leftEvaluated, rightEvaluated, "equaltmp");
     }
   case TokenType::NOTEQUAL:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
-      return builder_.CreateFCmpONE(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateFCmpONE(leftEvaluated, rightEvaluated,
+                                    "notequalmp");
     } else {
-      return builder_.CreateICmpNE(leftEvaluated, rightEvaluated, "divtmp");
+      return builder_.CreateICmpNE(leftEvaluated, rightEvaluated,
+                                   "notequaltmp");
     }
   case TokenType::OPERATOR_SMALLER:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
-      return builder_.CreateFCmpOLT(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateFCmpOLT(leftEvaluated, rightEvaluated, "smallermp");
     } else {
-      return builder_.CreateICmpSLT(leftEvaluated, rightEvaluated, "divtmp");
+      return builder_.CreateICmpSLT(leftEvaluated, rightEvaluated,
+                                    "smallertmp");
     }
   case TokenType::SMALLEREQUAL:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
-      return builder_.CreateFCmpOLE(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateFCmpOLE(leftEvaluated, rightEvaluated,
+                                    "smallerequalmp");
     } else {
-      return builder_.CreateICmpSLE(leftEvaluated, rightEvaluated, "divtmp");
+      return builder_.CreateICmpSLE(leftEvaluated, rightEvaluated,
+                                    "smallerequaltmp");
     }
   case TokenType::OPERATOR_GREATER:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
-      return builder_.CreateFCmpOGT(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateFCmpOGT(leftEvaluated, rightEvaluated, "greatermp");
     } else {
-      return builder_.CreateICmpSGT(leftEvaluated, rightEvaluated, "divtmp");
+      return builder_.CreateICmpSGT(leftEvaluated, rightEvaluated,
+                                    "greatertmp");
     }
   case TokenType::BIGGEREQUAL:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
-      return builder_.CreateFCmpOGE(leftEvaluated, rightEvaluated, "divmp");
+      return builder_.CreateFCmpOGE(leftEvaluated, rightEvaluated,
+                                    "biggerequalmp");
     } else {
-      return builder_.CreateICmpSGE(leftEvaluated, rightEvaluated, "divtmp");
+      return builder_.CreateICmpSGE(leftEvaluated, rightEvaluated,
+                                    "biggerequaltmp");
     }
   default:
     return nullptr;
@@ -165,8 +174,7 @@ llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeStatement *node) const {
-  auto val{node->expression()->accept(this)};
-  return val;
+  return node->expression()->accept(this);
 }
 
 llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
@@ -179,7 +187,7 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
 
   // Almacenar el valor en la variable y tambien en la tabla
   builder_.CreateStore(value, alloca);
-  const GenericType* varType{node->varType()};
+  const GenericType *varType{node->varType()};
   node->table()->addVariable(node->id(), varType, value, alloca);
   // Devolver el valor almacenado
   return nullptr;
@@ -195,20 +203,22 @@ llvm::Value *CodeGeneration::visit(const NodeConstDeclaration *node) const {
 
   // Almacenar el valor en la variable y tambien en la tabla
   builder_.CreateStore(value, alloca);
-  const GenericType* varType{node->varType()};
-  node->table()->addVariable(node->id(), varType, value, alloca,
-                             true);
+  const GenericType *varType{node->varType()};
+  node->table()->addVariable(node->id(), varType, value, alloca, true);
   // Devolver el valor almacenado
   return nullptr;
 }
 
 llvm::Value *CodeGeneration::visit(const NodeVariableCall *node) const {
   std::cout << "---------\n" << *node->table() << std::flush;
-  return node->table()->variableValue(node->id());
+  // return node->table()->variableValue(node->id());
+  return builder_.CreateLoad(
+      node->table()->variableValue(node->id())->getType(),
+      node->table()->variableAddress(node->id()), node->id());
 }
 
 llvm::Value *CodeGeneration::visit(const NodeVariableReassignment *node) const {
-  llvm::AllocaInst *varAddress{node->table()->variableAdress(node->id())};
+  llvm::AllocaInst *varAddress{node->table()->variableAddress(node->id())};
   llvm::Value *newValue{node->expression()->accept(this)};
   builder_.CreateStore(newValue, varAddress);
   node->table()->setVariable(node->id(), newValue);
@@ -257,6 +267,50 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node) const {
   return nullptr;
 }
 
+llvm::Value *CodeGeneration::visit(const NodeWhileStatement *node) const {
+  // Crear los bloques básicos: condición, cuerpo y finalización del while
+  llvm::Function *TheFunction = builder_.GetInsertBlock()->getParent();
+
+  llvm::BasicBlock *CondBB =
+      llvm::BasicBlock::Create(*context_, "while.cond", TheFunction);
+  llvm::BasicBlock *BodyBB = llvm::BasicBlock::Create(
+      *context_, "while.body", TheFunction); // si pongo Thefunction luego no me
+                                             // hace falta hacer un insert
+  llvm::BasicBlock *EndBB = llvm::BasicBlock::Create(*context_, "while.end");
+
+  // Saltar inmediatamente a la condición del bucle
+  builder_.CreateBr(CondBB);
+
+  // Insertar el bloque de condición
+  builder_.SetInsertPoint(CondBB);
+
+  // Evaluar la condición
+  llvm::Value *condition = node->condition()->accept(this);
+  if (!condition) {
+    return nullptr; // Error al generar la condición
+  }
+
+  // Crear una instrucción condicional para decidir si continuar con el bucle o
+  // terminar
+  builder_.CreateCondBr(condition, BodyBB, EndBB);
+
+  // Insertar el bloque del cuerpo del bucle
+  builder_.SetInsertPoint(BodyBB);
+
+  // Generar el cuerpo del bucle
+  node->body()->accept(this);
+
+  // Al finalizar el cuerpo, saltar nuevamente a la condición del bucle
+  builder_.CreateBr(CondBB);
+
+  // Insertar el bloque de finalización (salida del bucle)
+  TheFunction->insert(TheFunction->end(), EndBB);
+  builder_.SetInsertPoint(EndBB);
+
+  // No retorna ningún valor
+  return nullptr;
+}
+
 llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
   llvm::Value *lastValue{nullptr};
   for (const auto &statement : *node) {
@@ -264,7 +318,8 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
     if (statement->expression()->type() == NodeType::VAR_DECL ||
         statement->expression()->type() == NodeType::CONST_DECL ||
         statement->expression()->type() == NodeType::VAR_REG ||
-        statement->expression()->type() == NodeType::IF) {
+        statement->expression()->type() == NodeType::IF ||
+        statement->expression()->type() == NodeType::WHILE) {
       // std::cout << "SKIPPED->>>"
       //          << nodeTypeToString(statement->expression()->type()) + "\n"
       //          << std::flush;
