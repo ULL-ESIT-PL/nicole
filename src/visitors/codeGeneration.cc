@@ -183,30 +183,19 @@ llvm::Value *CodeGeneration::visit(const NodeUnaryOp *node) const {
   }
   llvm::Type *expressionType = expressionEvaluated->getType();
   switch (node->op()) {
-  case TokenType::OPERATOR_NOT:
-    if (expressionType->isIntegerTy()) {
+  case TokenType::OPERATOR_NOT: {
+    if (expressionType->isIntegerTy(1)) {
       return builder_.CreateNot(expressionEvaluated, "notTemp");
     } else {
       llvm::report_fatal_error("Can only use not operator with booleans");
     }
-  case TokenType::INCREMENT:
-    if (expressionType->isIntegerTy()) {
-      return builder_.CreateAdd(
-          expressionEvaluated,
-          llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 1),
-          "increTemp");
-    } else {
-      llvm::report_fatal_error("Can only use ++ operator with booleans");
-    }
-  case TokenType::DECREMENT:
-    if (expressionType->isIntegerTy()) {
-      return builder_.CreateSub(
-          expressionEvaluated,
-          llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 1),
-          "decreTemp");
-    } else {
-      llvm::report_fatal_error("Can only use -- operator with booleans");
-    }
+  }
+  case TokenType::INCREMENT: {
+    return nullptr;
+  }
+  case TokenType::DECREMENT: {
+    return nullptr;
+  }
   default:
     llvm::llvm_unreachable_internal("Operator not supported");
   }
