@@ -405,7 +405,7 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope) const {
     return std::make_unique<NodeLiteralString>(value);
   }
   case TokenType::CHAR: {
-    const char value{getCurrentToken().raw()[0]};
+    const char value{getCurrentToken().raw()[1]};
     eat();
     return std::make_unique<NodeLiteralChar>(value);
   }

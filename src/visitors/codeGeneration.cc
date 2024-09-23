@@ -23,7 +23,6 @@
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Value.h"
 #include "llvm/Support/ErrorHandling.h"
-#include "llvm/Support/raw_ostream.h"
 #include <memory>
 #include <string>
 
@@ -423,42 +422,53 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
-   std::string result;
-    auto value = node->expression()->accept(this);
-    if (auto constantInt = llvm::dyn_cast<llvm::ConstantInt>(value)) {
-        // Es un entero (puede ser bool o int)
-        if (constantInt->getType()->isIntegerTy(1)) {
-            result = constantInt->isZero() ? "false" : "true"; // Es un bool
-        } else {
-            result = std::to_string(constantInt->getSExtValue()); // Es un entero
-        }
-    } else if (auto constantFP = llvm::dyn_cast<llvm::ConstantFP>(value)) {
-        // Es un valor de punto flotante (double)
-        result = std::to_string(constantFP->getValueAPF().convertToDouble());
-    } else if (auto globalString = llvm::dyn_cast<llvm::GlobalVariable>(value)) {
-        if (auto initializer = llvm::dyn_cast<llvm::ConstantDataArray>(globalString->getInitializer())) {
-            // Es un string
-            if (initializer->isString()) {
-                result = initializer->getAsString().str();
-                result = result.substr(1, result.size() - 3);
-            }
-        }
-    } else if (auto constantStr = llvm::dyn_cast<llvm::ConstantDataArray>(value)) {
-        // Caso para obtener directamente una constante de tipo string
-        if (constantStr->isString()) {
-            result = constantStr->getAsString().str();
-            result = result.substr(1, result.size() - 1);
-        }
+  std::string result;
+  auto value = node->expression()->accept(this);
+  if (auto constantInt = llvm::dyn_cast<llvm::ConstantInt>(value)) {
+    // Es un entero (puede ser bool o int)
+    if (constantInt->getType()->isIntegerTy(1)) {
+      result = constantInt->isZero() ? "false" : "true"; // Es un bool
+    } else if (constantInt->getType()->isIntegerTy(8)) {
+      result.push_back(char(constantInt->getValue().getSExtValue()));
+    } else {
+      result = std::to_string(constantInt->getSExtValue()); // Es un entero
     }
-
-    // Si no es ninguno de los anteriores, puedes usar la impresión de LLVM para inspeccionar el valor
-    if (result.empty()) {
-        std::string rawString;
-        llvm::raw_string_ostream rso(rawString);
-        value->print(rso);  // Imprime el valor en formato IR a un string
-        result = rso.str(); // Asigna el valor impreso como resultado
+  } else if (auto constantFP = llvm::dyn_cast<llvm::ConstantFP>(value)) {
+    // Es un valor de punto flotante (double)
+    result = std::to_string(constantFP->getValueAPF().convertToDouble());
+  } else if (auto globalString = llvm::dyn_cast<llvm::GlobalVariable>(value)) {
+    // Es un string almacenado en una variable global
+    if (auto initializer = llvm::dyn_cast<llvm::ConstantDataArray>(
+            globalString->getInitializer())) {
+      if (initializer->isString()) {
+        result = initializer->getAsString().str();
+      }
     }
-  std::string strToPrint{result};
+  } else if (auto ptrType =
+                 llvm::dyn_cast<llvm::PointerType>(value->getType())) {
+    // Si el puntero apunta a una variable global
+    if (auto globalVar = llvm::dyn_cast<llvm::GlobalVariable>(value)) {
+      if (auto initializer = llvm::dyn_cast<llvm::ConstantDataArray>(
+              globalVar->getInitializer())) {
+        if (initializer->isString()) {
+          result = initializer->getAsString().str();
+        }
+      }
+    }
+  } else if (auto constantStr =
+                 llvm::dyn_cast<llvm::ConstantDataArray>(value)) {
+    // Es una constante tipo string directamente
+    if (constantStr->isString()) {
+      result = constantStr->getAsString().str();
+    }
+  }
+  // Evita imprimir el valor en formato IR si ya tienes un resultado válido
+  if (result.empty()) {
+    // No se pudo determinar el tipo o extraer un valor válido
+    result = "<unknown or unsupported value>";
+  }
+  // Imprimir la cadena final procesada
+  std::string strToPrint = result;
   // Verificar si la función printf ya está en el módulo
   llvm::Function *printfFunc = module_->getFunction("printf");
   if (!printfFunc) {
@@ -472,17 +482,13 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
     printfFunc = llvm::Function::Create(
         printfType, llvm::Function::ExternalLinkage, "printf", module_);
   }
-
   // Convertir la cadena std::string a una constante global de LLVM
   llvm::Value *formatStr = builder_.CreateGlobalStringPtr(strToPrint, "fmt");
-
   // Llamar a printf con la cadena de formato
   std::vector<llvm::Value *> args;
   args.push_back(formatStr); // Primer argumento: el puntero a la cadena (char*)
-
   // Crear la llamada a printf
   llvm::Value *call = builder_.CreateCall(printfFunc, args, "calltmp");
-
   // return call; // Retornar la llamada creada
   return nullptr;
 }
