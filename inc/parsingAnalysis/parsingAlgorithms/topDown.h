@@ -14,6 +14,9 @@ private:
   std::unique_ptr<NodeStatementList>
   parseBody(std::shared_ptr<VariableTable> &bodyScope) const;
 
+  std::unique_ptr<NodeStatementList>
+  parseComma(std::shared_ptr<VariableTable> &bodyScope) const;
+
   std::unique_ptr<NodeStatement>
   parseStatement(std::shared_ptr<VariableTable> currentScope) const;
 
@@ -22,6 +25,9 @@ private:
 
   std::unique_ptr<NodeWhileStatement>
   parseWhileStatement(std::shared_ptr<VariableTable> currentScope) const;
+
+  std::unique_ptr<NodeForStatement>
+  parseForStatement(std::shared_ptr<VariableTable> currentScope) const;
 
   std::unique_ptr<NodePrint>
   parsePrintStatement(std::shared_ptr<VariableTable> currentScope) const;

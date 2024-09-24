@@ -50,6 +50,8 @@ public:
 
   std::string visit(const NodeWhileStatement *node) const override;
 
+  std::string visit(const NodeForStatement *node) const override;
+
   std::string visit(const NodePrint *node) const override;
 
   std::string visit(const Tree *tr) const override;

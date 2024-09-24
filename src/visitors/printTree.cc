@@ -12,6 +12,7 @@
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralInt.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeWhileStatement.h"
+#include "../../inc/parsingAnalysis/ast/loops/nodeForStatement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeBinaryOp.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeIncrement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeUnaryOp.h"
@@ -134,6 +135,18 @@ std::string PrintTree::visit(const NodeWhileStatement *node) const {
   result << indent_ << "While Statement:\n";
   increaseIndent();
   result << indent_ << "Condition:\n" << node->condition()->accept(this);
+  result << indent_ << "Body:\n" << node->body()->accept(this);
+  decreaseIndent();
+  return result.str();
+}
+
+std::string PrintTree::visit(const NodeForStatement *node) const {
+  std::ostringstream result;
+  result << indent_ << "For Statement:\n";
+  increaseIndent();
+  result << indent_ << "Init:\n" << node->init()->accept(this);
+  result << indent_ << "Condition:\n" << node->condition()->accept(this);
+  result << indent_ << "Update:\n" << node->update()->accept(this);
   result << indent_ << "Body:\n" << node->body()->accept(this);
   decreaseIndent();
   return result.str();

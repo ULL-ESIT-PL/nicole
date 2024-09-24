@@ -12,6 +12,7 @@
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralInt.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeWhileStatement.h"
+#include "../../inc/parsingAnalysis/ast/loops/nodeForStatement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeBinaryOp.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeIncrement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeUnaryOp.h"
@@ -393,6 +394,10 @@ llvm::Value *CodeGeneration::visit(const NodeWhileStatement *node) const {
   return nullptr;
 }
 
+llvm::Value *CodeGeneration::visit(const NodeForStatement *node) const {
+  return nullptr;
+}
+
 llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
   llvm::Value *lastValue{nullptr};
   for (const auto &statement : *node) {
@@ -403,6 +408,7 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
         statement->expression()->type() == NodeType::INCREMENT ||
         statement->expression()->type() == NodeType::IF ||
         statement->expression()->type() == NodeType::WHILE ||
+        statement->expression()->type() == NodeType::FOR ||
         statement->expression()->type() == NodeType::PRINT) {
       // std::cout << "SKIPPED->>>"
       //          << nodeTypeToString(statement->expression()->type()) + "\n"
@@ -417,7 +423,7 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
               << std::flush;
     lastValue = value;
   }
-
+  
   return lastValue;
 }
 

@@ -46,6 +46,23 @@ TopDown::parseBody(std::shared_ptr<VariableTable> &bodyScope) const {
   return std::make_unique<NodeStatementList>(std::move(body));
 }
 
+std::unique_ptr<NodeStatementList>
+TopDown::parseComma(std::shared_ptr<VariableTable> &currentScope) const {
+  std::vector<std::unique_ptr<NodeStatement>> body;
+  while (std::size_t(currentToken_) < tokens_.size() &&
+         !isTokenType(TokenType::SEMICOLON)) {
+    body.push_back(
+        std::make_unique<NodeStatement>(parseVarDeclaration(currentScope)));
+    if (std::size_t(currentToken_) < tokens_.size() &&
+        isTokenType(TokenType::COMMA)) {
+      eat();
+    } else {
+      break;
+    }
+  }
+  return std::make_unique<NodeStatementList>(std::move(body));
+}
+
 std::unique_ptr<NodeStatement>
 TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope) const {
   switch (getCurrentToken().type()) {
@@ -127,6 +144,54 @@ std::unique_ptr<NodeWhileStatement> TopDown::parseWhileStatement(
   auto whileBody{parseBody(whileScope)};
   return std::make_unique<NodeWhileStatement>(std::move(condition),
                                               std::move(whileBody));
+}
+
+std::unique_ptr<NodeForStatement>
+TopDown::parseForStatement(std::shared_ptr<VariableTable> currentScope) const {
+  eat();
+  if (getCurrentToken().type() == TokenType::LP) {
+    eat();
+  } else {
+    const std::string strErr{"Error: missing left parenthesis, found " +
+                             getCurrentToken().raw()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  if (getCurrentToken().type() == TokenType::RP) {
+    const std::string strErr{"Error: empty for, found " +
+                             getCurrentToken().raw()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  auto forScope{std::make_shared<VariableTable>(currentScope)};
+  auto init{parseComma(forScope)};
+  if (getCurrentToken().type() == TokenType::SEMICOLON) {
+    eat();
+  } else {
+    const std::string strErr{"Error: missing \";\" to separate init from "
+                             "condition in for statement, found " +
+                             getCurrentToken().raw()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  auto condition{parseLogicalOr(forScope)};
+  if (getCurrentToken().type() == TokenType::SEMICOLON) {
+    eat();
+  } else {
+    const std::string strErr{"Error: missing \";\" to separate condition from "
+                             "update in for statement, found " +
+                             getCurrentToken().raw()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  auto update{parseComma(forScope)};
+  if (getCurrentToken().type() == TokenType::RP) {
+    eat();
+  } else {
+    const std::string strErr{"Error: missing right parenthesis, found " +
+                             getCurrentToken().raw()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  auto body{parseBody(forScope)};
+  return std::make_unique<NodeForStatement>(std::move(init),
+                                            std::move(condition),
+                                            std::move(update), std::move(body));
 }
 
 std::unique_ptr<NodePrint> TopDown::parsePrintStatement(
