@@ -2,6 +2,7 @@
 #define NODE_FOR_STATEMENT_H
 
 #include "../statements/statementList.h"
+#include "llvm/Support/ErrorHandling.h"
 
 namespace nicole {
 

@@ -70,6 +70,8 @@ TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope) const {
     return std::make_unique<NodeStatement>(parseIfStatement(currentScope));
   case TokenType::WHILE:
     return std::make_unique<NodeStatement>(parseWhileStatement(currentScope));
+  case TokenType::FOR:
+    return std::make_unique<NodeStatement>(parseForStatement(currentScope));
   case TokenType::PRINT:
     return std::make_unique<NodeStatement>(parsePrintStatement(currentScope));
   default:

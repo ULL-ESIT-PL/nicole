@@ -11,8 +11,8 @@
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralDouble.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralInt.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
-#include "../../inc/parsingAnalysis/ast/loops/nodeWhileStatement.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeForStatement.h"
+#include "../../inc/parsingAnalysis/ast/loops/nodeWhileStatement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeBinaryOp.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeIncrement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeUnaryOp.h"
@@ -263,7 +263,6 @@ llvm::Value *CodeGeneration::visit(const NodeStatement *node) const {
 llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
   llvm::Value *value{node->expression()->accept(this)};
   llvm::Type *valueType{value->getType()}; // Tipo de la variable
-
   // Crear la instrucción 'alloca' para reservar espacio para la variable
   llvm::AllocaInst *alloca{
       builder_.CreateAlloca(valueType, nullptr, node->id())};
@@ -272,6 +271,7 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
   builder_.CreateStore(value, alloca);
   const GenericType *varType{node->varType()};
   node->table()->addVariable(node->id(), varType, value, alloca);
+
   // Devolver el valor almacenado
   return nullptr;
 }
@@ -395,6 +395,50 @@ llvm::Value *CodeGeneration::visit(const NodeWhileStatement *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeForStatement *node) const {
+  // Crear los bloques básicos: condición, cuerpo y finalización del while
+
+  auto initiation{node->init()->accept(this)};
+
+  llvm::Function *TheFunction = builder_.GetInsertBlock()->getParent();
+
+  llvm::BasicBlock *CondBB =
+      llvm::BasicBlock::Create(*context_, "for.cond", TheFunction);
+  llvm::BasicBlock *BodyBB = llvm::BasicBlock::Create(
+      *context_, "for.body", TheFunction); // si pongo Thefunction luego no me
+                                           // hace falta hacer un insert
+  llvm::BasicBlock *EndBB = llvm::BasicBlock::Create(*context_, "for.end");
+
+  // Saltar inmediatamente a la condición del bucle
+  builder_.CreateBr(CondBB);
+
+  // Insertar el bloque de condición
+  builder_.SetInsertPoint(CondBB);
+
+  // Evaluar la condición
+  llvm::Value *condition = node->condition()->accept(this);
+  if (!condition) {
+    return nullptr; // Error al generar la condición
+  }
+
+  // Crear una instrucción condicional para decidir si continuar con el bucle o
+  // terminar
+  builder_.CreateCondBr(condition, BodyBB, EndBB);
+
+  // Insertar el bloque del cuerpo del bucle
+  builder_.SetInsertPoint(BodyBB);
+
+  // Generar el cuerpo del bucle
+  node->body()->accept(this);
+  node->update()->accept(this);
+
+  // Al finalizar el cuerpo, saltar nuevamente a la condición del bucle
+  builder_.CreateBr(CondBB);
+
+  // Insertar el bloque de finalización (salida del bucle)
+  TheFunction->insert(TheFunction->end(), EndBB);
+  builder_.SetInsertPoint(EndBB);
+
+  // No retorna ningún valor
   return nullptr;
 }
 
@@ -410,9 +454,10 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
         statement->expression()->type() == NodeType::WHILE ||
         statement->expression()->type() == NodeType::FOR ||
         statement->expression()->type() == NodeType::PRINT) {
-      // std::cout << "SKIPPED->>>"
-      //          << nodeTypeToString(statement->expression()->type()) + "\n"
-      //          << std::flush;
+
+      //std::cout << "SKIPPED->>>"
+        //        << nodeTypeToString(statement->expression()->type()) + "\n"
+          //      << std::flush;
       continue;
     }
     if (!value) {
@@ -423,7 +468,7 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
               << std::flush;
     lastValue = value;
   }
-  
+
   return lastValue;
 }
 

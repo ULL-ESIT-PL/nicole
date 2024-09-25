@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
   auto tree{result.get()};
   //if (argc > 1) {
     PrintTree printer{};
-    // std::cout << printer.print(tree) << "\n";
+    std::cout << printer.print(tree) << "\n";
   //  return 0;
   // }
   CodeGeneration codeGen{contextPtr, module.get(), entry};
