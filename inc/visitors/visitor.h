@@ -34,6 +34,8 @@ class NodeVariableReassignment;
 class NodeIfStatement;
 class NodeWhileStatement;
 class NodeForStatement;
+class NodeStop;
+class NodePass;
 class NodePrint;
 class Tree;
 
@@ -76,6 +78,10 @@ public:
   virtual T visit(const NodeWhileStatement *node) const = 0;
 
   virtual T visit(const NodeForStatement *node) const = 0;
+
+  virtual T visit(const NodeStop *node) const = 0;
+
+  virtual T visit(const NodePass *node) const = 0;
 
   virtual T visit(const NodePrint *node) const = 0;
 

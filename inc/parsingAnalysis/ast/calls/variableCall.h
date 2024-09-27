@@ -7,17 +7,16 @@
 namespace nicole {
 
 class NodeVariableCall : public Node {
- private:
+private:
   /* data */
   std::string id_{""};
   std::shared_ptr<VariableTable> currentScope_;
 
- public:
-  NodeVariableCall(const std::string& id,
-                          std::shared_ptr<VariableTable> currentScope,
-                          std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::CALL_VAR, std::move(father)},
-        id_{id},
+public:
+  NodeVariableCall(const std::string &id,
+                   std::shared_ptr<VariableTable> currentScope,
+                   std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::CALL_VAR, father}, id_{id},
         currentScope_{currentScope} {};
 
   std::string id() const { return id_; }
@@ -33,6 +32,6 @@ class NodeVariableCall : public Node {
   }
 };
 
-}  // namespace nicole
+} // namespace nicole
 
 #endif

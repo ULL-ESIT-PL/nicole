@@ -13,8 +13,8 @@ private:
 public:
   NodeUnaryOp(const TokenType &op,
               std::unique_ptr<Node> expression,
-              std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::UNARY, std::move(father)}, operator_{op},
+              std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::UNARY, father}, operator_{op},
         expression_{std::move(expression)} {};
 
   virtual ~NodeUnaryOp() = default;

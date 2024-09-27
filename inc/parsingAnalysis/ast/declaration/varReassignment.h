@@ -18,9 +18,9 @@ public:
   NodeVariableReassignment(const std::string &id,
                            std::unique_ptr<Node> expression,
                            std::shared_ptr<VariableTable> currentScope,
-                           std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::VAR_REG, std::move(father)}, id_{id},
-        currentScope_{currentScope}, expression_{std::move(expression)} {};
+                           std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::VAR_REG, father}, id_{id}, currentScope_{currentScope},
+        expression_{std::move(expression)} {};
 
   std::string id() const { return id_; }
 

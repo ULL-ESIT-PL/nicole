@@ -14,8 +14,8 @@ private:
 public:
   NodeBinaryOp(std::unique_ptr<Node> left, const TokenType &op,
                std::unique_ptr<Node> right,
-               std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::BINARY, std::move(father)}, left_{std::move(left)},
+               std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::BINARY, father}, left_{std::move(left)},
         operator_{op}, right_{std::move(right)} {};
 
   virtual ~NodeBinaryOp() = default;

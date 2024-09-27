@@ -12,6 +12,8 @@
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralInt.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeForStatement.h"
+#include "../../inc/parsingAnalysis/ast/loops/nodePass.h"
+#include "../../inc/parsingAnalysis/ast/loops/nodeStop.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeWhileStatement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeBinaryOp.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeIncrement.h"
@@ -294,7 +296,6 @@ llvm::Value *CodeGeneration::visit(const NodeConstDeclaration *node) const {
 
 llvm::Value *CodeGeneration::visit(const NodeVariableCall *node) const {
   std::cout << "---------\n" << *node->table() << std::flush;
-  // return node->table()->variableValue(node->id());
   return builder_.CreateLoad(
       node->table()->variableValue(node->id())->getType(),
       node->table()->variableAddress(node->id()), node->id());
@@ -442,6 +443,14 @@ llvm::Value *CodeGeneration::visit(const NodeForStatement *node) const {
   return nullptr;
 }
 
+llvm::Value *CodeGeneration::visit(const NodeStop *node) const {
+  return nullptr;
+}
+
+llvm::Value *CodeGeneration::visit(const NodePass *node) const {
+  return nullptr;
+}
+
 llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
   llvm::Value *lastValue{nullptr};
   for (const auto &statement : *node) {
@@ -453,11 +462,13 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
         statement->expression()->type() == NodeType::IF ||
         statement->expression()->type() == NodeType::WHILE ||
         statement->expression()->type() == NodeType::FOR ||
+        statement->expression()->type() == NodeType::STOP ||
+        statement->expression()->type() == NodeType::PASS ||
         statement->expression()->type() == NodeType::PRINT) {
 
-      //std::cout << "SKIPPED->>>"
-        //        << nodeTypeToString(statement->expression()->type()) + "\n"
-          //      << std::flush;
+      // std::cout << "SKIPPED->>>"
+      //         << nodeTypeToString(statement->expression()->type()) + "\n"
+      //       << std::flush;
       continue;
     }
     if (!value) {
@@ -473,75 +484,70 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
-  std::string result;
   auto value = node->expression()->accept(this);
+
+  // Ensure value is valid
+  if (!value) {
+    llvm::report_fatal_error("Failed to evaluate expression for print.");
+  }
+
+  std::string formatString;
+
+  // Check the type of the value
+  if (auto *loadInst = llvm::dyn_cast<llvm::LoadInst>(value)) {
+    const NodeVariableCall *varCall{
+        dynamic_cast<const NodeVariableCall *>(node->expression())};
+    value = varCall->table()->variableValue(varCall->id());
+  }
+
+  // Handle integer types
   if (auto constantInt = llvm::dyn_cast<llvm::ConstantInt>(value)) {
-    // Es un entero (puede ser bool o int)
-    if (constantInt->getType()->isIntegerTy(1)) {
-      result = constantInt->isZero() ? "false" : "true"; // Es un bool
-    } else if (constantInt->getType()->isIntegerTy(8)) {
-      result.push_back(char(constantInt->getValue().getSExtValue()));
+    if (constantInt->getType()->isIntegerTy(1)) { // boolean
+      formatString = "%s\n"; // Use %s for boolean representation
+      value = constantInt->isZero()
+                  ? llvm::ConstantDataArray::getString(*context_, "false")
+                  : llvm::ConstantDataArray::getString(*context_, "true");
     } else {
-      result = std::to_string(constantInt->getSExtValue()); // Es un entero
+      formatString = "%d\n"; // Use %d for integers
     }
-  } else if (auto constantFP = llvm::dyn_cast<llvm::ConstantFP>(value)) {
-    // Es un valor de punto flotante (double)
-    result = std::to_string(constantFP->getValueAPF().convertToDouble());
-  } else if (auto globalString = llvm::dyn_cast<llvm::GlobalVariable>(value)) {
-    // Es un string almacenado en una variable global
+  }
+  // Handle floating point types
+  else if (auto constantFP = llvm::dyn_cast<llvm::ConstantFP>(value)) {
+    formatString = "%f\n"; // Use %f for floating points
+  }
+  // Handle string types
+  else if (auto globalString = llvm::dyn_cast<llvm::GlobalVariable>(value)) {
     if (auto initializer = llvm::dyn_cast<llvm::ConstantDataArray>(
             globalString->getInitializer())) {
       if (initializer->isString()) {
-        result = initializer->getAsString().str();
+        formatString = "%s\n"; // Use %s for strings
+        value = globalString;  // Use global string variable
       }
     }
-  } else if (auto ptrType =
-                 llvm::dyn_cast<llvm::PointerType>(value->getType())) {
-    // Si el puntero apunta a una variable global
-    if (auto globalVar = llvm::dyn_cast<llvm::GlobalVariable>(value)) {
-      if (auto initializer = llvm::dyn_cast<llvm::ConstantDataArray>(
-              globalVar->getInitializer())) {
-        if (initializer->isString()) {
-          result = initializer->getAsString().str();
-        }
-      }
-    }
-  } else if (auto constantStr =
-                 llvm::dyn_cast<llvm::ConstantDataArray>(value)) {
-    // Es una constante tipo string directamente
-    if (constantStr->isString()) {
-      result = constantStr->getAsString().str();
-    }
+  } else {
+    llvm::report_fatal_error("Unsupported type for print.");
   }
-  // Evita imprimir el valor en formato IR si ya tienes un resultado válido
-  if (result.empty()) {
-    // No se pudo determinar el tipo o extraer un valor válido
-    result = "<unknown or unsupported value>";
-  }
-  // Imprimir la cadena final procesada
-  std::string strToPrint = result;
-  // Verificar si la función printf ya está en el módulo
+
+  // Check if printf already exists in the module
   llvm::Function *printfFunc = module_->getFunction("printf");
   if (!printfFunc) {
-    // Si printf no existe, se crea su declaración
     llvm::FunctionType *printfType = llvm::FunctionType::get(
-        llvm::IntegerType::getInt32Ty(*context_), // printf retorna int
-        llvm::PointerType::getUnqual(
-            llvm::Type::getInt8Ty(*context_)), // primer arg: char*
-        true // Es variádica (acepta múltiples args)
-    );
+        llvm::IntegerType::getInt32Ty(*context_),
+        llvm::PointerType::getUnqual(llvm::Type::getInt8Ty(*context_)), true);
     printfFunc = llvm::Function::Create(
         printfType, llvm::Function::ExternalLinkage, "printf", module_);
   }
-  // Convertir la cadena std::string a una constante global de LLVM
-  llvm::Value *formatStr = builder_.CreateGlobalStringPtr(strToPrint, "fmt");
-  // Llamar a printf con la cadena de formato
+
+  // Create a format string and call printf
+  llvm::Value *formatStr = builder_.CreateGlobalStringPtr(formatString, "fmt");
   std::vector<llvm::Value *> args;
-  args.push_back(formatStr); // Primer argumento: el puntero a la cadena (char*)
-  // Crear la llamada a printf
-  llvm::Value *call = builder_.CreateCall(printfFunc, args, "calltmp");
-  // return call; // Retornar la llamada creada
-  return nullptr;
+  args.push_back(formatStr); // First argument: format string
+  args.push_back(value);     // Second argument: value to print
+
+  // Call printf
+  builder_.CreateCall(printfFunc, args, "calltmp");
+
+  return nullptr; // Nothing to return after print
 }
 
 llvm::Value *CodeGeneration::visit(const Tree *node) const {

@@ -25,6 +25,8 @@ enum class NodeType {
   WHILE,
   FOR,
   DO_WHILE,
+  STOP,
+  PASS,
   PRINT
 };
 

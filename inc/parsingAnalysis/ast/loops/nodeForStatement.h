@@ -18,8 +18,8 @@ public:
                    std::unique_ptr<Node> condition,
                    std::unique_ptr<NodeStatementList> update,
                    std::unique_ptr<NodeStatementList> body,
-                   std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::FOR, std::move(father)}, init_{std::move(init)},
+                   std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::FOR, father}, init_{std::move(init)},
         condition_{std::move(condition)}, update_{std::move(update)},
         body_{std::move(body)} {};
 

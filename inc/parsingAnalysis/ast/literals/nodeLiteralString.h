@@ -13,10 +13,10 @@ private:
 
 public:
   NodeLiteralString(const std::string &val,
-                    std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::STRING, std::move(father)} {
-        value_ = unEscape(val);
-      };
+                    std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::STRING, father} {
+    value_ = unEscape(val);
+  };
 
   llvm::Value *accept(const CodeGeneration *visitor) const override {
     return visitor->visit(this);

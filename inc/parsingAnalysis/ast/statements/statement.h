@@ -13,8 +13,8 @@ private:
 
 public:
   NodeStatement(std::unique_ptr<Node> expression,
-                std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::STATEMENT, std::move(father)},
+                std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::STATEMENT, father},
         expression_{std::move(expression)} {};
 
   ~NodeStatement() = default;

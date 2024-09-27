@@ -13,8 +13,8 @@ private:
 public:
   NodeWhileStatement(std::unique_ptr<Node> condition,
                      std::unique_ptr<NodeStatementList> body,
-                     std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::WHILE, std::move(father)},
+                     std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::WHILE, father},
         condition_{std::move(condition)}, body_{std::move(body)} {};
 
   const Node *condition() const { return condition_.get(); }

@@ -41,6 +41,10 @@ std::string nodeTypeToString(const NodeType &nt) {
     return "FOR";
   case NodeType::DO_WHILE:
     return "DO_WHILE";
+  case NodeType::STOP:
+    return "STOP";
+  case NodeType::PASS:
+    return "PASS";
   case NodeType::PRINT:
     return "PRINT";
   }

@@ -15,17 +15,19 @@ namespace nicole {
 class Node {
 protected:
   NodeType type_;
-  std::unique_ptr<Node> father_;
+  std::shared_ptr<Node> father_;
 
 public:
-  Node(const NodeType &type, std::unique_ptr<Node> father = nullptr)
-      : type_{type}, father_{std::move(father)} {};
+  Node(const NodeType &type, std::shared_ptr<Node> father = nullptr)
+      : type_{type}, father_{father} {};
 
   virtual ~Node() = default;
 
   NodeType type() const { return type_; }
 
-  Node *father() const { return father_.get(); }
+  const Node *father() const { return father_.get(); }
+
+  void setFather(std::shared_ptr<Node> father) { father_ = father; }
 
   virtual llvm::Value *accept(const CodeGeneration *visitor) const = 0;
 

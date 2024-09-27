@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "visitor.h"
+#include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/IRBuilder.h"
 
 namespace nicole {
@@ -52,6 +53,10 @@ public:
   llvm::Value *visit(const NodeWhileStatement *node) const override;
 
   llvm::Value *visit(const NodeForStatement *node) const override;
+
+  llvm::Value *visit(const NodeStop *node) const override;
+
+  llvm::Value *visit(const NodePass *node) const override;
 
   llvm::Value *visit(const NodePrint *node) const override;
 

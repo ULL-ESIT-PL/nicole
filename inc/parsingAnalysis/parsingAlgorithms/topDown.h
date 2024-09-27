@@ -12,51 +12,51 @@ private:
   std::unique_ptr<NodeStatementList> parseStart() const;
 
   std::unique_ptr<NodeStatementList>
-  parseBody(std::shared_ptr<VariableTable> &bodyScope) const;
+  parseBody(std::shared_ptr<VariableTable> &bodyScope, std::shared_ptr<Node> &father) const;
 
   std::unique_ptr<NodeStatementList>
-  parseComma(std::shared_ptr<VariableTable> &bodyScope) const;
+  parseComma(std::shared_ptr<VariableTable> &bodyScope, std::shared_ptr<Node> &father) const;
 
   std::unique_ptr<NodeStatement>
-  parseStatement(std::shared_ptr<VariableTable> currentScope) const;
+  parseStatement(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> &father) const;
 
   std::unique_ptr<NodeIfStatement>
-  parseIfStatement(std::shared_ptr<VariableTable> currentScope) const;
+  parseIfStatement(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> &father) const;
 
   std::unique_ptr<NodeWhileStatement>
-  parseWhileStatement(std::shared_ptr<VariableTable> currentScope) const;
+  parseWhileStatement(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> &father) const;
 
   std::unique_ptr<NodeForStatement>
-  parseForStatement(std::shared_ptr<VariableTable> currentScope) const;
+  parseForStatement(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> &father) const;
 
   std::unique_ptr<NodePrint>
-  parsePrintStatement(std::shared_ptr<VariableTable> currentScope) const;
+  parsePrintStatement(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> &father) const;
 
   std::unique_ptr<Node>
-  parseVarDeclaration(std::shared_ptr<VariableTable> currentScope) const;
+  parseVarDeclaration(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> &father) const;
 
   std::unique_ptr<Node>
-  parseLogicalOr(std::shared_ptr<VariableTable> currentScope) const;
+  parseLogicalOr(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> &father) const;
 
   std::unique_ptr<Node>
-  parseLogicalAnd(std::shared_ptr<VariableTable> currentScope) const;
+  parseLogicalAnd(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> &father) const;
 
   // equal not
   std::unique_ptr<Node>
-  parseLogicalEqual(std::shared_ptr<VariableTable> currentScope) const;
+  parseLogicalEqual(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> &father) const;
   
   // < <=...
   std::unique_ptr<Node>
-  parseCompare(std::shared_ptr<VariableTable> currentScope) const;
+  parseCompare(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> &father) const;
 
   std::unique_ptr<Node>
-  parseAdd_Sub(std::shared_ptr<VariableTable> currentScope) const;
+  parseAdd_Sub(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> &father) const;
 
   std::unique_ptr<Node>
-  parseMult_Div(std::shared_ptr<VariableTable> currentScope) const;
+  parseMult_Div(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> &father) const;
 
   std::unique_ptr<Node>
-  parseFactor(std::shared_ptr<VariableTable> currentScope) const;
+  parseFactor(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> &father) const;
 
 public:
   TopDown(std::unique_ptr<Sintax> sintax) : Parser{std::move(sintax)} {}

@@ -16,11 +16,11 @@ public:
   NodeIfStatement(std::unique_ptr<Node> condition,
                   std::unique_ptr<NodeStatementList> body,
                   std::unique_ptr<NodeStatementList> elseBody = nullptr,
-                  std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::IF, std::move(father)}, condition_{std::move(condition)},
+                  std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::IF, father}, condition_{std::move(condition)},
         body_{std::move(body)}, elseBody_{std::move(elseBody)} {};
 
-  const Node* condition() const { return condition_.get(); }
+  const Node *condition() const { return condition_.get(); }
 
   const NodeStatementList *body() const { return body_.get(); }
 

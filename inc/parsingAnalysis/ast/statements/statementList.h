@@ -14,8 +14,8 @@ private:
 
 public:
   NodeStatementList(std::vector<std::unique_ptr<NodeStatement>> &&statements,
-                    std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::STATEMENT_LIST, std::move(father)},
+                    std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::STATEMENT_LIST, father},
         statements_(std::move(statements)) {
     // No need to move the elements individually anymore, as std::move handles
     // it

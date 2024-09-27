@@ -11,8 +11,10 @@
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralDouble.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralInt.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
-#include "../../inc/parsingAnalysis/ast/loops/nodeWhileStatement.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeForStatement.h"
+#include "../../inc/parsingAnalysis/ast/loops/nodePass.h"
+#include "../../inc/parsingAnalysis/ast/loops/nodeStop.h"
+#include "../../inc/parsingAnalysis/ast/loops/nodeWhileStatement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeBinaryOp.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeIncrement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeUnaryOp.h"
@@ -159,6 +161,22 @@ std::string PrintTree::visit(const NodeStatementList *node) const {
   for (const auto &statement : *node) {
     result << statement->accept(this);
   }
+  decreaseIndent();
+  return result.str();
+}
+
+std::string PrintTree::visit(const NodeStop *node) const {
+  std::ostringstream result;
+  increaseIndent();
+  result << indent_ << "Stop Statement:\n";
+  decreaseIndent();
+  return result.str();
+}
+
+std::string PrintTree::visit(const NodePass *node) const {
+  std::ostringstream result;
+  increaseIndent();
+  result << indent_ << "Pass Statement:\n";
   decreaseIndent();
   return result.str();
 }

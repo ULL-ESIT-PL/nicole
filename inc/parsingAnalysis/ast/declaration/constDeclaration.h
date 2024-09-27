@@ -17,17 +17,17 @@ private:
 
 public:
   NodeConstDeclaration(const std::string &id,
-                          std::unique_ptr<GenericType> varType,
-                          std::unique_ptr<Node> expression,
-                          std::shared_ptr<VariableTable> currentScope,
-                          std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::CONST_DECL, std::move(father)}, id_{id},
+                       std::unique_ptr<GenericType> varType,
+                       std::unique_ptr<Node> expression,
+                       std::shared_ptr<VariableTable> currentScope,
+                       std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::CONST_DECL, father}, id_{id},
         varType_{std::move(varType)}, expression_{std::move(expression)},
         currentScope_{currentScope} {};
 
   std::string id() const { return id_; }
 
-  const GenericType* varType() const { return varType_.get(); }
+  const GenericType *varType() const { return varType_.get(); }
 
   const Node *expression() const { return expression_.get(); }
 

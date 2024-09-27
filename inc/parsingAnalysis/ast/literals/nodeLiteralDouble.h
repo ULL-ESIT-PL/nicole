@@ -10,8 +10,8 @@ private:
   double value_{};
 
 public:
-  NodeLiteralDouble(const double val, std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::DOUBLE, std::move(father)}, value_{val} {};
+  NodeLiteralDouble(const double val, std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::DOUBLE, father}, value_{val} {};
 
   llvm::Value *accept(const CodeGeneration *visitor) const override {
     return visitor->visit(this);

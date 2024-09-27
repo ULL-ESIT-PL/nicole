@@ -1,2 +1,4 @@
-for (let x: int = 0, let y: int = 0; y < 10; ++x, ++y) {
-}
+let x: int = 10;
+let y: int = x + 10;
+
+print(x);
