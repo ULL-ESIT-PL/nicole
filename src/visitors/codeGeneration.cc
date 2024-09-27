@@ -27,6 +27,7 @@
 #include "llvm/IR/Value.h"
 #include "llvm/Support/ErrorHandling.h"
 #include <memory>
+#include <ostream>
 #include <string>
 
 namespace nicole {
@@ -485,7 +486,7 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
 
 llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
   auto value = node->expression()->accept(this);
-
+  std::cout << "NAME: " << value->getName().str() << std::flush;
   // Ensure value is valid
   if (!value) {
     llvm::report_fatal_error("Failed to evaluate expression for print.");
@@ -493,15 +494,39 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
 
   std::string formatString;
 
-  // Check the type of the value
-  if (auto *loadInst = llvm::dyn_cast<llvm::LoadInst>(value)) {
-    const NodeVariableCall *varCall{
-        dynamic_cast<const NodeVariableCall *>(node->expression())};
-    value = varCall->table()->variableValue(varCall->id());
-  }
-
   // Handle integer types
-  if (auto constantInt = llvm::dyn_cast<llvm::ConstantInt>(value)) {
+  // Check if the value is a LoadInst
+  if (auto loadInst = llvm::dyn_cast<llvm::LoadInst>(value)) {
+    // Get the type of the loaded value
+    llvm::Type *loadedType = loadInst->getType();
+
+    // Handle integer types
+    if (llvm::isa<llvm::IntegerType>(loadedType)) {
+      if (loadedType->isIntegerTy(1)) { // boolean
+        formatString = "%s\n";          // Use %s for boolean representation
+        value = builder_.CreateICmpNE(loadInst,
+                                      llvm::ConstantInt::get(loadedType, 0));
+        value = llvm::ConstantDataArray::getString(*context_, "true");
+      } else {
+        formatString = "%d\n"; // Use %d for integers
+      }
+    }
+    // Handle floating point types
+
+    // Handle string types
+    else if (auto globalString = llvm::dyn_cast<llvm::GlobalVariable>(
+                 loadInst->getPointerOperand())) {
+      if (auto initializer = llvm::dyn_cast<llvm::ConstantDataArray>(
+              globalString->getInitializer())) {
+        if (initializer->isString()) {
+          formatString = "%s\n"; // Use %s for strings
+          value = globalString;  // Use global string variable
+        }
+      }
+    } else {
+      llvm::report_fatal_error("Unsupported type for print.");
+    }
+  } else if (auto constantInt = llvm::dyn_cast<llvm::ConstantInt>(value)) {
     if (constantInt->getType()->isIntegerTy(1)) { // boolean
       formatString = "%s\n"; // Use %s for boolean representation
       value = constantInt->isZero()
@@ -523,6 +548,15 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
         formatString = "%s\n"; // Use %s for strings
         value = globalString;  // Use global string variable
       }
+    }
+  } else if (auto intValue = llvm::dyn_cast<llvm::IntegerType>(value->getType())) {
+    // Handle integer types
+    if (intValue->isIntegerTy(1)) { // boolean
+      formatString = "%s\n"; 
+      value = builder_.CreateICmpNE(value, llvm::ConstantInt::get(intValue, 0));
+      value = llvm::ConstantDataArray::getString(*context_, "true");
+    } else {
+      formatString = "%d\n"; // Use %d for integers
     }
   } else {
     llvm::report_fatal_error("Unsupported type for print.");
