@@ -486,7 +486,7 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
 
 llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
   auto value = node->expression()->accept(this);
-  std::cout << "NAME: " << value->getName().str() << std::flush;
+  // std::cout << "NAME: " << value->getName().str() << std::flush;
   // Ensure value is valid
   if (!value) {
     llvm::report_fatal_error("Failed to evaluate expression for print.");
@@ -549,10 +549,13 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
         value = globalString;  // Use global string variable
       }
     }
-  } else if (auto intValue = llvm::dyn_cast<llvm::IntegerType>(value->getType())) {
+  }
+  // Para cuando value es un temporal
+  else if (auto intValue =
+               llvm::dyn_cast<llvm::IntegerType>(value->getType())) {
     // Handle integer types
     if (intValue->isIntegerTy(1)) { // boolean
-      formatString = "%s\n"; 
+      formatString = "%s\n";
       value = builder_.CreateICmpNE(value, llvm::ConstantInt::get(intValue, 0));
       value = llvm::ConstantDataArray::getString(*context_, "true");
     } else {
