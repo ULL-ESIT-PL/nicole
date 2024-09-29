@@ -249,6 +249,7 @@ TopDown::parseStructDeclaration(std::shared_ptr<VariableTable> currentScope,
   if (token.type() == TokenType::ID) {
     const std::string idTypeStr{token.raw()};
     idType = std::make_shared<UserType>(idTypeStr);
+    typeTable_->addType(idType);
     eat();
     if (getCurrentToken().type() == TokenType::LB) {
       auto structScope{std::make_shared<VariableTable>(nullptr)};
@@ -286,7 +287,7 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
           eat();
           auto value{parseLogicalOr(currentScope, father)};
           return std::make_shared<NodeVariableDeclaration>(id, idType, value,
-                                                           currentScope);
+                                                           currentScope, typeTable_);
         } else {
           const std::string strErr{"Error missing value of " + id};
           llvm::report_fatal_error(strErr.c_str());
@@ -318,7 +319,7 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
           eat();
           auto value{parseLogicalOr(currentScope, father)};
           return std::make_shared<NodeVariableDeclaration>(id, idType, value,
-                                                           currentScope);
+                                                           currentScope, typeTable_);
         } else {
           const std::string strErr{"Error missing value of " + id};
           llvm::report_fatal_error(strErr.c_str());
@@ -554,7 +555,7 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
       eat();
       auto expression{parseLogicalOr(currentScope, father)};
       return std::make_shared<NodeVariableReassignment>(id, expression,
-                                                        currentScope);
+                                                        currentScope, typeTable_);
     }
     return std::make_shared<NodeVariableCall>(id, currentScope);
   }

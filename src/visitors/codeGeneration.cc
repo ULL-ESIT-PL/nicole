@@ -308,7 +308,9 @@ llvm::Value *CodeGeneration::visit(const NodeStructDeclaration *node) const {
         dynamic_cast<const NodeVariableDeclaration *>(declaration.get());
     if (varDecl) {
       // Obtén el tipo de la variable
-      llvm::Type *fieldType = llvm::Type::getInt32Ty(*context_);
+      llvm::Type *fieldType = varDecl->typeTable()
+                                  ->type(varDecl->varType()->name())
+                                  ->type(context_);
       fieldTypes.push_back(fieldType);
     }
   }
@@ -616,8 +618,43 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
 
 llvm::Value *CodeGeneration::visit(const Tree *node) const {
   llvm::Value *val{node->root()->accept(this)};
-  llvm::StructType *pointType = llvm::StructType::create(*context_, "point");
+/*
+  llvm::StructType *pointType =
+    llvm::StructType::getTypeByName(*context_, "point");
+llvm::Constant *xValue =
+    llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 10); // x = 10
+llvm::Constant *yValue =
+    llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 20); // y = 20
 
+// Crear una constante de estructura con los valores de `x` e `y`
+llvm::Constant *pointInstance =
+    llvm::ConstantStruct::get(pointType, {xValue, yValue});
+
+// Crear una variable local para `point`
+llvm::AllocaInst *pointVar =
+    builder_.CreateAlloca(pointType, nullptr, "pointVar");
+
+// Almacenar la instancia en `pointVar`
+builder_.CreateStore(pointInstance, pointVar);
+
+// Acceder al campo `y`
+// Primero, cargamos la estructura desde `pointVar`
+llvm::LoadInst *loadedPoint = builder_.CreateLoad(pointType, pointVar, "loadedPoint");
+
+// Extraer el campo `y`, que se supone es el índice 1 en la estructura
+llvm::Value *yField = builder_.CreateExtractValue(loadedPoint, 1, "yField");
+
+// Reasignar `y` a un nuevo valor (40)
+llvm::Constant *newYValue =
+    llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 40);
+
+// Crear una nueva instancia de la estructura con el nuevo valor de `y`
+llvm::Value *newPoint =
+    llvm::ConstantStruct::get(pointType, {xValue, newYValue});
+
+// Almacenar la nueva estructura de vuelta en `pointVar`
+builder_.CreateStore(newPoint, pointVar);
+*/
   return builder_.CreateRetVoid();
 }
 

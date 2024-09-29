@@ -9,7 +9,7 @@
 namespace nicole {
 
 class GenericType {
-private:
+protected:
   /* data */
   std::string name_{""};
   std::weak_ptr<GenericType> father_;

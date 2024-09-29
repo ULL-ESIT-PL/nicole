@@ -19,7 +19,7 @@ public:
   ~UserType() = default;
 
   llvm::Type *type(llvm::LLVMContext *context) const override {
-    return llvm::StructType::get(*context);
+    return llvm::StructType::getTypeByName(*context, name_);
   };
 };
 
