@@ -20,14 +20,17 @@ enum class NodeType {
   CONST_DECL,
   VAR_DECL,
   STRUCT_DECL,
+  FUN_DECL,
   VAR_REG,
   CALL_VAR,
+  CALL_CTR,
   IF,
   WHILE,
   FOR,
   DO_WHILE,
   STOP,
   PASS,
+  RETURN,
   PRINT
 };
 

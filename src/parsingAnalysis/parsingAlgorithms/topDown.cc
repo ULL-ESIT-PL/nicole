@@ -1,4 +1,5 @@
 #include "../../../inc/parsingAnalysis/parsingAlgorithms/topDown.h"
+#include "llvm/Support/ErrorHandling.h"
 #include <cstdio>
 #include <memory>
 
@@ -66,6 +67,44 @@ TopDown::parseComma(std::shared_ptr<VariableTable> &currentScope,
   return std::make_shared<NodeStatementList>(body);
 }
 
+std::shared_ptr<ParamsDeclaration>
+TopDown::parseParams(std::shared_ptr<VariableTable> &currentScope,
+                     std::shared_ptr<Node> father) const {
+  std::vector<std::pair<std::string, std::shared_ptr<GenericType>>> params;
+  while (std::size_t(currentToken_) < tokens_.size() &&
+         !isTokenType(TokenType::SEMICOLON)) {
+    auto token{getCurrentToken()};
+    std::string id{};
+    std::shared_ptr<GenericType> type{nullptr};
+    if (token.type() == TokenType::ID) {
+      id = token.raw();
+      eat();
+    } else {
+      llvm::report_fatal_error("Expected parameter, found: ,");
+    }
+    if (getCurrentToken().type() == TokenType::DOTDOT) {
+      eat();
+    } else {
+      llvm::report_fatal_error("Expected :, found: ");
+    }
+    token = getCurrentToken();
+    if (token.type() == TokenType::ID) {
+      type = typeTable_->type(token.raw());
+      eat();
+    } else {
+      llvm::report_fatal_error("Expected type, found: ");
+    }
+    params.push_back({id, type});
+    if (std::size_t(currentToken_) < tokens_.size() &&
+        isTokenType(TokenType::COMMA)) {
+      eat();
+    } else {
+      break;
+    }
+  }
+  return std::make_shared<ParamsDeclaration>(params, currentScope);
+}
+
 std::shared_ptr<NodeStatement>
 TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope,
                         std::shared_ptr<Node> father) const {
@@ -89,6 +128,10 @@ TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope,
   case TokenType::STRUCT: {
     return std::make_shared<NodeStatement>(
         parseStructDeclaration(currentScope, father), father);
+  }
+  case TokenType::FUNCTION: {
+    return std::make_shared<NodeStatement>(
+        parseFunctionDeclaration(currentScope, father), father);
   }
   default: {
     return std::make_shared<NodeStatement>(
@@ -262,6 +305,18 @@ TopDown::parseStructDeclaration(std::shared_ptr<VariableTable> currentScope,
   return std::make_shared<NodeStructDeclaration>(idType, body);
 }
 
+std::shared_ptr<NodeFunctionDeclaration>
+TopDown::parseFunctionDeclaration(std::shared_ptr<VariableTable> currentScope,
+                                  std::shared_ptr<Node> father) const {
+  eat();
+  auto token{getCurrentToken()};
+  std::string id{};
+  std::shared_ptr<ParamsDeclaration> params{nullptr};
+  std::shared_ptr<GenericType> returnType{nullptr};
+  std::shared_ptr<ParamsDeclaration> body{nullptr};
+  return nullptr;
+}
+
 std::shared_ptr<Node>
 TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
                              std::shared_ptr<Node> father) const {
@@ -286,8 +341,8 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
         if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
           eat();
           auto value{parseLogicalOr(currentScope, father)};
-          return std::make_shared<NodeVariableDeclaration>(id, idType, value,
-                                                           currentScope, typeTable_);
+          return std::make_shared<NodeVariableDeclaration>(
+              id, idType, value, currentScope, typeTable_);
         } else {
           const std::string strErr{"Error missing value of " + id};
           llvm::report_fatal_error(strErr.c_str());
@@ -318,8 +373,8 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
         if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
           eat();
           auto value{parseLogicalOr(currentScope, father)};
-          return std::make_shared<NodeVariableDeclaration>(id, idType, value,
-                                                           currentScope, typeTable_);
+          return std::make_shared<NodeVariableDeclaration>(
+              id, idType, value, currentScope, typeTable_);
         } else {
           const std::string strErr{"Error missing value of " + id};
           llvm::report_fatal_error(strErr.c_str());
@@ -554,14 +609,15 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
     if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
       eat();
       auto expression{parseLogicalOr(currentScope, father)};
-      return std::make_shared<NodeVariableReassignment>(id, expression,
-                                                        currentScope, typeTable_);
+      return std::make_shared<NodeVariableReassignment>(
+          id, expression, currentScope, typeTable_);
     } else if (getCurrentToken().type() == TokenType::LB) {
       eat();
       auto attributes{parseComma(currentScope, father)};
       if (getCurrentToken().type() == TokenType::RB) {
         eat();
-        return std::make_shared<NodeStructConstructor>(id, attributes, typeTable_);
+        return std::make_shared<NodeStructConstructor>(id, attributes,
+                                                       typeTable_);
       }
     }
     return std::make_shared<NodeVariableCall>(id, currentScope);
@@ -573,6 +629,13 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
   case TokenType::PASS: {
     eat();
     return std::make_shared<NodePass>(father);
+  }
+  case TokenType::RETURN: {
+    eat();
+    if (getCurrentToken().type() == TokenType::SEMICOLON) {
+      return std::make_shared<NodeReturn>(nullptr);
+    }
+    return std::make_shared<NodeReturn>(parseLogicalOr(currentScope, father));
   }
   case TokenType::LP: {
     eat();

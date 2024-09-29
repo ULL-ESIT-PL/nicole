@@ -19,7 +19,7 @@ public:
                         std::shared_ptr<NodeStatementList> parameters,
                         std::shared_ptr<TypeTable> typeTable,
                         std::shared_ptr<Node> father = nullptr)
-      : Node{NodeType::CALL_VAR, father}, id_{id}, parameters_{parameters},
+      : Node{NodeType::CALL_CTR, father}, id_{id}, parameters_{parameters},
         typeTable_{typeTable} {};
 
   std::string id() const { return id_; }

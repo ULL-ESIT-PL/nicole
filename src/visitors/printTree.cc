@@ -5,6 +5,8 @@
 #include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
 #include "../../inc/parsingAnalysis/ast/conditionals/nodeIfStatement.h"
 #include "../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
+#include "../../inc/parsingAnalysis/ast/declaration/nodeFunDeclaration.h"
+#include "../../inc/parsingAnalysis/ast/declaration/nodeReturn.h"
 #include "../../inc/parsingAnalysis/ast/declaration/structDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
@@ -50,6 +52,10 @@ std::string PrintTree::visit(const NodeLiteralInt *node) const {
 
 std::string PrintTree::visit(const NodeLiteralString *node) const {
   return indent_ + "String: \"" + node->value() + "\"\n";
+}
+
+std::string PrintTree::visit(const NodeReturn *node) const {
+  return indent_ + "Return: \"" + node->expression()->accept(this) + "\"\n";
 }
 
 std::string PrintTree::visit(const NodeBinaryOp *node) const {
@@ -112,6 +118,22 @@ std::string PrintTree::visit(const NodeStructDeclaration *node) const {
   result << indent_ << "Struct Declaration:\n";
   increaseIndent();
   result << indent_ << "Attributes:\n" << node->body()->accept(this);
+  decreaseIndent();
+  return result.str();
+}
+
+std::string PrintTree::visit(const NodeFunctionDeclaration *node) const {
+  std::ostringstream result;
+  result << indent_ << "Function Declaration:\n";
+  increaseIndent();
+  result << indent_ << "Id:\n" << node->id();
+  result << indent_ << "Attributes:\n";
+  for (const auto &param : *node->parameters()) {
+    result << indent_ << "Id: " << param.first
+           << " Type: " << param.second->name();
+  }
+  result << indent_ << "Return:\n" << node->returnType()->name();
+  result << indent_ << "Body:\n" << node->body()->accept(this);
   decreaseIndent();
   return result.str();
 }

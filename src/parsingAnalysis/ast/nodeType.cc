@@ -49,6 +49,12 @@ std::string nodeTypeToString(const NodeType &nt) {
     return "PASS";
   case NodeType::PRINT:
     return "PRINT";
+  case NodeType::CALL_CTR:
+    return "CALL_CTR";
+  case NodeType::FUN_DECL:
+    return "FUN_DECL";
+  case NodeType::RETURN:
+    return "RETURN";
   }
 }
 } // namespace nicole

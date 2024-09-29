@@ -17,6 +17,9 @@ private:
   std::shared_ptr<NodeStatementList>
   parseComma(std::shared_ptr<VariableTable> &bodyScope, std::shared_ptr<Node> father) const;
 
+  std::shared_ptr<ParamsDeclaration>
+  parseParams(std::shared_ptr<VariableTable> &bodyScope, std::shared_ptr<Node> father) const;
+
   std::shared_ptr<NodeStatement>
   parseStatement(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> father) const;
 
@@ -34,6 +37,9 @@ private:
 
   std::shared_ptr<NodeStructDeclaration>
   parseStructDeclaration(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> father) const;
+
+  std::shared_ptr<NodeFunctionDeclaration>
+  parseFunctionDeclaration(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> father) const;
 
   std::shared_ptr<Node>
   parseVarDeclaration(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> father) const;

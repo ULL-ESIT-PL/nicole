@@ -1,6 +1,5 @@
-struct point {
-  let x: int = 0;
-  let y: int = 0;
+def hola(x: int, y: int): int {
+  let z: int = x;
+  let k: int = y;
+  return z + k;
 }
-
-let p: point = point{let x: int = 10, let y: int = 10};

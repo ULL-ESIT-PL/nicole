@@ -5,6 +5,8 @@
 #include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
 #include "../../inc/parsingAnalysis/ast/conditionals/nodeIfStatement.h"
 #include "../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
+#include "../../inc/parsingAnalysis/ast/declaration/nodeFunDeclaration.h"
+#include "../../inc/parsingAnalysis/ast/declaration/nodeReturn.h"
 #include "../../inc/parsingAnalysis/ast/declaration/structDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
@@ -63,6 +65,12 @@ llvm::Value *CodeGeneration::visit(const NodeLiteralString *node) const {
       globalString, llvm::PointerType::getUnqual(strConst->getType()));
 
   return globalStrPtr;
+}
+
+llvm::Value *CodeGeneration::visit(const NodeReturn *node) const {
+  llvm::Value *result{node->expression()->accept(this)};
+  if (!result) return builder_.CreateRetVoid();
+  return builder_.CreateRet(result);
 }
 
 llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node) const {
@@ -323,6 +331,11 @@ llvm::Value *CodeGeneration::visit(const NodeStructDeclaration *node) const {
   // símbolos, etc.
 
   return nullptr; // No devuelve ningún valor, ya que estamos creando un tipo
+}
+
+llvm::Value *CodeGeneration::visit(const NodeFunctionDeclaration *node) const {
+  llvm::report_fatal_error("hola");
+  return nullptr;
 }
 
 llvm::Value *CodeGeneration::visit(const NodeStructConstructor *node) const {

@@ -22,14 +22,17 @@ class NodeLiteralChar;
 class NodeLiteralDouble;
 class NodeLiteralInt;
 class NodeLiteralString;
+class NodeReturn;
 class NodeBinaryOp;
 class NodeUnaryOp;
 class NodeIncrement;
 class NodeStatement;
 class NodeStatementList;
+class NodeParamsDeclaration;
 class NodeVariableDeclaration;
 class NodeConstDeclaration;
 class NodeStructDeclaration;
+class NodeFunctionDeclaration;
 class NodeStructConstructor;
 class NodeVariableCall;
 class NodeVariableReassignment;
@@ -57,6 +60,8 @@ public:
 
   virtual T visit(const NodeLiteralString *node) const = 0;
 
+  virtual T visit(const NodeReturn *node) const = 0;
+
   virtual T visit(const NodeBinaryOp *node) const = 0;
 
   virtual T visit(const NodeUnaryOp *node) const = 0;
@@ -72,6 +77,8 @@ public:
   virtual T visit(const NodeConstDeclaration *node) const = 0;
 
   virtual T visit(const NodeStructDeclaration *node) const = 0;
+
+  virtual T visit(const NodeFunctionDeclaration *node) const = 0;
 
   virtual T visit(const NodeStructConstructor *node) const = 0;
 

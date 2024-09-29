@@ -2,10 +2,13 @@
 #define PARSER_H
 
 #include "../../lexicalAnalysis/nicoleSintax.h"
-#include "../ast/calls/variableCall.h"
 #include "../ast/calls/structConstructor.h"
+#include "../ast/calls/variableCall.h"
 #include "../ast/conditionals/nodeIfStatement.h"
 #include "../ast/declaration/constDeclaration.h"
+#include "../ast/declaration/nodeFunDeclaration.h"
+#include "../ast/declaration/nodeReturn.h"
+#include "../ast/declaration/paramsDeclaration.h"
 #include "../ast/declaration/structDeclaration.h"
 #include "../ast/declaration/varDeclaration.h"
 #include "../ast/declaration/varReassignment.h"
