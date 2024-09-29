@@ -8,17 +8,19 @@ namespace nicole {
 
 class NodeIfStatement final : public Node {
 private:
-  mutable std::unique_ptr<Node> condition_;
-  mutable std::unique_ptr<NodeStatementList> body_;
-  mutable std::unique_ptr<NodeStatementList> elseBody_;
+  mutable std::shared_ptr<Node> condition_;
+  mutable std::shared_ptr<NodeStatementList> body_;
+  mutable std::shared_ptr<NodeStatementList> elseBody_;
 
 public:
-  NodeIfStatement(std::unique_ptr<Node> condition,
-                  std::unique_ptr<NodeStatementList> body,
-                  std::unique_ptr<NodeStatementList> elseBody = nullptr,
+  NodeIfStatement(std::shared_ptr<Node> condition,
+                  std::shared_ptr<NodeStatementList> body,
+                  std::shared_ptr<NodeStatementList> elseBody = nullptr,
                   std::shared_ptr<Node> father = nullptr)
-      : Node{NodeType::IF, father}, condition_{std::move(condition)},
-        body_{std::move(body)}, elseBody_{std::move(elseBody)} {};
+      : Node{NodeType::IF, father}, condition_{condition}, body_{body},
+        elseBody_{elseBody} {
+    // condition_->setFather(this);
+  };
 
   const Node *condition() const { return condition_.get(); }
 

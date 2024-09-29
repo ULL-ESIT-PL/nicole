@@ -10,25 +10,24 @@ namespace nicole {
 
 class NodeStatementList final : public Node {
 private:
-  std::vector<std::unique_ptr<NodeStatement>> statements_{};
+  std::vector<std::shared_ptr<NodeStatement>> statements_{};
 
 public:
-  NodeStatementList(std::vector<std::unique_ptr<NodeStatement>> &&statements,
+  NodeStatementList(const std::vector<std::shared_ptr<NodeStatement>> &statements,
                     std::shared_ptr<Node> father = nullptr)
-      : Node{NodeType::STATEMENT_LIST, father},
-        statements_(std::move(statements)) {
+      : Node{NodeType::STATEMENT_LIST, father}, statements_(statements) {
     // No need to move the elements individually anymore, as std::move handles
     // it
   }
 
   ~NodeStatementList() = default;
 
-  const std::vector<std::unique_ptr<NodeStatement>> &statements() const {
+  const std::vector<std::shared_ptr<NodeStatement>> &statements() const {
     return statements_;
   }
 
-  void addStatement(std::unique_ptr<NodeStatement> statement) {
-    statements_.push_back(std::move(statement));
+  void addStatement(std::shared_ptr<NodeStatement> statement) {
+    statements_.push_back(statement);
   }
 
   auto begin() const { return statements_.begin(); }

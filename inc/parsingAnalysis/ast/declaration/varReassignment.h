@@ -11,16 +11,16 @@ class NodeVariableReassignment : public Node {
 private:
   /* data */
   std::string id_{""};
-  std::unique_ptr<Node> expression_;
+  std::shared_ptr<Node> expression_;
   std::shared_ptr<VariableTable> currentScope_;
 
 public:
   NodeVariableReassignment(const std::string &id,
-                           std::unique_ptr<Node> expression,
+                           std::shared_ptr<Node> expression,
                            std::shared_ptr<VariableTable> currentScope,
                            std::shared_ptr<Node> father = nullptr)
       : Node{NodeType::VAR_REG, father}, id_{id}, currentScope_{currentScope},
-        expression_{std::move(expression)} {};
+        expression_{expression} {};
 
   std::string id() const { return id_; }
 

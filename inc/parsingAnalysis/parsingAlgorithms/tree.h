@@ -8,10 +8,10 @@ namespace nicole {
 class Tree {
 private:
   /* data */
-  std::unique_ptr<NodeStatementList> root_{};
+  std::shared_ptr<NodeStatementList> root_{};
 
 public:
-  Tree(std::unique_ptr<NodeStatementList> root) : root_{std::move(root)} {};
+  Tree(std::shared_ptr<NodeStatementList> root) : root_{root} {};
 
   const NodeStatementList *root() const { return root_.get(); }
 

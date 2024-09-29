@@ -4,31 +4,30 @@
 
 namespace nicole {
 
-std::unique_ptr<Tree> TopDown::parse(const std::filesystem::path &path) const {
+std::shared_ptr<Tree> TopDown::parse(const std::filesystem::path &path) const {
   tokens_ = lexer_.analyze(path);
   globalScope_ = std::make_shared<VariableTable>(nullptr);
   root_ = parseStart();
-  return std::make_unique<Tree>(std::move(root_));
+  return std::make_shared<Tree>(root_);
 }
 
-std::unique_ptr<NodeStatementList> TopDown::parseStart() const {
-  std::vector<std::unique_ptr<NodeStatement>> gloablScopeStatements{};
+std::shared_ptr<NodeStatementList> TopDown::parseStart() const {
+  std::vector<std::shared_ptr<NodeStatement>> gloablScopeStatements{};
   std::shared_ptr<Node> father{nullptr};
   while (std::size_t(currentToken_) < tokens_.size()) {
-    gloablScopeStatements.push_back(
-        std::move(parseStatement(globalScope_, father)));
+    gloablScopeStatements.push_back(parseStatement(globalScope_, father));
     if (std::size_t(currentToken_) < tokens_.size() &&
         isTokenType(TokenType::SEMICOLON)) {
       eat();
     }
   }
 
-  return std::make_unique<NodeStatementList>(std::move(gloablScopeStatements));
+  return std::make_shared<NodeStatementList>(gloablScopeStatements);
 }
 
-std::unique_ptr<NodeStatementList>
+std::shared_ptr<NodeStatementList>
 TopDown::parseBody(std::shared_ptr<VariableTable> &bodyScope,
-                   std::shared_ptr<Node> &father) const {
+                   std::shared_ptr<Node> father) const {
   if (getCurrentToken().type() == TokenType::LB) {
     eat();
   } else {
@@ -36,26 +35,26 @@ TopDown::parseBody(std::shared_ptr<VariableTable> &bodyScope,
                              getCurrentToken().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
-  std::vector<std::unique_ptr<NodeStatement>> body;
+  std::vector<std::shared_ptr<NodeStatement>> body;
   while (std::size_t(currentToken_) < tokens_.size() &&
          !isTokenType(TokenType::RB)) {
-    body.push_back(std::move(parseStatement(bodyScope, father)));
+    body.push_back(parseStatement(bodyScope, father));
     if (std::size_t(currentToken_) < tokens_.size() &&
         isTokenType(TokenType::SEMICOLON)) {
       eat();
     }
   }
   eat(); // Consume el token "}"
-  return std::make_unique<NodeStatementList>(std::move(body));
+  return std::make_shared<NodeStatementList>(body);
 }
 
-std::unique_ptr<NodeStatementList>
+std::shared_ptr<NodeStatementList>
 TopDown::parseComma(std::shared_ptr<VariableTable> &currentScope,
-                    std::shared_ptr<Node> &father) const {
-  std::vector<std::unique_ptr<NodeStatement>> body;
+                    std::shared_ptr<Node> father) const {
+  std::vector<std::shared_ptr<NodeStatement>> body;
   while (std::size_t(currentToken_) < tokens_.size() &&
          !isTokenType(TokenType::SEMICOLON)) {
-    body.push_back(std::make_unique<NodeStatement>(
+    body.push_back(std::make_shared<NodeStatement>(
         parseVarDeclaration(currentScope, father)));
     if (std::size_t(currentToken_) < tokens_.size() &&
         isTokenType(TokenType::COMMA)) {
@@ -64,39 +63,39 @@ TopDown::parseComma(std::shared_ptr<VariableTable> &currentScope,
       break;
     }
   }
-  return std::make_unique<NodeStatementList>(std::move(body));
+  return std::make_shared<NodeStatementList>(body);
 }
 
-std::unique_ptr<NodeStatement>
+std::shared_ptr<NodeStatement>
 TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope,
-                        std::shared_ptr<Node> &father) const {
+                        std::shared_ptr<Node> father) const {
   switch (getCurrentToken().type()) {
   case TokenType::IF: {
-    return std::make_unique<NodeStatement>(
+    return std::make_shared<NodeStatement>(
         parseIfStatement(currentScope, father), father);
   }
   case TokenType::WHILE: {
-    return std::make_unique<NodeStatement>(
+    return std::make_shared<NodeStatement>(
         parseWhileStatement(currentScope, father), father);
   }
   case TokenType::FOR: {
-    return std::make_unique<NodeStatement>(
+    return std::make_shared<NodeStatement>(
         parseForStatement(currentScope, father), father);
   }
   case TokenType::PRINT: {
-    return std::make_unique<NodeStatement>(
+    return std::make_shared<NodeStatement>(
         parsePrintStatement(currentScope, father), father);
   }
   default: {
-    return std::make_unique<NodeStatement>(
+    return std::make_shared<NodeStatement>(
         parseVarDeclaration(currentScope, father), father);
   }
   }
 }
 
-std::unique_ptr<NodeIfStatement>
+std::shared_ptr<NodeIfStatement>
 TopDown::parseIfStatement(std::shared_ptr<VariableTable> currentScope,
-                          std::shared_ptr<Node> &father) const {
+                          std::shared_ptr<Node> father) const {
   eat();
   if (getCurrentToken().type() == TokenType::LP) {
     eat();
@@ -122,20 +121,19 @@ TopDown::parseIfStatement(std::shared_ptr<VariableTable> currentScope,
   }
   auto ifScope{std::make_shared<VariableTable>(currentScope)};
   auto ifBody{parseBody(ifScope, father)};
-  std::unique_ptr<NodeStatementList> elseBody{nullptr};
+  std::shared_ptr<NodeStatementList> elseBody{nullptr};
   if (currentToken_ < tokens_.size() and
       getCurrentToken().type() == TokenType::ELSE) {
     eat();
     auto elseScope{std::make_shared<VariableTable>(currentScope)};
-    elseBody = std::move(parseBody(elseScope, father));
+    elseBody = parseBody(elseScope, father);
   }
-  return std::make_unique<NodeIfStatement>(
-      std::move(condition), std::move(ifBody), std::move(elseBody));
+  return std::make_shared<NodeIfStatement>(condition, ifBody, elseBody);
 }
 
-std::unique_ptr<NodeWhileStatement>
+std::shared_ptr<NodeWhileStatement>
 TopDown::parseWhileStatement(std::shared_ptr<VariableTable> currentScope,
-                             std::shared_ptr<Node> &father) const {
+                             std::shared_ptr<Node> father) const {
   eat();
   if (getCurrentToken().type() == TokenType::LP) {
     eat();
@@ -161,13 +159,12 @@ TopDown::parseWhileStatement(std::shared_ptr<VariableTable> currentScope,
   }
   auto whileScope{std::make_shared<VariableTable>(currentScope)};
   auto whileBody{parseBody(whileScope, father)};
-  return std::make_unique<NodeWhileStatement>(std::move(condition),
-                                              std::move(whileBody));
+  return std::make_shared<NodeWhileStatement>(condition, whileBody);
 }
 
-std::unique_ptr<NodeForStatement>
+std::shared_ptr<NodeForStatement>
 TopDown::parseForStatement(std::shared_ptr<VariableTable> currentScope,
-                           std::shared_ptr<Node> &father) const {
+                           std::shared_ptr<Node> father) const {
   eat();
   if (getCurrentToken().type() == TokenType::LP) {
     eat();
@@ -209,14 +206,12 @@ TopDown::parseForStatement(std::shared_ptr<VariableTable> currentScope,
     llvm::report_fatal_error(strErr.c_str());
   }
   auto body{parseBody(forScope, father)};
-  return std::make_unique<NodeForStatement>(std::move(init),
-                                            std::move(condition),
-                                            std::move(update), std::move(body));
+  return std::make_shared<NodeForStatement>(init, condition, update, body);
 }
 
-std::unique_ptr<NodePrint>
+std::shared_ptr<NodePrint>
 TopDown::parsePrintStatement(std::shared_ptr<VariableTable> currentScope,
-                             std::shared_ptr<Node> &father) const {
+                             std::shared_ptr<Node> father) const {
   eat();
   if (getCurrentToken().type() == TokenType::LP) {
     eat();
@@ -237,12 +232,12 @@ TopDown::parsePrintStatement(std::shared_ptr<VariableTable> currentScope,
                              getCurrentToken().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
-  return std::make_unique<NodePrint>(std::move(expression));
+  return std::make_shared<NodePrint>(expression);
 }
 
-std::unique_ptr<Node>
+std::shared_ptr<Node>
 TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
-                             std::shared_ptr<Node> &father) const {
+                             std::shared_ptr<Node> father) const {
   Token token{getCurrentToken()};
   if (token.type() == TokenType::LET) {
     eat();
@@ -259,14 +254,14 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
       token = getCurrentToken();
       if (token.type() == TokenType::ID) {
         const std::string idTypeStr{token.raw()};
-        std::unique_ptr<GenericType> idType{
-            std::make_unique<GenericType>(idTypeStr)};
+        std::shared_ptr<GenericType> idType{
+            std::make_shared<GenericType>(idTypeStr)};
         eat();
         if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
           eat();
           auto value{parseLogicalOr(currentScope, father)};
-          return std::make_unique<NodeVariableDeclaration>(
-              id, std::move(idType), std::move(value), currentScope);
+          return std::make_shared<NodeVariableDeclaration>(id, idType, value,
+                                                           currentScope);
         } else {
           const std::string strErr{"Error missing value of " + id};
           llvm::report_fatal_error(strErr.c_str());
@@ -292,14 +287,14 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
       token = getCurrentToken();
       if (token.type() == TokenType::ID) {
         const std::string idTypeStr{token.raw()};
-        std::unique_ptr<GenericType> idType{
-            std::make_unique<GenericType>(idTypeStr)};
+        std::shared_ptr<GenericType> idType{
+            std::make_shared<GenericType>(idTypeStr)};
         eat();
         if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
           eat();
           auto value{parseLogicalOr(currentScope, father)};
-          return std::make_unique<NodeConstDeclaration>(
-              id, std::move(idType), std::move(value), currentScope);
+          return std::make_shared<NodeConstDeclaration>(id, idType, value,
+                                                        currentScope);
         } else {
           const std::string strErr{"Error missing value of " + id};
           llvm::report_fatal_error(strErr.c_str());
@@ -314,9 +309,9 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
   return parseLogicalOr(currentScope, father);
 }
 
-std::unique_ptr<Node>
+std::shared_ptr<Node>
 TopDown::parseLogicalOr(std::shared_ptr<VariableTable> currentScope,
-                        std::shared_ptr<Node> &father) const {
+                        std::shared_ptr<Node> father) const {
   // equivalent to the first e + e in Jison recursively goes down
   auto left{parseLogicalAnd(currentScope, father)};
 
@@ -324,16 +319,15 @@ TopDown::parseLogicalOr(std::shared_ptr<VariableTable> currentScope,
          getCurrentToken().type() == TokenType::OR) {
     eat();
     auto right{parseLogicalAnd(currentScope, father)};
-    left = std::make_unique<NodeBinaryOp>(std::move(left), TokenType::OR,
-                                          std::move(right));
+    left = std::make_shared<NodeBinaryOp>(left, TokenType::OR, right);
   }
 
   return left;
 }
 
-std::unique_ptr<Node>
+std::shared_ptr<Node>
 TopDown::parseLogicalAnd(std::shared_ptr<VariableTable> currentScope,
-                         std::shared_ptr<Node> &father) const {
+                         std::shared_ptr<Node> father) const {
   // equivalent to the first e + e in Jison recursively goes down
   auto left{parseLogicalEqual(currentScope, father)};
 
@@ -341,16 +335,15 @@ TopDown::parseLogicalAnd(std::shared_ptr<VariableTable> currentScope,
          getCurrentToken().type() == TokenType::AND) {
     eat();
     auto right{parseLogicalEqual(currentScope, father)};
-    left = std::make_unique<NodeBinaryOp>(std::move(left), TokenType::AND,
-                                          std::move(right));
+    left = std::make_shared<NodeBinaryOp>(left, TokenType::AND, right);
   }
 
   return left;
 }
 
-std::unique_ptr<Node>
+std::shared_ptr<Node>
 TopDown::parseLogicalEqual(std::shared_ptr<VariableTable> currentScope,
-                           std::shared_ptr<Node> &father) const {
+                           std::shared_ptr<Node> father) const {
   // equivalent to the first e + e in Jison recursively goes down
   auto left{parseCompare(currentScope, father)};
 
@@ -362,12 +355,10 @@ TopDown::parseLogicalEqual(std::shared_ptr<VariableTable> currentScope,
     auto right{parseCompare(currentScope, father)};
     switch (token.type()) {
     case TokenType::EQUAL:
-      left = std::make_unique<NodeBinaryOp>(std::move(left), TokenType::EQUAL,
-                                            std::move(right));
+      left = std::make_shared<NodeBinaryOp>(left, TokenType::EQUAL, right);
       break;
     case TokenType::NOTEQUAL:
-      left = std::make_unique<NodeBinaryOp>(
-          std::move(left), TokenType::NOTEQUAL, std::move(right));
+      left = std::make_shared<NodeBinaryOp>(left, TokenType::NOTEQUAL, right);
       break;
     default:
       llvm::report_fatal_error("Error: invalid token type at parsing + or -");
@@ -377,9 +368,9 @@ TopDown::parseLogicalEqual(std::shared_ptr<VariableTable> currentScope,
   return left;
 }
 
-std::unique_ptr<Node>
+std::shared_ptr<Node>
 TopDown::parseCompare(std::shared_ptr<VariableTable> currentScope,
-                      std::shared_ptr<Node> &father) const {
+                      std::shared_ptr<Node> father) const {
   // equivalent to the first e + e in Jison recursively goes down
   auto left{parseAdd_Sub(currentScope, father)};
 
@@ -393,20 +384,20 @@ TopDown::parseCompare(std::shared_ptr<VariableTable> currentScope,
     auto right{parseAdd_Sub(currentScope, father)};
     switch (token.type()) {
     case TokenType::OPERATOR_SMALLER:
-      left = std::make_unique<NodeBinaryOp>(
-          std::move(left), TokenType::OPERATOR_SMALLER, std::move(right));
+      left = std::make_shared<NodeBinaryOp>(left, TokenType::OPERATOR_SMALLER,
+                                            right);
       break;
     case TokenType::SMALLEREQUAL:
-      left = std::make_unique<NodeBinaryOp>(
-          std::move(left), TokenType::SMALLEREQUAL, std::move(right));
+      left =
+          std::make_shared<NodeBinaryOp>(left, TokenType::SMALLEREQUAL, right);
       break;
     case TokenType::OPERATOR_GREATER:
-      left = std::make_unique<NodeBinaryOp>(
-          std::move(left), TokenType::OPERATOR_GREATER, std::move(right));
+      left = std::make_shared<NodeBinaryOp>(left, TokenType::OPERATOR_GREATER,
+                                            right);
       break;
     case TokenType::BIGGEREQUAL:
-      left = std::make_unique<NodeBinaryOp>(
-          std::move(left), TokenType::BIGGEREQUAL, std::move(right));
+      left =
+          std::make_shared<NodeBinaryOp>(left, TokenType::BIGGEREQUAL, right);
       break;
     default:
       llvm::report_fatal_error("Error: invalid token type at parsing + or -");
@@ -416,9 +407,9 @@ TopDown::parseCompare(std::shared_ptr<VariableTable> currentScope,
   return left;
 }
 
-std::unique_ptr<Node>
+std::shared_ptr<Node>
 TopDown::parseAdd_Sub(std::shared_ptr<VariableTable> currentScope,
-                      std::shared_ptr<Node> &father) const {
+                      std::shared_ptr<Node> father) const {
   // equivalent to the first e + e in Jison recursively goes down
   auto left{parseMult_Div(currentScope, father)};
 
@@ -430,12 +421,12 @@ TopDown::parseAdd_Sub(std::shared_ptr<VariableTable> currentScope,
     auto right{parseMult_Div(currentScope, father)};
     switch (token.type()) {
     case TokenType::OPERATOR_ADD:
-      left = std::make_unique<NodeBinaryOp>(
-          std::move(left), TokenType::OPERATOR_ADD, std::move(right));
+      left =
+          std::make_shared<NodeBinaryOp>(left, TokenType::OPERATOR_ADD, right);
       break;
     case TokenType::OPERATOR_SUB:
-      left = std::make_unique<NodeBinaryOp>(
-          std::move(left), TokenType::OPERATOR_SUB, std::move(right));
+      left =
+          std::make_shared<NodeBinaryOp>(left, TokenType::OPERATOR_SUB, right);
       break;
     default:
       llvm::report_fatal_error("Error: invalid token type at parsing + or -");
@@ -445,9 +436,9 @@ TopDown::parseAdd_Sub(std::shared_ptr<VariableTable> currentScope,
   return left;
 }
 
-std::unique_ptr<Node>
+std::shared_ptr<Node>
 TopDown::parseMult_Div(std::shared_ptr<VariableTable> currentScope,
-                       std::shared_ptr<Node> &father) const {
+                       std::shared_ptr<Node> father) const {
   // equivalent to the first e + e in Jison recursively goes down
   auto left{parseFactor(currentScope, father)};
 
@@ -460,16 +451,16 @@ TopDown::parseMult_Div(std::shared_ptr<VariableTable> currentScope,
     auto right{parseFactor(currentScope, father)};
     switch (token.type()) {
     case TokenType::OPERATOR_MULT:
-      left = std::make_unique<NodeBinaryOp>(
-          std::move(left), TokenType::OPERATOR_MULT, std::move(right));
+      left =
+          std::make_shared<NodeBinaryOp>(left, TokenType::OPERATOR_MULT, right);
       break;
     case TokenType::OPERATOR_DIV:
-      left = std::make_unique<NodeBinaryOp>(
-          std::move(left), TokenType::OPERATOR_DIV, std::move(right));
+      left =
+          std::make_shared<NodeBinaryOp>(left, TokenType::OPERATOR_DIV, right);
       break;
     case TokenType::OPERATOR_MODULE:
-      left = std::make_unique<NodeBinaryOp>(
-          std::move(left), TokenType::OPERATOR_MODULE, std::move(right));
+      left = std::make_shared<NodeBinaryOp>(left, TokenType::OPERATOR_MODULE,
+                                            right);
       break;
     default:
       llvm::report_fatal_error("Error: invalid token type at parsing + or -");
@@ -479,56 +470,56 @@ TopDown::parseMult_Div(std::shared_ptr<VariableTable> currentScope,
   return left;
 }
 
-std::unique_ptr<Node>
+std::shared_ptr<Node>
 TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
-                     std::shared_ptr<Node> &father) const {
+                     std::shared_ptr<Node> father) const {
   switch (getCurrentToken().type()) {
   case TokenType::NUMBER_INT: {
     const int value{std::stoi(getCurrentToken().raw())};
     eat();
-    return std::make_unique<NodeLiteralInt>(value);
+    return std::make_shared<NodeLiteralInt>(value);
   }
   case TokenType::NUMBER_DOUBLE: {
     const double value{std::stod(getCurrentToken().raw())};
     eat();
-    return std::make_unique<NodeLiteralDouble>(value);
+    return std::make_shared<NodeLiteralDouble>(value);
   }
   case TokenType::STRING: {
     const std::string value{getCurrentToken().raw()};
     eat();
-    return std::make_unique<NodeLiteralString>(value);
+    return std::make_shared<NodeLiteralString>(value);
   }
   case TokenType::CHAR: {
     const char value{getCurrentToken().raw()[1]};
     eat();
-    return std::make_unique<NodeLiteralChar>(value);
+    return std::make_shared<NodeLiteralChar>(value);
   }
   case TokenType::TRUE: {
     eat();
-    return std::make_unique<NodeLiteralBool>(true);
+    return std::make_shared<NodeLiteralBool>(true);
   }
   case TokenType::FALSE: {
     eat();
-    return std::make_unique<NodeLiteralBool>(false);
+    return std::make_shared<NodeLiteralBool>(false);
   }
   case TokenType::OPERATOR_NOT: {
     eat();
-    return std::make_unique<NodeUnaryOp>(TokenType::OPERATOR_NOT,
+    return std::make_shared<NodeUnaryOp>(TokenType::OPERATOR_NOT,
                                          parseLogicalOr(currentScope, father));
   }
   case TokenType::OPERATOR_SUB: {
     eat();
-    return std::make_unique<NodeUnaryOp>(TokenType::OPERATOR_SUB,
+    return std::make_shared<NodeUnaryOp>(TokenType::OPERATOR_SUB,
                                          parseLogicalOr(currentScope, father));
   }
   case TokenType::INCREMENT: {
     eat();
-    return std::make_unique<NodeIncrement>(
+    return std::make_shared<NodeIncrement>(
         TokenType::INCREMENT, parseLogicalOr(currentScope, father));
   }
   case TokenType::DECREMENT: {
     eat();
-    return std::make_unique<NodeIncrement>(
+    return std::make_shared<NodeIncrement>(
         TokenType::DECREMENT, parseLogicalOr(currentScope, father));
   }
   case TokenType::ID: {
@@ -537,18 +528,18 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
     if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
       eat();
       auto expression{parseLogicalOr(currentScope, father)};
-      return std::make_unique<NodeVariableReassignment>(
-          id, std::move(expression), currentScope);
+      return std::make_shared<NodeVariableReassignment>(id, expression,
+                                                        currentScope);
     }
-    return std::make_unique<NodeVariableCall>(id, currentScope);
+    return std::make_shared<NodeVariableCall>(id, currentScope);
   }
   case TokenType::STOP: {
     eat();
-    return std::make_unique<NodeStop>(father);
+    return std::make_shared<NodeStop>(father);
   }
   case TokenType::PASS: {
     eat();
-    return std::make_unique<NodePass>(father);
+    return std::make_shared<NodePass>(father);
   }
   case TokenType::LP: {
     eat();

@@ -9,13 +9,11 @@ namespace nicole {
 
 class NodePrint final : public Node {
 private:
-  mutable std::unique_ptr<Node> expression_{};
+  mutable std::shared_ptr<Node> expression_{};
 
 public:
-  NodePrint(std::unique_ptr<Node> expression,
-                std::unique_ptr<Node> father = nullptr)
-      : Node{NodeType::PRINT, std::move(father)},
-        expression_{std::move(expression)} {};
+  NodePrint(std::shared_ptr<Node> expression, std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::PRINT, father}, expression_{expression} {};
 
   ~NodePrint() = default;
 

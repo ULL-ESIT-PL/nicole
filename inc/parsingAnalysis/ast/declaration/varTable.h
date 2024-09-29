@@ -14,7 +14,7 @@ namespace nicole {
 
 class VariableTable final {
  private:
-  std::shared_ptr<VariableTable> father_;
+  std::weak_ptr<VariableTable> father_;
   std::unordered_map<
       std::string, std::tuple<const GenericType*,
                               std::pair<llvm::Value*, llvm::AllocaInst*>, bool>>
@@ -24,7 +24,7 @@ class VariableTable final {
   VariableTable(std::shared_ptr<VariableTable> father = nullptr)
       : father_{father} {};
 
-  std::shared_ptr<VariableTable> father() { return father_; }
+  std::shared_ptr<VariableTable> father() { return father_.lock(); }
 
   auto begin() const { return table_.begin(); }
 

@@ -8,14 +8,13 @@ namespace nicole {
 class NodeUnaryOp final : public Node {
 private:
   TokenType operator_;
-  std::unique_ptr<Node> expression_;
+  std::shared_ptr<Node> expression_;
 
 public:
-  NodeUnaryOp(const TokenType &op,
-              std::unique_ptr<Node> expression,
+  NodeUnaryOp(const TokenType &op, std::shared_ptr<Node> expression,
               std::shared_ptr<Node> father = nullptr)
       : Node{NodeType::UNARY, father}, operator_{op},
-        expression_{std::move(expression)} {};
+        expression_{expression} {};
 
   virtual ~NodeUnaryOp() = default;
 

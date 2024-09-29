@@ -7,22 +7,23 @@
 namespace nicole {
 
 class GenericType {
- private:
+private:
   /* data */
   std::string name_{""};
-  std::unique_ptr<GenericType> father_;
+  std::weak_ptr<GenericType> father_;
 
- public:
-  GenericType(const std::string& name, std::unique_ptr<GenericType> father = nullptr)
-      : name_{name}, father_{std::move(father)} {};
+public:
+  GenericType(const std::string &name,
+              std::shared_ptr<GenericType> father = nullptr)
+      : name_{name}, father_{father} {};
 
   virtual ~GenericType() = default;
 
   std::string name() const { return name_; }
 
-  GenericType* father() const { return father_.get(); }
+  std::shared_ptr<GenericType> father() const { return father_.lock(); }
 };
 
-}  // namespace nicole
+} // namespace nicole
 
 #endif

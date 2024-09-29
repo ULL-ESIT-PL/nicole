@@ -41,11 +41,11 @@ protected:
   bool isTokenType(const TokenType &type) const;
 
 public:
-  Parser(std::unique_ptr<Sintax> sintax) : lexer_{sintax->createLexer()} {}
+  Parser(std::shared_ptr<Sintax> sintax) : lexer_{sintax->createLexer()} {}
 
   virtual ~Parser() = default;
 
-  virtual std::unique_ptr<Tree>
+  virtual std::shared_ptr<Tree>
   parse(const std::filesystem::path &path) const = 0;
 };
 

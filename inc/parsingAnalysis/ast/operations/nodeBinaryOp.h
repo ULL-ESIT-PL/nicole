@@ -7,16 +7,16 @@ namespace nicole {
 
 class NodeBinaryOp final : public Node {
 private:
-  std::unique_ptr<Node> left_;
+  std::shared_ptr<Node> left_;
   TokenType operator_;
-  std::unique_ptr<Node> right_;
+  std::shared_ptr<Node> right_;
 
 public:
-  NodeBinaryOp(std::unique_ptr<Node> left, const TokenType &op,
-               std::unique_ptr<Node> right,
+  NodeBinaryOp(std::shared_ptr<Node> left, const TokenType &op,
+               std::shared_ptr<Node> right,
                std::shared_ptr<Node> father = nullptr)
-      : Node{NodeType::BINARY, father}, left_{std::move(left)},
-        operator_{op}, right_{std::move(right)} {};
+      : Node{NodeType::BINARY, father}, left_{left},
+        operator_{op}, right_{right} {};
 
   virtual ~NodeBinaryOp() = default;
 

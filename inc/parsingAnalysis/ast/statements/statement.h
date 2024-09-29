@@ -9,13 +9,11 @@ namespace nicole {
 
 class NodeStatement final : public Node {
 private:
-  mutable std::unique_ptr<Node> expression_{};
+  mutable std::shared_ptr<Node> expression_{};
 
 public:
-  NodeStatement(std::unique_ptr<Node> expression,
-                std::shared_ptr<Node> father = nullptr)
-      : Node{NodeType::STATEMENT, father},
-        expression_{std::move(expression)} {};
+  NodeStatement(std::shared_ptr<Node> expression, std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::STATEMENT, father}, expression_{expression} {};
 
   ~NodeStatement() = default;
 

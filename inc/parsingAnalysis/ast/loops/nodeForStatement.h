@@ -8,20 +8,20 @@ namespace nicole {
 
 class NodeForStatement final : public Node {
 private:
-  mutable std::unique_ptr<NodeStatementList> init_;
-  mutable std::unique_ptr<Node> condition_;
-  mutable std::unique_ptr<NodeStatementList> update_;
-  mutable std::unique_ptr<NodeStatementList> body_;
+  mutable std::shared_ptr<NodeStatementList> init_;
+  mutable std::shared_ptr<Node> condition_;
+  mutable std::shared_ptr<NodeStatementList> update_;
+  mutable std::shared_ptr<NodeStatementList> body_;
 
 public:
-  NodeForStatement(std::unique_ptr<NodeStatementList> init,
-                   std::unique_ptr<Node> condition,
-                   std::unique_ptr<NodeStatementList> update,
-                   std::unique_ptr<NodeStatementList> body,
+  NodeForStatement(std::shared_ptr<NodeStatementList> init,
+                   std::shared_ptr<Node> condition,
+                   std::shared_ptr<NodeStatementList> update,
+                   std::shared_ptr<NodeStatementList> body,
                    std::shared_ptr<Node> father = nullptr)
-      : Node{NodeType::FOR, father}, init_{std::move(init)},
-        condition_{std::move(condition)}, update_{std::move(update)},
-        body_{std::move(body)} {};
+      : Node{NodeType::FOR, father}, init_{init},
+        condition_{condition}, update_{update},
+        body_{body} {};
 
   const NodeStatementList *init() const { return init_.get(); }
 
