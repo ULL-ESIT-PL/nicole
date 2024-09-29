@@ -1,6 +1,8 @@
 #ifndef GENERIC_TYPE_H
 #define GENERIC_TYPE_H
 
+#include "llvm/IR/LLVMContext.h"
+#include <llvm/IR/Type.h>
 #include <memory>
 #include <string>
 
@@ -18,6 +20,8 @@ public:
       : name_{name}, father_{father} {};
 
   virtual ~GenericType() = default;
+
+  virtual llvm::Type *type(llvm::LLVMContext* context) const = 0;
 
   std::string name() const { return name_; }
 

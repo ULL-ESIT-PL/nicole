@@ -51,6 +51,7 @@ set(SRC_FILES
     src/parsingAnalysis/ast/nodeType.cc
     src/parsingAnalysis/ast/literals/nodeLiteralString.cc
     src/parsingAnalysis/ast/declaration/varTable.cc
+    src/parsingAnalysis/types/typeTable.cc
     src/parsingAnalysis/parsingAlgorithms/parser.cc
     src/parsingAnalysis/parsingAlgorithms/topDown.cc
     src/visitors/codeGeneration.cc

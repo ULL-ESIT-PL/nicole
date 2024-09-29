@@ -19,6 +19,8 @@ public:
                         std::shared_ptr<Node> father = nullptr)
       : Node{NodeType::STRUCT_DECL, father}, idType_{idType}, body_{body} {};
 
+  const GenericType *structType() const { return idType_.get(); }
+  
   const NodeStatementList *body() const { return body_.get(); }
 
   llvm::Value *accept(const CodeGeneration *visitor) const override {

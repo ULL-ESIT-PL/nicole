@@ -7,6 +7,7 @@ namespace nicole {
 std::shared_ptr<Tree> TopDown::parse(const std::filesystem::path &path) const {
   tokens_ = lexer_.analyze(path);
   globalScope_ = std::make_shared<VariableTable>(nullptr);
+  typeTable_ = std::make_shared<TypeTable>();
   root_ = parseStart();
   return std::make_shared<Tree>(root_);
 }
@@ -247,7 +248,7 @@ TopDown::parseStructDeclaration(std::shared_ptr<VariableTable> currentScope,
   std::shared_ptr<GenericType> idType{nullptr};
   if (token.type() == TokenType::ID) {
     const std::string idTypeStr{token.raw()};
-    idType = std::make_shared<GenericType>(idTypeStr);
+    idType = std::make_shared<UserType>(idTypeStr);
     eat();
     if (getCurrentToken().type() == TokenType::LB) {
       auto structScope{std::make_shared<VariableTable>(nullptr)};
@@ -279,8 +280,7 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
       token = getCurrentToken();
       if (token.type() == TokenType::ID) {
         const std::string idTypeStr{token.raw()};
-        std::shared_ptr<GenericType> idType{
-            std::make_shared<GenericType>(idTypeStr)};
+        std::shared_ptr<GenericType> idType{typeTable_->type(idTypeStr)};
         eat();
         if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
           eat();
@@ -312,8 +312,7 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
       token = getCurrentToken();
       if (token.type() == TokenType::ID) {
         const std::string idTypeStr{token.raw()};
-        std::shared_ptr<GenericType> idType{
-            std::make_shared<GenericType>(idTypeStr)};
+        std::shared_ptr<GenericType> idType{typeTable_->type(idTypeStr)};
         eat();
         if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
           eat();

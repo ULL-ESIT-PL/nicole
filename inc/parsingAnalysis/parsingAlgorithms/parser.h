@@ -24,7 +24,9 @@
 #include "../ast/statements/statement.h"
 #include "../ast/statements/statementList.h"
 #include "../ast/utils/nodePrint.h"
+#include "../types/typeTable.h"
 #include "tree.h"
+#include <memory>
 
 namespace nicole {
 
@@ -34,6 +36,7 @@ protected:
   mutable std::vector<Token> tokens_{};
   mutable std::size_t currentToken_{0};
   mutable std::shared_ptr<VariableTable> globalScope_{};
+  mutable std::shared_ptr<TypeTable> typeTable_{};
 
   void eat() const;
 

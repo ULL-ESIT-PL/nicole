@@ -297,7 +297,28 @@ llvm::Value *CodeGeneration::visit(const NodeConstDeclaration *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeStructDeclaration *node) const {
-  return nullptr;
+  std::string structName = node->structType()->name();
+  // Crear una lista de los tipos de los campos
+  std::vector<llvm::Type *> fieldTypes;
+  // Suponiendo que el cuerpo de la estructura contiene declaraciones de
+  // variables
+  for (auto &declaration : node->body()->statements()) {
+    // Supongamos que declaration es de tipo NodeVariableDeclaration o similar
+    const NodeVariableDeclaration *varDecl =
+        dynamic_cast<const NodeVariableDeclaration *>(declaration.get());
+    if (varDecl) {
+      // Obtén el tipo de la variable
+      llvm::Type *fieldType = llvm::Type::getInt32Ty(*context_);
+      fieldTypes.push_back(fieldType);
+    }
+  }
+  // Crear el tipo de estructura en LLVM
+  llvm::StructType *structType =
+      llvm::StructType::create(*context_, fieldTypes, structName);
+  // Aquí puedes hacer más, como almacenar el tipo de estructura en una tabla de
+  // símbolos, etc.
+
+  return nullptr; // No devuelve ningún valor, ya que estamos creando un tipo
 }
 
 llvm::Value *CodeGeneration::visit(const NodeVariableCall *node) const {
@@ -595,6 +616,8 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
 
 llvm::Value *CodeGeneration::visit(const Tree *node) const {
   llvm::Value *val{node->root()->accept(this)};
+  llvm::StructType *pointType = llvm::StructType::create(*context_, "point");
+
   return builder_.CreateRetVoid();
 }
 
