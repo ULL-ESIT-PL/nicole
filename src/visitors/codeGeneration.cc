@@ -1,6 +1,7 @@
 #include "../../inc/visitors/codeGeneration.h"
 
 #include "../../inc/lexicalAnalysis/type.h"
+#include "../../inc/parsingAnalysis/ast/calls/structConstructor.h"
 #include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
 #include "../../inc/parsingAnalysis/ast/conditionals/nodeIfStatement.h"
 #include "../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
@@ -27,7 +28,6 @@
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Value.h"
 #include "llvm/Support/ErrorHandling.h"
-#include <memory>
 #include <ostream>
 #include <string>
 
@@ -302,12 +302,14 @@ llvm::Value *CodeGeneration::visit(const NodeStructDeclaration *node) const {
   std::vector<llvm::Type *> fieldTypes;
   // Suponiendo que el cuerpo de la estructura contiene declaraciones de
   // variables
-  for (auto &declaration : node->body()->statements()) {
+  for (const auto &declaration : *node->body()) {
     // Supongamos que declaration es de tipo NodeVariableDeclaration o similar
     const NodeVariableDeclaration *varDecl =
-        dynamic_cast<const NodeVariableDeclaration *>(declaration.get());
+        dynamic_cast<const NodeVariableDeclaration *>(
+            declaration->expression());
     if (varDecl) {
       // Obtén el tipo de la variable
+      std::cout << varDecl->varType()->name() << std::flush;
       llvm::Type *fieldType = varDecl->typeTable()
                                   ->type(varDecl->varType()->name())
                                   ->type(context_);
@@ -321,6 +323,11 @@ llvm::Value *CodeGeneration::visit(const NodeStructDeclaration *node) const {
   // símbolos, etc.
 
   return nullptr; // No devuelve ningún valor, ya que estamos creando un tipo
+}
+
+llvm::Value *CodeGeneration::visit(const NodeStructConstructor *node) const {
+  llvm::report_fatal_error("hola");
+  return nullptr;
 }
 
 llvm::Value *CodeGeneration::visit(const NodeVariableCall *node) const {
@@ -618,43 +625,44 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
 
 llvm::Value *CodeGeneration::visit(const Tree *node) const {
   llvm::Value *val{node->root()->accept(this)};
-/*
+
   llvm::StructType *pointType =
-    llvm::StructType::getTypeByName(*context_, "point");
-llvm::Constant *xValue =
-    llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 10); // x = 10
-llvm::Constant *yValue =
-    llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 20); // y = 20
+      llvm::StructType::getTypeByName(*context_, "point");
+  llvm::Constant *xValue =
+      llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 10); // x = 10
+  llvm::Constant *yValue =
+      llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 20); // y = 20
 
-// Crear una constante de estructura con los valores de `x` e `y`
-llvm::Constant *pointInstance =
-    llvm::ConstantStruct::get(pointType, {xValue, yValue});
+  // Crear una constante de estructura con los valores de `x` e `y`
+  llvm::Constant *pointInstance =
+      llvm::ConstantStruct::get(pointType, {xValue, yValue});
 
-// Crear una variable local para `point`
-llvm::AllocaInst *pointVar =
-    builder_.CreateAlloca(pointType, nullptr, "pointVar");
+  // Crear una variable local para `point`
+  llvm::AllocaInst *pointVar =
+      builder_.CreateAlloca(pointType, nullptr, "pointVar");
 
-// Almacenar la instancia en `pointVar`
-builder_.CreateStore(pointInstance, pointVar);
+  // Almacenar la instancia en `pointVar`
+  builder_.CreateStore(pointInstance, pointVar);
+  /*
+  // Acceder al campo `y`
+  // Primero, cargamos la estructura desde `pointVar`
+  llvm::LoadInst *loadedPoint = builder_.CreateLoad(pointType, pointVar,
+  "loadedPoint");
 
-// Acceder al campo `y`
-// Primero, cargamos la estructura desde `pointVar`
-llvm::LoadInst *loadedPoint = builder_.CreateLoad(pointType, pointVar, "loadedPoint");
+  // Extraer el campo `y`, que se supone es el índice 1 en la estructura
+  llvm::Value *yField = builder_.CreateExtractValue(loadedPoint, 1, "yField");
 
-// Extraer el campo `y`, que se supone es el índice 1 en la estructura
-llvm::Value *yField = builder_.CreateExtractValue(loadedPoint, 1, "yField");
+  // Reasignar `y` a un nuevo valor (40)
+  llvm::Constant *newYValue =
+      llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 40);
 
-// Reasignar `y` a un nuevo valor (40)
-llvm::Constant *newYValue =
-    llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 40);
+  // Crear una nueva instancia de la estructura con el nuevo valor de `y`
+  llvm::Value *newPoint =
+      llvm::ConstantStruct::get(pointType, {xValue, newYValue});
 
-// Crear una nueva instancia de la estructura con el nuevo valor de `y`
-llvm::Value *newPoint =
-    llvm::ConstantStruct::get(pointType, {xValue, newYValue});
-
-// Almacenar la nueva estructura de vuelta en `pointVar`
-builder_.CreateStore(newPoint, pointVar);
-*/
+  // Almacenar la nueva estructura de vuelta en `pointVar`
+  builder_.CreateStore(newPoint, pointVar);
+  */
   return builder_.CreateRetVoid();
 }
 

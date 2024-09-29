@@ -3,6 +3,7 @@
 
 #include "../../lexicalAnalysis/nicoleSintax.h"
 #include "../ast/calls/variableCall.h"
+#include "../ast/calls/structConstructor.h"
 #include "../ast/conditionals/nodeIfStatement.h"
 #include "../ast/declaration/constDeclaration.h"
 #include "../ast/declaration/structDeclaration.h"

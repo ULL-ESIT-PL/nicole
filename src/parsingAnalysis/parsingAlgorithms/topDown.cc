@@ -556,6 +556,13 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
       auto expression{parseLogicalOr(currentScope, father)};
       return std::make_shared<NodeVariableReassignment>(id, expression,
                                                         currentScope, typeTable_);
+    } else if (getCurrentToken().type() == TokenType::LB) {
+      eat();
+      auto attributes{parseComma(currentScope, father)};
+      if (getCurrentToken().type() == TokenType::RB) {
+        eat();
+        return std::make_shared<NodeStructConstructor>(id, attributes, typeTable_);
+      }
     }
     return std::make_shared<NodeVariableCall>(id, currentScope);
   }

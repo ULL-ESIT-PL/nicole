@@ -44,6 +44,8 @@ public:
 
   std::string visit(const NodeStructDeclaration *node) const override;
 
+  std::string visit(const NodeStructConstructor *node) const override;
+
   std::string visit(const NodeVariableCall *node) const override;
 
   std::string visit(const NodeVariableReassignment *node) const override;

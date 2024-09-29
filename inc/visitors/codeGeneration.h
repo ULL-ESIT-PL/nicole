@@ -47,6 +47,8 @@ public:
 
   llvm::Value *visit(const NodeStructDeclaration *node) const override;
 
+  llvm::Value *visit(const NodeStructConstructor *node) const override;
+
   llvm::Value *visit(const NodeVariableCall *node) const override;
 
   llvm::Value *visit(const NodeVariableReassignment *node) const override;

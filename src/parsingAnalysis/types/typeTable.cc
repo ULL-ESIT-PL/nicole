@@ -27,7 +27,7 @@ void TypeTable::addType(std::shared_ptr<GenericType> type) const {
 
 std::shared_ptr<GenericType> TypeTable::type(const std::string &name) const {
   if (!hasType(name)) {
-    const std::string errStr{"The type:" + name + "does not exist"};
+    const std::string errStr{"The type: " + name + " does not exist"};
     llvm::report_fatal_error(errStr.c_str());
   }
   

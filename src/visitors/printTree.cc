@@ -1,11 +1,12 @@
 #include "../../inc/visitors/printTree.h"
 
 #include "../../inc/lexicalAnalysis/type.h"
+#include "../../inc/parsingAnalysis/ast/calls/structConstructor.h"
 #include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
 #include "../../inc/parsingAnalysis/ast/conditionals/nodeIfStatement.h"
 #include "../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
-#include "../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/structDeclaration.h"
+#include "../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralBool.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralChar.h"
@@ -111,6 +112,15 @@ std::string PrintTree::visit(const NodeStructDeclaration *node) const {
   result << indent_ << "Struct Declaration:\n";
   increaseIndent();
   result << indent_ << "Attributes:\n" << node->body()->accept(this);
+  decreaseIndent();
+  return result.str();
+}
+
+std::string PrintTree::visit(const NodeStructConstructor *node) const {
+  std::ostringstream result;
+  result << indent_ << "Struct Constructor:\n";
+  increaseIndent();
+  result << indent_ << "Params:\n" << node->parameters()->accept(this);
   decreaseIndent();
   return result.str();
 }
