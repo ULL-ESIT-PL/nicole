@@ -50,6 +50,8 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "RETURN";
   case TokenType::FUNCTION:
     return "FUNCTION";
+  case TokenType::STRUCT:
+    return "STRUCT";
   case TokenType::OR:
     return "OR";
   case TokenType::AND:

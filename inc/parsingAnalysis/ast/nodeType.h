@@ -19,6 +19,7 @@ enum class NodeType {
   STATEMENT_LIST,
   CONST_DECL,
   VAR_DECL,
+  STRUCT_DECL,
   VAR_REG,
   CALL_VAR,
   IF,

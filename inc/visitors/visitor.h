@@ -29,6 +29,7 @@ class NodeStatement;
 class NodeStatementList;
 class NodeVariableDeclaration;
 class NodeConstDeclaration;
+class NodeStructDeclaration;
 class NodeVariableCall;
 class NodeVariableReassignment;
 class NodeIfStatement;
@@ -68,6 +69,8 @@ public:
   virtual T visit(const NodeVariableDeclaration *node) const = 0;
 
   virtual T visit(const NodeConstDeclaration *node) const = 0;
+
+  virtual T visit(const NodeStructDeclaration *node) const = 0;
 
   virtual T visit(const NodeVariableCall *node) const = 0;
 

@@ -32,6 +32,7 @@ Lexer NicoleSintax::createLexer() const {
       Category{TokenType::PASS, "pass", false},
       Category{TokenType::RETURN, "return", false},
       Category{TokenType::FUNCTION, "def", false},
+      Category{TokenType::STRUCT, "struct", false},
 
       Category{TokenType::OR, "or", false},
       Category{TokenType::AND, "and", false},

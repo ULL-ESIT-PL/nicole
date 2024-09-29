@@ -29,6 +29,7 @@ enum class TokenType {
   PASS,
   RETURN,
   FUNCTION,
+  STRUCT,
   OR,
   AND,
   ID,

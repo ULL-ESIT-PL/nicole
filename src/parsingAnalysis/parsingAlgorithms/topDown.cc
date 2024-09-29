@@ -85,6 +85,10 @@ TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope,
     return std::make_shared<NodeStatement>(
         parsePrintStatement(currentScope, father), father);
   }
+  case TokenType::STRUCT: {
+    return std::make_shared<NodeStatement>(
+        parseStructDeclaration(currentScope, father), father);
+  }
   default: {
     return std::make_shared<NodeStatement>(
         parseVarDeclaration(currentScope, father), father);
@@ -232,6 +236,28 @@ TopDown::parsePrintStatement(std::shared_ptr<VariableTable> currentScope,
     llvm::report_fatal_error(strErr.c_str());
   }
   return std::make_shared<NodePrint>(expression);
+}
+
+std::shared_ptr<NodeStructDeclaration>
+TopDown::parseStructDeclaration(std::shared_ptr<VariableTable> currentScope,
+                                std::shared_ptr<Node> father) const {
+  eat();
+  auto token{getCurrentToken()};
+  std::shared_ptr<NodeStatementList> body{nullptr};
+  std::shared_ptr<GenericType> idType{nullptr};
+  if (token.type() == TokenType::ID) {
+    const std::string idTypeStr{token.raw()};
+    idType = std::make_shared<GenericType>(idTypeStr);
+    eat();
+    if (getCurrentToken().type() == TokenType::LB) {
+      auto structScope{std::make_shared<VariableTable>(nullptr)};
+      body = parseBody(structScope, father);
+    } else {
+      const std::string strErr{"Error missing left { of " + idTypeStr};
+      llvm::report_fatal_error(strErr.c_str());
+    }
+  }
+  return std::make_shared<NodeStructDeclaration>(idType, body);
 }
 
 std::shared_ptr<Node>

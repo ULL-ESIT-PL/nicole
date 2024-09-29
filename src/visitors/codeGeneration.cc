@@ -4,6 +4,7 @@
 #include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
 #include "../../inc/parsingAnalysis/ast/conditionals/nodeIfStatement.h"
 #include "../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
+#include "../../inc/parsingAnalysis/ast/declaration/structDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralBool.h"
@@ -295,6 +296,10 @@ llvm::Value *CodeGeneration::visit(const NodeConstDeclaration *node) const {
   return nullptr;
 }
 
+llvm::Value *CodeGeneration::visit(const NodeStructDeclaration *node) const {
+  return nullptr;
+}
+
 llvm::Value *CodeGeneration::visit(const NodeVariableCall *node) const {
   std::cout << "---------\n" << *node->table() << std::flush;
   return builder_.CreateLoad(
@@ -465,6 +470,7 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
         statement->expression()->type() == NodeType::FOR ||
         statement->expression()->type() == NodeType::STOP ||
         statement->expression()->type() == NodeType::PASS ||
+        statement->expression()->type() == NodeType::STRUCT_DECL ||
         statement->expression()->type() == NodeType::PRINT) {
 
       // std::cout << "SKIPPED->>>"

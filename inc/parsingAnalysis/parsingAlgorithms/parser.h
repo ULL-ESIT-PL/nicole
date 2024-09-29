@@ -5,6 +5,7 @@
 #include "../ast/calls/variableCall.h"
 #include "../ast/conditionals/nodeIfStatement.h"
 #include "../ast/declaration/constDeclaration.h"
+#include "../ast/declaration/structDeclaration.h"
 #include "../ast/declaration/varDeclaration.h"
 #include "../ast/declaration/varReassignment.h"
 #include "../ast/declaration/varTable.h"

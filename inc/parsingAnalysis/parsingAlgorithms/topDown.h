@@ -32,6 +32,9 @@ private:
   std::shared_ptr<NodePrint>
   parsePrintStatement(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> father) const;
 
+  std::shared_ptr<NodeStructDeclaration>
+  parseStructDeclaration(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> father) const;
+
   std::shared_ptr<Node>
   parseVarDeclaration(std::shared_ptr<VariableTable> currentScope, std::shared_ptr<Node> father) const;
 
