@@ -3,6 +3,7 @@
 
 #include "../node.h"
 #include "../statements/statementList.h"
+#include <memory>
 
 namespace nicole {
 
@@ -18,9 +19,7 @@ public:
                   std::shared_ptr<NodeStatementList> elseBody = nullptr,
                   std::shared_ptr<Node> father = nullptr)
       : Node{NodeType::IF, father}, condition_{condition}, body_{body},
-        elseBody_{elseBody} {
-    // condition_->setFather(this);
-  };
+        elseBody_{elseBody} {};
 
   const Node *condition() const { return condition_.get(); }
 

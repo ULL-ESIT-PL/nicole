@@ -20,7 +20,8 @@ public:
                            std::shared_ptr<VariableTable> currentScope,
                            std::shared_ptr<Node> father = nullptr)
       : Node{NodeType::VAR_REG, father}, id_{id}, currentScope_{currentScope},
-        expression_{expression} {};
+        expression_{expression} {
+  };
 
   std::string id() const { return id_; }
 

@@ -12,10 +12,11 @@
 #include "../inc/parsingAnalysis/parsingAlgorithms/topDown.h"
 #include "../inc/visitors/codeGeneration.h"
 #include "../inc/visitors/printTree.h"
+#include "llvm/Support/ErrorHandling.h"
 
 using namespace nicole;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   // Start LLVM
   llvm::LLVMContext context;
   llvm::IRBuilder<> builder{context};
@@ -38,19 +39,17 @@ int main(int argc, char* argv[]) {
   llvm::LLVMContext *contextPtr{&context};
 
   const std::filesystem::path path{"../test/test1.nc"};
-  std::unique_ptr<Sintax> sintax{std::make_unique<NicoleSintax>()};
-  const std::unique_ptr<Parser> parser{
-      std::make_unique<TopDown>(std::move(sintax))};
+  std::shared_ptr<Sintax> sintax{std::make_shared<NicoleSintax>()};
+  const std::shared_ptr<Parser> parser{std::make_shared<TopDown>(sintax)};
   const auto result{parser->parse(path)};
   auto tree{result.get()};
-  //if (argc > 1) {
-    PrintTree printer{};
-    std::cout << printer.print(tree) << "\n";
+  // if (argc > 1) {
+  PrintTree printer{};
+  std::cout << printer.print(tree) << "\n";
   //  return 0;
   // }
   CodeGeneration codeGen{contextPtr, module.get(), entry};
   llvm::Value *returnValue{codeGen.generate(tree)};
-
   /*
     if (!returnValue) {
       std::cerr << "Error: No return value generated." << std::endl;
@@ -92,7 +91,7 @@ int main(int argc, char* argv[]) {
   char* resultPtr = (char*)gv.PointerVal;
   std::cout << "Result: " << resultPtr << std::endl;
   */
- 
+
   delete execEngine;
 
   return 0;

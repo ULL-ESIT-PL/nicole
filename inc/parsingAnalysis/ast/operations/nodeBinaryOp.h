@@ -15,8 +15,10 @@ public:
   NodeBinaryOp(std::shared_ptr<Node> left, const TokenType &op,
                std::shared_ptr<Node> right,
                std::shared_ptr<Node> father = nullptr)
-      : Node{NodeType::BINARY, father}, left_{left},
-        operator_{op}, right_{right} {};
+      : Node{NodeType::BINARY, father}, left_{left}, operator_{op},
+        right_{right} {
+    
+  };
 
   virtual ~NodeBinaryOp() = default;
 

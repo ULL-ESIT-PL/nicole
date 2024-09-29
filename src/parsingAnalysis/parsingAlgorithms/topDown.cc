@@ -21,7 +21,6 @@ std::shared_ptr<NodeStatementList> TopDown::parseStart() const {
       eat();
     }
   }
-
   return std::make_shared<NodeStatementList>(gloablScopeStatements);
 }
 
@@ -293,8 +292,8 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
         if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
           eat();
           auto value{parseLogicalOr(currentScope, father)};
-          return std::make_shared<NodeConstDeclaration>(id, idType, value,
-                                                        currentScope);
+          return std::make_shared<NodeVariableDeclaration>(id, idType, value,
+                                                           currentScope);
         } else {
           const std::string strErr{"Error missing value of " + id};
           llvm::report_fatal_error(strErr.c_str());
@@ -306,6 +305,7 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
       }
     }
   }
+
   return parseLogicalOr(currentScope, father);
 }
 

@@ -12,8 +12,10 @@ private:
   mutable std::shared_ptr<Node> expression_{};
 
 public:
-  NodePrint(std::shared_ptr<Node> expression, std::shared_ptr<Node> father = nullptr)
-      : Node{NodeType::PRINT, father}, expression_{expression} {};
+  NodePrint(std::shared_ptr<Node> expression,
+            std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::PRINT, father}, expression_{expression} {
+  };
 
   ~NodePrint() = default;
 

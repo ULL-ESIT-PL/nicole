@@ -16,7 +16,8 @@ public:
   NodeIncrement(const TokenType &op, std::shared_ptr<Node> expression,
                 std::shared_ptr<Node> father = nullptr)
       : Node{NodeType::INCREMENT, father}, operator_{op},
-        expression_{expression} {};
+        expression_{expression} {
+  };
 
   virtual ~NodeIncrement() = default;
 

@@ -14,8 +14,7 @@ public:
   NodeWhileStatement(std::shared_ptr<Node> condition,
                      std::shared_ptr<NodeStatementList> body,
                      std::shared_ptr<Node> father = nullptr)
-      : Node{NodeType::WHILE, father},
-        condition_{condition}, body_{body} {};
+      : Node{NodeType::WHILE, father}, condition_{condition}, body_{body} {};
 
   const Node *condition() const { return condition_.get(); }
 

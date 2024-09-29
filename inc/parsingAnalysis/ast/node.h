@@ -12,7 +12,7 @@
 
 namespace nicole {
 
-class Node {
+class Node : public std::enable_shared_from_this<Node> {
 protected:
   NodeType type_;
   std::weak_ptr<Node> father_;
@@ -26,8 +26,6 @@ public:
   NodeType type() const { return type_; }
 
   std::shared_ptr<Node> father() const { return father_.lock(); }
-
-  void setFather(std::shared_ptr<Node> father) { father_ = father; }
 
   virtual llvm::Value *accept(const CodeGeneration *visitor) const = 0;
 

@@ -12,8 +12,10 @@ private:
   mutable std::shared_ptr<Node> expression_{};
 
 public:
-  NodeStatement(std::shared_ptr<Node> expression, std::shared_ptr<Node> father = nullptr)
-      : Node{NodeType::STATEMENT, father}, expression_{expression} {};
+  NodeStatement(std::shared_ptr<Node> expression,
+                std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::STATEMENT, father}, expression_{expression} {
+  };
 
   ~NodeStatement() = default;
 

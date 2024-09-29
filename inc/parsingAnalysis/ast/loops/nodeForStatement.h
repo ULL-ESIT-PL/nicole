@@ -19,9 +19,8 @@ public:
                    std::shared_ptr<NodeStatementList> update,
                    std::shared_ptr<NodeStatementList> body,
                    std::shared_ptr<Node> father = nullptr)
-      : Node{NodeType::FOR, father}, init_{init},
-        condition_{condition}, update_{update},
-        body_{body} {};
+      : Node{NodeType::FOR, father}, init_{init}, condition_{condition},
+        update_{update}, body_{body} {};
 
   const NodeStatementList *init() const { return init_.get(); }
 
