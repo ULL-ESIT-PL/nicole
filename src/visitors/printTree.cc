@@ -55,6 +55,7 @@ std::string PrintTree::visit(const NodeLiteralString *node) const {
 }
 
 std::string PrintTree::visit(const NodeReturn *node) const {
+  if (node->isEmptyExpression()) return indent_ + "Return: void\n";
   return indent_ + "Return: \"" + node->expression()->accept(this) + "\"\n";
 }
 

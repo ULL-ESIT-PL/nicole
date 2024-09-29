@@ -10,6 +10,7 @@ std::shared_ptr<Tree> TopDown::parse(const std::filesystem::path &path) const {
   globalScope_ = std::make_shared<VariableTable>(nullptr);
   typeTable_ = std::make_shared<TypeTable>();
   root_ = parseStart();
+
   return std::make_shared<Tree>(root_);
 }
 
@@ -23,6 +24,7 @@ std::shared_ptr<NodeStatementList> TopDown::parseStart() const {
       eat();
     }
   }
+
   return std::make_shared<NodeStatementList>(gloablScopeStatements);
 }
 
@@ -132,6 +134,10 @@ TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope,
   case TokenType::FUNCTION: {
     return std::make_shared<NodeStatement>(
         parseFunctionDeclaration(currentScope, father), father);
+  }
+  case TokenType::RETURN: {
+    return std::make_shared<NodeStatement>(
+        parseReturn(currentScope, father), father);
   }
   default: {
     return std::make_shared<NodeStatement>(
@@ -315,6 +321,15 @@ TopDown::parseFunctionDeclaration(std::shared_ptr<VariableTable> currentScope,
   std::shared_ptr<GenericType> returnType{nullptr};
   std::shared_ptr<ParamsDeclaration> body{nullptr};
   return nullptr;
+}
+
+std::shared_ptr<NodeReturn> TopDown::parseReturn(
+    std::shared_ptr<VariableTable>& currentScope, std::shared_ptr<Node> father) const {
+  eat();
+  if (isTokenType(TokenType::SEMICOLON)) {
+    return std::make_shared<NodeReturn>(nullptr);
+  }
+  return std::make_shared<NodeReturn>(parseLogicalOr(currentScope, father));
 }
 
 std::shared_ptr<Node>
@@ -629,13 +644,6 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
   case TokenType::PASS: {
     eat();
     return std::make_shared<NodePass>(father);
-  }
-  case TokenType::RETURN: {
-    eat();
-    if (getCurrentToken().type() == TokenType::SEMICOLON) {
-      return std::make_shared<NodeReturn>(nullptr, nullptr);
-    }
-    return std::make_shared<NodeReturn>(parseLogicalOr(currentScope, father));
   }
   case TokenType::LP: {
     eat();

@@ -516,8 +516,8 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
         statement->expression()->type() == NodeType::STOP ||
         statement->expression()->type() == NodeType::PASS ||
         statement->expression()->type() == NodeType::STRUCT_DECL ||
+        statement->expression()->type() == NodeType::FUN_DECL ||
         statement->expression()->type() == NodeType::PRINT) {
-
       // std::cout << "SKIPPED->>>"
       //         << nodeTypeToString(statement->expression()->type()) + "\n"
       //       << std::flush;

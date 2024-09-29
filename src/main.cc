@@ -42,6 +42,7 @@ int main(int argc, char *argv[]) {
   std::shared_ptr<Sintax> sintax{std::make_shared<NicoleSintax>()};
   const std::shared_ptr<Parser> parser{std::make_shared<TopDown>(sintax)};
   const auto result{parser->parse(path)};
+  
   auto tree{result.get()};
   // if (argc > 1) {
   PrintTree printer{};
