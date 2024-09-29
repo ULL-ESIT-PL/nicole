@@ -633,7 +633,7 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
   case TokenType::RETURN: {
     eat();
     if (getCurrentToken().type() == TokenType::SEMICOLON) {
-      return std::make_shared<NodeReturn>(nullptr);
+      return std::make_shared<NodeReturn>(nullptr, nullptr);
     }
     return std::make_shared<NodeReturn>(parseLogicalOr(currentScope, father));
   }

@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "../node.h"
+#include "llvm/Support/ErrorHandling.h"
 
 namespace nicole {
 
@@ -13,13 +14,19 @@ private:
 
 public:
   NodeReturn(std::shared_ptr<Node> expression,
-                std::shared_ptr<Node> father = nullptr)
-      : Node{NodeType::RETURN, father}, expression_{expression} {
-  };
+             std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::RETURN, father}, expression_{expression} {};
 
   ~NodeReturn() = default;
 
-  const Node *expression() const { return expression_.get(); }
+  bool isEmptyExpression() const { return expression_ == nullptr; }
+
+  const Node *expression() const {
+    if (!expression_) {
+      return nullptr;
+    }
+    return expression_.get();
+  }
 
   llvm::Value *accept(const CodeGeneration *visitor) const override {
     return visitor->visit(this);

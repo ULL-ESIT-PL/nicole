@@ -68,8 +68,10 @@ llvm::Value *CodeGeneration::visit(const NodeLiteralString *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeReturn *node) const {
+  if (node->isEmptyExpression()) {
+    return builder_.CreateRetVoid();
+  }
   llvm::Value *result{node->expression()->accept(this)};
-  if (!result) return builder_.CreateRetVoid();
   return builder_.CreateRet(result);
 }
 
@@ -638,7 +640,7 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
 
 llvm::Value *CodeGeneration::visit(const Tree *node) const {
   llvm::Value *val{node->root()->accept(this)};
-
+/*
   llvm::StructType *pointType =
       llvm::StructType::getTypeByName(*context_, "point");
   llvm::Constant *xValue =
@@ -656,7 +658,7 @@ llvm::Value *CodeGeneration::visit(const Tree *node) const {
 
   // Almacenar la instancia en `pointVar`
   builder_.CreateStore(pointInstance, pointVar);
-  /*
+  
   // Acceder al campo `y`
   // Primero, cargamos la estructura desde `pointVar`
   llvm::LoadInst *loadedPoint = builder_.CreateLoad(pointType, pointVar,
