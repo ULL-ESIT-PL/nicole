@@ -336,7 +336,20 @@ llvm::Value *CodeGeneration::visit(const NodeStructDeclaration *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeFunctionDeclaration *node) const {
-  llvm::report_fatal_error("hola");
+  // missing add paramters to scope and link to function
+  llvm::FunctionType *funcType{
+      llvm::FunctionType::get(node->returnType()->type(context_), false)};
+
+  llvm::Function *funct{llvm::Function::Create(
+      funcType, llvm::Function::ExternalLinkage, node->id(), module_)};
+
+  llvm::BasicBlock *entry{llvm::BasicBlock::Create(*context_, "entry", funct)};
+
+  builder_.SetInsertPoint(entry);
+  auto value{node->body()->accept(this)};
+  auto mainFun{module_->getFunction("main")};
+  builder_.SetInsertPoint(&mainFun->getEntryBlock());
+  // Missing add to functionTable
   return nullptr;
 }
 
@@ -640,44 +653,44 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
 
 llvm::Value *CodeGeneration::visit(const Tree *node) const {
   llvm::Value *val{node->root()->accept(this)};
-/*
-  llvm::StructType *pointType =
-      llvm::StructType::getTypeByName(*context_, "point");
-  llvm::Constant *xValue =
-      llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 10); // x = 10
-  llvm::Constant *yValue =
-      llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 20); // y = 20
+  /*
+    llvm::StructType *pointType =
+        llvm::StructType::getTypeByName(*context_, "point");
+    llvm::Constant *xValue =
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 10); // x = 10
+    llvm::Constant *yValue =
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 20); // y = 20
 
-  // Crear una constante de estructura con los valores de `x` e `y`
-  llvm::Constant *pointInstance =
-      llvm::ConstantStruct::get(pointType, {xValue, yValue});
+    // Crear una constante de estructura con los valores de `x` e `y`
+    llvm::Constant *pointInstance =
+        llvm::ConstantStruct::get(pointType, {xValue, yValue});
 
-  // Crear una variable local para `point`
-  llvm::AllocaInst *pointVar =
-      builder_.CreateAlloca(pointType, nullptr, "pointVar");
+    // Crear una variable local para `point`
+    llvm::AllocaInst *pointVar =
+        builder_.CreateAlloca(pointType, nullptr, "pointVar");
 
-  // Almacenar la instancia en `pointVar`
-  builder_.CreateStore(pointInstance, pointVar);
-  
-  // Acceder al campo `y`
-  // Primero, cargamos la estructura desde `pointVar`
-  llvm::LoadInst *loadedPoint = builder_.CreateLoad(pointType, pointVar,
-  "loadedPoint");
+    // Almacenar la instancia en `pointVar`
+    builder_.CreateStore(pointInstance, pointVar);
 
-  // Extraer el campo `y`, que se supone es el índice 1 en la estructura
-  llvm::Value *yField = builder_.CreateExtractValue(loadedPoint, 1, "yField");
+    // Acceder al campo `y`
+    // Primero, cargamos la estructura desde `pointVar`
+    llvm::LoadInst *loadedPoint = builder_.CreateLoad(pointType, pointVar,
+    "loadedPoint");
 
-  // Reasignar `y` a un nuevo valor (40)
-  llvm::Constant *newYValue =
-      llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 40);
+    // Extraer el campo `y`, que se supone es el índice 1 en la estructura
+    llvm::Value *yField = builder_.CreateExtractValue(loadedPoint, 1, "yField");
 
-  // Crear una nueva instancia de la estructura con el nuevo valor de `y`
-  llvm::Value *newPoint =
-      llvm::ConstantStruct::get(pointType, {xValue, newYValue});
+    // Reasignar `y` a un nuevo valor (40)
+    llvm::Constant *newYValue =
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(*context_), 40);
 
-  // Almacenar la nueva estructura de vuelta en `pointVar`
-  builder_.CreateStore(newPoint, pointVar);
-  */
+    // Crear una nueva instancia de la estructura con el nuevo valor de `y`
+    llvm::Value *newPoint =
+        llvm::ConstantStruct::get(pointType, {xValue, newYValue});
+
+    // Almacenar la nueva estructura de vuelta en `pointVar`
+    builder_.CreateStore(newPoint, pointVar);
+    */
   return builder_.CreateRetVoid();
 }
 

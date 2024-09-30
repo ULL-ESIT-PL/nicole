@@ -72,7 +72,10 @@ TopDown::parseComma(std::shared_ptr<VariableTable> &currentScope,
 std::shared_ptr<ParamsDeclaration>
 TopDown::parseParams(std::shared_ptr<VariableTable> &currentScope,
                      std::shared_ptr<Node> father) const {
-  std::vector<std::pair<std::string, std::shared_ptr<GenericType>>> params;
+  std::vector<std::pair<std::string, std::shared_ptr<GenericType>>> params{};
+  if (getCurrentToken().type() == TokenType::RP) {
+    return std::make_shared<ParamsDeclaration>(params, currentScope);
+  }
   while (std::size_t(currentToken_) < tokens_.size() &&
          !isTokenType(TokenType::SEMICOLON)) {
     auto token{getCurrentToken()};
@@ -136,8 +139,8 @@ TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope,
         parseFunctionDeclaration(currentScope, father), father);
   }
   case TokenType::RETURN: {
-    return std::make_shared<NodeStatement>(
-        parseReturn(currentScope, father), father);
+    return std::make_shared<NodeStatement>(parseReturn(currentScope, father),
+                                           father);
   }
   default: {
     return std::make_shared<NodeStatement>(
@@ -317,14 +320,52 @@ TopDown::parseFunctionDeclaration(std::shared_ptr<VariableTable> currentScope,
   eat();
   auto token{getCurrentToken()};
   std::string id{};
-  std::shared_ptr<ParamsDeclaration> params{nullptr};
+  if (token.type() == TokenType::ID) {
+    id = token.raw();
+    eat();
+  } else {
+    const std::string strErr{"Error missing function id after def"};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  if (getCurrentToken().type() == TokenType::LP) {
+    eat();
+  } else {
+    const std::string strErr{"Error missing left ( for function " + id};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  auto funScope{std::make_shared<VariableTable>(nullptr)};
+  std::shared_ptr<ParamsDeclaration> params{parseParams(funScope, father)};
+  if (getCurrentToken().type() == TokenType::RP) {
+    eat();
+  } else {
+    const std::string strErr{"Error missing right ) for function " + id};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  if (getCurrentToken().type() == TokenType::DOTDOT) {
+    eat();
+  } else {
+    const std::string strErr{"Error missing \':\' after right ) for function " +
+                             id};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  token = getCurrentToken();
   std::shared_ptr<GenericType> returnType{nullptr};
-  std::shared_ptr<ParamsDeclaration> body{nullptr};
-  return nullptr;
+  if (token.type() == TokenType::ID) {
+    returnType = typeTable_->type(token.raw());
+    eat();
+  } else {
+    const std::string strErr{"Error missing return type for the function " +
+                             id};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  std::shared_ptr<NodeStatementList> body{parseBody(funScope, father)};
+  return std::make_shared<NodeFunctionDeclaration>(id, params, returnType, body,
+                                                   funScope, typeTable_);
 }
 
-std::shared_ptr<NodeReturn> TopDown::parseReturn(
-    std::shared_ptr<VariableTable>& currentScope, std::shared_ptr<Node> father) const {
+std::shared_ptr<NodeReturn>
+TopDown::parseReturn(std::shared_ptr<VariableTable> &currentScope,
+                     std::shared_ptr<Node> father) const {
   eat();
   if (isTokenType(TokenType::SEMICOLON)) {
     return std::make_shared<NodeReturn>(nullptr);

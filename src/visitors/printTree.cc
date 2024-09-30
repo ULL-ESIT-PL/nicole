@@ -127,7 +127,7 @@ std::string PrintTree::visit(const NodeFunctionDeclaration *node) const {
   std::ostringstream result;
   result << indent_ << "Function Declaration:\n";
   increaseIndent();
-  result << indent_ << "Id:\n" << node->id();
+  result << indent_ << "Id:\n" << node->id() << "\n";
   result << indent_ << "Attributes:\n";
   for (const auto &param : *node->parameters()) {
     result << indent_ << "Id: " << param.first
