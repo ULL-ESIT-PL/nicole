@@ -2,6 +2,7 @@
 #define BOOL_TYPE_H
 
 #include "genericType.h"
+#include "llvm/IR/Constants.h"
 #include <llvm/IR/Type.h>
 #include <llvm/IR/DerivedTypes.h>
 

@@ -7,7 +7,7 @@ Lexer NicoleSintax::createLexer() const {
       Category{TokenType::SPACE, "\\s+", true},
       Category{TokenType::COMMENT, "\\/\\*(.|\\n)*?\\*\\/", true},
 
-      Category{TokenType::NUMBER_DOUBLE, "\\d+\\.\\d+([eE][-]?\\d+)?", false},
+      Category{TokenType::NUMBER_FLOAT, "\\d+\\.\\d+([eE][-]?\\d+)?", false},
       Category{TokenType::NUMBER_INT, "\\d+([eE][-]?\\d+)?", false},
       Category{TokenType::CHAR, "\'(?:\\\\.|[^\'\\\\])\'", false},
       Category{TokenType::STRING, "\"(?:\\\\.|[^\"\\\\])*\"", false},

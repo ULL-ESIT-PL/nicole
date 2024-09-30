@@ -25,7 +25,7 @@ public:
 
   llvm::Value *visit(const NodeLiteralChar *node) const override;
 
-  llvm::Value *visit(const NodeLiteralDouble *node) const override;
+  llvm::Value *visit(const NodeLiteralFloat *node) const override;
 
   llvm::Value *visit(const NodeLiteralInt *node) const override;
 
@@ -54,6 +54,8 @@ public:
   llvm::Value *visit(const NodeStructConstructor *node) const override;
 
   llvm::Value *visit(const NodeVariableCall *node) const override;
+
+  llvm::Value *visit(const NodeFunctionCall *node) const override;
 
   llvm::Value *visit(const NodeVariableReassignment *node) const override;
 

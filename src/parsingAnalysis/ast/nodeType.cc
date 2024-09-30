@@ -11,8 +11,8 @@ std::string nodeTypeToString(const NodeType &nt) {
     return "STRING";
   case NodeType::INT:
     return "INT";
-  case NodeType::DOUBLE:
-    return "DOUBLE";
+  case NodeType::FLOAT:
+    return "FLOAT";
   case NodeType::BOOL:
     return "BOOL";
   case NodeType::BINARY:
@@ -35,6 +35,8 @@ std::string nodeTypeToString(const NodeType &nt) {
     return "VAR_REG";
   case NodeType::CALL_VAR:
     return "CALL_VAR";
+  case NodeType::CALL_FUNCTION:
+    return "CALL_FUNCTION";
   case NodeType::IF:
     return "IF";
   case NodeType::WHILE:

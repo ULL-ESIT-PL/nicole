@@ -8,7 +8,7 @@ namespace nicole {
 enum class TokenType {
   SPACE,
   COMMENT,
-  NUMBER_DOUBLE,
+  NUMBER_FLOAT,
   NUMBER_INT,
   CHAR,
   STRING,

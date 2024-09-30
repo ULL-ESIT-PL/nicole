@@ -2,6 +2,7 @@
 #define GENERIC_TYPE_H
 
 #include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Value.h"
 #include <llvm/IR/Type.h>
 #include <memory>
 #include <string>
@@ -21,7 +22,7 @@ public:
 
   virtual ~GenericType() = default;
 
-  virtual llvm::Type *type(llvm::LLVMContext* context) const = 0;
+  virtual llvm::Type *type(llvm::LLVMContext *context) const = 0;
 
   std::string name() const { return name_; }
 

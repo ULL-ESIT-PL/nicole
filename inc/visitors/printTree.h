@@ -22,7 +22,7 @@ public:
 
   std::string visit(const NodeLiteralChar *node) const override;
 
-  std::string visit(const NodeLiteralDouble *node) const override;
+  std::string visit(const NodeLiteralFloat *node) const override;
 
   std::string visit(const NodeLiteralInt *node) const override;
 
@@ -51,6 +51,8 @@ public:
   std::string visit(const NodeStructConstructor *node) const override;
 
   std::string visit(const NodeVariableCall *node) const override;
+
+  std::string visit(const NodeFunctionCall *node) const override;
 
   std::string visit(const NodeVariableReassignment *node) const override;
 

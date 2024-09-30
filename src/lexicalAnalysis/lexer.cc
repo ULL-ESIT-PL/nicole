@@ -64,7 +64,7 @@ std::vector<Token> Lexer::analyze(const std::filesystem::path& fileName,
     for (const auto& category : categories_) {
       if (std::regex_match(what[0].str(), category.pattern().pattern())) {
         if (verbose) {
-          std::cout << "Category: " << static_cast<int>(category.type())
+          std::cout << "Category: " << tokenTypeToString(category.type())
                     << ", Match: " << what[0].str() << "\n";
         }
         if (!category.skip()) {

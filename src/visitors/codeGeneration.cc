@@ -1,6 +1,7 @@
 #include "../../inc/visitors/codeGeneration.h"
 
 #include "../../inc/lexicalAnalysis/type.h"
+#include "../../inc/parsingAnalysis/ast/calls/functionCall.h"
 #include "../../inc/parsingAnalysis/ast/calls/structConstructor.h"
 #include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
 #include "../../inc/parsingAnalysis/ast/conditionals/nodeIfStatement.h"
@@ -12,7 +13,7 @@
 #include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralBool.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralChar.h"
-#include "../../inc/parsingAnalysis/ast/literals/nodeLiteralDouble.h"
+#include "../../inc/parsingAnalysis/ast/literals/nodeLiteralFloat.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralInt.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeForStatement.h"
@@ -26,12 +27,15 @@
 #include "../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "../../inc/parsingAnalysis/ast/utils/nodePrint.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
+#include "llvm/ADT/APFloat.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Value.h"
 #include "llvm/Support/ErrorHandling.h"
+#include <cstddef>
 #include <ostream>
 #include <string>
+#include <vector>
 
 namespace nicole {
 
@@ -45,7 +49,7 @@ llvm::Value *CodeGeneration::visit(const NodeLiteralChar *node) const {
                                 node->value());
 }
 
-llvm::Value *CodeGeneration::visit(const NodeLiteralDouble *node) const {
+llvm::Value *CodeGeneration::visit(const NodeLiteralFloat *node) const {
   return llvm::ConstantFP::get(*context_, llvm::APFloat(node->value()));
 }
 
@@ -337,8 +341,13 @@ llvm::Value *CodeGeneration::visit(const NodeStructDeclaration *node) const {
 
 llvm::Value *CodeGeneration::visit(const NodeFunctionDeclaration *node) const {
   // missing add paramters to scope and link to function
-  llvm::FunctionType *funcType{
-      llvm::FunctionType::get(node->returnType()->type(context_), false)};
+  auto params{node->parameters()};
+  std::vector<llvm::Type *> paramTypes{};
+  for (const auto &param : *params) {
+    paramTypes.push_back(param.second->type(context_));
+  }
+  llvm::FunctionType *funcType{llvm::FunctionType::get(
+      node->returnType()->type(context_), paramTypes, false)};
 
   llvm::Function *funct{llvm::Function::Create(
       funcType, llvm::Function::ExternalLinkage, node->id(), module_)};
@@ -346,10 +355,22 @@ llvm::Value *CodeGeneration::visit(const NodeFunctionDeclaration *node) const {
   llvm::BasicBlock *entry{llvm::BasicBlock::Create(*context_, "entry", funct)};
 
   builder_.SetInsertPoint(entry);
+  auto paramsVec{params->paramters()};
+  for (std::size_t i{0}; i < paramsVec.size(); ++i) {
+    auto argument{funct->getArg(i)};
+    argument->setName(paramsVec[i].first +
+                      std::to_string(i)); // Asigna nombre al primer parámetro
+    auto type{paramsVec[i].second};
+    llvm::AllocaInst *alloca{builder_.CreateAlloca(
+        type->type(context_), nullptr, paramsVec[i].first)};
+    builder_.CreateStore(argument, alloca);
+    node->table()->addVariable(paramsVec[i].first, type.get(), argument,
+                               alloca);
+  }
   auto value{node->body()->accept(this)};
   auto mainFun{module_->getFunction("main")};
   builder_.SetInsertPoint(&mainFun->getEntryBlock());
-  // Missing add to functionTable
+  node->functionTable()->addFunction(node->id(), node->returnType(), funct);
   return nullptr;
 }
 
@@ -363,6 +384,22 @@ llvm::Value *CodeGeneration::visit(const NodeVariableCall *node) const {
   return builder_.CreateLoad(
       node->table()->variableValue(node->id())->getType(),
       node->table()->variableAddress(node->id()), node->id());
+}
+
+llvm::Value *CodeGeneration::visit(const NodeFunctionCall *node) const {
+  std::cout << "---------\n" << *node->functionTable() << std::flush;
+  auto func{node->functionTable()->function(node->id())};
+  std::vector<llvm::Value *> args{};
+  for (const auto &param : *node) {
+    args.push_back(param->accept(this));
+  }
+  if (func->arg_size() != args.size()) {
+    const std::string errStr{
+        "Invalid arguments size for function: " + node->id() +
+        ", the size is " + std::to_string(func->arg_size())};
+    llvm::report_fatal_error(errStr.c_str());
+  }
+  return builder_.CreateCall(func, args, "call_" + node->id());
 }
 
 llvm::Value *CodeGeneration::visit(const NodeVariableReassignment *node) const {
@@ -574,6 +611,9 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
       } else {
         formatString = "%d\n"; // Use %d for integers
       }
+    } else if (loadedType->isFloatTy()) { // Check for float type
+      formatString = "%f\n";              // Use %f for float representation
+      // You might want to handle how to print the float value here
     }
     // Handle floating point types
 
@@ -588,7 +628,8 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
         }
       }
     } else {
-      llvm::report_fatal_error("Unsupported type for print.");
+      llvm::report_fatal_error(
+          "Unsupported type for print from variable call.");
     }
   } else if (auto constantInt = llvm::dyn_cast<llvm::ConstantInt>(value)) {
     if (constantInt->getType()->isIntegerTy(1)) { // boolean
@@ -620,8 +661,9 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
     // Handle integer types
     if (intValue->isIntegerTy(1)) { // boolean
       formatString = "%s\n";
-      value = builder_.CreateICmpNE(value, llvm::ConstantInt::get(intValue, 0));
-      value = llvm::ConstantDataArray::getString(*context_, "true");
+      value = constantInt->isZero()
+                  ? llvm::ConstantDataArray::getString(*context_, "false")
+                  : llvm::ConstantDataArray::getString(*context_, "true");
     } else {
       formatString = "%d\n"; // Use %d for integers
     }

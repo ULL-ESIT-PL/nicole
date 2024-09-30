@@ -1,6 +1,7 @@
 #include "../../inc/visitors/printTree.h"
 
 #include "../../inc/lexicalAnalysis/type.h"
+#include "../../inc/parsingAnalysis/ast/calls/functionCall.h"
 #include "../../inc/parsingAnalysis/ast/calls/structConstructor.h"
 #include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
 #include "../../inc/parsingAnalysis/ast/conditionals/nodeIfStatement.h"
@@ -12,7 +13,7 @@
 #include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralBool.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralChar.h"
-#include "../../inc/parsingAnalysis/ast/literals/nodeLiteralDouble.h"
+#include "../../inc/parsingAnalysis/ast/literals/nodeLiteralFloat.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralInt.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeForStatement.h"
@@ -42,8 +43,8 @@ std::string PrintTree::visit(const NodeLiteralChar *node) const {
   return indent_ + "Char: '" + std::to_string(node->value()) + "'\n";
 }
 
-std::string PrintTree::visit(const NodeLiteralDouble *node) const {
-  return indent_ + "Double: " + std::to_string(node->value()) + "\n";
+std::string PrintTree::visit(const NodeLiteralFloat *node) const {
+  return indent_ + "Float: " + std::to_string(node->value()) + "\n";
 }
 
 std::string PrintTree::visit(const NodeLiteralInt *node) const {
@@ -55,7 +56,8 @@ std::string PrintTree::visit(const NodeLiteralString *node) const {
 }
 
 std::string PrintTree::visit(const NodeReturn *node) const {
-  if (node->isEmptyExpression()) return indent_ + "Return: void\n";
+  if (node->isEmptyExpression())
+    return indent_ + "Return: void\n";
   return indent_ + "Return: \"" + node->expression()->accept(this) + "\"\n";
 }
 
@@ -150,6 +152,20 @@ std::string PrintTree::visit(const NodeStructConstructor *node) const {
 
 std::string PrintTree::visit(const NodeVariableCall *node) const {
   return indent_ + "Variable Call: " + node->id() + "\n";
+}
+
+std::string PrintTree::visit(const NodeFunctionCall *node) const {
+  std::ostringstream result;
+  result << indent_ + "Function Call: " + node->id() + "\n";
+  increaseIndent();
+  result << indent_ << "Params: " << node->id() << "\n";
+  for (const auto &param : *node) {
+    increaseIndent();
+    result << indent_ << "Value:\n" << param->accept(this);
+    decreaseIndent();
+  }
+  decreaseIndent();
+  return result.str();
 }
 
 std::string PrintTree::visit(const NodeVariableReassignment *node) const {

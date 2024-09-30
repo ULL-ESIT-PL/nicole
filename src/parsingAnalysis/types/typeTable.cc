@@ -9,8 +9,8 @@ void TypeTable::addPrimitives() const {
   table_[boolType->name()] = boolType;
   auto charType{std::make_shared<CharType>()};
   table_[charType->name()] = charType;
-  auto doubleType{std::make_shared<DoubleType>()};
-  table_[doubleType->name()] = doubleType;
+  auto floatType{std::make_shared<FloatType>()};
+  table_[floatType->name()] = floatType;
   auto intType{std::make_shared<IntType>()};
   table_[intType->name()] = intType;
   auto stringType{std::make_shared<StringType>()};

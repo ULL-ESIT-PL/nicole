@@ -88,6 +88,11 @@ private:
   std::shared_ptr<Node> parseFactor(std::shared_ptr<VariableTable> currentScope,
                                     std::shared_ptr<Node> father) const;
 
+  std::shared_ptr<NodeFunctionCall>
+  parseFunctionCall(const std::string &id,
+                    std::shared_ptr<VariableTable> currentScope,
+                    std::shared_ptr<Node> father) const;
+
 public:
   TopDown(std::shared_ptr<Sintax> sintax) : Parser{sintax} {}
 

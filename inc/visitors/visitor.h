@@ -19,7 +19,7 @@ enum class TokenType;
 class Node; // Declaración adelantada
 class NodeLiteralBool;
 class NodeLiteralChar;
-class NodeLiteralDouble;
+class NodeLiteralFloat;
 class NodeLiteralInt;
 class NodeLiteralString;
 class NodeReturn;
@@ -35,6 +35,7 @@ class NodeStructDeclaration;
 class NodeFunctionDeclaration;
 class NodeStructConstructor;
 class NodeVariableCall;
+class NodeFunctionCall;
 class NodeVariableReassignment;
 class NodeIfStatement;
 class NodeWhileStatement;
@@ -54,7 +55,7 @@ public:
 
   virtual T visit(const NodeLiteralChar *node) const = 0;
 
-  virtual T visit(const NodeLiteralDouble *node) const = 0;
+  virtual T visit(const NodeLiteralFloat *node) const = 0;
 
   virtual T visit(const NodeLiteralInt *node) const = 0;
 
@@ -83,6 +84,8 @@ public:
   virtual T visit(const NodeStructConstructor *node) const = 0;
 
   virtual T visit(const NodeVariableCall *node) const = 0;
+
+  virtual T visit(const NodeFunctionCall *node) const = 0;
 
   virtual T visit(const NodeVariableReassignment *node) const = 0;
 

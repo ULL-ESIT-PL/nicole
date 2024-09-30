@@ -1,9 +1,7 @@
-def fun(): int {
-    let x: int = 10;
-    return 1 + 1;
+def hello(y: float): float {
+    return 0.1 * y;
 }
 
-def fun2(): int {
-    let x: bool = true;
-    return 1 + 1;
-}
+let x: float = hello(2.0);
+
+print(x);

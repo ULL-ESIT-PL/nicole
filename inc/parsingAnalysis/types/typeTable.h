@@ -3,7 +3,7 @@
 
 #include "boolType.h"
 #include "charType.h"
-#include "doubleType.h"
+#include "floatType.h"
 #include "intType.h"
 #include "stringType.h"
 #include "userType.h"

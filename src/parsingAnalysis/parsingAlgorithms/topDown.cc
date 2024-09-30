@@ -9,6 +9,7 @@ std::shared_ptr<Tree> TopDown::parse(const std::filesystem::path &path) const {
   tokens_ = lexer_.analyze(path);
   globalScope_ = std::make_shared<VariableTable>(nullptr);
   typeTable_ = std::make_shared<TypeTable>();
+  functionTable_ = std::make_shared<FunctionTable>();
   root_ = parseStart();
 
   return std::make_shared<Tree>(root_);
@@ -360,7 +361,7 @@ TopDown::parseFunctionDeclaration(std::shared_ptr<VariableTable> currentScope,
   }
   std::shared_ptr<NodeStatementList> body{parseBody(funScope, father)};
   return std::make_shared<NodeFunctionDeclaration>(id, params, returnType, body,
-                                                   funScope, typeTable_);
+                                                   funScope, typeTable_, functionTable_);
 }
 
 std::shared_ptr<NodeReturn>
@@ -616,10 +617,10 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
     eat();
     return std::make_shared<NodeLiteralInt>(value);
   }
-  case TokenType::NUMBER_DOUBLE: {
+  case TokenType::NUMBER_FLOAT: {
     const double value{std::stod(getCurrentToken().raw())};
     eat();
-    return std::make_shared<NodeLiteralDouble>(value);
+    return std::make_shared<NodeLiteralFloat>(value);
   }
   case TokenType::STRING: {
     const std::string value{getCurrentToken().raw()};
@@ -675,6 +676,8 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
         return std::make_shared<NodeStructConstructor>(id, attributes,
                                                        typeTable_);
       }
+    } else if (getCurrentToken().type() == TokenType::LP) {
+      return parseFunctionCall(id, currentScope, father);
     }
     return std::make_shared<NodeVariableCall>(id, currentScope);
   }
@@ -703,6 +706,34 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
                              getCurrentToken().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
+}
+
+std::shared_ptr<NodeFunctionCall>
+TopDown::parseFunctionCall(const std::string& id, std::shared_ptr<VariableTable> currentScope,
+                           std::shared_ptr<Node> father) const {
+  eat();
+  std::vector<std::shared_ptr<Node>> params{};
+  if (getCurrentToken().type() == TokenType::RP) {
+    eat();
+    return std::make_shared<NodeFunctionCall>(id, params, currentScope, functionTable_);
+  }
+  while (std::size_t(currentToken_) < tokens_.size() &&
+         !isTokenType(TokenType::SEMICOLON)) {
+    params.push_back(parseLogicalOr(currentScope, father));
+    if (std::size_t(currentToken_) < tokens_.size() &&
+        isTokenType(TokenType::COMMA)) {
+      eat();
+    } else {
+      break;
+    }
+  }
+  if (getCurrentToken().type() == TokenType::RP) {
+    eat();
+  } else {
+    const std::string strErr{"Error missing right ) for function " + id};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  return std::make_shared<NodeFunctionCall>(id, params, currentScope, functionTable_);
 }
 
 } // namespace nicole

@@ -1,5 +1,5 @@
-#ifndef DOUBLE_TYPE_H
-#define DOUBLE_TYPE_H
+#ifndef FLOAT_TYPE_H
+#define FLOAT_TYPE_H
 
 #include "genericType.h"
 #include <llvm/IR/Type.h>
@@ -10,12 +10,12 @@
 
 namespace nicole {
 
-class DoubleType : public GenericType {
+class FloatType : public GenericType {
 public:
-  DoubleType(std::shared_ptr<GenericType> father = nullptr)
-      : GenericType{"double", father} {};
+  FloatType(std::shared_ptr<GenericType> father = nullptr)
+      : GenericType{"float", father} {};
 
-  ~DoubleType() = default;
+  ~FloatType() = default;
 
   llvm::Type *type(llvm::LLVMContext *context) const override {
     return llvm::Type::getFloatTy(*context);

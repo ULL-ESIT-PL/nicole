@@ -3,6 +3,7 @@
 
 #include "../../types/typeTable.h"
 #include "../node.h"
+#include "functionTable.h"
 #include "paramsDeclaration.h"
 #include "varTable.h"
 #include <memory>
@@ -18,6 +19,7 @@ private:
   std::shared_ptr<NodeStatementList> body_;
   std::shared_ptr<VariableTable> currentScope_;
   std::shared_ptr<TypeTable> typeTable_;
+  std::shared_ptr<FunctionTable> functionTable_;
 
 public:
   NodeFunctionDeclaration(const std::string &id,
@@ -26,10 +28,11 @@ public:
                           std::shared_ptr<NodeStatementList> body,
                           std::shared_ptr<VariableTable> currentScope,
                           std::shared_ptr<TypeTable> typeTable,
+                          std::shared_ptr<FunctionTable> functionTable,
                           std::shared_ptr<Node> father = nullptr)
       : Node{NodeType::FUN_DECL, father}, id_{id}, params_{params},
         returnType_{returnType}, body_{body}, currentScope_{currentScope},
-        typeTable_{typeTable} {};
+        typeTable_{typeTable}, functionTable_{functionTable} {};
 
   std::string id() const { return id_; }
 
@@ -42,6 +45,8 @@ public:
   std::shared_ptr<VariableTable> table() const { return currentScope_; }
 
   std::shared_ptr<TypeTable> typeTable() const { return typeTable_; }
+
+  std::shared_ptr<FunctionTable> functionTable() const { return functionTable_; }
 
   llvm::Value *accept(const CodeGeneration *visitor) const override {
     return visitor->visit(this);
