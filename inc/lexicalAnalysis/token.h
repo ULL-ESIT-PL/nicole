@@ -2,6 +2,7 @@
 #define TOKEN_H
 
 #include "type.h"
+#include "location.h"
 
 namespace nicole {
 
@@ -9,20 +10,17 @@ class Token final {
  private:
   TokenType type_{};
   std::string raw_{""};
-  int row_{-1};
-  int col_{-1};
+  Location loc_{"",0, 0};
 
  public:
-  Token(const TokenType& type, const std::string& raw, int row, int col)
-      : type_{type}, raw_{raw}, row_{row}, col_{col} {};
+  Token(const TokenType& type, const std::string& raw, const Location& loc)
+      : type_{type}, raw_{raw}, loc_{loc} {};
 
   TokenType type() const { return type_; };
 
   std::string raw() const { return raw_; }
 
-  int row() const { return row_; }
-
-  int col() const { return col_; }
+  Location location() const { return loc_; }
 };
 
 }  // namespace nicole

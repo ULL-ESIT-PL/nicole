@@ -1,7 +1,6 @@
-def hello(y: float): float {
-    return 0.1 * y;
+struct point {
+  let x: int = 0;
+  let y: int = 0;
 }
 
-let x: float = hello(2.0);
-
-print(x);
+let x: point = point{0, 0};
