@@ -617,8 +617,13 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
     eat();
     return std::make_shared<NodeLiteralInt>(value);
   }
-  case TokenType::NUMBER_FLOAT: {
+  case TokenType::NUMBER_DOUBLE: {
     const double value{std::stod(getCurrentToken().raw())};
+    eat();
+    return std::make_shared<NodeLiteralDouble>(value);
+  }
+  case TokenType::NUMBER_FLOAT: {
+    const float value{std::stof(getCurrentToken().raw().substr(1))};
     eat();
     return std::make_shared<NodeLiteralFloat>(value);
   }

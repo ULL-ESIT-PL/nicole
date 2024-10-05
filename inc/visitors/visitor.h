@@ -20,6 +20,7 @@ class Node; // Declaración adelantada
 class NodeLiteralBool;
 class NodeLiteralChar;
 class NodeLiteralFloat;
+class NodeLiteralDouble;
 class NodeLiteralInt;
 class NodeLiteralString;
 class NodeReturn;
@@ -56,6 +57,8 @@ public:
   virtual T visit(const NodeLiteralChar *node) const = 0;
 
   virtual T visit(const NodeLiteralFloat *node) const = 0;
+
+  virtual T visit(const NodeLiteralDouble *node) const = 0;
 
   virtual T visit(const NodeLiteralInt *node) const = 0;
 

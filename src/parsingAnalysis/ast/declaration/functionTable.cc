@@ -16,7 +16,7 @@ void FunctionTable::addFunction(const std::string &id,
                                 const GenericType *idType,
                                 llvm::Function *fun) {
   if (!hasFunction(id)) {
-    table_[id] = std::make_tuple(fun, std::move(idType));
+    table_[id] = std::make_tuple(fun, idType);
     return;
   }
   const std::string strErr{"The Function " + id + " already exist"};

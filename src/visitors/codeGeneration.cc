@@ -14,6 +14,7 @@
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralBool.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralChar.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralFloat.h"
+#include "../../inc/parsingAnalysis/ast/literals/nodeLiteralDouble.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralInt.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeForStatement.h"
@@ -30,6 +31,7 @@
 #include "llvm/ADT/APFloat.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Instructions.h"
+#include "llvm/IR/Type.h"
 #include "llvm/IR/Value.h"
 #include "llvm/Support/ErrorHandling.h"
 #include <cstddef>
@@ -50,7 +52,11 @@ llvm::Value *CodeGeneration::visit(const NodeLiteralChar *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeLiteralFloat *node) const {
-  return llvm::ConstantFP::get(*context_, llvm::APFloat(node->value()));
+  return llvm::ConstantFP::get(llvm::Type::getFloatTy(*context_), llvm::APFloat(node->value()));
+}
+
+llvm::Value *CodeGeneration::visit(const NodeLiteralDouble *node) const {
+  return llvm::ConstantFP::get(llvm::Type::getDoubleTy(*context_), llvm::APFloat(node->value()));
 }
 
 llvm::Value *CodeGeneration::visit(const NodeLiteralInt *node) const {
@@ -281,6 +287,12 @@ llvm::Value *CodeGeneration::visit(const NodeStatement *node) const {
 llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
   llvm::Value *value{node->expression()->accept(this)};
   llvm::Type *valueType{value->getType()}; // Tipo de la variable
+  if (node->varType()->type(context_) == llvm::Type::getVoidTy(*context_)) {
+    llvm::report_fatal_error("Cannot assign to type void");
+  }
+  if (node->varType()->type(context_) != valueType) {
+    llvm::report_fatal_error("Type mismatch");
+  }
   // Crear la instrucción 'alloca' para reservar espacio para la variable
   llvm::AllocaInst *alloca{
       builder_.CreateAlloca(valueType, nullptr, node->id())};
@@ -297,7 +309,12 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
 llvm::Value *CodeGeneration::visit(const NodeConstDeclaration *node) const {
   llvm::Value *value{node->expression()->accept(this)};
   llvm::Type *valueType{value->getType()}; // Tipo de la variable
-
+  if (node->varType()->type(context_) == llvm::Type::getVoidTy(*context_)) {
+    llvm::report_fatal_error("Cannot assign to type void");
+  }
+  if (node->varType()->type(context_) != valueType) {
+    llvm::report_fatal_error("Type mismatch");
+  }
   // Crear la instrucción 'alloca' para reservar espacio para la variable
   llvm::AllocaInst *alloca{
       builder_.CreateAlloca(valueType, nullptr, node->id())};
@@ -368,6 +385,20 @@ llvm::Value *CodeGeneration::visit(const NodeFunctionDeclaration *node) const {
                                alloca);
   }
   auto value{node->body()->accept(this)};
+  if (node->returnType()->type(context_) == llvm::Type::getVoidTy(*context_)) {
+    builder_.CreateRetVoid();
+  } else {
+    bool hasReturn{false};
+    for (const auto& inst : *entry) {
+      if (llvm::isa<llvm::ReturnInst>(inst)) {
+        hasReturn = true;
+        break;
+      }
+    }
+    if (!hasReturn) {
+      llvm::report_fatal_error("Non void functions must have a return statement");
+    }
+  }
   auto mainFun{module_->getFunction("main")};
   builder_.SetInsertPoint(&mainFun->getEntryBlock());
   node->functionTable()->addFunction(node->id(), node->returnType(), funct);
@@ -405,6 +436,9 @@ llvm::Value *CodeGeneration::visit(const NodeFunctionCall *node) const {
 llvm::Value *CodeGeneration::visit(const NodeVariableReassignment *node) const {
   llvm::AllocaInst *varAddress{node->table()->variableAddress(node->id())};
   llvm::Value *newValue{node->expression()->accept(this)};
+  if (node->table()->variableValue(node->id())->getType() != newValue->getType()) {
+    llvm::report_fatal_error("Type mismatch at reassignment");
+  }
   builder_.CreateStore(newValue, varAddress);
   node->table()->setVariable(node->id(), newValue);
 

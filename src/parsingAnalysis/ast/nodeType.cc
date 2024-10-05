@@ -3,8 +3,8 @@
 namespace nicole {
 std::string nodeTypeToString(const NodeType &nt) {
   switch (nt) {
-  case NodeType::LITERAL:
-    return "LITERAL";
+  case NodeType::VOID:
+    return "VOID";
   case NodeType::CHAR:
     return "CHAR";
   case NodeType::STRING:
@@ -13,6 +13,8 @@ std::string nodeTypeToString(const NodeType &nt) {
     return "INT";
   case NodeType::FLOAT:
     return "FLOAT";
+  case NodeType::DOUBLE:
+    return "DOUBLE";
   case NodeType::BOOL:
     return "BOOL";
   case NodeType::BINARY:

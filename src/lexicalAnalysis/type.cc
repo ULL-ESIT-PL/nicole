@@ -10,6 +10,8 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "COMMENT";
   case TokenType::NUMBER_FLOAT:
     return "NUMBER_FLOAT";
+  case TokenType::NUMBER_DOUBLE:
+    return "NUMBER_DOUBLE";
   case TokenType::NUMBER_INT:
     return "NUMBER_INT";
   case TokenType::CHAR:

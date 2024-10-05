@@ -6,6 +6,8 @@
 #include "floatType.h"
 #include "intType.h"
 #include "stringType.h"
+#include "doubleType.h"
+#include "voidType.h"
 #include "userType.h"
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Type.h>

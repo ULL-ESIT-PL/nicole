@@ -9,6 +9,7 @@ enum class TokenType {
   SPACE,
   COMMENT,
   NUMBER_FLOAT,
+  NUMBER_DOUBLE,
   NUMBER_INT,
   CHAR,
   STRING,

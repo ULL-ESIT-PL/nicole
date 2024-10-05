@@ -16,7 +16,7 @@ void VariableTable::addVariable(const std::string &id,
                                 llvm::AllocaInst *alloca, const bool isConst) {
   if (!hasVariable(id)) {
     table_[id] =
-        std::make_tuple(std::move(idType), std::pair{value, alloca}, isConst);
+        std::make_tuple(idType, std::pair{value, alloca}, isConst);
     return;
   }
   const std::string strErr{"The variable " + id + " already exist"};

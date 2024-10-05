@@ -1,17 +1,17 @@
-#ifndef NODE_LITERAL_FLOAT_H
-#define NODE_LITERAL_FLOAT_H
+#ifndef NODE_LITERAL_DOUBLE_H
+#define NODE_LITERAL_DOUBLE_H
 
 #include "../node.h"
 
 namespace nicole {
 
-class NodeLiteralFloat final : public Node {
+class NodeLiteralDouble final : public Node {
 private:
-  float value_{};
+  double value_{};
 
 public:
-  NodeLiteralFloat(const float val, std::shared_ptr<Node> father = nullptr)
-      : Node{NodeType::FLOAT, father}, value_{val} {};
+  NodeLiteralDouble(const double val, std::shared_ptr<Node> father = nullptr)
+      : Node{NodeType::DOUBLE, father}, value_{val} {};
 
   llvm::Value *accept(const CodeGeneration *visitor) const override {
     return visitor->visit(this);
@@ -21,7 +21,7 @@ public:
     return visitor->visit(this);
   }
 
-  float value() const { return value_; }
+  double value() const { return value_; }
 };
 
 } // namespace nicole

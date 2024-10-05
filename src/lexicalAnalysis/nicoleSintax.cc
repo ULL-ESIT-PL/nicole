@@ -7,7 +7,8 @@ Lexer NicoleSintax::createLexer() const {
       Category{TokenType::SPACE, "\\s+", true},
       Category{TokenType::COMMENT, "\\/\\*(.|\\n)*?\\*\\/", true},
 
-      Category{TokenType::NUMBER_FLOAT, "\\d+\\.\\d+([eE][-]?\\d+)?", false},
+      Category{TokenType::NUMBER_FLOAT, "f\\d+\\.\\d+([eE][-]?\\d+)?", false},
+      Category{TokenType::NUMBER_DOUBLE, "\\d+\\.\\d+([eE][-]?\\d+)?", false},
       Category{TokenType::NUMBER_INT, "\\d+([eE][-]?\\d+)?", false},
       Category{TokenType::CHAR, "\'(?:\\\\.|[^\'\\\\])\'", false},
       Category{TokenType::STRING, "\"(?:\\\\.|[^\"\\\\])*\"", false},
@@ -27,7 +28,6 @@ Lexer NicoleSintax::createLexer() const {
       Category{TokenType::ELSE, "else", false},
       Category{TokenType::WHILE, "while", false},
       Category{TokenType::FOR, "for", false},
-      Category{TokenType::DO, "do", false},
       Category{TokenType::STOP, "stop", false},
       Category{TokenType::PASS, "pass", false},
       Category{TokenType::RETURN, "return", false},
@@ -38,6 +38,8 @@ Lexer NicoleSintax::createLexer() const {
       Category{TokenType::AND, "and", false},
 
       Category{TokenType::ID, "[a-zA-Z]+[a-zA-Z0-9]*", false},
+
+      Category{TokenType::DO, "do", false},
 
       Category{TokenType::RP, "\\)", false},
       Category{TokenType::LP, "\\(", false},

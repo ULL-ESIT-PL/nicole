@@ -14,6 +14,7 @@
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralBool.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralChar.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralFloat.h"
+#include "../../inc/parsingAnalysis/ast/literals/nodeLiteralDouble.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralInt.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeForStatement.h"
@@ -45,6 +46,10 @@ std::string PrintTree::visit(const NodeLiteralChar *node) const {
 
 std::string PrintTree::visit(const NodeLiteralFloat *node) const {
   return indent_ + "Float: " + std::to_string(node->value()) + "\n";
+}
+
+std::string PrintTree::visit(const NodeLiteralDouble*node) const {
+  return indent_ + "Double: " + std::to_string(node->value()) + "\n";
 }
 
 std::string PrintTree::visit(const NodeLiteralInt *node) const {

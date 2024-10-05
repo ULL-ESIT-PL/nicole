@@ -24,6 +24,8 @@ public:
 
   std::string visit(const NodeLiteralFloat *node) const override;
 
+  std::string visit(const NodeLiteralDouble *node) const override;
+
   std::string visit(const NodeLiteralInt *node) const override;
 
   std::string visit(const NodeLiteralString *node) const override;

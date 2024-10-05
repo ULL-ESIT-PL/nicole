@@ -20,6 +20,7 @@
 #include "../ast/literals/nodeLiteralFloat.h"
 #include "../ast/literals/nodeLiteralInt.h"
 #include "../ast/literals/nodeLiteralString.h"
+#include "../ast/literals/nodeLiteralDouble.h"
 #include "../ast/loops/nodeForStatement.h"
 #include "../ast/loops/nodePass.h"
 #include "../ast/loops/nodeStop.h"

@@ -6,11 +6,12 @@
 namespace nicole {
 
 enum class NodeType {
-  LITERAL,
+  VOID,
   CHAR,
   STRING,
   INT,
   FLOAT,
+  DOUBLE,
   BOOL,
   BINARY,
   UNARY,

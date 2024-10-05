@@ -28,6 +28,8 @@ public:
 
   llvm::Value *visit(const NodeLiteralFloat *node) const override;
 
+  llvm::Value *visit(const NodeLiteralDouble *node) const override;
+
   llvm::Value *visit(const NodeLiteralInt *node) const override;
 
   llvm::Value *visit(const NodeLiteralString *node) const override;
