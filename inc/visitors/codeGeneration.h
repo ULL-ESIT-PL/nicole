@@ -5,6 +5,7 @@
 
 #include "visitor.h"
 #include "../parsingAnalysis/types/genericType.h"
+#include "../parsingAnalysis/ast/utils/convert.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/IRBuilder.h"
 

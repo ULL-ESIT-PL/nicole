@@ -683,9 +683,7 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
 
   // Create a format string and call printf
   llvm::Value *formatStr = builder_.CreateGlobalStringPtr(formatString, "fmt");
-  std::vector<llvm::Value *> args;
-  args.push_back(formatStr); // First argument: format string
-  args.push_back(value);     // Second argument: value to print
+  std::vector<llvm::Value *> args{formatStr, value};
 
   // Call printf
   builder_.CreateCall(printfFunc, args, "calltmp");
