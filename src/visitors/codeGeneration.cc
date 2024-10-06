@@ -623,6 +623,9 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
   auto value = node->expression()->accept(this);
   // std::cout << "NAME: " << value->getName().str() << std::flush;
   // Ensure value is valid
+  const auto params{printParameters(value, context_, builder_)};
+  value = params.first;
+  /*
   if (!value) {
     llvm::report_fatal_error("Failed to evaluate expression for print.");
   }
@@ -704,7 +707,7 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
   } else {
     llvm::report_fatal_error("Unsupported type for print.");
   }
-
+*/
   // Check if printf already exists in the module
   llvm::Function *printfFunc = module_->getFunction("printf");
   if (!printfFunc) {
@@ -716,7 +719,7 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
   }
 
   // Create a format string and call printf
-  llvm::Value *formatStr = builder_.CreateGlobalStringPtr(formatString, "fmt");
+  llvm::Value *formatStr = builder_.CreateGlobalStringPtr(params.second, "fmt");
   std::vector<llvm::Value *> args{formatStr, value};
 
   // Call printf

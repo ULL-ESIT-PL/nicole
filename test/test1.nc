@@ -1,3 +1,3 @@
-def fun(): double { return 10.0; }
+let x: str = "hola";
 
-let x: double = fun();
+print(x);
