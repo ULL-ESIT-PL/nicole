@@ -633,7 +633,7 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
     return std::make_shared<NodeLiteralString>(value);
   }
   case TokenType::CHAR: {
-    const char value{getCurrentToken().raw()[1]};
+    const std::string value{getCurrentToken().raw()};
     eat();
     return std::make_shared<NodeLiteralChar>(value);
   }

@@ -1,5 +1,5 @@
-def fun(): str {
-    return "10.0hdt";
+def fun(): char {
+    return '\n';
 }
 
 print(fun());

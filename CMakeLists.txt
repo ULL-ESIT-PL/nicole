@@ -49,6 +49,7 @@ set(SRC_FILES
     src/lexicalAnalysis/lexer.cc
     src/lexicalAnalysis/nicoleSintax.cc
     src/parsingAnalysis/ast/nodeType.cc
+    src/parsingAnalysis/ast/literals/nodeLiteralChar.cc
     src/parsingAnalysis/ast/literals/nodeLiteralString.cc
     src/parsingAnalysis/ast/declaration/varTable.cc
     src/parsingAnalysis/ast/declaration/functionTable.cc
