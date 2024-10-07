@@ -1,5 +1,8 @@
-def fun(): char {
-    return '\n';
+def fun(): str {
+    if (true) {
+        return "holaaaa";
+    }
+    return "hhhhhh";
 }
 
 print(fun());

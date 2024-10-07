@@ -395,6 +395,12 @@ llvm::Value *CodeGeneration::visit(const NodeFunctionDeclaration *node) const {
         break;
       }
     }
+    for (const auto& inst : funct->back()) {
+      if (llvm::isa<llvm::ReturnInst>(inst)) {
+        hasReturn = true;
+        break;
+      }
+    }
     if (!hasReturn) {
       llvm::report_fatal_error("Non void functions must have a return statement");
     }
