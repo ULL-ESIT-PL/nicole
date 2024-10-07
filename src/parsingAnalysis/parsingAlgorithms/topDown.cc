@@ -26,7 +26,7 @@ std::shared_ptr<NodeStatementList> TopDown::parseStart() const {
     }
   }
 
-  return std::make_shared<NodeStatementList>(gloablScopeStatements);
+  return ASTBuilder::createList(gloablScopeStatements);
 }
 
 std::shared_ptr<NodeStatementList>
@@ -49,7 +49,7 @@ TopDown::parseBody(std::shared_ptr<VariableTable> &bodyScope,
     }
   }
   eat(); // Consume el token "}"
-  return std::make_shared<NodeStatementList>(body);
+  return ASTBuilder::createList(body);
 }
 
 std::shared_ptr<NodeStatementList>
@@ -58,7 +58,7 @@ TopDown::parseComma(std::shared_ptr<VariableTable> &currentScope,
   std::vector<std::shared_ptr<NodeStatement>> body;
   while (std::size_t(currentToken_) < tokens_.size() &&
          !isTokenType(TokenType::SEMICOLON)) {
-    body.push_back(std::make_shared<NodeStatement>(
+    body.push_back(ASTBuilder::createStatement(
         parseVarDeclaration(currentScope, father)));
     if (std::size_t(currentToken_) < tokens_.size() &&
         isTokenType(TokenType::COMMA)) {
@@ -67,7 +67,7 @@ TopDown::parseComma(std::shared_ptr<VariableTable> &currentScope,
       break;
     }
   }
-  return std::make_shared<NodeStatementList>(body);
+  return ASTBuilder::createList(body);
 }
 
 std::shared_ptr<ParamsDeclaration>
@@ -116,35 +116,35 @@ TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope,
                         std::shared_ptr<Node> father) const {
   switch (getCurrentToken().type()) {
   case TokenType::IF: {
-    return std::make_shared<NodeStatement>(
+    return ASTBuilder::createStatement(
         parseIfStatement(currentScope, father), father);
   }
   case TokenType::WHILE: {
-    return std::make_shared<NodeStatement>(
+    return ASTBuilder::createStatement(
         parseWhileStatement(currentScope, father), father);
   }
   case TokenType::FOR: {
-    return std::make_shared<NodeStatement>(
+    return ASTBuilder::createStatement(
         parseForStatement(currentScope, father), father);
   }
   case TokenType::PRINT: {
-    return std::make_shared<NodeStatement>(
+    return ASTBuilder::createStatement(
         parsePrintStatement(currentScope, father), father);
   }
   case TokenType::STRUCT: {
-    return std::make_shared<NodeStatement>(
+    return ASTBuilder::createStatement(
         parseStructDeclaration(currentScope, father), father);
   }
   case TokenType::FUNCTION: {
-    return std::make_shared<NodeStatement>(
+    return ASTBuilder::createStatement(
         parseFunctionDeclaration(currentScope, father), father);
   }
   case TokenType::RETURN: {
-    return std::make_shared<NodeStatement>(parseReturn(currentScope, father),
+    return ASTBuilder::createStatement(parseReturn(currentScope, father),
                                            father);
   }
   default: {
-    return std::make_shared<NodeStatement>(
+    return ASTBuilder::createStatement(
         parseVarDeclaration(currentScope, father), father);
   }
   }
@@ -185,7 +185,7 @@ TopDown::parseIfStatement(std::shared_ptr<VariableTable> currentScope,
     auto elseScope{std::make_shared<VariableTable>(currentScope)};
     elseBody = parseBody(elseScope, father);
   }
-  return std::make_shared<NodeIfStatement>(condition, ifBody, elseBody);
+  return ASTBuilder::createIf(condition, ifBody, elseBody);
 }
 
 std::shared_ptr<NodeWhileStatement>
@@ -216,7 +216,7 @@ TopDown::parseWhileStatement(std::shared_ptr<VariableTable> currentScope,
   }
   auto whileScope{std::make_shared<VariableTable>(currentScope)};
   auto whileBody{parseBody(whileScope, father)};
-  return std::make_shared<NodeWhileStatement>(condition, whileBody);
+  return ASTBuilder::createWhile(condition, whileBody);
 }
 
 std::shared_ptr<NodeForStatement>
@@ -263,7 +263,7 @@ TopDown::parseForStatement(std::shared_ptr<VariableTable> currentScope,
     llvm::report_fatal_error(strErr.c_str());
   }
   auto body{parseBody(forScope, father)};
-  return std::make_shared<NodeForStatement>(init, condition, update, body);
+  return ASTBuilder::createFor(init, condition, update, body);
 }
 
 std::shared_ptr<NodePrint>
@@ -289,7 +289,7 @@ TopDown::parsePrintStatement(std::shared_ptr<VariableTable> currentScope,
                              getCurrentToken().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
-  return std::make_shared<NodePrint>(expression);
+  return ASTBuilder::createPrint(expression);
 }
 
 std::shared_ptr<NodeStructDeclaration>
@@ -312,7 +312,7 @@ TopDown::parseStructDeclaration(std::shared_ptr<VariableTable> currentScope,
       llvm::report_fatal_error(strErr.c_str());
     }
   }
-  return std::make_shared<NodeStructDeclaration>(idType, body);
+  return ASTBuilder::createStructDecl(idType, body);
 }
 
 std::shared_ptr<NodeFunctionDeclaration>
@@ -360,7 +360,7 @@ TopDown::parseFunctionDeclaration(std::shared_ptr<VariableTable> currentScope,
     llvm::report_fatal_error(strErr.c_str());
   }
   std::shared_ptr<NodeStatementList> body{parseBody(funScope, father)};
-  return std::make_shared<NodeFunctionDeclaration>(id, params, returnType, body,
+  return ASTBuilder::createFunctDecl(id, params, returnType, body,
                                                    funScope, typeTable_, functionTable_);
 }
 
@@ -369,9 +369,9 @@ TopDown::parseReturn(std::shared_ptr<VariableTable> &currentScope,
                      std::shared_ptr<Node> father) const {
   eat();
   if (isTokenType(TokenType::SEMICOLON)) {
-    return std::make_shared<NodeReturn>(nullptr);
+    return ASTBuilder::createReturn(nullptr);
   }
-  return std::make_shared<NodeReturn>(parseLogicalOr(currentScope, father));
+  return ASTBuilder::createReturn(parseLogicalOr(currentScope, father));
 }
 
 std::shared_ptr<Node>
@@ -398,7 +398,7 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
         if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
           eat();
           auto value{parseLogicalOr(currentScope, father)};
-          return std::make_shared<NodeVariableDeclaration>(
+          return ASTBuilder::createVarDecl(
               id, idType, value, currentScope, typeTable_);
         } else {
           const std::string strErr{"Error missing value of " + id};
@@ -430,7 +430,7 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
         if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
           eat();
           auto value{parseLogicalOr(currentScope, father)};
-          return std::make_shared<NodeVariableDeclaration>(
+          return ASTBuilder::createVarDecl(
               id, idType, value, currentScope, typeTable_);
         } else {
           const std::string strErr{"Error missing value of " + id};
@@ -457,7 +457,7 @@ TopDown::parseLogicalOr(std::shared_ptr<VariableTable> currentScope,
          getCurrentToken().type() == TokenType::OR) {
     eat();
     auto right{parseLogicalAnd(currentScope, father)};
-    left = std::make_shared<NodeBinaryOp>(left, TokenType::OR, right);
+    left = ASTBuilder::createBinOp(left, TokenType::OR, right);
   }
 
   return left;
@@ -473,7 +473,7 @@ TopDown::parseLogicalAnd(std::shared_ptr<VariableTable> currentScope,
          getCurrentToken().type() == TokenType::AND) {
     eat();
     auto right{parseLogicalEqual(currentScope, father)};
-    left = std::make_shared<NodeBinaryOp>(left, TokenType::AND, right);
+    left = ASTBuilder::createBinOp(left, TokenType::AND, right);
   }
 
   return left;
@@ -493,10 +493,10 @@ TopDown::parseLogicalEqual(std::shared_ptr<VariableTable> currentScope,
     auto right{parseCompare(currentScope, father)};
     switch (token.type()) {
     case TokenType::EQUAL:
-      left = std::make_shared<NodeBinaryOp>(left, TokenType::EQUAL, right);
+      left = ASTBuilder::createBinOp(left, TokenType::EQUAL, right);
       break;
     case TokenType::NOTEQUAL:
-      left = std::make_shared<NodeBinaryOp>(left, TokenType::NOTEQUAL, right);
+      left = ASTBuilder::createBinOp(left, TokenType::NOTEQUAL, right);
       break;
     default:
       llvm::report_fatal_error("Error: invalid token type at parsing + or -");
@@ -522,20 +522,20 @@ TopDown::parseCompare(std::shared_ptr<VariableTable> currentScope,
     auto right{parseAdd_Sub(currentScope, father)};
     switch (token.type()) {
     case TokenType::OPERATOR_SMALLER:
-      left = std::make_shared<NodeBinaryOp>(left, TokenType::OPERATOR_SMALLER,
+      left = ASTBuilder::createBinOp(left, TokenType::OPERATOR_SMALLER,
                                             right);
       break;
     case TokenType::SMALLEREQUAL:
       left =
-          std::make_shared<NodeBinaryOp>(left, TokenType::SMALLEREQUAL, right);
+          ASTBuilder::createBinOp(left, TokenType::SMALLEREQUAL, right);
       break;
     case TokenType::OPERATOR_GREATER:
-      left = std::make_shared<NodeBinaryOp>(left, TokenType::OPERATOR_GREATER,
+      left = ASTBuilder::createBinOp(left, TokenType::OPERATOR_GREATER,
                                             right);
       break;
     case TokenType::BIGGEREQUAL:
       left =
-          std::make_shared<NodeBinaryOp>(left, TokenType::BIGGEREQUAL, right);
+          ASTBuilder::createBinOp(left, TokenType::BIGGEREQUAL, right);
       break;
     default:
       llvm::report_fatal_error("Error: invalid token type at parsing + or -");
@@ -560,11 +560,11 @@ TopDown::parseAdd_Sub(std::shared_ptr<VariableTable> currentScope,
     switch (token.type()) {
     case TokenType::OPERATOR_ADD:
       left =
-          std::make_shared<NodeBinaryOp>(left, TokenType::OPERATOR_ADD, right);
+          ASTBuilder::createBinOp(left, TokenType::OPERATOR_ADD, right);
       break;
     case TokenType::OPERATOR_SUB:
       left =
-          std::make_shared<NodeBinaryOp>(left, TokenType::OPERATOR_SUB, right);
+          ASTBuilder::createBinOp(left, TokenType::OPERATOR_SUB, right);
       break;
     default:
       llvm::report_fatal_error("Error: invalid token type at parsing + or -");
@@ -590,14 +590,14 @@ TopDown::parseMult_Div(std::shared_ptr<VariableTable> currentScope,
     switch (token.type()) {
     case TokenType::OPERATOR_MULT:
       left =
-          std::make_shared<NodeBinaryOp>(left, TokenType::OPERATOR_MULT, right);
+          ASTBuilder::createBinOp(left, TokenType::OPERATOR_MULT, right);
       break;
     case TokenType::OPERATOR_DIV:
       left =
-          std::make_shared<NodeBinaryOp>(left, TokenType::OPERATOR_DIV, right);
+          ASTBuilder::createBinOp(left, TokenType::OPERATOR_DIV, right);
       break;
     case TokenType::OPERATOR_MODULE:
-      left = std::make_shared<NodeBinaryOp>(left, TokenType::OPERATOR_MODULE,
+      left = ASTBuilder::createBinOp(left, TokenType::OPERATOR_MODULE,
                                             right);
       break;
     default:
@@ -615,54 +615,54 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
   case TokenType::NUMBER_INT: {
     const int value{std::stoi(getCurrentToken().raw())};
     eat();
-    return std::make_shared<NodeLiteralInt>(value);
+    return ASTBuilder::createInt(value, father);
   }
   case TokenType::NUMBER_DOUBLE: {
     const double value{std::stod(getCurrentToken().raw())};
     eat();
-    return std::make_shared<NodeLiteralDouble>(value);
+    return ASTBuilder::createDouble(value, father);
   }
   case TokenType::NUMBER_FLOAT: {
     const float value{std::stof(getCurrentToken().raw().substr(1))};
     eat();
-    return std::make_shared<NodeLiteralFloat>(value);
+    return ASTBuilder::createFloat(value, father);
   }
   case TokenType::STRING: {
     const std::string value{getCurrentToken().raw()};
     eat();
-    return std::make_shared<NodeLiteralString>(value);
+    return ASTBuilder::createString(value, father);
   }
   case TokenType::CHAR: {
     const std::string value{getCurrentToken().raw()};
     eat();
-    return std::make_shared<NodeLiteralChar>(value);
+    return ASTBuilder::createChar(value, father);
   }
   case TokenType::TRUE: {
     eat();
-    return std::make_shared<NodeLiteralBool>(true);
+    return ASTBuilder::createBool(true);
   }
   case TokenType::FALSE: {
     eat();
-    return std::make_shared<NodeLiteralBool>(false);
+    return ASTBuilder::createBool(false);
   }
   case TokenType::OPERATOR_NOT: {
     eat();
-    return std::make_shared<NodeUnaryOp>(TokenType::OPERATOR_NOT,
+    return ASTBuilder::createUnaryOp(TokenType::OPERATOR_NOT,
                                          parseLogicalOr(currentScope, father));
   }
   case TokenType::OPERATOR_SUB: {
     eat();
-    return std::make_shared<NodeUnaryOp>(TokenType::OPERATOR_SUB,
+    return ASTBuilder::createUnaryOp(TokenType::OPERATOR_SUB,
                                          parseLogicalOr(currentScope, father));
   }
   case TokenType::INCREMENT: {
     eat();
-    return std::make_shared<NodeIncrement>(
+    return ASTBuilder::createIncrement(
         TokenType::INCREMENT, parseLogicalOr(currentScope, father));
   }
   case TokenType::DECREMENT: {
     eat();
-    return std::make_shared<NodeIncrement>(
+    return ASTBuilder::createIncrement(
         TokenType::DECREMENT, parseLogicalOr(currentScope, father));
   }
   case TokenType::ID: {
@@ -671,28 +671,28 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
     if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
       eat();
       auto expression{parseLogicalOr(currentScope, father)};
-      return std::make_shared<NodeVariableReassignment>(
+      return ASTBuilder::createVarRGT(
           id, expression, currentScope, typeTable_);
     } else if (getCurrentToken().type() == TokenType::LB) {
       eat();
       auto attributes{parseComma(currentScope, father)};
       if (getCurrentToken().type() == TokenType::RB) {
         eat();
-        return std::make_shared<NodeStructConstructor>(id, attributes,
+        return ASTBuilder::createStructConstr(id, attributes,
                                                        typeTable_);
       }
     } else if (getCurrentToken().type() == TokenType::LP) {
       return parseFunctionCall(id, currentScope, father);
     }
-    return std::make_shared<NodeVariableCall>(id, currentScope);
+    return ASTBuilder::createVarCall(id, currentScope);
   }
   case TokenType::STOP: {
     eat();
-    return std::make_shared<NodeStop>(father);
+    return ASTBuilder::createStop(father);
   }
   case TokenType::PASS: {
     eat();
-    return std::make_shared<NodePass>(father);
+    return ASTBuilder::createPass(father);
   }
   case TokenType::LP: {
     eat();
@@ -720,7 +720,7 @@ TopDown::parseFunctionCall(const std::string& id, std::shared_ptr<VariableTable>
   std::vector<std::shared_ptr<Node>> params{};
   if (getCurrentToken().type() == TokenType::RP) {
     eat();
-    return std::make_shared<NodeFunctionCall>(id, params, currentScope, functionTable_);
+    return ASTBuilder::createFunctCall(id, params, currentScope, functionTable_);
   }
   while (std::size_t(currentToken_) < tokens_.size() &&
          !isTokenType(TokenType::SEMICOLON)) {
@@ -738,7 +738,7 @@ TopDown::parseFunctionCall(const std::string& id, std::shared_ptr<VariableTable>
     const std::string strErr{"Error missing right ) for function " + id};
     llvm::report_fatal_error(strErr.c_str());
   }
-  return std::make_shared<NodeFunctionCall>(id, params, currentScope, functionTable_);
+  return ASTBuilder::createFunctCall(id, params, currentScope, functionTable_);
 }
 
 } // namespace nicole
