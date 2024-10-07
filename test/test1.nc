@@ -1,3 +1,5 @@
-let x: str = "hola";
+def fun(): str {
+    return "10.0hdt";
+}
 
-print(x);
+print(fun());
