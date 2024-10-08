@@ -1,8 +1,14 @@
-def fun(): str {
-    if (true) {
-        return "holaaaa";
-    }
-    return "hhhhhh";
+def fun(x: int): void {
+  print("X = ");
+  print(x);
+  print("\n");
+  if (x == 0) {
+    print("hola");
+    return;
+  } else {
+    --x;
+    fun(x);
+  }
 }
 
-print(fun());
+fun(10);

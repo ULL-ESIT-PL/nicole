@@ -13,8 +13,8 @@
 #include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralBool.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralChar.h"
-#include "../../inc/parsingAnalysis/ast/literals/nodeLiteralFloat.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralDouble.h"
+#include "../../inc/parsingAnalysis/ast/literals/nodeLiteralFloat.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralInt.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeForStatement.h"
@@ -52,11 +52,13 @@ llvm::Value *CodeGeneration::visit(const NodeLiteralChar *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeLiteralFloat *node) const {
-  return llvm::ConstantFP::get(llvm::Type::getFloatTy(*context_), llvm::APFloat(node->value()));
+  return llvm::ConstantFP::get(llvm::Type::getFloatTy(*context_),
+                               llvm::APFloat(node->value()));
 }
 
 llvm::Value *CodeGeneration::visit(const NodeLiteralDouble *node) const {
-  return llvm::ConstantFP::get(llvm::Type::getDoubleTy(*context_), llvm::APFloat(node->value()));
+  return llvm::ConstantFP::get(llvm::Type::getDoubleTy(*context_),
+                               llvm::APFloat(node->value()));
 }
 
 llvm::Value *CodeGeneration::visit(const NodeLiteralInt *node) const {
@@ -368,6 +370,9 @@ llvm::Value *CodeGeneration::visit(const NodeFunctionDeclaration *node) const {
 
   llvm::Function *funct{llvm::Function::Create(
       funcType, llvm::Function::ExternalLinkage, node->id(), module_)};
+  // adding to the table here before processing body so a recursion call wont conflict
+  // whenever it searches inside the table saying it does not exist
+  node->functionTable()->addFunction(node->id(), node->returnType(), funct);
 
   llvm::BasicBlock *entry{llvm::BasicBlock::Create(*context_, "entry", funct)};
 
@@ -389,25 +394,25 @@ llvm::Value *CodeGeneration::visit(const NodeFunctionDeclaration *node) const {
     builder_.CreateRetVoid();
   } else {
     bool hasReturn{false};
-    for (const auto& inst : *entry) {
+    for (const auto &inst : *entry) {
       if (llvm::isa<llvm::ReturnInst>(inst)) {
         hasReturn = true;
         break;
       }
     }
-    for (const auto& inst : funct->back()) {
+    for (const auto &inst : funct->back()) {
       if (llvm::isa<llvm::ReturnInst>(inst)) {
         hasReturn = true;
         break;
       }
     }
     if (!hasReturn) {
-      llvm::report_fatal_error("Non void functions must have a return statement");
+      llvm::report_fatal_error(
+          "Non void functions must have a return statement");
     }
   }
   auto mainFun{module_->getFunction("main")};
   builder_.SetInsertPoint(&mainFun->getEntryBlock());
-  node->functionTable()->addFunction(node->id(), node->returnType(), funct);
   return nullptr;
 }
 
@@ -442,7 +447,8 @@ llvm::Value *CodeGeneration::visit(const NodeFunctionCall *node) const {
 llvm::Value *CodeGeneration::visit(const NodeVariableReassignment *node) const {
   llvm::AllocaInst *varAddress{node->table()->variableAddress(node->id())};
   llvm::Value *newValue{node->expression()->accept(this)};
-  if (node->table()->variableValue(node->id())->getType() != newValue->getType()) {
+  if (node->table()->variableValue(node->id())->getType() !=
+      newValue->getType()) {
     llvm::report_fatal_error("Type mismatch at reassignment");
   }
   builder_.CreateStore(newValue, varAddress);
