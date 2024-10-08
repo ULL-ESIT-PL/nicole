@@ -8,6 +8,8 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "SPACE";
   case TokenType::COMMENT:
     return "COMMENT";
+  case TokenType::ENDLINE:
+    return "ENDLINE";
   case TokenType::NUMBER_FLOAT:
     return "NUMBER_FLOAT";
   case TokenType::NUMBER_DOUBLE:

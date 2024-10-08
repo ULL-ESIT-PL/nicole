@@ -6,7 +6,7 @@
 namespace nicole {
 
 std::shared_ptr<Tree> TopDown::parse(const std::filesystem::path &path) const {
-  tokens_ = lexer_.analyze(path, false);
+  tokens_ = lexer_.analyze(path, true);
   globalScope_ = std::make_shared<VariableTable>(nullptr);
   typeTable_ = std::make_shared<TypeTable>();
   functionTable_ = std::make_shared<FunctionTable>();

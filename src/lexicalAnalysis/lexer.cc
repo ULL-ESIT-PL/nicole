@@ -38,7 +38,7 @@ std::string Lexer::readFile(const std::filesystem::path &fileName) const {
   std::string text{""};
   std::string line{""};
   while (getline(file, line)) {
-    text += line;
+    text += line + "\n";
   }
   file.close();
   return text;
