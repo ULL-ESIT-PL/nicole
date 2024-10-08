@@ -1,9 +1,11 @@
 def fun(x: int): void {
-  if (x == 0) {
-    print("\n\n\nAitor y alejandro suspenden IA\n\n\n");
-    return;
-  } 
-  fun(--x);
+  while (x > 0) {
+    for (let y: int = 0; y < 5; ++y) {
+      print("0 ");
+    }
+    print("\n");
+    --x;
+  }
 }
 
 fun(10);

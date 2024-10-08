@@ -7,9 +7,9 @@ namespace nicole {
 
 std::shared_ptr<Tree> TopDown::parse(const std::filesystem::path &path) const {
   tokens_ = lexer_.analyze(path, true);
-  globalScope_ = std::make_shared<VariableTable>(nullptr);
-  typeTable_ = std::make_shared<TypeTable>();
-  functionTable_ = std::make_shared<FunctionTable>();
+  globalScope_ = TBBuilder::createScope(nullptr);
+  typeTable_ = TBBuilder::createTypeTB();
+  functionTable_ = TBBuilder::createFunctTB();
   root_ = parseStart();
 
   return std::make_shared<Tree>(root_);
@@ -176,13 +176,13 @@ TopDown::parseIfStatement(std::shared_ptr<VariableTable> currentScope,
                              getCurrentToken().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
-  auto ifScope{std::make_shared<VariableTable>(currentScope)};
+  auto ifScope{TBBuilder::createScope(currentScope)};
   auto ifBody{parseBody(ifScope, father)};
   std::shared_ptr<NodeStatementList> elseBody{nullptr};
   if (currentToken_ < tokens_.size() and
       getCurrentToken().type() == TokenType::ELSE) {
     eat();
-    auto elseScope{std::make_shared<VariableTable>(currentScope)};
+    auto elseScope{TBBuilder::createScope(currentScope)};
     elseBody = parseBody(elseScope, father);
   }
   return ASTBuilder::createIf(condition, ifBody, elseBody);
@@ -214,7 +214,7 @@ TopDown::parseWhileStatement(std::shared_ptr<VariableTable> currentScope,
                              getCurrentToken().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
-  auto whileScope{std::make_shared<VariableTable>(currentScope)};
+  auto whileScope{TBBuilder::createScope(currentScope)};
   auto whileBody{parseBody(whileScope, father)};
   return ASTBuilder::createWhile(condition, whileBody);
 }
@@ -235,7 +235,7 @@ TopDown::parseForStatement(std::shared_ptr<VariableTable> currentScope,
                              getCurrentToken().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
-  auto forScope{std::make_shared<VariableTable>(currentScope)};
+  auto forScope{TBBuilder::createScope(currentScope)};
   auto init{parseComma(forScope, father)};
   if (getCurrentToken().type() == TokenType::SEMICOLON) {
     eat();
@@ -305,7 +305,7 @@ TopDown::parseStructDeclaration(std::shared_ptr<VariableTable> currentScope,
     typeTable_->addType(idType);
     eat();
     if (getCurrentToken().type() == TokenType::LB) {
-      auto structScope{std::make_shared<VariableTable>(nullptr)};
+      auto structScope{TBBuilder::createScope(nullptr)};
       body = parseBody(structScope, father);
     } else {
       const std::string strErr{"Error missing left { of " + idTypeStr};
@@ -334,7 +334,7 @@ TopDown::parseFunctionDeclaration(std::shared_ptr<VariableTable> currentScope,
     const std::string strErr{"Error missing left ( for function " + id};
     llvm::report_fatal_error(strErr.c_str());
   }
-  auto funScope{std::make_shared<VariableTable>(nullptr)};
+  auto funScope{TBBuilder::createScope(nullptr)};
   std::shared_ptr<ParamsDeclaration> params{parseParams(funScope, father)};
   if (getCurrentToken().type() == TokenType::RP) {
     eat();

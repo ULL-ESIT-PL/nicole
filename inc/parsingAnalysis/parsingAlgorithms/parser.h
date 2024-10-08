@@ -3,6 +3,7 @@
 
 #include "../../lexicalAnalysis/nicoleSintax.h"
 #include "../ast/nodeBuilder.h"
+#include "../ast/tableBuilder.h"
 #include "tree.h"
 #include <memory>
 
