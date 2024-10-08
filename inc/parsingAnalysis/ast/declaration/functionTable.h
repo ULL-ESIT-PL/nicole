@@ -15,16 +15,12 @@ namespace nicole {
 
 class FunctionTable final {
 private:
-  std::weak_ptr<FunctionTable> father_;
   std::unordered_map<std::string,
                      std::tuple<llvm::Function *, const GenericType *>>
       table_{};
 
 public:
-  FunctionTable(std::shared_ptr<FunctionTable> father = nullptr)
-      : father_{father} {};
-
-  std::shared_ptr<FunctionTable> father() { return father_.lock(); }
+  FunctionTable() {};
 
   auto begin() const { return table_.begin(); }
 

@@ -1,8 +1,9 @@
- let y: int = 10; 
-  if (0 == 0) {
-    if (true) {
-      if(true) {
-        print(y);
-      }
-    }
+def fun(x: int): void {
+  if (x == 0) {
+    print("\n\n\nAitor y alejandro suspenden IA\n\n\n");
+    return;
   } 
+  fun(--x);
+}
+
+fun(10);

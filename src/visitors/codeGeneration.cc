@@ -266,7 +266,7 @@ llvm::Value *CodeGeneration::visit(const NodeIncrement *node) const {
         castedExpression->table()->variableAddress(castedExpression->id())};
     builder_.CreateStore(newValue, varAddress);
     castedExpression->table()->setVariable(castedExpression->id(), newValue);
-    return nullptr;
+    return newValue;
   }
   case TokenType::DECREMENT: {
     llvm::Value *newValue{
@@ -275,7 +275,7 @@ llvm::Value *CodeGeneration::visit(const NodeIncrement *node) const {
         castedExpression->table()->variableAddress(castedExpression->id())};
     builder_.CreateStore(newValue, varAddress);
     castedExpression->table()->setVariable(castedExpression->id(), newValue);
-    return nullptr;
+    return newValue;
   }
   default:
     llvm::llvm_unreachable_internal("Operator not supported");
@@ -641,7 +641,6 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
     if (statement->expression()->type() == NodeType::VAR_DECL ||
         statement->expression()->type() == NodeType::CONST_DECL ||
         statement->expression()->type() == NodeType::VAR_REG ||
-        statement->expression()->type() == NodeType::INCREMENT ||
         statement->expression()->type() == NodeType::IF ||
         statement->expression()->type() == NodeType::WHILE ||
         statement->expression()->type() == NodeType::FOR ||
