@@ -36,6 +36,7 @@
 #include "llvm/Support/ErrorHandling.h"
 #include <cstddef>
 #include <ostream>
+#include <regex>
 #include <string>
 #include <vector>
 
@@ -370,8 +371,8 @@ llvm::Value *CodeGeneration::visit(const NodeFunctionDeclaration *node) const {
 
   llvm::Function *funct{llvm::Function::Create(
       funcType, llvm::Function::ExternalLinkage, node->id(), module_)};
-  // adding to the table here before processing body so a recursion call wont conflict
-  // whenever it searches inside the table saying it does not exist
+  // adding to the table here before processing body so a recursion call wont
+  // conflict whenever it searches inside the table saying it does not exist
   node->functionTable()->addFunction(node->id(), node->returnType(), funct);
 
   llvm::BasicBlock *entry{llvm::BasicBlock::Create(*context_, "entry", funct)};
@@ -398,6 +399,26 @@ llvm::Value *CodeGeneration::visit(const NodeFunctionDeclaration *node) const {
       if (llvm::isa<llvm::ReturnInst>(inst)) {
         hasReturn = true;
         break;
+      }
+    }
+
+    llvm::BasicBlock* previousBlock = nullptr;
+    // Iterar sobre los bloques básicos en la función
+    for (auto& block : *funct) {
+        if (block.getName() == funct->back().getName()) {
+            // Si hemos llegado al bloque "back", regresamos el bloque anterior
+            break; // Regresamos el bloque anterior
+        }
+        // Actualizamos el bloque anterior
+        previousBlock = &block;
+    }
+    std::regex elseName{"else"};
+    if (previousBlock and std::regex_match(previousBlock->getName().str(), elseName)) {
+      for (const auto &inst : *previousBlock) {
+        if (llvm::isa<llvm::ReturnInst>(inst)) {
+          hasReturn = true;
+          break;
+        }
       }
     }
     for (const auto &inst : funct->back()) {
@@ -481,14 +502,29 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node) const {
   // Insertar el bloque 'then'
   builder_.SetInsertPoint(ThenBB);
   node->body()->accept(this); // Ejecutar el cuerpo del 'then'
-  builder_.CreateBr(MergeBB); // Unir con MergeBB
-
+  bool ifHasReturn{false};
+  for (const auto &inst : *ThenBB) {
+    if (llvm::isa<llvm::ReturnInst>(inst)) {
+      ifHasReturn = true;
+    }
+  }
+  if (!ifHasReturn) {
+    builder_.CreateBr(MergeBB); // Unir con MergeBB
+  }
   if (ElseBB) {
     // Insertar el bloque 'else'
     TheFunction->insert(TheFunction->end(), ElseBB);
     builder_.SetInsertPoint(ElseBB);
     node->elseBody()->accept(this); // Ejecutar el cuerpo del 'else'
-    builder_.CreateBr(MergeBB);     // Unir con MergeBB
+    bool elseHasReturn{false};
+    for (const auto &inst : *ElseBB) {
+      if (llvm::isa<llvm::ReturnInst>(inst)) {
+        elseHasReturn = true;
+      }
+    }
+    if (!elseHasReturn) {
+      builder_.CreateBr(MergeBB); // Unir con MergeBB
+    }
   }
 
   // Insertar el bloque 'merge'
@@ -622,9 +658,9 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
     if (!value) {
       return nullptr;
     }
-    std::cout << "NOT SKIPPED->>>"
-              << nodeTypeToString(statement->expression()->type()) + "\n"
-              << std::flush;
+    // std::cout << "NOT SKIPPED->>>"
+    //       << nodeTypeToString(statement->expression()->type()) + "\n"
+    //     << std::flush;
     lastValue = value;
   }
 

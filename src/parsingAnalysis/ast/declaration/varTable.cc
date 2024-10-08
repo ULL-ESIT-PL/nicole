@@ -5,8 +5,8 @@ namespace nicole {
 bool VariableTable::hasVariable(const std::string &id) {
   if (table_.count(id))
     return true;
-  if (auto fatherShared = father_.lock()) {
-    return fatherShared->hasVariable(id);
+  if (father_) {
+    return father_->hasVariable(id);
   }
   return false;
 }
@@ -31,8 +31,8 @@ void VariableTable::setVariable(const std::string &id, llvm::Value *value) {
       llvm::report_fatal_error(strErr.c_str());
     }
     std::get<1>(table_[id]).first = value;
-  } else if (auto fatherShared = father_.lock()) {
-    fatherShared->setVariable(id, value);
+  } else if (father_) {
+    father_->setVariable(id, value);
   } else {
     const std::string strErr{"The variable " + id + " does not exist"};
     llvm::report_fatal_error(strErr.c_str());
@@ -42,8 +42,8 @@ void VariableTable::setVariable(const std::string &id, llvm::Value *value) {
 llvm::Value *VariableTable::variableValue(const std::string &id) {
   if (table_.count(id))
     return std::get<1>(table_.at(id)).first;
-  if (auto fatherShared = father_.lock())
-    return fatherShared->variableValue(id);
+  if (father_)
+    return father_->variableValue(id);
   const std::string strErr{"The variable " + id + " does not exist"};
   llvm::report_fatal_error(strErr.c_str());
 }
@@ -51,8 +51,8 @@ llvm::Value *VariableTable::variableValue(const std::string &id) {
 llvm::AllocaInst *VariableTable::variableAddress(const std::string &id) {
   if (table_.count(id))
     return std::get<1>(table_.at(id)).second;
-  if (auto fatherShared = father_.lock())
-    return fatherShared->variableAddress(id);
+  if (father_)
+    return father_->variableAddress(id);
   const std::string strErr{"The variable " + id + " does not exist"};
   llvm::report_fatal_error(strErr.c_str());
 }
@@ -60,15 +60,15 @@ llvm::AllocaInst *VariableTable::variableAddress(const std::string &id) {
 const GenericType *VariableTable::variableType(const std::string &id) {
   if (table_.count(id))
     return std::get<0>(table_.at(id));
-  if (auto fatherShared = father_.lock())
-    return fatherShared->variableType(id);
+  if (father_)
+    return father_->variableType(id);
   const std::string strErr{"The variable " + id + " does not exist"};
   llvm::report_fatal_error(strErr.c_str());
 }
 
 std::ostream &operator<<(std::ostream &os, const VariableTable &scope) {
-  if (auto fatherShared = scope.father_.lock()) {
-    os << *fatherShared;
+  if (auto father_ = scope.father_) {
+    os << *father_;
   }
   os << "Table size: " + std::to_string(scope.table_.size()) + "\n";
   for (auto &&variable : scope) {
