@@ -9,6 +9,7 @@
 
 namespace nicole {
 
+// Abstract class that represents a parser so we can switch between parsers
 class Parser {
 protected:
   Lexer lexer_;

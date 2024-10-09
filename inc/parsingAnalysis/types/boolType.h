@@ -11,6 +11,7 @@
 
 namespace nicole {
 
+// A primitive of our language
 class BoolType : public GenericType {
 public:
   BoolType(std::shared_ptr<GenericType> father = nullptr)

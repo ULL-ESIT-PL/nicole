@@ -49,6 +49,8 @@ Toy Compiler written in c++ using LLVM by Evian Concepción Peña
 
 - Better error messages
 
+- Do while
+
 - Vectors / Array
 
 - Structures of data

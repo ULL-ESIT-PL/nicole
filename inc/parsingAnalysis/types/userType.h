@@ -10,6 +10,7 @@
 
 namespace nicole {
 
+// Used in structs and classes
 class UserType : public GenericType {
 public:
   UserType(const std::string &name,

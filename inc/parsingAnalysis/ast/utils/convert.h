@@ -7,7 +7,9 @@
 
 namespace nicole {
 
-std::pair<llvm::Value*, std::string> printParameters(llvm::Value* value, llvm::LLVMContext* context, llvm::IRBuilder<>& builder);
+std::pair<llvm::Value *, std::string>
+printParameters(llvm::Value *value, llvm::LLVMContext *context,
+                llvm::IRBuilder<> &builder);
 
 }
 

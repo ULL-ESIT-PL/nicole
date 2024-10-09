@@ -10,6 +10,7 @@
 
 namespace nicole {
 
+// A primitive of our language mainly used for void functions
 class VoidType : public GenericType {
 public:
   VoidType(std::shared_ptr<GenericType> father = nullptr)

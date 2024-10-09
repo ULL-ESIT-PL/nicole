@@ -10,6 +10,7 @@
 
 namespace nicole {
 
+// A primitive of our language
 class StringType : public GenericType {
 public:
   StringType(std::shared_ptr<GenericType> father = nullptr)

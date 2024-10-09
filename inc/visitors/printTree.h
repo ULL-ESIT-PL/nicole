@@ -7,6 +7,7 @@
 
 namespace nicole {
 
+// Visitor pattern to visualize the AST
 class PrintTree final : public Visitor<std::string> {
 private:
   mutable std::string indent_; // Indentación actual

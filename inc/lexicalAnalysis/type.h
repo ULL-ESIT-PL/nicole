@@ -5,6 +5,8 @@
 
 namespace nicole {
 
+// We use a enum so the parsing doesnt relly into knowing the raw data or a
+// string comparasion between types which is slower
 enum class TokenType {
   SPACE,
   COMMENT,
@@ -60,11 +62,11 @@ enum class TokenType {
   OPERATOR_GREATER,
   OPERATOR_NOT,
   OPERATOR_MODULE,
-  UNMATCHED,  // Para tokens no reconocidos
+  UNMATCHED, // Para tokens no reconocidos
   ALL
 };
 
-std::string tokenTypeToString(const TokenType& tk);
-}  // namespace nicole
+std::string tokenTypeToString(const TokenType &tk);
+} // namespace nicole
 
 #endif

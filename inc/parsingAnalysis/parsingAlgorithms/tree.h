@@ -5,6 +5,7 @@
 
 namespace nicole {
 
+// AST of our language
 class Tree {
 private:
   /* data */

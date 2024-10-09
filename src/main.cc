@@ -16,6 +16,7 @@
 
 using namespace nicole;
 
+// Just creates a main function for our program like a wrapper
 int main(int argc, char *argv[]) {
   // Start LLVM
   llvm::LLVMContext context;

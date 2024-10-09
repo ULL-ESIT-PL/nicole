@@ -3,14 +3,16 @@
 
 #include <iostream>
 
-#include "visitor.h"
-#include "../parsingAnalysis/types/genericType.h"
 #include "../parsingAnalysis/ast/utils/convert.h"
+#include "../parsingAnalysis/types/genericType.h"
+#include "visitor.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/IRBuilder.h"
 
 namespace nicole {
 
+// Visitor pattern to translate the AST to IR (Intermediate Representation)
+// using LLVM library
 class CodeGeneration final : public Visitor<llvm::Value *> {
 private:
   llvm::LLVMContext *context_;
@@ -21,7 +23,7 @@ public:
   CodeGeneration(llvm::LLVMContext *context, llvm::Module *module,
                  llvm::BasicBlock *entry)
       : context_{context}, module_{module}, builder_{entry} {}
-      
+
   llvm::Value *visit(const NodeLiteralBool *node) const override;
 
   llvm::Value *visit(const NodeLiteralChar *node) const override;

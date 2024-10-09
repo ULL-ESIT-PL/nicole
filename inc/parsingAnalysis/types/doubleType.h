@@ -10,6 +10,7 @@
 
 namespace nicole {
 
+// A primitive of our language
 class DoubleType : public GenericType {
 public:
   DoubleType(std::shared_ptr<GenericType> father = nullptr)

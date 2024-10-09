@@ -7,6 +7,7 @@
 
 namespace nicole {
 
+// Since we dont have built-in libraries yet the printing is a node
 class NodePrint final : public Node {
 private:
   mutable std::shared_ptr<Node> expression_{};

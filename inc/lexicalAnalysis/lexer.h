@@ -11,23 +11,25 @@
 
 namespace nicole {
 
+// Lexer that tokenize an input file
 class Lexer final {
- private:
+private:
   std::vector<Category> categories_{};
 
+  // makes a category that matches with every token of our sintax
   Category concatCategories() const;
 
-  std::string readFile(const std::filesystem::path& fileName) const;
+  std::string readFile(const std::filesystem::path &fileName) const;
 
-  void checkUnmatched(const std::vector<Token>& tokens) const;
+  void checkUnmatched(const std::vector<Token> &tokens) const;
 
- public:
-  Lexer(const std::vector<Category>& categories);
+public:
+  Lexer(const std::vector<Category> &categories);
 
-  std::vector<Token> analyze(const std::filesystem::path& fileName,
+  std::vector<Token> analyze(const std::filesystem::path &fileName,
                              bool verbose = false) const;
 };
 
-}  // namespace nicole
+} // namespace nicole
 
 #endif

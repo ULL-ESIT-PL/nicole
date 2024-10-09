@@ -5,6 +5,7 @@
 
 namespace nicole {
 
+// The sintax used for the Nicole language
 class NicoleSintax final : public Sintax {
  public:
   NicoleSintax() = default;

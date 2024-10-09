@@ -1,11 +1,16 @@
-def fun(x: int): void {
-  while (x > 0) {
-    for (let y: int = 0; y < 5; ++y) {
+/*
+  dummy script to print a matrix MxN 
+  using different loops inside a functions 
+  that receives parameters
+*/
+def fun(m: int, n: int): void {
+  while (m > 0) {
+    for (let y: int = 0; y < n; ++y) {
       print("0 ");
     }
     print("\n");
-    --x;
+    --m;
   }
 }
 
-fun(10);
+fun(10, 5);

@@ -6,14 +6,16 @@
 
 namespace nicole {
 
+// Regex doesn´t store a raw string of the pattern so a wrapper is need like the
+// one used in boost library
 class RegexWrapper final {
- private:
+private:
   /* data */
   std::string rawPattern_{""};
   std::regex pattern_{""};
 
- public:
-  RegexWrapper(const std::string& rawPattern)
+public:
+  RegexWrapper(const std::string &rawPattern)
       : rawPattern_{rawPattern},
         pattern_{rawPattern, std::regex_constants::optimize} {};
 
@@ -21,11 +23,11 @@ class RegexWrapper final {
 
   std::regex pattern() const { return pattern_; }
 
-  bool match(const std::string& str) const {
+  bool match(const std::string &str) const {
     return std::regex_match(str, pattern_);
   }
 };
 
-}  // namespace nicole
+} // namespace nicole
 
 #endif

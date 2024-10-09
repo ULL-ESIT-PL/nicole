@@ -7,6 +7,7 @@
 
 namespace nicole {
 
+// Equivalent to continue keyword in c++ or javaScript
 class NodePass final : public Node {
 public:
   NodePass(std::shared_ptr<Node> father = nullptr)

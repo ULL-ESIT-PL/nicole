@@ -7,6 +7,7 @@
 
 namespace nicole {
 
+// Equivalent to break keyword in c++ or javaScript
 class NodeStop final : public Node {
 public:
   NodeStop(std::shared_ptr<Node> father = nullptr)

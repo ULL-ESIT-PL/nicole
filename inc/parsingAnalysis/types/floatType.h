@@ -10,6 +10,7 @@
 
 namespace nicole {
 
+// A primitive of our language
 class FloatType : public GenericType {
 public:
   FloatType(std::shared_ptr<GenericType> father = nullptr)

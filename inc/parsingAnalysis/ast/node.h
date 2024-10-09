@@ -12,6 +12,7 @@
 
 namespace nicole {
 
+// Abstract class to represent a node of our AST
 class Node : public std::enable_shared_from_this<Node> {
 protected:
   NodeType type_;

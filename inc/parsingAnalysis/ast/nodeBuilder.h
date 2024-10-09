@@ -38,6 +38,7 @@
 
 namespace nicole {
 
+// Helper to build nodes
 class ASTBuilder {
 private:
   ASTBuilder() = delete;

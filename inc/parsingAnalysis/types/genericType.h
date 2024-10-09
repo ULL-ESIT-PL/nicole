@@ -9,6 +9,7 @@
 
 namespace nicole {
 
+// Abstract class to represent primitives and user types
 class GenericType {
 protected:
   /* data */

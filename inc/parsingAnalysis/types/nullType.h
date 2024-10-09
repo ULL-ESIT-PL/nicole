@@ -11,6 +11,7 @@
 
 namespace nicole {
 
+// A primitive of our language
 class NullType : public GenericType {
 public:
   NullType(std::shared_ptr<GenericType> father = nullptr)

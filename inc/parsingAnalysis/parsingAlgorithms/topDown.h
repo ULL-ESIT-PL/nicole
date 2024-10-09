@@ -5,6 +5,10 @@
 
 namespace nicole {
 
+// Top down recursive parser that can be used with any type of sintax, in this
+// case we implement our productions with the Nicole language. In the futute I
+// would like to extend it to let the user create its own productions outside
+// the parser
 class TopDown final : public Parser {
 private:
   mutable std::shared_ptr<NodeStatementList> root_{nullptr};

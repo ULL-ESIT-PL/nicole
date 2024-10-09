@@ -6,6 +6,7 @@
 
 namespace nicole {
 
+// Used to simplify the parsing analysis
 class Token final {
  private:
   TokenType type_{};

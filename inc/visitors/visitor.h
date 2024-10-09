@@ -47,6 +47,7 @@ class NodePass;
 class NodePrint;
 class Tree;
 
+// Abstract class that represents the visitor pattern
 template<class T>
 class Visitor {
 public:

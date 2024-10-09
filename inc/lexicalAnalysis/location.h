@@ -6,6 +6,7 @@
 
 namespace nicole {
 
+// Represents the position of the token
 class Location final {
 private:
   std::filesystem::path file_{""};

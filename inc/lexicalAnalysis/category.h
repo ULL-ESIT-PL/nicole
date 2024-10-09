@@ -10,6 +10,7 @@
 
 namespace nicole {
 
+// Represents de category of a token
 class Category final {
  private:
   TokenType type_{};
@@ -26,7 +27,7 @@ class Category final {
 
   std::string rawPattern() const { return pattern_.str(); }
 
-  bool skip() const { return skip_; }
+  bool skip() const { return skip_; } // to know if it must be skipped like comments
 
   bool matchToken(const Token& token) const {
     return regex_match(token.raw(), pattern_.pattern());

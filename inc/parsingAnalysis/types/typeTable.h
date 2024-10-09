@@ -18,6 +18,7 @@
 
 namespace nicole {
 
+// Table to store the types built-in and user tpes
 class TypeTable {
 private:
   mutable std::unordered_map<std::string, std::shared_ptr<GenericType>> table_;

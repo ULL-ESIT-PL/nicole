@@ -5,6 +5,7 @@
 
 namespace nicole {
 
+// To know with what kind of node are we working
 enum class NodeType {
   VOID,
   CHAR,

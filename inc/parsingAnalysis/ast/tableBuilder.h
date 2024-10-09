@@ -7,6 +7,7 @@
 #include <memory>
 namespace nicole {
 
+// Helper to build tables
 class TBBuilder {
 private:
   TBBuilder() = delete;
