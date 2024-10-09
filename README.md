@@ -2,6 +2,10 @@
 
 Toy Compiler written in c++ using LLVM by Evian Concepción Peña
 
+## Goals
+
+Combine a user friendly sintax and the speed of a compiled language, example: Mojo (uses MLIR) or Julia
+
 ## How to build
 
 - At parent directory --> ```mkdir build```
@@ -67,7 +71,7 @@ Toy Compiler written in c++ using LLVM by Evian Concepción Peña
 
 - Operators +=, -=...
 
-- Concatenation of expression, example: variable[index][index].method...
+- Concatenation of expression, example: variable[index][index].method... Right now would require create an intermediate variable
 
 - Import / Export
 
