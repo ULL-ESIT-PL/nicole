@@ -81,7 +81,7 @@ std::string tokenTypeToString(const TokenType &tk) {
   case TokenType::TERNARY:
     return "TERNARY";
   case TokenType::DOTDOT:
-    return "DOTDOT"; // '..' Range operator
+    return "DOTDOT"; // :
   case TokenType::SMALLEREQUAL:
     return "SMALLEREQUAL";
   case TokenType::BIGGEREQUAL:

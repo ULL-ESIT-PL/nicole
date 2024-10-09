@@ -77,12 +77,6 @@ public:
   llvm::Value *visit(const Tree *tr) const override;
 
   llvm::Value *generate(const Tree *tr) const;
-
-  llvm::Type* translateGenericType(const GenericType *genericType) const {
-    
-    // Agrega más tipos según sea necesario
-    llvm::report_fatal_error("Unsupported type in struct declaration.");
-}
 };
 
 } // namespace nicole

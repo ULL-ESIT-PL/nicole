@@ -44,11 +44,8 @@ int main(int argc, char *argv[]) {
   const auto result{parser->parse(path)};
   
   auto tree{result.get()};
-  // if (argc > 1) {
   PrintTree printer{};
   // std::cout << printer.print(tree) << "\n";
-  //  return 0;
-  // }
   CodeGeneration codeGen{contextPtr, module.get(), entry};
   llvm::Value *returnValue{codeGen.generate(tree)};
   /*

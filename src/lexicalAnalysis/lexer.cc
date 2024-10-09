@@ -63,11 +63,10 @@ std::vector<Token> Lexer::analyze(const std::filesystem::path &fileName,
         std::cout << "Unmatched: " << UNMATCHED << "\n";
       }
 
-      // Calculate row and column for unmatched token
       for (auto it = lastMatchEnd; it != what[0].first; ++it) {
         if (*it == '\n') {
           ++row;
-          col = 1; // Reset column to 1 at the start of a new line
+          col = 1;
         } else {
           ++col;
         }
@@ -110,7 +109,6 @@ std::vector<Token> Lexer::analyze(const std::filesystem::path &fileName,
       std::cout << "Unmatched: " << UNMATCHED << "\n";
     }
 
-    // Calculate row and column for the final unmatched token
     for (auto it = lastMatchEnd; it != end; ++it) {
       if (*it == '\n') {
         ++row;

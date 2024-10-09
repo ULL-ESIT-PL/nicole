@@ -15,8 +15,9 @@
 
 namespace nicole {
 
+// Forward declaration to avoid circular dependency
 enum class TokenType;
-class Node; // Declaración adelantada
+class Node;
 class NodeLiteralBool;
 class NodeLiteralChar;
 class NodeLiteralFloat;
@@ -51,7 +52,6 @@ class Visitor {
 public:
   virtual ~Visitor() = default;
 
-  // Métodos específicos para los diferentes tipos de nodos
   virtual T visit(const NodeLiteralBool *node) const = 0;
 
   virtual T visit(const NodeLiteralChar *node) const = 0;

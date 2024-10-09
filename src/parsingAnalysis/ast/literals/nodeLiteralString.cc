@@ -5,27 +5,25 @@ std::string NodeLiteralString::unEscape(const std::string &str) const {
   std::string result;
   const std::string strNoQuotes{str.substr(1, str.size() - 2)};
   for (size_t i = 0; i < str.length(); ++i) {
-    if (strNoQuotes[i] == '\\' &&
-        i + 1 < str.length()) { // Detectar una barra invertida
+    if (strNoQuotes[i] == '\\' && i + 1 < str.length()) {
       switch (strNoQuotes[i + 1]) {
-      case 'n': // Nueva línea
+      case 'n':
         result += '\n';
         break;
-      case 't': // Tabulación
+      case 't':
         result += '\t';
         break;
-      case '\\': // Barra invertida
+      case '\\':
         result += '\\';
         break;
-      case '\"': // Comillas
+      case '\"':
         result += '\"';
         break;
-      default: // Si no es un carácter de escape conocido, agregar el carácter
-               // tal cual
+      default:
         result += strNoQuotes[i + 1];
         break;
       }
-      i++; // Saltar el siguiente carácter ya que lo procesamos
+      i++;
     } else {
       result += strNoQuotes[i]; // Agregar el carácter actual
     }

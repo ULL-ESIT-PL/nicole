@@ -112,8 +112,6 @@ llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node) const {
         builder_.CreateSIToFP(rightEvaluated, leftType, "intToDouble");
   }
 
-  // Asegúrate de que ambos operandos tengan el mismo tipo ahora (ambos double o
-  // ambos int)
   if (leftEvaluated->getType() != rightEvaluated->getType()) {
     return nullptr; // Error: tipos no compatibles
   }
@@ -353,14 +351,12 @@ llvm::Value *CodeGeneration::visit(const NodeStructDeclaration *node) const {
   // Crear el tipo de estructura en LLVM
   llvm::StructType *structType =
       llvm::StructType::create(*context_, fieldTypes, structName);
-  // Aquí puedes hacer más, como almacenar el tipo de estructura en una tabla de
-  // símbolos, etc.
+  // ADD TO TABLE ???
 
-  return nullptr; // No devuelve ningún valor, ya que estamos creando un tipo
+  return nullptr;
 }
 
 llvm::Value *CodeGeneration::visit(const NodeFunctionDeclaration *node) const {
-  // missing add paramters to scope and link to function
   auto params{node->parameters()};
   std::vector<llvm::Type *> paramTypes{};
   for (const auto &param : *params) {
@@ -382,7 +378,7 @@ llvm::Value *CodeGeneration::visit(const NodeFunctionDeclaration *node) const {
   for (std::size_t i{0}; i < paramsVec.size(); ++i) {
     auto argument{funct->getArg(i)};
     argument->setName(paramsVec[i].first +
-                      std::to_string(i)); // Asigna nombre al primer parámetro
+                      std::to_string(i));
     auto type{paramsVec[i].second};
     llvm::AllocaInst *alloca{builder_.CreateAlloca(
         type->type(context_), nullptr, paramsVec[i].first)};
@@ -535,7 +531,6 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeWhileStatement *node) const {
-  // Crear los bloques básicos: condición, cuerpo y finalización del while
   llvm::Function *TheFunction = builder_.GetInsertBlock()->getParent();
 
   llvm::BasicBlock *CondBB =
@@ -668,93 +663,10 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
 
 llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
   auto value = node->expression()->accept(this);
-  // std::cout << "NAME: " << value->getName().str() << std::flush;
   // Ensure value is valid
   const auto params{printParameters(value, context_, builder_)};
   value = params.first;
-  /*
-  if (!value) {
-    llvm::report_fatal_error("Failed to evaluate expression for print.");
-  }
-
-  std::string formatString;
-
-  // Handle integer types
-  // Check if the value is a LoadInst
-  if (auto loadInst = llvm::dyn_cast<llvm::LoadInst>(value)) {
-    // Get the type of the loaded value
-    llvm::Type *loadedType = loadInst->getType();
-
-    // Handle integer types
-    if (llvm::isa<llvm::IntegerType>(loadedType)) {
-      if (loadedType->isIntegerTy(1)) { // boolean
-        formatString = "%s\n";          // Use %s for boolean representation
-        value = builder_.CreateICmpNE(loadInst,
-                                      llvm::ConstantInt::get(loadedType, 0));
-        value = llvm::ConstantDataArray::getString(*context_, "true");
-      } else {
-        formatString = "%d\n"; // Use %d for integers
-      }
-    } else if (loadedType->isFloatTy()) { // Check for float type
-      formatString = "%f\n";              // Use %f for float representation
-      // You might want to handle how to print the float value here
-    }
-    // Handle floating point types
-
-    // Handle string types
-    else if (auto globalString = llvm::dyn_cast<llvm::GlobalVariable>(
-                 loadInst->getPointerOperand())) {
-      if (auto initializer = llvm::dyn_cast<llvm::ConstantDataArray>(
-              globalString->getInitializer())) {
-        if (initializer->isString()) {
-          formatString = "%s\n"; // Use %s for strings
-          value = globalString;  // Use global string variable
-        }
-      }
-    } else {
-      llvm::report_fatal_error(
-          "Unsupported type for print from variable call.");
-    }
-  } else if (auto constantInt = llvm::dyn_cast<llvm::ConstantInt>(value)) {
-    if (constantInt->getType()->isIntegerTy(1)) { // boolean
-      formatString = "%s\n"; // Use %s for boolean representation
-      value = constantInt->isZero()
-                  ? llvm::ConstantDataArray::getString(*context_, "false")
-                  : llvm::ConstantDataArray::getString(*context_, "true");
-    } else {
-      formatString = "%d\n"; // Use %d for integers
-    }
-  }
-  // Handle floating point types
-  else if (auto constantFP = llvm::dyn_cast<llvm::ConstantFP>(value)) {
-    formatString = "%f\n"; // Use %f for floating points
-  }
-  // Handle string types
-  else if (auto globalString = llvm::dyn_cast<llvm::GlobalVariable>(value)) {
-    if (auto initializer = llvm::dyn_cast<llvm::ConstantDataArray>(
-            globalString->getInitializer())) {
-      if (initializer->isString()) {
-        formatString = "%s\n"; // Use %s for strings
-        value = globalString;  // Use global string variable
-      }
-    }
-  }
-  // Para cuando value es un temporal
-  else if (auto intValue =
-               llvm::dyn_cast<llvm::IntegerType>(value->getType())) {
-    // Handle integer types
-    if (intValue->isIntegerTy(1)) { // boolean
-      formatString = "%s\n";
-      value = constantInt->isZero()
-                  ? llvm::ConstantDataArray::getString(*context_, "false")
-                  : llvm::ConstantDataArray::getString(*context_, "true");
-    } else {
-      formatString = "%d\n"; // Use %d for integers
-    }
-  } else {
-    llvm::report_fatal_error("Unsupported type for print.");
-  }
-*/
+  
   // Check if printf already exists in the module
   llvm::Function *printfFunc = module_->getFunction("printf");
   if (!printfFunc) {
@@ -772,7 +684,7 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
   // Call printf
   builder_.CreateCall(printfFunc, args, "calltmp");
 
-  return nullptr; // Nothing to return after print
+  return nullptr;
 }
 
 llvm::Value *CodeGeneration::visit(const Tree *node) const {
@@ -819,11 +731,11 @@ llvm::Value *CodeGeneration::visit(const Tree *node) const {
 }
 
 llvm::Value *CodeGeneration::generate(const Tree *tr) const {
-  std::cout << "Generate--> " << builder_.GetInsertBlock()->getName().str()
-            << "\n";
+  //std::cout << "Generate--> " << builder_.GetInsertBlock()->getName().str()
+    //        << "\n";
   auto val{visit(tr)};
-  std::cout << "Generate--> " << builder_.GetInsertBlock()->getName().str()
-            << "\n";
+  // std::cout << "Generate--> " << builder_.GetInsertBlock()->getName().str()
+     //       << "\n";
   return val;
 }
 } // namespace nicole
