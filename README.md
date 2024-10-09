@@ -81,7 +81,7 @@ Combine a user friendly sintax and the speed of a compiled language, example: Mo
 
 - Type checking analysis
 
-- Optimization analysis
+- Optimization analysis (let the user decide between differnt levels, Default, None, Agressive...)
 
 - System calls
 
