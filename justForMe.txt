@@ -1,0 +1,12 @@
+cambiar en main.cc y codeGeneration.cc main por main2
+
+#include <cstdio>
+extern "C" {
+    int fibonacci(int);
+}
+
+int main() {
+    printf("%d", fibonacci(37));
+}
+
+clang++ m.cc output.o -o main
