@@ -298,9 +298,9 @@ TopDown::parsePrintStatement(std::shared_ptr<VariableTable> currentScope,
     const std::string strErr{"Error: empty print, found "};
     llvm::report_fatal_error(strErr.c_str());
   }
-  ////
-  auto expression{parseParamsCall(currentScope, father)};
-  ///
+  
+  auto expressions{parseParamsCall(currentScope, father)};
+
   if (tkStream_.current().type() == TokenType::RP) {
     tkStream_.eat();
   } else {
@@ -308,7 +308,7 @@ TopDown::parsePrintStatement(std::shared_ptr<VariableTable> currentScope,
                              tkStream_.current().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
-  return ASTBuilder::createPrint(expression);
+  return ASTBuilder::createPrint(expressions);
 }
 
 std::shared_ptr<NodeStructDeclaration>
