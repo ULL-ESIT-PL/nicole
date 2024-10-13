@@ -44,7 +44,7 @@ std::string Lexer::readFile(const std::filesystem::path &fileName) const {
   return text;
 }
 
-std::vector<Token> Lexer::analyze(const std::filesystem::path &fileName,
+TokenStream Lexer::analyze(const std::filesystem::path &fileName,
                                   bool verbose) const {
   const std::string TEXT{readFile(fileName)};
   const Category expression{concatCategories()};
@@ -122,7 +122,7 @@ std::vector<Token> Lexer::analyze(const std::filesystem::path &fileName,
         Token{TokenType::UNMATCHED, UNMATCHED, Location{fileName, row, col}});
   }
   checkUnmatched(result);
-  return result;
+  return TokenStream{result};
 }
 
 } // namespace nicole

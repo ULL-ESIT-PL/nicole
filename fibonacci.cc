@@ -6,6 +6,8 @@ int fibonacci(int n) {
     return fibonacci(n - 2) + fibonacci(n - 1);
 }
 
+// let x: int* = null;
+
 int main() {
     printf("%d", fibonacci(37));
     return 0;

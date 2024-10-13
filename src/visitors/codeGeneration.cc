@@ -377,8 +377,7 @@ llvm::Value *CodeGeneration::visit(const NodeFunctionDeclaration *node) const {
   auto paramsVec{params->paramters()};
   for (std::size_t i{0}; i < paramsVec.size(); ++i) {
     auto argument{funct->getArg(i)};
-    argument->setName(paramsVec[i].first +
-                      std::to_string(i));
+    argument->setName(paramsVec[i].first + std::to_string(i));
     auto type{paramsVec[i].second};
     llvm::AllocaInst *alloca{builder_.CreateAlloca(
         type->type(context_), nullptr, paramsVec[i].first)};
@@ -397,19 +396,21 @@ llvm::Value *CodeGeneration::visit(const NodeFunctionDeclaration *node) const {
         break;
       }
     }
-
-    llvm::BasicBlock* previousBlock = nullptr;
+    // the code below is meant to detect if a function doesnt have return of if
+    // it is inside a else
+    llvm::BasicBlock *previousBlock = nullptr;
     // Iterar sobre los bloques básicos en la función
-    for (auto& block : *funct) {
-        if (block.getName() == funct->back().getName()) {
-            // Si hemos llegado al bloque "back", regresamos el bloque anterior
-            break; // Regresamos el bloque anterior
-        }
-        // Actualizamos el bloque anterior
-        previousBlock = &block;
+    for (auto &block : *funct) {
+      if (block.getName() == funct->back().getName()) {
+        // Si hemos llegado al bloque "back", regresamos el bloque anterior
+        break; // Regresamos el bloque anterior
+      }
+      // Actualizamos el bloque anterior
+      previousBlock = &block;
     }
     std::regex elseName{"else"};
-    if (previousBlock and std::regex_match(previousBlock->getName().str(), elseName)) {
+    if (previousBlock and
+        std::regex_match(previousBlock->getName().str(), elseName)) {
       for (const auto &inst : *previousBlock) {
         if (llvm::isa<llvm::ReturnInst>(inst)) {
           hasReturn = true;
@@ -498,6 +499,7 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node) const {
   // Insertar el bloque 'then'
   builder_.SetInsertPoint(ThenBB);
   node->body()->accept(this); // Ejecutar el cuerpo del 'then'
+  // to avoid branching if has return
   bool ifHasReturn{false};
   for (const auto &inst : *ThenBB) {
     if (llvm::isa<llvm::ReturnInst>(inst)) {
@@ -512,6 +514,7 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node) const {
     TheFunction->insert(TheFunction->end(), ElseBB);
     builder_.SetInsertPoint(ElseBB);
     node->elseBody()->accept(this); // Ejecutar el cuerpo del 'else'
+    // to avoid branching if has return
     bool elseHasReturn{false};
     for (const auto &inst : *ElseBB) {
       if (llvm::isa<llvm::ReturnInst>(inst)) {
@@ -666,7 +669,7 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
   // Ensure value is valid
   const auto params{printParameters(value, context_, builder_)};
   value = params.first;
-  
+
   // Check if printf already exists in the module
   llvm::Function *printfFunc = module_->getFunction("printf");
   if (!printfFunc) {
@@ -731,11 +734,11 @@ llvm::Value *CodeGeneration::visit(const Tree *node) const {
 }
 
 llvm::Value *CodeGeneration::generate(const Tree *tr) const {
-  //std::cout << "Generate--> " << builder_.GetInsertBlock()->getName().str()
-    //        << "\n";
+  // std::cout << "Generate--> " << builder_.GetInsertBlock()->getName().str()
+  //         << "\n";
   auto val{visit(tr)};
   // std::cout << "Generate--> " << builder_.GetInsertBlock()->getName().str()
-     //       << "\n";
+  //       << "\n";
   return val;
 }
 } // namespace nicole

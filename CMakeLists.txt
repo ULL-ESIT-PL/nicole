@@ -46,6 +46,7 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LLVM_LDFLAGS} ${LLVM_SYS
 set(SRC_FILES
     src/main.cc
     src/lexicalAnalysis/type.cc
+    src/lexicalAnalysis/tokenStream.cc
     src/lexicalAnalysis/lexer.cc
     src/lexicalAnalysis/nicoleSintax.cc
     src/parsingAnalysis/ast/nodeType.cc
@@ -55,7 +56,6 @@ set(SRC_FILES
     src/parsingAnalysis/ast/declaration/functionTable.cc
     src/parsingAnalysis/ast/utils/convert.cc
     src/parsingAnalysis/types/typeTable.cc
-    src/parsingAnalysis/parsingAlgorithms/parser.cc
     src/parsingAnalysis/parsingAlgorithms/topDown.cc
     src/visitors/codeGeneration.cc
     src/visitors/printTree.cc

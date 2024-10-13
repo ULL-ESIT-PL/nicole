@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "category.h"
+#include "tokeStream.h"
 
 namespace nicole {
 
@@ -26,7 +27,7 @@ private:
 public:
   Lexer(const std::vector<Category> &categories);
 
-  std::vector<Token> analyze(const std::filesystem::path &fileName,
+  TokenStream analyze(const std::filesystem::path &fileName,
                              bool verbose = false) const;
 };
 

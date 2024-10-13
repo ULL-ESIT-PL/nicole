@@ -6,7 +6,7 @@
 namespace nicole {
 
 std::shared_ptr<Tree> TopDown::parse(const std::filesystem::path &path) const {
-  tokens_ = lexer_.analyze(path, true);
+  tkStream_ = lexer_.analyze(path, true);
   globalScope_ = TBBuilder::createScope(nullptr);
   typeTable_ = TBBuilder::createTypeTB();
   functionTable_ = TBBuilder::createFunctTB();
@@ -18,11 +18,11 @@ std::shared_ptr<Tree> TopDown::parse(const std::filesystem::path &path) const {
 std::shared_ptr<NodeStatementList> TopDown::parseStart() const {
   std::vector<std::shared_ptr<NodeStatement>> gloablScopeStatements{};
   std::shared_ptr<Node> father{nullptr};
-  while (std::size_t(currentToken_) < tokens_.size()) {
+  while (tkStream_.currentPos() < tkStream_.size()) {
     gloablScopeStatements.push_back(parseStatement(globalScope_, father));
-    if (std::size_t(currentToken_) < tokens_.size() &&
-        isTokenType(TokenType::SEMICOLON)) {
-      eat();
+    if (tkStream_.currentPos() < tkStream_.size() &&
+        tkStream_.isCurrentTokenType(TokenType::SEMICOLON)) {
+      tkStream_.eat();
     }
   }
 
@@ -32,23 +32,23 @@ std::shared_ptr<NodeStatementList> TopDown::parseStart() const {
 std::shared_ptr<NodeStatementList>
 TopDown::parseBody(std::shared_ptr<VariableTable> &bodyScope,
                    std::shared_ptr<Node> father) const {
-  if (getCurrentToken().type() == TokenType::LB) {
-    eat();
+  if (tkStream_.current().type() == TokenType::LB) {
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing left bracket, found " +
-                             getCurrentToken().raw()};
+                             tkStream_.current().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
   std::vector<std::shared_ptr<NodeStatement>> body;
-  while (std::size_t(currentToken_) < tokens_.size() &&
-         !isTokenType(TokenType::RB)) {
+  while (tkStream_.currentPos() < tkStream_.size() &&
+         !tkStream_.isCurrentTokenType(TokenType::RB)) {
     body.push_back(parseStatement(bodyScope, father));
-    if (std::size_t(currentToken_) < tokens_.size() &&
-        isTokenType(TokenType::SEMICOLON)) {
-      eat();
+    if (tkStream_.currentPos() < tkStream_.size() &&
+        tkStream_.isCurrentTokenType(TokenType::SEMICOLON)) {
+      tkStream_.eat();
     }
   }
-  eat(); // Consume el token "}"
+  tkStream_.eat(); // Consume el token "}"
   return ASTBuilder::createList(body);
 }
 
@@ -56,13 +56,13 @@ std::shared_ptr<NodeStatementList>
 TopDown::parseComma(std::shared_ptr<VariableTable> &currentScope,
                     std::shared_ptr<Node> father) const {
   std::vector<std::shared_ptr<NodeStatement>> body;
-  while (std::size_t(currentToken_) < tokens_.size() &&
-         !isTokenType(TokenType::SEMICOLON)) {
+  while (tkStream_.currentPos() < tkStream_.size() &&
+         !tkStream_.isCurrentTokenType(TokenType::SEMICOLON)) {
     body.push_back(ASTBuilder::createStatement(
         parseVarDeclaration(currentScope, father)));
-    if (std::size_t(currentToken_) < tokens_.size() &&
-        isTokenType(TokenType::COMMA)) {
-      eat();
+    if (tkStream_.currentPos() < tkStream_.size() &&
+        tkStream_.isCurrentTokenType(TokenType::COMMA)) {
+      tkStream_.eat();
     } else {
       break;
     }
@@ -74,36 +74,36 @@ std::shared_ptr<ParamsDeclaration>
 TopDown::parseParams(std::shared_ptr<VariableTable> &currentScope,
                      std::shared_ptr<Node> father) const {
   std::vector<std::pair<std::string, std::shared_ptr<GenericType>>> params{};
-  if (getCurrentToken().type() == TokenType::RP) {
+  if (tkStream_.current().type() == TokenType::RP) {
     return std::make_shared<ParamsDeclaration>(params, currentScope);
   }
-  while (std::size_t(currentToken_) < tokens_.size() &&
-         !isTokenType(TokenType::SEMICOLON)) {
-    auto token{getCurrentToken()};
+  while (tkStream_.currentPos() < tkStream_.size() &&
+         !tkStream_.isCurrentTokenType(TokenType::SEMICOLON)) {
+    auto token{tkStream_.current()};
     std::string id{};
     std::shared_ptr<GenericType> type{nullptr};
     if (token.type() == TokenType::ID) {
       id = token.raw();
-      eat();
+      tkStream_.eat();
     } else {
       llvm::report_fatal_error("Expected parameter, found: ,");
     }
-    if (getCurrentToken().type() == TokenType::DOTDOT) {
-      eat();
+    if (tkStream_.current().type() == TokenType::DOTDOT) {
+      tkStream_.eat();
     } else {
       llvm::report_fatal_error("Expected :, found: ");
     }
-    token = getCurrentToken();
+    token = tkStream_.current();
     if (token.type() == TokenType::ID) {
       type = typeTable_->type(token.raw());
-      eat();
+      tkStream_.eat();
     } else {
       llvm::report_fatal_error("Expected type, found: ");
     }
     params.push_back({id, type});
-    if (std::size_t(currentToken_) < tokens_.size() &&
-        isTokenType(TokenType::COMMA)) {
-      eat();
+    if (tkStream_.currentPos() < tkStream_.size() &&
+        tkStream_.isCurrentTokenType(TokenType::COMMA)) {
+      tkStream_.eat();
     } else {
       break;
     }
@@ -114,7 +114,7 @@ TopDown::parseParams(std::shared_ptr<VariableTable> &currentScope,
 std::shared_ptr<NodeStatement>
 TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope,
                         std::shared_ptr<Node> father) const {
-  switch (getCurrentToken().type()) {
+  switch (tkStream_.current().type()) {
   case TokenType::IF: {
     return ASTBuilder::createStatement(
         parseIfStatement(currentScope, father), father);
@@ -153,35 +153,35 @@ TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope,
 std::shared_ptr<NodeIfStatement>
 TopDown::parseIfStatement(std::shared_ptr<VariableTable> currentScope,
                           std::shared_ptr<Node> father) const {
-  eat();
-  if (getCurrentToken().type() == TokenType::LP) {
-    eat();
+  tkStream_.eat();
+  if (tkStream_.current().type() == TokenType::LP) {
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing left parenthesis, found " +
-                             getCurrentToken().raw()};
+                             tkStream_.current().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
-  if (getCurrentToken().type() == TokenType::RP) {
+  if (tkStream_.current().type() == TokenType::RP) {
     const std::string strErr{"Error: empty if condition, found " +
-                             getCurrentToken().raw()};
+                             tkStream_.current().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
 
   auto condition{parseLogicalOr(currentScope, father)};
 
-  if (getCurrentToken().type() == TokenType::RP) {
-    eat();
+  if (tkStream_.current().type() == TokenType::RP) {
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing right parenthesis, found " +
-                             getCurrentToken().raw()};
+                             tkStream_.current().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
   auto ifScope{TBBuilder::createScope(currentScope)};
   auto ifBody{parseBody(ifScope, father)};
   std::shared_ptr<NodeStatementList> elseBody{nullptr};
-  if (currentToken_ < tokens_.size() and
-      getCurrentToken().type() == TokenType::ELSE) {
-    eat();
+  if (tkStream_.currentPos() < tkStream_.size() and
+      tkStream_.current().type() == TokenType::ELSE) {
+    tkStream_.eat();
     auto elseScope{TBBuilder::createScope(currentScope)};
     elseBody = parseBody(elseScope, father);
   }
@@ -191,27 +191,27 @@ TopDown::parseIfStatement(std::shared_ptr<VariableTable> currentScope,
 std::shared_ptr<NodeWhileStatement>
 TopDown::parseWhileStatement(std::shared_ptr<VariableTable> currentScope,
                              std::shared_ptr<Node> father) const {
-  eat();
-  if (getCurrentToken().type() == TokenType::LP) {
-    eat();
+  tkStream_.eat();
+  if (tkStream_.current().type() == TokenType::LP) {
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing left parenthesis, found " +
-                             getCurrentToken().raw()};
+                             tkStream_.current().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
-  if (getCurrentToken().type() == TokenType::RP) {
+  if (tkStream_.current().type() == TokenType::RP) {
     const std::string strErr{"Error: empty while condition, found " +
-                             getCurrentToken().raw()};
+                             tkStream_.current().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
 
   auto condition{parseLogicalOr(currentScope, father)};
 
-  if (getCurrentToken().type() == TokenType::RP) {
-    eat();
+  if (tkStream_.current().type() == TokenType::RP) {
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing right parenthesis, found " +
-                             getCurrentToken().raw()};
+                             tkStream_.current().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
   auto whileScope{TBBuilder::createScope(currentScope)};
@@ -222,44 +222,44 @@ TopDown::parseWhileStatement(std::shared_ptr<VariableTable> currentScope,
 std::shared_ptr<NodeForStatement>
 TopDown::parseForStatement(std::shared_ptr<VariableTable> currentScope,
                            std::shared_ptr<Node> father) const {
-  eat();
-  if (getCurrentToken().type() == TokenType::LP) {
-    eat();
+  tkStream_.eat();
+  if (tkStream_.current().type() == TokenType::LP) {
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing left parenthesis, found " +
-                             getCurrentToken().raw()};
+                             tkStream_.current().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
-  if (getCurrentToken().type() == TokenType::RP) {
+  if (tkStream_.current().type() == TokenType::RP) {
     const std::string strErr{"Error: empty for, found " +
-                             getCurrentToken().raw()};
+                             tkStream_.current().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
   auto forScope{TBBuilder::createScope(currentScope)};
   auto init{parseComma(forScope, father)};
-  if (getCurrentToken().type() == TokenType::SEMICOLON) {
-    eat();
+  if (tkStream_.current().type() == TokenType::SEMICOLON) {
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing \";\" to separate init from "
                              "condition in for statement, found " +
-                             getCurrentToken().raw()};
+                             tkStream_.current().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
   auto condition{parseLogicalOr(forScope, father)};
-  if (getCurrentToken().type() == TokenType::SEMICOLON) {
-    eat();
+  if (tkStream_.current().type() == TokenType::SEMICOLON) {
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing \";\" to separate condition from "
                              "update in for statement, found " +
-                             getCurrentToken().raw()};
+                             tkStream_.current().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
   auto update{parseComma(forScope, father)};
-  if (getCurrentToken().type() == TokenType::RP) {
-    eat();
+  if (tkStream_.current().type() == TokenType::RP) {
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing right parenthesis, found " +
-                             getCurrentToken().raw()};
+                             tkStream_.current().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
   auto body{parseBody(forScope, father)};
@@ -269,24 +269,24 @@ TopDown::parseForStatement(std::shared_ptr<VariableTable> currentScope,
 std::shared_ptr<NodePrint>
 TopDown::parsePrintStatement(std::shared_ptr<VariableTable> currentScope,
                              std::shared_ptr<Node> father) const {
-  eat();
-  if (getCurrentToken().type() == TokenType::LP) {
-    eat();
+  tkStream_.eat();
+  if (tkStream_.current().type() == TokenType::LP) {
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing left parenthesis, found " +
-                             getCurrentToken().raw()};
+                             tkStream_.current().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
-  if (getCurrentToken().type() == TokenType::RP) {
+  if (tkStream_.current().type() == TokenType::RP) {
     const std::string strErr{"Error: empty print, found "};
     llvm::report_fatal_error(strErr.c_str());
   }
   auto expression{parseLogicalOr(currentScope, father)};
-  if (getCurrentToken().type() == TokenType::RP) {
-    eat();
+  if (tkStream_.current().type() == TokenType::RP) {
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing right parenthesis, found " +
-                             getCurrentToken().raw()};
+                             tkStream_.current().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
   return ASTBuilder::createPrint(expression);
@@ -295,16 +295,16 @@ TopDown::parsePrintStatement(std::shared_ptr<VariableTable> currentScope,
 std::shared_ptr<NodeStructDeclaration>
 TopDown::parseStructDeclaration(std::shared_ptr<VariableTable> currentScope,
                                 std::shared_ptr<Node> father) const {
-  eat();
-  auto token{getCurrentToken()};
+  tkStream_.eat();
+  auto token{tkStream_.current()};
   std::shared_ptr<NodeStatementList> body{nullptr};
   std::shared_ptr<GenericType> idType{nullptr};
   if (token.type() == TokenType::ID) {
     const std::string idTypeStr{token.raw()};
     idType = std::make_shared<UserType>(idTypeStr);
     typeTable_->addType(idType);
-    eat();
-    if (getCurrentToken().type() == TokenType::LB) {
+    tkStream_.eat();
+    if (tkStream_.current().type() == TokenType::LB) {
       auto structScope{TBBuilder::createScope(nullptr)};
       body = parseBody(structScope, father);
     } else {
@@ -318,42 +318,42 @@ TopDown::parseStructDeclaration(std::shared_ptr<VariableTable> currentScope,
 std::shared_ptr<NodeFunctionDeclaration>
 TopDown::parseFunctionDeclaration(std::shared_ptr<VariableTable> currentScope,
                                   std::shared_ptr<Node> father) const {
-  eat();
-  auto token{getCurrentToken()};
+  tkStream_.eat();
+  auto token{tkStream_.current()};
   std::string id{};
   if (token.type() == TokenType::ID) {
     id = token.raw();
-    eat();
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error missing function id after def"};
     llvm::report_fatal_error(strErr.c_str());
   }
-  if (getCurrentToken().type() == TokenType::LP) {
-    eat();
+  if (tkStream_.current().type() == TokenType::LP) {
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error missing left ( for function " + id};
     llvm::report_fatal_error(strErr.c_str());
   }
   auto funScope{TBBuilder::createScope(nullptr)};
   std::shared_ptr<ParamsDeclaration> params{parseParams(funScope, father)};
-  if (getCurrentToken().type() == TokenType::RP) {
-    eat();
+  if (tkStream_.current().type() == TokenType::RP) {
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error missing right ) for function " + id};
     llvm::report_fatal_error(strErr.c_str());
   }
-  if (getCurrentToken().type() == TokenType::DOTDOT) {
-    eat();
+  if (tkStream_.current().type() == TokenType::DOTDOT) {
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error missing \':\' after right ) for function " +
                              id};
     llvm::report_fatal_error(strErr.c_str());
   }
-  token = getCurrentToken();
+  token = tkStream_.current();
   std::shared_ptr<GenericType> returnType{nullptr};
   if (token.type() == TokenType::ID) {
     returnType = typeTable_->type(token.raw());
-    eat();
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error missing return type for the function " +
                              id};
@@ -367,8 +367,8 @@ TopDown::parseFunctionDeclaration(std::shared_ptr<VariableTable> currentScope,
 std::shared_ptr<NodeReturn>
 TopDown::parseReturn(std::shared_ptr<VariableTable> &currentScope,
                      std::shared_ptr<Node> father) const {
-  eat();
-  if (isTokenType(TokenType::SEMICOLON)) {
+  tkStream_.eat();
+  if (tkStream_.isCurrentTokenType(TokenType::SEMICOLON)) {
     return ASTBuilder::createReturn(nullptr);
   }
   return ASTBuilder::createReturn(parseLogicalOr(currentScope, father));
@@ -377,26 +377,26 @@ TopDown::parseReturn(std::shared_ptr<VariableTable> &currentScope,
 std::shared_ptr<Node>
 TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
                              std::shared_ptr<Node> father) const {
-  Token token{getCurrentToken()};
+  Token token{tkStream_.current()};
   if (token.type() == TokenType::LET) {
-    eat();
-    token = getCurrentToken();
+    tkStream_.eat();
+    token = tkStream_.current();
     if (token.type() == TokenType::ID) {
       const std::string id{token.raw()};
-      eat();
-      if (getCurrentToken().type() == TokenType::DOTDOT) {
-        eat();
+      tkStream_.eat();
+      if (tkStream_.current().type() == TokenType::DOTDOT) {
+        tkStream_.eat();
       } else {
         const std::string strErr{"Error missing \':\' after " + id};
         llvm::report_fatal_error(strErr.c_str());
       }
-      token = getCurrentToken();
+      token = tkStream_.current();
       if (token.type() == TokenType::ID) {
         const std::string idTypeStr{token.raw()};
         std::shared_ptr<GenericType> idType{typeTable_->type(idTypeStr)};
-        eat();
-        if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
-          eat();
+        tkStream_.eat();
+        if (tkStream_.current().type() == TokenType::ASSIGNMENT) {
+          tkStream_.eat();
           auto value{parseLogicalOr(currentScope, father)};
           return ASTBuilder::createVarDecl(
               id, idType, value, currentScope, typeTable_);
@@ -411,24 +411,24 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
       }
     }
   } else if (token.type() == TokenType::CONST) {
-    eat();
-    token = getCurrentToken();
+    tkStream_.eat();
+    token = tkStream_.current();
     if (token.type() == TokenType::ID) {
       const std::string id{token.raw()};
-      eat();
-      if (getCurrentToken().type() == TokenType::DOTDOT) {
-        eat();
+      tkStream_.eat();
+      if (tkStream_.current().type() == TokenType::DOTDOT) {
+        tkStream_.eat();
       } else {
         const std::string strErr{"Error missing \':\' after " + id};
         llvm::report_fatal_error(strErr.c_str());
       }
-      token = getCurrentToken();
+      token = tkStream_.current();
       if (token.type() == TokenType::ID) {
         const std::string idTypeStr{token.raw()};
         std::shared_ptr<GenericType> idType{typeTable_->type(idTypeStr)};
-        eat();
-        if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
-          eat();
+        tkStream_.eat();
+        if (tkStream_.current().type() == TokenType::ASSIGNMENT) {
+          tkStream_.eat();
           auto value{parseLogicalOr(currentScope, father)};
           return ASTBuilder::createVarDecl(
               id, idType, value, currentScope, typeTable_);
@@ -453,9 +453,9 @@ TopDown::parseLogicalOr(std::shared_ptr<VariableTable> currentScope,
   // equivalent to the first e + e in Jison recursively goes down
   auto left{parseLogicalAnd(currentScope, father)};
 
-  while (std::size_t(currentToken_) < tokens_.size() &&
-         getCurrentToken().type() == TokenType::OR) {
-    eat();
+  while (tkStream_.currentPos() < tkStream_.size() &&
+         tkStream_.current().type() == TokenType::OR) {
+    tkStream_.eat();
     auto right{parseLogicalAnd(currentScope, father)};
     left = ASTBuilder::createBinOp(left, TokenType::OR, right);
   }
@@ -469,9 +469,9 @@ TopDown::parseLogicalAnd(std::shared_ptr<VariableTable> currentScope,
   // equivalent to the first e + e in Jison recursively goes down
   auto left{parseLogicalEqual(currentScope, father)};
 
-  while (std::size_t(currentToken_) < tokens_.size() &&
-         getCurrentToken().type() == TokenType::AND) {
-    eat();
+  while (tkStream_.currentPos() < tkStream_.size() &&
+         tkStream_.current().type() == TokenType::AND) {
+    tkStream_.eat();
     auto right{parseLogicalEqual(currentScope, father)};
     left = ASTBuilder::createBinOp(left, TokenType::AND, right);
   }
@@ -485,11 +485,11 @@ TopDown::parseLogicalEqual(std::shared_ptr<VariableTable> currentScope,
   // equivalent to the first e + e in Jison recursively goes down
   auto left{parseCompare(currentScope, father)};
 
-  while (std::size_t(currentToken_) < tokens_.size() &&
-         (getCurrentToken().type() == TokenType::EQUAL ||
-          getCurrentToken().type() == TokenType::NOTEQUAL)) {
-    const Token token{getCurrentToken()};
-    eat();
+  while (tkStream_.currentPos() < tkStream_.size() &&
+         (tkStream_.current().type() == TokenType::EQUAL ||
+          tkStream_.current().type() == TokenType::NOTEQUAL)) {
+    const Token token{tkStream_.current()};
+    tkStream_.eat();
     auto right{parseCompare(currentScope, father)};
     switch (token.type()) {
     case TokenType::EQUAL:
@@ -512,13 +512,13 @@ TopDown::parseCompare(std::shared_ptr<VariableTable> currentScope,
   // equivalent to the first e + e in Jison recursively goes down
   auto left{parseAdd_Sub(currentScope, father)};
 
-  while (std::size_t(currentToken_) < tokens_.size() &&
-         (getCurrentToken().type() == TokenType::OPERATOR_SMALLER ||
-          getCurrentToken().type() == TokenType::SMALLEREQUAL ||
-          getCurrentToken().type() == TokenType::OPERATOR_GREATER ||
-          getCurrentToken().type() == TokenType::BIGGEREQUAL)) {
-    const Token token{getCurrentToken()};
-    eat();
+  while (tkStream_.currentPos() < tkStream_.size() &&
+         (tkStream_.current().type() == TokenType::OPERATOR_SMALLER ||
+          tkStream_.current().type() == TokenType::SMALLEREQUAL ||
+          tkStream_.current().type() == TokenType::OPERATOR_GREATER ||
+          tkStream_.current().type() == TokenType::BIGGEREQUAL)) {
+    const Token token{tkStream_.current()};
+    tkStream_.eat();
     auto right{parseAdd_Sub(currentScope, father)};
     switch (token.type()) {
     case TokenType::OPERATOR_SMALLER:
@@ -551,11 +551,11 @@ TopDown::parseAdd_Sub(std::shared_ptr<VariableTable> currentScope,
   // equivalent to the first e + e in Jison recursively goes down
   auto left{parseMult_Div(currentScope, father)};
 
-  while (std::size_t(currentToken_) < tokens_.size() &&
-         (getCurrentToken().type() == TokenType::OPERATOR_ADD ||
-          getCurrentToken().type() == TokenType::OPERATOR_SUB)) {
-    const Token token{getCurrentToken()};
-    eat();
+  while (tkStream_.currentPos() < tkStream_.size() &&
+         (tkStream_.current().type() == TokenType::OPERATOR_ADD ||
+          tkStream_.current().type() == TokenType::OPERATOR_SUB)) {
+    const Token token{tkStream_.current()};
+    tkStream_.eat();
     auto right{parseMult_Div(currentScope, father)};
     switch (token.type()) {
     case TokenType::OPERATOR_ADD:
@@ -580,12 +580,12 @@ TopDown::parseMult_Div(std::shared_ptr<VariableTable> currentScope,
   // equivalent to the first e + e in Jison recursively goes down
   auto left{parseFactor(currentScope, father)};
 
-  while (std::size_t(currentToken_) < tokens_.size() &&
-         (getCurrentToken().type() == TokenType::OPERATOR_MULT ||
-          getCurrentToken().type() == TokenType::OPERATOR_DIV ||
-          getCurrentToken().type() == TokenType::OPERATOR_MODULE)) {
-    const Token token{getCurrentToken()};
-    eat();
+  while (tkStream_.currentPos() < tkStream_.size() &&
+         (tkStream_.current().type() == TokenType::OPERATOR_MULT ||
+          tkStream_.current().type() == TokenType::OPERATOR_DIV ||
+          tkStream_.current().type() == TokenType::OPERATOR_MODULE)) {
+    const Token token{tkStream_.current()};
+    tkStream_.eat();
     auto right{parseFactor(currentScope, father)};
     switch (token.type()) {
     case TokenType::OPERATOR_MULT:
@@ -611,104 +611,104 @@ TopDown::parseMult_Div(std::shared_ptr<VariableTable> currentScope,
 std::shared_ptr<Node>
 TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
                      std::shared_ptr<Node> father) const {
-  switch (getCurrentToken().type()) {
+  switch (tkStream_.current().type()) {
   case TokenType::NUMBER_INT: {
-    const int value{std::stoi(getCurrentToken().raw())};
-    eat();
+    const int value{std::stoi(tkStream_.current().raw())};
+    tkStream_.eat();
     return ASTBuilder::createInt(value, father);
   }
   case TokenType::NUMBER_DOUBLE: {
-    const double value{std::stod(getCurrentToken().raw())};
-    eat();
+    const double value{std::stod(tkStream_.current().raw())};
+    tkStream_.eat();
     return ASTBuilder::createDouble(value, father);
   }
   case TokenType::NUMBER_FLOAT: {
-    const float value{std::stof(getCurrentToken().raw().substr(1))};
-    eat();
+    const float value{std::stof(tkStream_.current().raw().substr(1))};
+    tkStream_.eat();
     return ASTBuilder::createFloat(value, father);
   }
   case TokenType::STRING: {
-    const std::string value{getCurrentToken().raw()};
-    eat();
+    const std::string value{tkStream_.current().raw()};
+    tkStream_.eat();
     return ASTBuilder::createString(value, father);
   }
   case TokenType::CHAR: {
-    const std::string value{getCurrentToken().raw()};
-    eat();
+    const std::string value{tkStream_.current().raw()};
+    tkStream_.eat();
     return ASTBuilder::createChar(value, father);
   }
   case TokenType::TRUE: {
-    eat();
+    tkStream_.eat();
     return ASTBuilder::createBool(true);
   }
   case TokenType::FALSE: {
-    eat();
+    tkStream_.eat();
     return ASTBuilder::createBool(false);
   }
   case TokenType::OPERATOR_NOT: {
-    eat();
+    tkStream_.eat();
     return ASTBuilder::createUnaryOp(TokenType::OPERATOR_NOT,
                                          parseLogicalOr(currentScope, father));
   }
   case TokenType::OPERATOR_SUB: {
-    eat();
+    tkStream_.eat();
     return ASTBuilder::createUnaryOp(TokenType::OPERATOR_SUB,
                                          parseLogicalOr(currentScope, father));
   }
   case TokenType::INCREMENT: {
-    eat();
+    tkStream_.eat();
     return ASTBuilder::createIncrement(
         TokenType::INCREMENT, parseLogicalOr(currentScope, father));
   }
   case TokenType::DECREMENT: {
-    eat();
+    tkStream_.eat();
     return ASTBuilder::createIncrement(
         TokenType::DECREMENT, parseLogicalOr(currentScope, father));
   }
   case TokenType::ID: {
-    const std::string id{getCurrentToken().raw()};
-    eat();
-    if (getCurrentToken().type() == TokenType::ASSIGNMENT) {
-      eat();
+    const std::string id{tkStream_.current().raw()};
+    tkStream_.eat();
+    if (tkStream_.current().type() == TokenType::ASSIGNMENT) {
+      tkStream_.eat();
       auto expression{parseLogicalOr(currentScope, father)};
       return ASTBuilder::createVarRGT(
           id, expression, currentScope, typeTable_);
-    } else if (getCurrentToken().type() == TokenType::LB) {
-      eat();
+    } else if (tkStream_.current().type() == TokenType::LB) {
+      tkStream_.eat();
       auto attributes{parseComma(currentScope, father)};
-      if (getCurrentToken().type() == TokenType::RB) {
-        eat();
+      if (tkStream_.current().type() == TokenType::RB) {
+        tkStream_.eat();
         return ASTBuilder::createStructConstr(id, attributes,
                                                        typeTable_);
       }
-    } else if (getCurrentToken().type() == TokenType::LP) {
+    } else if (tkStream_.current().type() == TokenType::LP) {
       return parseFunctionCall(id, currentScope, father);
     }
     return ASTBuilder::createVarCall(id, currentScope);
   }
   case TokenType::STOP: {
-    eat();
+    tkStream_.eat();
     return ASTBuilder::createStop(father);
   }
   case TokenType::PASS: {
-    eat();
+    tkStream_.eat();
     return ASTBuilder::createPass(father);
   }
   case TokenType::LP: {
-    eat();
+    tkStream_.eat();
     auto expression{parseLogicalOr(currentScope, father)};
-    if (getCurrentToken().type() == TokenType::RP) {
-      eat();
+    if (tkStream_.current().type() == TokenType::RP) {
+      tkStream_.eat();
     } else {
       const std::string strErr{"Error: missing right parenthesis, found " +
-                               getCurrentToken().raw()};
+                               tkStream_.current().raw()};
       llvm::report_fatal_error(strErr.c_str());
     }
     return expression;
   }
   default:
     const std::string strErr{"Error: unknown token found " +
-                             getCurrentToken().raw()};
+                             tkStream_.current().raw()};
     llvm::report_fatal_error(strErr.c_str());
   }
 }
@@ -716,24 +716,24 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
 std::shared_ptr<NodeFunctionCall>
 TopDown::parseFunctionCall(const std::string& id, std::shared_ptr<VariableTable> currentScope,
                            std::shared_ptr<Node> father) const {
-  eat();
+  tkStream_.eat();
   std::vector<std::shared_ptr<Node>> params{};
-  if (getCurrentToken().type() == TokenType::RP) {
-    eat();
+  if (tkStream_.current().type() == TokenType::RP) {
+    tkStream_.eat();
     return ASTBuilder::createFunctCall(id, params, currentScope, functionTable_);
   }
-  while (std::size_t(currentToken_) < tokens_.size() &&
-         !isTokenType(TokenType::SEMICOLON)) {
+  while (tkStream_.currentPos() < tkStream_.size() &&
+         !tkStream_.isCurrentTokenType(TokenType::SEMICOLON)) {
     params.push_back(parseLogicalOr(currentScope, father));
-    if (std::size_t(currentToken_) < tokens_.size() &&
-        isTokenType(TokenType::COMMA)) {
-      eat();
+    if (tkStream_.currentPos() < tkStream_.size() &&
+        tkStream_.isCurrentTokenType(TokenType::COMMA)) {
+      tkStream_.eat();
     } else {
       break;
     }
   }
-  if (getCurrentToken().type() == TokenType::RP) {
-    eat();
+  if (tkStream_.current().type() == TokenType::RP) {
+    tkStream_.eat();
   } else {
     const std::string strErr{"Error missing right ) for function " + id};
     llvm::report_fatal_error(strErr.c_str());
