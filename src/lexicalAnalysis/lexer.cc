@@ -1,5 +1,6 @@
 #include "../../inc/lexicalAnalysis/lexer.h"
 #include <cstddef>
+#include <regex>
 
 namespace nicole {
 
@@ -30,6 +31,11 @@ void Lexer::checkUnmatched(const std::vector<Token> &tokens) const {
 }
 
 std::string Lexer::readFile(const std::filesystem::path &fileName) const {
+  const std::regex fileNameFormat{"[a-zA-Z]+[a-zA-Z0-9]*\\.nc"};
+  if (!std::regex_match(fileName.filename().string(), fileNameFormat)) {
+    const std::string strErr{"The file " + fileName.filename().string() + " does not have extension: nc"};
+    llvm::report_fatal_error(strErr.c_str());
+  }
   std::fstream file{fileName};
   if (!file.is_open()) {
     const std::string strErr{"The file " + fileName.string() + " is not open"};
@@ -45,7 +51,7 @@ std::string Lexer::readFile(const std::filesystem::path &fileName) const {
 }
 
 TokenStream Lexer::analyze(const std::filesystem::path &fileName,
-                                  bool verbose) const {
+                           bool verbose) const {
   const std::string TEXT{readFile(fileName)};
   const Category expression{concatCategories()};
   std::vector<Token> result{};
