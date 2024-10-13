@@ -12,6 +12,4 @@ def factorial(n: int): int {
   return n * factorial(n - 1);
 }
 
-print(fibonacci(37));
-print("\n");
-print(factorial(10));
+print(fibonacci(37), "\n", factorial(10));

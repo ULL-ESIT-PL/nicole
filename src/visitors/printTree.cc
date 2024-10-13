@@ -250,7 +250,9 @@ std::string PrintTree::visit(const NodePrint *node) const {
   result << indent_ << "Print Statement:\n";
   increaseIndent();
   increaseIndent();
-  result << indent_ << "Expression:\n" << node->expression()->accept(this);
+  for (const auto expr : node->expressions()) {
+    result << indent_ << "Expression:\n" << expr->accept(this);
+  }
   decreaseIndent();
   decreaseIndent();
   return result.str();

@@ -23,8 +23,14 @@ private:
   parseComma(std::shared_ptr<VariableTable> &bodyScope,
              std::shared_ptr<Node> father) const;
 
+  // this one is used in definitions
   std::shared_ptr<ParamsDeclaration>
   parseParams(std::shared_ptr<VariableTable> &bodyScope,
+              std::shared_ptr<Node> father) const;
+
+  // this one is usde in calls
+  std::vector<std::shared_ptr<Node>>
+  parseParamsCall(std::shared_ptr<VariableTable> &bodyScope,
               std::shared_ptr<Node> father) const;
 
   std::shared_ptr<NodeStatement>

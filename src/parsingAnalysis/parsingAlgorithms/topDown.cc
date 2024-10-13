@@ -58,8 +58,8 @@ TopDown::parseComma(std::shared_ptr<VariableTable> &currentScope,
   std::vector<std::shared_ptr<NodeStatement>> body;
   while (tkStream_.currentPos() < tkStream_.size() &&
          !tkStream_.isCurrentTokenType(TokenType::SEMICOLON)) {
-    body.push_back(ASTBuilder::createStatement(
-        parseVarDeclaration(currentScope, father)));
+    body.push_back(
+        ASTBuilder::createStatement(parseVarDeclaration(currentScope, father)));
     if (tkStream_.currentPos() < tkStream_.size() &&
         tkStream_.isCurrentTokenType(TokenType::COMMA)) {
       tkStream_.eat();
@@ -111,21 +111,38 @@ TopDown::parseParams(std::shared_ptr<VariableTable> &currentScope,
   return std::make_shared<ParamsDeclaration>(params, currentScope);
 }
 
+std::vector<std::shared_ptr<Node>>
+TopDown::parseParamsCall(std::shared_ptr<VariableTable> &currentScope,
+                         std::shared_ptr<Node> father) const {
+  std::vector<std::shared_ptr<Node>> params{};
+  while (tkStream_.currentPos() < tkStream_.size() &&
+         !tkStream_.isCurrentTokenType(TokenType::SEMICOLON)) {
+    params.push_back(parseLogicalOr(currentScope, father));
+    if (tkStream_.currentPos() < tkStream_.size() &&
+        tkStream_.isCurrentTokenType(TokenType::COMMA)) {
+      tkStream_.eat();
+    } else {
+      break;
+    }
+  }
+  return params;
+}
+
 std::shared_ptr<NodeStatement>
 TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope,
                         std::shared_ptr<Node> father) const {
   switch (tkStream_.current().type()) {
   case TokenType::IF: {
-    return ASTBuilder::createStatement(
-        parseIfStatement(currentScope, father), father);
+    return ASTBuilder::createStatement(parseIfStatement(currentScope, father),
+                                       father);
   }
   case TokenType::WHILE: {
     return ASTBuilder::createStatement(
         parseWhileStatement(currentScope, father), father);
   }
   case TokenType::FOR: {
-    return ASTBuilder::createStatement(
-        parseForStatement(currentScope, father), father);
+    return ASTBuilder::createStatement(parseForStatement(currentScope, father),
+                                       father);
   }
   case TokenType::PRINT: {
     return ASTBuilder::createStatement(
@@ -141,7 +158,7 @@ TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope,
   }
   case TokenType::RETURN: {
     return ASTBuilder::createStatement(parseReturn(currentScope, father),
-                                           father);
+                                       father);
   }
   default: {
     return ASTBuilder::createStatement(
@@ -281,7 +298,9 @@ TopDown::parsePrintStatement(std::shared_ptr<VariableTable> currentScope,
     const std::string strErr{"Error: empty print, found "};
     llvm::report_fatal_error(strErr.c_str());
   }
-  auto expression{parseLogicalOr(currentScope, father)};
+  ////
+  auto expression{parseParamsCall(currentScope, father)};
+  ///
   if (tkStream_.current().type() == TokenType::RP) {
     tkStream_.eat();
   } else {
@@ -360,8 +379,8 @@ TopDown::parseFunctionDeclaration(std::shared_ptr<VariableTable> currentScope,
     llvm::report_fatal_error(strErr.c_str());
   }
   std::shared_ptr<NodeStatementList> body{parseBody(funScope, father)};
-  return ASTBuilder::createFunctDecl(id, params, returnType, body,
-                                                   funScope, typeTable_, functionTable_);
+  return ASTBuilder::createFunctDecl(id, params, returnType, body, funScope,
+                                     typeTable_, functionTable_);
 }
 
 std::shared_ptr<NodeReturn>
@@ -398,8 +417,8 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
         if (tkStream_.current().type() == TokenType::ASSIGNMENT) {
           tkStream_.eat();
           auto value{parseLogicalOr(currentScope, father)};
-          return ASTBuilder::createVarDecl(
-              id, idType, value, currentScope, typeTable_);
+          return ASTBuilder::createVarDecl(id, idType, value, currentScope,
+                                           typeTable_);
         } else {
           const std::string strErr{"Error missing value of " + id};
           llvm::report_fatal_error(strErr.c_str());
@@ -430,8 +449,8 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
         if (tkStream_.current().type() == TokenType::ASSIGNMENT) {
           tkStream_.eat();
           auto value{parseLogicalOr(currentScope, father)};
-          return ASTBuilder::createVarDecl(
-              id, idType, value, currentScope, typeTable_);
+          return ASTBuilder::createVarDecl(id, idType, value, currentScope,
+                                           typeTable_);
         } else {
           const std::string strErr{"Error missing value of " + id};
           llvm::report_fatal_error(strErr.c_str());
@@ -522,20 +541,16 @@ TopDown::parseCompare(std::shared_ptr<VariableTable> currentScope,
     auto right{parseAdd_Sub(currentScope, father)};
     switch (token.type()) {
     case TokenType::OPERATOR_SMALLER:
-      left = ASTBuilder::createBinOp(left, TokenType::OPERATOR_SMALLER,
-                                            right);
+      left = ASTBuilder::createBinOp(left, TokenType::OPERATOR_SMALLER, right);
       break;
     case TokenType::SMALLEREQUAL:
-      left =
-          ASTBuilder::createBinOp(left, TokenType::SMALLEREQUAL, right);
+      left = ASTBuilder::createBinOp(left, TokenType::SMALLEREQUAL, right);
       break;
     case TokenType::OPERATOR_GREATER:
-      left = ASTBuilder::createBinOp(left, TokenType::OPERATOR_GREATER,
-                                            right);
+      left = ASTBuilder::createBinOp(left, TokenType::OPERATOR_GREATER, right);
       break;
     case TokenType::BIGGEREQUAL:
-      left =
-          ASTBuilder::createBinOp(left, TokenType::BIGGEREQUAL, right);
+      left = ASTBuilder::createBinOp(left, TokenType::BIGGEREQUAL, right);
       break;
     default:
       llvm::report_fatal_error("Error: invalid token type at parsing + or -");
@@ -559,12 +574,10 @@ TopDown::parseAdd_Sub(std::shared_ptr<VariableTable> currentScope,
     auto right{parseMult_Div(currentScope, father)};
     switch (token.type()) {
     case TokenType::OPERATOR_ADD:
-      left =
-          ASTBuilder::createBinOp(left, TokenType::OPERATOR_ADD, right);
+      left = ASTBuilder::createBinOp(left, TokenType::OPERATOR_ADD, right);
       break;
     case TokenType::OPERATOR_SUB:
-      left =
-          ASTBuilder::createBinOp(left, TokenType::OPERATOR_SUB, right);
+      left = ASTBuilder::createBinOp(left, TokenType::OPERATOR_SUB, right);
       break;
     default:
       llvm::report_fatal_error("Error: invalid token type at parsing + or -");
@@ -589,16 +602,13 @@ TopDown::parseMult_Div(std::shared_ptr<VariableTable> currentScope,
     auto right{parseFactor(currentScope, father)};
     switch (token.type()) {
     case TokenType::OPERATOR_MULT:
-      left =
-          ASTBuilder::createBinOp(left, TokenType::OPERATOR_MULT, right);
+      left = ASTBuilder::createBinOp(left, TokenType::OPERATOR_MULT, right);
       break;
     case TokenType::OPERATOR_DIV:
-      left =
-          ASTBuilder::createBinOp(left, TokenType::OPERATOR_DIV, right);
+      left = ASTBuilder::createBinOp(left, TokenType::OPERATOR_DIV, right);
       break;
     case TokenType::OPERATOR_MODULE:
-      left = ASTBuilder::createBinOp(left, TokenType::OPERATOR_MODULE,
-                                            right);
+      left = ASTBuilder::createBinOp(left, TokenType::OPERATOR_MODULE, right);
       break;
     default:
       llvm::report_fatal_error("Error: invalid token type at parsing + or -");
@@ -648,22 +658,22 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
   case TokenType::OPERATOR_NOT: {
     tkStream_.eat();
     return ASTBuilder::createUnaryOp(TokenType::OPERATOR_NOT,
-                                         parseLogicalOr(currentScope, father));
+                                     parseLogicalOr(currentScope, father));
   }
   case TokenType::OPERATOR_SUB: {
     tkStream_.eat();
     return ASTBuilder::createUnaryOp(TokenType::OPERATOR_SUB,
-                                         parseLogicalOr(currentScope, father));
+                                     parseLogicalOr(currentScope, father));
   }
   case TokenType::INCREMENT: {
     tkStream_.eat();
-    return ASTBuilder::createIncrement(
-        TokenType::INCREMENT, parseLogicalOr(currentScope, father));
+    return ASTBuilder::createIncrement(TokenType::INCREMENT,
+                                       parseLogicalOr(currentScope, father));
   }
   case TokenType::DECREMENT: {
     tkStream_.eat();
-    return ASTBuilder::createIncrement(
-        TokenType::DECREMENT, parseLogicalOr(currentScope, father));
+    return ASTBuilder::createIncrement(TokenType::DECREMENT,
+                                       parseLogicalOr(currentScope, father));
   }
   case TokenType::ID: {
     const std::string id{tkStream_.current().raw()};
@@ -671,15 +681,13 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
     if (tkStream_.current().type() == TokenType::ASSIGNMENT) {
       tkStream_.eat();
       auto expression{parseLogicalOr(currentScope, father)};
-      return ASTBuilder::createVarRGT(
-          id, expression, currentScope, typeTable_);
+      return ASTBuilder::createVarRGT(id, expression, currentScope, typeTable_);
     } else if (tkStream_.current().type() == TokenType::LB) {
       tkStream_.eat();
       auto attributes{parseComma(currentScope, father)};
       if (tkStream_.current().type() == TokenType::RB) {
         tkStream_.eat();
-        return ASTBuilder::createStructConstr(id, attributes,
-                                                       typeTable_);
+        return ASTBuilder::createStructConstr(id, attributes, typeTable_);
       }
     } else if (tkStream_.current().type() == TokenType::LP) {
       return parseFunctionCall(id, currentScope, father);
@@ -714,24 +722,17 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
 }
 
 std::shared_ptr<NodeFunctionCall>
-TopDown::parseFunctionCall(const std::string& id, std::shared_ptr<VariableTable> currentScope,
+TopDown::parseFunctionCall(const std::string &id,
+                           std::shared_ptr<VariableTable> currentScope,
                            std::shared_ptr<Node> father) const {
   tkStream_.eat();
   std::vector<std::shared_ptr<Node>> params{};
   if (tkStream_.current().type() == TokenType::RP) {
     tkStream_.eat();
-    return ASTBuilder::createFunctCall(id, params, currentScope, functionTable_);
+    return ASTBuilder::createFunctCall(id, params, currentScope,
+                                       functionTable_);
   }
-  while (tkStream_.currentPos() < tkStream_.size() &&
-         !tkStream_.isCurrentTokenType(TokenType::SEMICOLON)) {
-    params.push_back(parseLogicalOr(currentScope, father));
-    if (tkStream_.currentPos() < tkStream_.size() &&
-        tkStream_.isCurrentTokenType(TokenType::COMMA)) {
-      tkStream_.eat();
-    } else {
-      break;
-    }
-  }
+  params = parseParamsCall(currentScope, father);
   if (tkStream_.current().type() == TokenType::RP) {
     tkStream_.eat();
   } else {

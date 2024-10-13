@@ -225,9 +225,9 @@ public:
   };
 
   static std::shared_ptr<NodePrint>
-  createPrint(std::shared_ptr<Node> expression,
+  createPrint(std::vector<std::shared_ptr<Node>> expressions,
               std::shared_ptr<Node> father = nullptr) {
-    return std::make_shared<NodePrint>(expression, father);
+    return std::make_shared<NodePrint>(expressions, father);
   };
 };
 

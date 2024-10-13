@@ -665,10 +665,24 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
-  auto value = node->expression()->accept(this);
-  // Ensure value is valid
-  const auto params{printParameters(value, context_, builder_)};
-  value = params.first;
+  std::vector<llvm::Value *> values{};
+  std::string fullFormatStr = "";
+
+  for (const auto &expr : node->expressions()) {
+    auto value = expr->accept(this);
+    if (!value) {
+      llvm::report_fatal_error("Expression evaluation failed.");
+    }
+    values.push_back(value);
+  }
+
+  auto paramsAndFormats{printParameters(values, context_, builder_)};
+  std::vector<llvm::Value *> args{};
+
+  for (const auto &paramAndFormat : paramsAndFormats) {
+    fullFormatStr += paramAndFormat.second; // Concatenar el formato
+    args.push_back(paramAndFormat.first);   // Añadir el valor
+  }
 
   // Check if printf already exists in the module
   llvm::Function *printfFunc = module_->getFunction("printf");
@@ -680,11 +694,12 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
         printfType, llvm::Function::ExternalLinkage, "printf", module_);
   }
 
-  // Create a format string and call printf
-  llvm::Value *formatStr = builder_.CreateGlobalStringPtr(params.second, "fmt");
-  std::vector<llvm::Value *> args{formatStr, value};
+  // Crear una cadena de formato y pasarla junto con los valores a printf
+  llvm::Value *formatStr = builder_.CreateGlobalStringPtr(fullFormatStr, "fmt");
+  args.insert(args.begin(),
+              formatStr); // Insert the format at the beginning of the arguments
 
-  // Call printf
+  // call printf
   builder_.CreateCall(printfFunc, args, "calltmp");
 
   return nullptr;
