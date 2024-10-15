@@ -26,8 +26,8 @@
 #include "../../inc/parsingAnalysis/ast/operations/nodeUnaryOp.h"
 #include "../../inc/parsingAnalysis/ast/statements/statement.h"
 #include "../../inc/parsingAnalysis/ast/statements/statementList.h"
-#include "../../inc/parsingAnalysis/ast/utils/nodePrint.h"
 #include "../../inc/parsingAnalysis/ast/utils/nodeImport.h"
+#include "../../inc/parsingAnalysis/ast/utils/nodePrint.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
 #include "llvm/ADT/APFloat.h"
 #include "llvm/IR/Instruction.h"
@@ -637,7 +637,7 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
   llvm::Value *lastValue{nullptr};
   for (const auto &statement : *node) {
     llvm::Value *value{statement->accept(this)};
-    if (statement->expression()->type() == NodeType::VAR_DECL ||
+    if (/* statement->expression()->type() == NodeType::VAR_DECL ||
         statement->expression()->type() == NodeType::CONST_DECL ||
         statement->expression()->type() == NodeType::VAR_REG ||
         statement->expression()->type() == NodeType::IF ||
@@ -648,15 +648,18 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
         statement->expression()->type() == NodeType::STRUCT_DECL ||
         statement->expression()->type() == NodeType::FUN_DECL ||
         statement->expression()->type() == NodeType::PRINT ||
-        statement->expression()->type() == NodeType::IMPORT) {
+        statement->expression()->type() == NodeType::IMPORT */
+        !value) {
       // std::cout << "SKIPPED->>>"
       //         << nodeTypeToString(statement->expression()->type()) + "\n"
       //       << std::flush;
       continue;
     }
+    /*
     if (!value) {
       return nullptr;
     }
+    */
     // std::cout << "NOT SKIPPED->>>"
     //       << nodeTypeToString(statement->expression()->type()) + "\n"
     //     << std::flush;
@@ -707,7 +710,7 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
   return nullptr;
 }
 
-llvm::Value *CodeGeneration::visit(const NodeImport*node) const {
+llvm::Value *CodeGeneration::visit(const NodeImport *node) const {
   return nullptr;
 }
 
