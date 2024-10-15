@@ -1,12 +1,14 @@
 #include "../../../inc/parsingAnalysis/parsingAlgorithms/topDown.h"
 #include "llvm/Support/ErrorHandling.h"
 #include <cstdio>
+#include <filesystem>
 #include <memory>
 
 namespace nicole {
 
 std::shared_ptr<Tree> TopDown::parse(const std::filesystem::path &path) const {
-  tkStream_ = lexer_.analyze(path, true);
+  tkStream_ = lexer_.analyze(path, false);
+  parsedFiles_.insert(path);
   globalScope_ = TBBuilder::createScope(nullptr);
   typeTable_ = TBBuilder::createTypeTB();
   functionTable_ = TBBuilder::createFunctTB();
@@ -160,6 +162,10 @@ TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope,
     return ASTBuilder::createStatement(parseReturn(currentScope, father),
                                        father);
   }
+  case TokenType::IMPORT: {
+    return ASTBuilder::createStatement(parseImport(currentScope, father),
+                                       father);
+  }
   default: {
     return ASTBuilder::createStatement(
         parseVarDeclaration(currentScope, father), father);
@@ -298,7 +304,7 @@ TopDown::parsePrintStatement(std::shared_ptr<VariableTable> currentScope,
     const std::string strErr{"Error: empty print, found "};
     llvm::report_fatal_error(strErr.c_str());
   }
-  
+
   auto expressions{parseParamsCall(currentScope, father)};
 
   if (tkStream_.current().type() == TokenType::RP) {
@@ -391,6 +397,28 @@ TopDown::parseReturn(std::shared_ptr<VariableTable> &currentScope,
     return ASTBuilder::createReturn(nullptr);
   }
   return ASTBuilder::createReturn(parseLogicalOr(currentScope, father));
+}
+
+std::shared_ptr<NodeImport>
+TopDown::parseImport(std::shared_ptr<VariableTable> &currentScope,
+                     std::shared_ptr<Node> father) const {
+  tkStream_.eat();
+  std::filesystem::path fileName{""};
+  if (tkStream_.isCurrentTokenType(TokenType::STRING)) {
+    const auto raw{tkStream_.current().raw()};
+    fileName = "../test/" + raw.substr(1, raw.size() - 2);
+  } else {
+    const std::string strErr{"Error missing path after import"};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  if (!std::filesystem::exists(fileName)) {
+    const std::string strErr{"Error path " + fileName.string() + " not found"};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+  if (!parsedFiles_.count(fileName)) {
+    tkStream_.insertAfter(lexer_.analyze(fileName));
+  } 
+  return ASTBuilder::createImport(fileName, father);
 }
 
 std::shared_ptr<Node>

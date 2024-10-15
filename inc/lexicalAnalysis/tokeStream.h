@@ -4,6 +4,7 @@
 #include "token.h"
 #include "type.h"
 #include <cstddef>
+#include <limits>
 #include <llvm/Support/ErrorHandling.h>
 #include <vector>
 
@@ -33,7 +34,8 @@ public:
   bool isCurrentTokenType(const TokenType type) const;
 
   // needed for whenever an import is found
-  void insertAfter(const size_t pos, const TokenStream& tkStream) const;
+  void insertAfter(const TokenStream &tkStream,
+                   size_t pos = std::numeric_limits<int>::infinity()) const;
 
   auto begin() const { return tokens_.begin(); }
 

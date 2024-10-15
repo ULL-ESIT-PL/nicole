@@ -27,6 +27,7 @@
 #include "../../inc/parsingAnalysis/ast/statements/statement.h"
 #include "../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "../../inc/parsingAnalysis/ast/utils/nodePrint.h"
+#include "../../inc/parsingAnalysis/ast/utils/nodeImport.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
 #include "llvm/ADT/APFloat.h"
 #include "llvm/IR/Instruction.h"
@@ -646,7 +647,8 @@ llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
         statement->expression()->type() == NodeType::PASS ||
         statement->expression()->type() == NodeType::STRUCT_DECL ||
         statement->expression()->type() == NodeType::FUN_DECL ||
-        statement->expression()->type() == NodeType::PRINT) {
+        statement->expression()->type() == NodeType::PRINT ||
+        statement->expression()->type() == NodeType::IMPORT) {
       // std::cout << "SKIPPED->>>"
       //         << nodeTypeToString(statement->expression()->type()) + "\n"
       //       << std::flush;
@@ -702,6 +704,10 @@ llvm::Value *CodeGeneration::visit(const NodePrint *node) const {
   // call printf
   builder_.CreateCall(printfFunc, args, "calltmp");
 
+  return nullptr;
+}
+
+llvm::Value *CodeGeneration::visit(const NodeImport*node) const {
   return nullptr;
 }
 

@@ -27,6 +27,7 @@
 #include "../../inc/parsingAnalysis/ast/statements/statement.h"
 #include "../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "../../inc/parsingAnalysis/ast/utils/nodePrint.h"
+#include "../../inc/parsingAnalysis/ast/utils/nodeImport.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
 
 namespace nicole {
@@ -254,6 +255,15 @@ std::string PrintTree::visit(const NodePrint *node) const {
     result << indent_ << "Expression:\n" << expr->accept(this);
   }
   decreaseIndent();
+  decreaseIndent();
+  return result.str();
+}
+
+std::string PrintTree::visit(const NodeImport *node) const {
+  std::ostringstream result;
+  result << indent_ << "Import Statement:\n";
+  increaseIndent();
+  result << indent_ << "File:\n" << node->fileName().string();
   decreaseIndent();
   return result.str();
 }

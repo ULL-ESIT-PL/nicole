@@ -5,7 +5,9 @@
 #include "../ast/nodeBuilder.h"
 #include "../ast/tableBuilder.h"
 #include "tree.h"
+#include <filesystem>
 #include <memory>
+#include <set>
 
 namespace nicole {
 
@@ -17,6 +19,7 @@ protected:
   mutable std::shared_ptr<VariableTable> globalScope_{};
   mutable std::shared_ptr<TypeTable> typeTable_{};
   mutable std::shared_ptr<FunctionTable> functionTable_{};
+  mutable std::set<std::filesystem::path> parsedFiles_{};
 
 public:
   Parser(std::shared_ptr<Sintax> sintax) : lexer_{sintax->createLexer()} {}

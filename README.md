@@ -49,6 +49,8 @@ Combine an user friendly sintax and the speed of a compiled language, example: M
 
 - Print in the terminal (by te moment just literal and not user types)
 
+- Import (still gotta check if every path works and more tests about dependency cycles)
+
 ## Features yet to implement
 
 - Better error messages
@@ -72,8 +74,6 @@ Combine an user friendly sintax and the speed of a compiled language, example: M
 - Operators +=, -=...
 
 - Concatenation of expression, example: variable[index][index].method... Right now would require create an intermediate variable
-
-- Import / Export
 
 - Standar library
 

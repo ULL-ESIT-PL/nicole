@@ -45,6 +45,7 @@ class NodeForStatement;
 class NodeStop;
 class NodePass;
 class NodePrint;
+class NodeImport;
 class Tree;
 
 // Abstract class that represents the visitor pattern
@@ -104,6 +105,8 @@ public:
   virtual T visit(const NodePass *node) const = 0;
 
   virtual T visit(const NodePrint *node) const = 0;
+
+  virtual T visit(const NodeImport *node) const = 0;
 
   virtual T visit(const Tree *tr) const = 0;
 };

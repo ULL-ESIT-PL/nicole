@@ -1,4 +1,5 @@
 #include "../../inc/lexicalAnalysis/tokeStream.h"
+#include <limits>
 
 namespace nicole {
 
@@ -10,9 +11,7 @@ void TokenStream::eat() const {
   llvm::report_fatal_error("Error: invalid access to tokens while eating");
 }
 
-bool TokenStream::isEnd() const {
-  return currentPos_ == tokens_.size();
-}
+bool TokenStream::isEnd() const { return currentPos_ == tokens_.size(); }
 
 Token TokenStream::current() const {
   if (currentPos_ < tokens_.size())
@@ -32,9 +31,12 @@ bool TokenStream::isCurrentTokenType(const TokenType type) const {
   llvm::report_fatal_error("Error: invalid access to tokens");
 }
 
-void TokenStream::insertAfter(const size_t pos, const TokenStream& tkStream) const {
-tokens_.insert(tokens_.begin() + currentPos_, tkStream.begin(),
-                     tkStream.end());
+void TokenStream::insertAfter(const TokenStream &tkStream, size_t pos) const {
+  if (pos == std::numeric_limits<int>::infinity()) {
+    pos = currentPos_;
+  }
+  tokens_.insert(tokens_.begin() + pos, tkStream.begin(),
+                 tkStream.end());
 }
 
 } // namespace nicole

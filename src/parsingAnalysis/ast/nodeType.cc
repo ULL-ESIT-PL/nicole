@@ -57,6 +57,8 @@ std::string nodeTypeToString(const NodeType &nt) {
     return "CALL_CTR";
   case NodeType::FUN_DECL:
     return "FUN_DECL";
+  case NodeType::IMPORT:
+    return "IMPORT";
   case NodeType::RETURN:
     return "RETURN";
   }

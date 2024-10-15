@@ -14,6 +14,7 @@ enum class NodeType {
   FLOAT,
   DOUBLE,
   BOOL,
+  IMPORT,
   BINARY,
   UNARY,
   INCREMENT,

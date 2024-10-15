@@ -1,3 +1,5 @@
+import "test2.nc";
+
 def fibonacci(n: int): int {
   if (n == 0 or n == 1) {
     return n;
@@ -12,4 +14,4 @@ def factorial(n: int): int {
   return n * factorial(n - 1);
 }
 
-print(fibonacci(37), "\n", factorial(10));
+print(fibonacci(37), "\n", factorial(10), " ", test());

@@ -1,6 +1,7 @@
 #ifndef NODE_BUILDER_H
 #define NODE_BUILDER_H
 
+#include <filesystem>
 #include <llvm/IR/Value.h>
 
 #include <memory>
@@ -11,29 +12,30 @@
 #include "calls/structConstructor.h"
 #include "calls/variableCall.h"
 #include "conditionals/nodeIfStatement.h"
+#include "declaration/constDeclaration.h"
 #include "declaration/functionTable.h"
 #include "declaration/nodeFunDeclaration.h"
 #include "declaration/nodeReturn.h"
 #include "declaration/paramsDeclaration.h"
-#include "declaration/varDeclaration.h"
-#include "declaration/constDeclaration.h"
 #include "declaration/structDeclaration.h"
+#include "declaration/varDeclaration.h"
 #include "declaration/varReassignment.h"
 #include "declaration/varTable.h"
 #include "literals/nodeLiteralBool.h"
 #include "literals/nodeLiteralChar.h"
 #include "literals/nodeLiteralDouble.h"
+#include "literals/nodeLiteralFloat.h"
 #include "literals/nodeLiteralInt.h"
 #include "literals/nodeLiteralString.h"
-#include "literals/nodeLiteralFloat.h"
-#include "operations/nodeBinaryOp.h"
-#include "operations/nodeUnaryOp.h"
-#include "operations/nodeIncrement.h"
 #include "loops/nodeForStatement.h"
 #include "loops/nodePass.h"
 #include "loops/nodeStop.h"
 #include "loops/nodeWhileStatement.h"
 #include "nodeType.h"
+#include "operations/nodeBinaryOp.h"
+#include "operations/nodeIncrement.h"
+#include "operations/nodeUnaryOp.h"
+#include "utils/nodeImport.h"
 #include "utils/nodePrint.h"
 
 namespace nicole {
@@ -228,6 +230,12 @@ public:
   createPrint(std::vector<std::shared_ptr<Node>> expressions,
               std::shared_ptr<Node> father = nullptr) {
     return std::make_shared<NodePrint>(expressions, father);
+  };
+
+  static std::shared_ptr<NodeImport>
+  createImport(const std::filesystem::path &fileName,
+               std::shared_ptr<Node> father = nullptr) {
+    return std::make_shared<NodeImport>(fileName, father);
   };
 };
 
