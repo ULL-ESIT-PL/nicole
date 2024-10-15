@@ -93,6 +93,8 @@ Combine an user friendly sintax and the speed of a compiled language, example: M
 
 - Polymorphism (not sure)
 
+- NameSpace (not sure)
+
 - Use MLIR -> Multi Level Intermediate Representation (not sure)
 
 
