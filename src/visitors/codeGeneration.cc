@@ -17,6 +17,7 @@
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralFloat.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralInt.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
+#include "../../inc/parsingAnalysis/ast/loops/nodeDoWhile.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeForStatement.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodePass.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeStop.h"
@@ -574,6 +575,40 @@ llvm::Value *CodeGeneration::visit(const NodeWhileStatement *node) const {
   builder_.SetInsertPoint(EndBB);
 
   // No retorna ningún valor
+  return nullptr;
+}
+
+llvm::Value *CodeGeneration::visit(const NodeDoWhileStatement *node) const {
+  llvm::Function *TheFunction = builder_.GetInsertBlock()->getParent();
+
+  // We invert the secuence of creating with the parameter TheFunction so the
+  // body is created first unlike for a while statement
+  llvm::BasicBlock *BodyBB =
+      llvm::BasicBlock::Create(*context_, "doWhile.body",
+                               TheFunction); // si pongo Thefunction luego no me
+  // hace falta hacer un insert
+  llvm::BasicBlock *CondBB =
+      llvm::BasicBlock::Create(*context_, "doWhile.cond", TheFunction);
+  llvm::BasicBlock *EndBB = llvm::BasicBlock::Create(*context_, "doWhile.end");
+
+  // Jump to the body
+  builder_.CreateBr(BodyBB);
+
+  // Start inserting into the body
+  builder_.SetInsertPoint(BodyBB);
+
+  llvm::Value *body{node->body()->accept(this)};
+
+  // Create condition expression
+  llvm::Value *condition{node->condition()->accept(this)};
+
+  // If condition is true we jump to body again
+  builder_.CreateCondBr(condition, BodyBB, EndBB);
+
+  // Insertar el bloque de finalización (salida del bucle)
+  TheFunction->insert(TheFunction->end(), EndBB);
+  builder_.SetInsertPoint(EndBB);
+
   return nullptr;
 }
 

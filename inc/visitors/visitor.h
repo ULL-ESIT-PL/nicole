@@ -41,6 +41,7 @@ class NodeFunctionCall;
 class NodeVariableReassignment;
 class NodeIfStatement;
 class NodeWhileStatement;
+class NodeDoWhileStatement;
 class NodeForStatement;
 class NodeStop;
 class NodePass;
@@ -97,6 +98,8 @@ public:
   virtual T visit(const NodeIfStatement *node) const = 0;
 
   virtual T visit(const NodeWhileStatement *node) const = 0;
+
+  virtual T visit(const NodeDoWhileStatement *node) const = 0;
 
   virtual T visit(const NodeForStatement *node) const = 0;
 

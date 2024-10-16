@@ -45,6 +45,10 @@ private:
   parseWhileStatement(std::shared_ptr<VariableTable> currentScope,
                       std::shared_ptr<Node> father) const;
 
+  std::shared_ptr<NodeDoWhileStatement>
+  parseDoWhileStatement(std::shared_ptr<VariableTable> currentScope,
+                      std::shared_ptr<Node> father) const;
+
   std::shared_ptr<NodeForStatement>
   parseForStatement(std::shared_ptr<VariableTable> currentScope,
                     std::shared_ptr<Node> father) const;

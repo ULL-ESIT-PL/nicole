@@ -31,6 +31,7 @@
 #include "loops/nodePass.h"
 #include "loops/nodeStop.h"
 #include "loops/nodeWhileStatement.h"
+#include "loops/nodeDoWhile.h"
 #include "nodeType.h"
 #include "operations/nodeBinaryOp.h"
 #include "operations/nodeIncrement.h"
@@ -204,6 +205,13 @@ public:
               std::shared_ptr<NodeStatementList> body,
               std::shared_ptr<Node> father = nullptr) {
     return std::make_shared<NodeWhileStatement>(condition, body, father);
+  };
+
+  static std::shared_ptr<NodeDoWhileStatement>
+  createDoWhile(std::shared_ptr<Node> condition,
+              std::shared_ptr<NodeStatementList> body,
+              std::shared_ptr<Node> father = nullptr) {
+    return std::make_shared<NodeDoWhileStatement>(condition, body, father);
   };
 
   static std::shared_ptr<NodeForStatement>

@@ -68,6 +68,8 @@ public:
 
   llvm::Value *visit(const NodeWhileStatement *node) const override;
 
+  llvm::Value *visit(const NodeDoWhileStatement *node) const override;
+
   llvm::Value *visit(const NodeForStatement *node) const override;
 
   llvm::Value *visit(const NodeStop *node) const override;

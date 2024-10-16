@@ -63,6 +63,8 @@ public:
 
   std::string visit(const NodeWhileStatement *node) const override;
 
+  std::string visit(const NodeDoWhileStatement *node) const override;
+
   std::string visit(const NodeForStatement *node) const override;
 
   std::string visit(const NodeStop *node) const override;

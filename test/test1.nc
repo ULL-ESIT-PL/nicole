@@ -1,3 +1,4 @@
+/*
 def fibonacci(n: int): int {
   if (n == 0 or n == 1) {
     return n;
@@ -23,3 +24,16 @@ def eApprox(n: int): double {
 print("Finbonacci: ", fibonacci(37), 
       "\nFactorial: ", factorial(10), 
       "\nE approximation: ", eApprox(30), "\n");
+*/
+
+let x: int = 0;
+
+do {
+ print("hola\n");
+ if (true) {
+  print("adios");
+ }
+ ++x;
+} while (x < 10)
+
+1+1;

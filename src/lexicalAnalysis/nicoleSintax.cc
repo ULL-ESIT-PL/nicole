@@ -37,7 +37,8 @@ Lexer NicoleSintax::createLexer() const {
       Category{TokenType::OR, "or", false},
       Category{TokenType::AND, "and", false},
 
-      Category{TokenType::ID, "[a-zA-Z]+[a-zA-Z0-9]*", false},
+      // avoids the conflic between do and double
+      Category{TokenType::ID, "(?!\\b(do)\\b)[a-zA-Z]+[a-zA-Z0-9]*", false},
 
       Category{TokenType::DO, "do", false},
 

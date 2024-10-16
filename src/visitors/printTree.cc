@@ -21,6 +21,7 @@
 #include "../../inc/parsingAnalysis/ast/loops/nodePass.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeStop.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeWhileStatement.h"
+#include "../../inc/parsingAnalysis/ast/loops/nodeDoWhile.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeBinaryOp.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeIncrement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeUnaryOp.h"
@@ -203,6 +204,16 @@ std::string PrintTree::visit(const NodeWhileStatement *node) const {
   increaseIndent();
   result << indent_ << "Condition:\n" << node->condition()->accept(this);
   result << indent_ << "Body:\n" << node->body()->accept(this);
+  decreaseIndent();
+  return result.str();
+}
+
+std::string PrintTree::visit(const NodeDoWhileStatement *node) const {
+  std::ostringstream result;
+  result << indent_ << "Do While Statement:\n";
+  increaseIndent();
+  result << indent_ << "Body:\n" << node->body()->accept(this);
+  result << indent_ << "Condition:\n" << node->condition()->accept(this);
   decreaseIndent();
   return result.str();
 }
