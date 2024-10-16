@@ -38,7 +38,8 @@ TopDown::parseBody(std::shared_ptr<VariableTable> &bodyScope,
     tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing left bracket, found " +
-                             tkStream_.current().raw()};
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   std::vector<std::shared_ptr<NodeStatement>> body;
@@ -88,19 +89,26 @@ TopDown::parseParams(std::shared_ptr<VariableTable> &currentScope,
       id = token.raw();
       tkStream_.eat();
     } else {
-      llvm::report_fatal_error("Expected parameter, found: ,");
+      const std::string strErr{"Expected parameter, found: " + token.raw() +
+                               " at " + token.locInfo()};
+      llvm::report_fatal_error(strErr.c_str());
     }
     if (tkStream_.current().type() == TokenType::DOTDOT) {
       tkStream_.eat();
     } else {
-      llvm::report_fatal_error("Expected :, found: ");
+      const std::string strErr{
+          "Expected :, found: " + tkStream_.current().raw() + " at " +
+          tkStream_.current().locInfo()};
+      llvm::report_fatal_error(strErr.c_str());
     }
     token = tkStream_.current();
     if (token.type() == TokenType::ID) {
       type = typeTable_->type(token.raw());
       tkStream_.eat();
     } else {
-      llvm::report_fatal_error("Expected type, found: ");
+      const std::string strErr{"Expected type, found: " + token.raw() + " at " +
+                               token.locInfo()};
+      llvm::report_fatal_error(strErr.c_str());
     }
     params.push_back({id, type});
     if (tkStream_.currentPos() < tkStream_.size() &&
@@ -181,12 +189,14 @@ TopDown::parseIfStatement(std::shared_ptr<VariableTable> currentScope,
     tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing left parenthesis, found " +
-                             tkStream_.current().raw()};
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   if (tkStream_.current().type() == TokenType::RP) {
     const std::string strErr{"Error: empty if condition, found " +
-                             tkStream_.current().raw()};
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
 
@@ -196,7 +206,8 @@ TopDown::parseIfStatement(std::shared_ptr<VariableTable> currentScope,
     tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing right parenthesis, found " +
-                             tkStream_.current().raw()};
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   auto ifScope{TBBuilder::createScope(currentScope)};
@@ -219,12 +230,14 @@ TopDown::parseWhileStatement(std::shared_ptr<VariableTable> currentScope,
     tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing left parenthesis, found " +
-                             tkStream_.current().raw()};
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   if (tkStream_.current().type() == TokenType::RP) {
     const std::string strErr{"Error: empty while condition, found " +
-                             tkStream_.current().raw()};
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
 
@@ -234,7 +247,8 @@ TopDown::parseWhileStatement(std::shared_ptr<VariableTable> currentScope,
     tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing right parenthesis, found " +
-                             tkStream_.current().raw()};
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   auto whileScope{TBBuilder::createScope(currentScope)};
@@ -250,12 +264,14 @@ TopDown::parseForStatement(std::shared_ptr<VariableTable> currentScope,
     tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing left parenthesis, found " +
-                             tkStream_.current().raw()};
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   if (tkStream_.current().type() == TokenType::RP) {
     const std::string strErr{"Error: empty for, found " +
-                             tkStream_.current().raw()};
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   auto forScope{TBBuilder::createScope(currentScope)};
@@ -265,7 +281,8 @@ TopDown::parseForStatement(std::shared_ptr<VariableTable> currentScope,
   } else {
     const std::string strErr{"Error: missing \";\" to separate init from "
                              "condition in for statement, found " +
-                             tkStream_.current().raw()};
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   auto condition{parseLogicalOr(forScope, father)};
@@ -274,7 +291,8 @@ TopDown::parseForStatement(std::shared_ptr<VariableTable> currentScope,
   } else {
     const std::string strErr{"Error: missing \";\" to separate condition from "
                              "update in for statement, found " +
-                             tkStream_.current().raw()};
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   auto update{parseComma(forScope, father)};
@@ -282,7 +300,8 @@ TopDown::parseForStatement(std::shared_ptr<VariableTable> currentScope,
     tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing right parenthesis, found " +
-                             tkStream_.current().raw()};
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   auto body{parseBody(forScope, father)};
@@ -297,11 +316,14 @@ TopDown::parsePrintStatement(std::shared_ptr<VariableTable> currentScope,
     tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing left parenthesis, found " +
-                             tkStream_.current().raw()};
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   if (tkStream_.current().type() == TokenType::RP) {
-    const std::string strErr{"Error: empty print, found "};
+    const std::string strErr{"Error: empty print, found " +
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
 
@@ -311,7 +333,8 @@ TopDown::parsePrintStatement(std::shared_ptr<VariableTable> currentScope,
     tkStream_.eat();
   } else {
     const std::string strErr{"Error: missing right parenthesis, found " +
-                             tkStream_.current().raw()};
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   return ASTBuilder::createPrint(expressions);
@@ -333,7 +356,8 @@ TopDown::parseStructDeclaration(std::shared_ptr<VariableTable> currentScope,
       auto structScope{TBBuilder::createScope(nullptr)};
       body = parseBody(structScope, father);
     } else {
-      const std::string strErr{"Error missing left { of " + idTypeStr};
+      const std::string strErr{"Error missing left { of " + idTypeStr + " at " +
+                               tkStream_.current().locInfo()};
       llvm::report_fatal_error(strErr.c_str());
     }
   }
@@ -350,13 +374,16 @@ TopDown::parseFunctionDeclaration(std::shared_ptr<VariableTable> currentScope,
     id = token.raw();
     tkStream_.eat();
   } else {
-    const std::string strErr{"Error missing function id after def"};
+    const std::string strErr{"Error missing function id after def, found" +
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   if (tkStream_.current().type() == TokenType::LP) {
     tkStream_.eat();
   } else {
-    const std::string strErr{"Error missing left ( for function " + id};
+    const std::string strErr{"Error missing left ( for function " + id +
+                             " at " + tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   auto funScope{TBBuilder::createScope(nullptr)};
@@ -364,14 +391,15 @@ TopDown::parseFunctionDeclaration(std::shared_ptr<VariableTable> currentScope,
   if (tkStream_.current().type() == TokenType::RP) {
     tkStream_.eat();
   } else {
-    const std::string strErr{"Error missing right ) for function " + id};
+    const std::string strErr{"Error missing right ) for function " + id +
+                             " at " + tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   if (tkStream_.current().type() == TokenType::DOTDOT) {
     tkStream_.eat();
   } else {
     const std::string strErr{"Error missing \':\' after right ) for function " +
-                             id};
+                             id + " at " + tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   token = tkStream_.current();
@@ -381,7 +409,7 @@ TopDown::parseFunctionDeclaration(std::shared_ptr<VariableTable> currentScope,
     tkStream_.eat();
   } else {
     const std::string strErr{"Error missing return type for the function " +
-                             id};
+                             id + " at " + tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   std::shared_ptr<NodeStatementList> body{parseBody(funScope, father)};
@@ -408,16 +436,20 @@ TopDown::parseImport(std::shared_ptr<VariableTable> &currentScope,
     const auto raw{tkStream_.current().raw()};
     fileName = "../test/" + raw.substr(1, raw.size() - 2);
   } else {
-    const std::string strErr{"Error missing path after import"};
+    const std::string strErr{
+        "Error missing path after import, found: " + tkStream_.current().raw() +
+        " at " + tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   if (!std::filesystem::exists(fileName)) {
-    const std::string strErr{"Error path " + fileName.string() + " not found"};
+    const std::string strErr{
+        "Error path " + fileName.string() +
+        " not found from: " + tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   if (!parsedFiles_.count(fileName)) {
     tkStream_.insertAfter(lexer_.analyze(fileName));
-  } 
+  }
   return ASTBuilder::createImport(fileName, father);
 }
 
@@ -434,7 +466,8 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
       if (tkStream_.current().type() == TokenType::DOTDOT) {
         tkStream_.eat();
       } else {
-        const std::string strErr{"Error missing \':\' after " + id};
+        const std::string strErr{"Error missing \':\' after " + id + " at " +
+                                 tkStream_.current().locInfo()};
         llvm::report_fatal_error(strErr.c_str());
       }
       token = tkStream_.current();
@@ -448,12 +481,14 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
           return ASTBuilder::createVarDecl(id, idType, value, currentScope,
                                            typeTable_);
         } else {
-          const std::string strErr{"Error missing value of " + id};
+          const std::string strErr{"Error missing value of " + id + " at " +
+                                   tkStream_.current().locInfo()};
           llvm::report_fatal_error(strErr.c_str());
         }
 
       } else {
-        const std::string strErr{"Error missing type of " + id};
+        const std::string strErr{"Error missing type of " + id + " at " +
+                                 tkStream_.current().locInfo()};
         llvm::report_fatal_error(strErr.c_str());
       }
     }
@@ -466,7 +501,8 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
       if (tkStream_.current().type() == TokenType::DOTDOT) {
         tkStream_.eat();
       } else {
-        const std::string strErr{"Error missing \':\' after " + id};
+        const std::string strErr{"Error missing \':\' after " + id + " at " +
+                                 tkStream_.current().locInfo()};
         llvm::report_fatal_error(strErr.c_str());
       }
       token = tkStream_.current();
@@ -480,12 +516,14 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
           return ASTBuilder::createVarDecl(id, idType, value, currentScope,
                                            typeTable_);
         } else {
-          const std::string strErr{"Error missing value of " + id};
+          const std::string strErr{"Error missing value of " + id + " at " +
+                                   tkStream_.current().locInfo()};
           llvm::report_fatal_error(strErr.c_str());
         }
 
       } else {
-        const std::string strErr{"Error missing type of " + id};
+        const std::string strErr{"Error missing type of " + id + " at " +
+                                 tkStream_.current().locInfo()};
         llvm::report_fatal_error(strErr.c_str());
       }
     }
@@ -546,7 +584,10 @@ TopDown::parseLogicalEqual(std::shared_ptr<VariableTable> currentScope,
       left = ASTBuilder::createBinOp(left, TokenType::NOTEQUAL, right);
       break;
     default:
-      llvm::report_fatal_error("Error: invalid token type at parsing + or -");
+      const std::string strErr{"Cannot operate a binary expression with " +
+                               tkStream_.current().raw() + " at " +
+                               tkStream_.current().locInfo()};
+      llvm::report_fatal_error(strErr.c_str());
     }
   }
 
@@ -581,7 +622,10 @@ TopDown::parseCompare(std::shared_ptr<VariableTable> currentScope,
       left = ASTBuilder::createBinOp(left, TokenType::BIGGEREQUAL, right);
       break;
     default:
-      llvm::report_fatal_error("Error: invalid token type at parsing + or -");
+      const std::string strErr{"Cannot operate a binary expression with " +
+                               tkStream_.current().raw() + " at " +
+                               tkStream_.current().locInfo()};
+      llvm::report_fatal_error(strErr.c_str());
     }
   }
 
@@ -608,7 +652,10 @@ TopDown::parseAdd_Sub(std::shared_ptr<VariableTable> currentScope,
       left = ASTBuilder::createBinOp(left, TokenType::OPERATOR_SUB, right);
       break;
     default:
-      llvm::report_fatal_error("Error: invalid token type at parsing + or -");
+      const std::string strErr{"Cannot operate a binary expression with " +
+                               tkStream_.current().raw() + " at " +
+                               tkStream_.current().locInfo()};
+      llvm::report_fatal_error(strErr.c_str());
     }
   }
 
@@ -639,7 +686,10 @@ TopDown::parseMult_Div(std::shared_ptr<VariableTable> currentScope,
       left = ASTBuilder::createBinOp(left, TokenType::OPERATOR_MODULE, right);
       break;
     default:
-      llvm::report_fatal_error("Error: invalid token type at parsing + or -");
+      const std::string strErr{"Cannot operate a binary expression with " +
+                               tkStream_.current().raw() + " at " +
+                               tkStream_.current().locInfo()};
+      llvm::report_fatal_error(strErr.c_str());
     }
   }
 
@@ -737,14 +787,16 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
       tkStream_.eat();
     } else {
       const std::string strErr{"Error: missing right parenthesis, found " +
-                               tkStream_.current().raw()};
+                               tkStream_.current().raw() + " at" +
+                               tkStream_.current().locInfo()};
       llvm::report_fatal_error(strErr.c_str());
     }
     return expression;
   }
   default:
     const std::string strErr{"Error: unknown token found " +
-                             tkStream_.current().raw()};
+                             tkStream_.current().raw() + " at" +
+                             tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
 }
@@ -764,7 +816,8 @@ TopDown::parseFunctionCall(const std::string &id,
   if (tkStream_.current().type() == TokenType::RP) {
     tkStream_.eat();
   } else {
-    const std::string strErr{"Error missing right ) for function " + id};
+    const std::string strErr{"Error missing right ) for function " + id +
+                             " at" + tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
   return ASTBuilder::createFunctCall(id, params, currentScope, functionTable_);
