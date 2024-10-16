@@ -43,7 +43,7 @@ Combine an user friendly sintax and the speed of a compiled language, example: M
 
 - If conditional with else as optional
 
-- Loops while, for
+- Loops while, do while, for
 
 - Every time a function, loop or conditional is being created it inherits the outer scope
 
@@ -54,8 +54,6 @@ Combine an user friendly sintax and the speed of a compiled language, example: M
 ## Features yet to implement
 
 - Better error messages
-
-- Do while
 
 - Vectors / Array
 
