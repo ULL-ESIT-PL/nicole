@@ -53,7 +53,9 @@ Combine an user friendly sintax and the speed of a compiled language, example: M
 
 ## Features yet to implement
 
-- Better error messages
+- Better error messages (missing print more than one error per compilation)
+
+- switch
 
 - Vectors / Array
 
