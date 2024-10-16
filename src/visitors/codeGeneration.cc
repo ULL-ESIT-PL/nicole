@@ -5,6 +5,8 @@
 #include "../../inc/parsingAnalysis/ast/calls/structConstructor.h"
 #include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
 #include "../../inc/parsingAnalysis/ast/conditionals/nodeIfStatement.h"
+#include "../../inc/parsingAnalysis/ast/conditionals/nodeSwitch.h"
+#include "../../inc/parsingAnalysis/ast/conditionals/nodeCase.h"
 #include "../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/nodeFunDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/nodeReturn.h"
@@ -476,6 +478,10 @@ llvm::Value *CodeGeneration::visit(const NodeVariableReassignment *node) const {
 
   return nullptr;
 }
+
+llvm::Value *CodeGeneration::visit(const NodeSwitchStatement *node) const {}
+
+llvm::Value *CodeGeneration::visit(const NodeCaseStatement *node) const {}
 
 llvm::Value *CodeGeneration::visit(const NodeIfStatement *node) const {
   llvm::Value *condition = node->condition()->accept(this);

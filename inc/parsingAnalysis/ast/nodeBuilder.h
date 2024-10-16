@@ -11,7 +11,9 @@
 #include "calls/functionCall.h"
 #include "calls/structConstructor.h"
 #include "calls/variableCall.h"
+#include "conditionals/nodeCase.h"
 #include "conditionals/nodeIfStatement.h"
+#include "conditionals/nodeSwitch.h"
 #include "declaration/constDeclaration.h"
 #include "declaration/functionTable.h"
 #include "declaration/nodeFunDeclaration.h"
@@ -27,11 +29,11 @@
 #include "literals/nodeLiteralFloat.h"
 #include "literals/nodeLiteralInt.h"
 #include "literals/nodeLiteralString.h"
+#include "loops/nodeDoWhile.h"
 #include "loops/nodeForStatement.h"
 #include "loops/nodePass.h"
 #include "loops/nodeStop.h"
 #include "loops/nodeWhileStatement.h"
-#include "loops/nodeDoWhile.h"
 #include "nodeType.h"
 #include "operations/nodeBinaryOp.h"
 #include "operations/nodeIncrement.h"
@@ -192,6 +194,20 @@ public:
         id, expression, currentScope, typeTable, father);
   };
 
+  static std::shared_ptr<NodeSwitchStatement>
+  createSwitch(std::shared_ptr<Node> match,
+               std::vector<std::shared_ptr<NodeCaseStatement>> cases,
+               std::shared_ptr<Node> father = nullptr) {
+    return std::make_shared<NodeSwitchStatement>(match, cases, father);
+  };
+
+  static std::shared_ptr<NodeCaseStatement>
+  createCase(std::shared_ptr<Node> match,
+             std::shared_ptr<NodeStatementList> body,
+             std::shared_ptr<Node> father = nullptr) {
+    return std::make_shared<NodeCaseStatement>(match, body, father);
+  };
+
   static std::shared_ptr<NodeIfStatement>
   createIf(std::shared_ptr<Node> condition,
            std::shared_ptr<NodeStatementList> body,
@@ -209,8 +225,8 @@ public:
 
   static std::shared_ptr<NodeDoWhileStatement>
   createDoWhile(std::shared_ptr<Node> condition,
-              std::shared_ptr<NodeStatementList> body,
-              std::shared_ptr<Node> father = nullptr) {
+                std::shared_ptr<NodeStatementList> body,
+                std::shared_ptr<Node> father = nullptr) {
     return std::make_shared<NodeDoWhileStatement>(condition, body, father);
   };
 

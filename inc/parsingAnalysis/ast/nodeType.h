@@ -29,6 +29,8 @@ enum class NodeType {
   CALL_FUNCTION,
   CALL_CTR,
   IF,
+  SWITCH,
+  CASE,
   WHILE,
   FOR,
   DO_WHILE,

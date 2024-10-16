@@ -64,6 +64,10 @@ public:
 
   llvm::Value *visit(const NodeVariableReassignment *node) const override;
 
+  llvm::Value *visit(const NodeSwitchStatement *node) const override;
+
+  llvm::Value *visit(const NodeCaseStatement *node) const override;
+
   llvm::Value *visit(const NodeIfStatement *node) const override;
 
   llvm::Value *visit(const NodeWhileStatement *node) const override;

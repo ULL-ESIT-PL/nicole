@@ -5,6 +5,8 @@
 #include "../../inc/parsingAnalysis/ast/calls/structConstructor.h"
 #include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
 #include "../../inc/parsingAnalysis/ast/conditionals/nodeIfStatement.h"
+#include "../../inc/parsingAnalysis/ast/conditionals/nodeSwitch.h"
+#include "../../inc/parsingAnalysis/ast/conditionals/nodeCase.h"
 #include "../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/nodeFunDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/nodeReturn.h"
@@ -184,6 +186,10 @@ std::string PrintTree::visit(const NodeVariableReassignment *node) const {
   decreaseIndent();
   return result.str();
 }
+
+std::string PrintTree::visit(const NodeSwitchStatement *node) const {}
+
+std::string PrintTree::visit(const NodeCaseStatement *node) const {}
 
 std::string PrintTree::visit(const NodeIfStatement *node) const {
   std::ostringstream result;

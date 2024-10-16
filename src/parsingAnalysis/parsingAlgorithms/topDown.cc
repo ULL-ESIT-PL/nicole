@@ -142,6 +142,10 @@ std::shared_ptr<NodeStatement>
 TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope,
                         std::shared_ptr<Node> father) const {
   switch (tkStream_.current().type()) {
+  case TokenType::SWITCH: {
+    return ASTBuilder::createStatement(
+        parseSwitchStatement(currentScope, father), father);
+  }
   case TokenType::IF: {
     return ASTBuilder::createStatement(parseIfStatement(currentScope, father),
                                        father);
@@ -184,6 +188,14 @@ TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope,
   }
   }
 }
+
+std::shared_ptr<NodeSwitchStatement>
+TopDown::parseSwitchStatement(std::shared_ptr<VariableTable> currentScope,
+                              std::shared_ptr<Node> father) const {}
+
+std::shared_ptr<NodeCaseStatement>
+TopDown::parseCaseStatement(std::shared_ptr<VariableTable> currentScope,
+                            std::shared_ptr<Node> father) const {}
 
 std::shared_ptr<NodeIfStatement>
 TopDown::parseIfStatement(std::shared_ptr<VariableTable> currentScope,

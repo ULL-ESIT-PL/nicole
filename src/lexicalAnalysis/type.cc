@@ -40,6 +40,10 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "IF";
   case TokenType::ELSE:
     return "ELSE";
+  case TokenType::SWITCH:
+    return "SWITCH";
+  case TokenType::CASE:
+    return "CASE";
   case TokenType::WHILE:
     return "WHILE";
   case TokenType::FOR:

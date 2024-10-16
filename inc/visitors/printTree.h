@@ -59,6 +59,10 @@ public:
 
   std::string visit(const NodeVariableReassignment *node) const override;
 
+  std::string visit(const NodeSwitchStatement *node) const override;
+
+  std::string visit(const NodeCaseStatement *node) const override;
+
   std::string visit(const NodeIfStatement *node) const override;
 
   std::string visit(const NodeWhileStatement *node) const override;

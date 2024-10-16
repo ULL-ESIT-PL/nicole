@@ -41,6 +41,10 @@ std::string nodeTypeToString(const NodeType &nt) {
     return "CALL_FUNCTION";
   case NodeType::IF:
     return "IF";
+  case NodeType::SWITCH:
+    return "SWITCH";
+  case NodeType::CASE:
+    return "CASE";
   case NodeType::WHILE:
     return "WHILE";
   case NodeType::FOR:
