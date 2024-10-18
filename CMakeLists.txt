@@ -63,7 +63,14 @@ set(SRC_FILES
     src/parsingAnalysis/parsingAlgorithms/productions/parseLoop.cc
     src/parsingAnalysis/parsingAlgorithms/productions/parseConditional.cc
     src/parsingAnalysis/parsingAlgorithms/productions/parseDecl.cc
-    src/visitors/codeGeneration.cc
+    src/visitors/codeGen/codeGeneration.cc
+    src/visitors/codeGen/codeGenFactor.cc
+    src/visitors/codeGen/codeGenLoop.cc
+    src/visitors/codeGen/codeGenConditional.cc
+    src/visitors/codeGen/codeGenBinary.cc
+    src/visitors/codeGen/codeGenDecl.cc
+    src/visitors/codeGen/codeGenCall.cc
+    src/visitors/codeGen/codeGenUtils.cc
     src/visitors/printTree.cc
 )
 
