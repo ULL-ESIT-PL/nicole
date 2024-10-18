@@ -57,6 +57,12 @@ set(SRC_FILES
     src/parsingAnalysis/ast/utils/convert.cc
     src/parsingAnalysis/types/typeTable.cc
     src/parsingAnalysis/parsingAlgorithms/topDown.cc
+    src/parsingAnalysis/parsingAlgorithms/productions/parseBinary.cc
+    src/parsingAnalysis/parsingAlgorithms/productions/parseFactor.cc
+    src/parsingAnalysis/parsingAlgorithms/productions/parseUtils.cc
+    src/parsingAnalysis/parsingAlgorithms/productions/parseLoop.cc
+    src/parsingAnalysis/parsingAlgorithms/productions/parseConditional.cc
+    src/parsingAnalysis/parsingAlgorithms/productions/parseDecl.cc
     src/visitors/codeGeneration.cc
     src/visitors/printTree.cc
 )

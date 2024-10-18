@@ -29,9 +29,9 @@ print("Finbonacci: ", fibonacci(37),
 let x: int = 0;
 let y: double = 20.0;
 do {
- print("hola\n");
+ print("hola");
  if (true) {
-  print("adios");
+  print("adios\n");
  }
  ++x;
 } while (x < 10)

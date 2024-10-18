@@ -197,8 +197,10 @@ public:
   static std::shared_ptr<NodeSwitchStatement>
   createSwitch(std::shared_ptr<Node> match,
                std::vector<std::shared_ptr<NodeCaseStatement>> cases,
+               std::shared_ptr<NodeCaseStatement> defaultCase,
                std::shared_ptr<Node> father = nullptr) {
-    return std::make_shared<NodeSwitchStatement>(match, cases, father);
+    return std::make_shared<NodeSwitchStatement>(match, cases, defaultCase,
+                                                 father);
   };
 
   static std::shared_ptr<NodeCaseStatement>

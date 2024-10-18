@@ -12,16 +12,25 @@ class NodeSwitchStatement final : public Node {
 private:
   mutable std::shared_ptr<Node> match_;
   mutable std::vector<std::shared_ptr<NodeCaseStatement>> cases_;
+  mutable std::shared_ptr<NodeCaseStatement> default_;
 
 public:
   NodeSwitchStatement(std::shared_ptr<Node> match,
                       std::vector<std::shared_ptr<NodeCaseStatement>> cases,
+                      std::shared_ptr<NodeCaseStatement> defaultCase,
                       std::shared_ptr<Node> father = nullptr)
-      : Node{NodeType::SWITCH, father}, match_{match}, cases_{cases} {};
+      : Node{NodeType::SWITCH, father}, match_{match}, cases_{cases},
+        default_{defaultCase} {};
 
   const Node *match() const { return match_.get(); }
 
-  std::vector<std::shared_ptr<NodeCaseStatement>> cases() const { return cases_; }
+  std::vector<std::shared_ptr<NodeCaseStatement>> cases() const {
+    return cases_;
+  }
+
+  std::shared_ptr<NodeCaseStatement> defaultCase() const {
+    return default_;
+  }
 
   auto begin() const { return cases_.begin(); }
 

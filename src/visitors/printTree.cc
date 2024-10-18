@@ -4,9 +4,9 @@
 #include "../../inc/parsingAnalysis/ast/calls/functionCall.h"
 #include "../../inc/parsingAnalysis/ast/calls/structConstructor.h"
 #include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
+#include "../../inc/parsingAnalysis/ast/conditionals/nodeCase.h"
 #include "../../inc/parsingAnalysis/ast/conditionals/nodeIfStatement.h"
 #include "../../inc/parsingAnalysis/ast/conditionals/nodeSwitch.h"
-#include "../../inc/parsingAnalysis/ast/conditionals/nodeCase.h"
 #include "../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/nodeFunDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/nodeReturn.h"
@@ -15,22 +15,22 @@
 #include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralBool.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralChar.h"
-#include "../../inc/parsingAnalysis/ast/literals/nodeLiteralFloat.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralDouble.h"
+#include "../../inc/parsingAnalysis/ast/literals/nodeLiteralFloat.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralInt.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralString.h"
+#include "../../inc/parsingAnalysis/ast/loops/nodeDoWhile.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeForStatement.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodePass.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeStop.h"
 #include "../../inc/parsingAnalysis/ast/loops/nodeWhileStatement.h"
-#include "../../inc/parsingAnalysis/ast/loops/nodeDoWhile.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeBinaryOp.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeIncrement.h"
 #include "../../inc/parsingAnalysis/ast/operations/nodeUnaryOp.h"
 #include "../../inc/parsingAnalysis/ast/statements/statement.h"
 #include "../../inc/parsingAnalysis/ast/statements/statementList.h"
-#include "../../inc/parsingAnalysis/ast/utils/nodePrint.h"
 #include "../../inc/parsingAnalysis/ast/utils/nodeImport.h"
+#include "../../inc/parsingAnalysis/ast/utils/nodePrint.h"
 #include "../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
 
 namespace nicole {
@@ -52,7 +52,7 @@ std::string PrintTree::visit(const NodeLiteralFloat *node) const {
   return indent_ + "Float: " + std::to_string(node->value()) + "\n";
 }
 
-std::string PrintTree::visit(const NodeLiteralDouble*node) const {
+std::string PrintTree::visit(const NodeLiteralDouble *node) const {
   return indent_ + "Double: " + std::to_string(node->value()) + "\n";
 }
 
@@ -187,9 +187,28 @@ std::string PrintTree::visit(const NodeVariableReassignment *node) const {
   return result.str();
 }
 
-std::string PrintTree::visit(const NodeSwitchStatement *node) const {}
+std::string PrintTree::visit(const NodeSwitchStatement *node) const {
+  std::ostringstream result;
+  result << indent_ << "Switch Statement:\n";
+  increaseIndent();
+  result << indent_ << "Match:\n" << node->match()->accept(this);
+  for (const auto caseStatement : *node) {
+    result << caseStatement->accept(this);
+  }
+  result << indent_ << "Default:\n" << node->defaultCase()->accept(this);
+  decreaseIndent();
+  return result.str();
+}
 
-std::string PrintTree::visit(const NodeCaseStatement *node) const {}
+std::string PrintTree::visit(const NodeCaseStatement *node) const {
+  std::ostringstream result;
+  result << indent_ << "Case Statement:\n";
+  increaseIndent();
+  result << indent_ << "Match:\n" << node->match()->accept(this);
+  result << indent_ << "Body:\n" << node->body()->accept(this);
+  decreaseIndent();
+  return result.str();
+}
 
 std::string PrintTree::visit(const NodeIfStatement *node) const {
   std::ostringstream result;
