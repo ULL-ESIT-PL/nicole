@@ -17,6 +17,7 @@ Lexer NicoleSintax::createLexer() const {
 
       Category{TokenType::CONST, "const", false},
       Category{TokenType::LET, "let", false},
+      Category{TokenType::AUTO, "auto", false},
 
       Category{TokenType::IMPORT, "import", false},
 

@@ -20,6 +20,7 @@ enum class TokenType {
   FALSE,
   LET,
   CONST,
+  AUTO,
   IMPORT,
   PRINT,
   SYSTEM,

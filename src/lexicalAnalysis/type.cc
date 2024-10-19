@@ -28,6 +28,8 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "LET";
   case TokenType::CONST:
     return "CONST";
+  case TokenType::AUTO:
+    return "AUTO";
   case TokenType::IMPORT:
     return "IMPORT";
   case TokenType::PRINT:

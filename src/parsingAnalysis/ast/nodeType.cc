@@ -31,6 +31,8 @@ std::string nodeTypeToString(const NodeType &nt) {
     return "VAR_DECL";
   case NodeType::CONST_DECL:
     return "CONST_DECL";
+  case NodeType::AUTO_DECL:
+    return "AUTO_DECL";
   case NodeType::STRUCT_DECL:
     return "STRUCT_DECL";
   case NodeType::VAR_REG:

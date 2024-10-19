@@ -191,4 +191,4 @@ llvm::Value *CodeGeneration::visit(const NodeReturn *node) const {
   return builder_.CreateRet(result);
 }
 
-}
+} // namespace nicole

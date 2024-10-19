@@ -152,8 +152,8 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
         if (tkStream_.current().type() == TokenType::ASSIGNMENT) {
           tkStream_.eat();
           auto value{parseLogicalOr(currentScope, father)};
-          return ASTBuilder::createVarDecl(id, idType, value, currentScope,
-                                           typeTable_);
+          return ASTBuilder::createConstDecl(id, idType, value, currentScope,
+                                             typeTable_);
         } else {
           const std::string strErr{"Error missing value of " + id + " at " +
                                    tkStream_.current().locInfo()};

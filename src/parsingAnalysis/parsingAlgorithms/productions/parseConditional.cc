@@ -173,6 +173,7 @@ TopDown::parseIfStatement(std::shared_ptr<VariableTable> currentScope,
     auto elseScope{TBBuilder::createScope(currentScope)};
     elseBody = parseBody(elseScope, father);
   }
+
   return ASTBuilder::createIf(condition, ifBody, elseBody);
 }
 

@@ -1,8 +1,9 @@
 #include "../../../../inc/parsingAnalysis/ast/declaration/varTable.h"
+#include "llvm/Support/ErrorHandling.h"
 
 namespace nicole {
 
-bool VariableTable::hasVariable(const std::string &id) {
+bool VariableTable::hasVariable(const std::string &id) const {
   if (table_.count(id))
     return true;
   if (father_) {
@@ -11,12 +12,21 @@ bool VariableTable::hasVariable(const std::string &id) {
   return false;
 }
 
+bool VariableTable::isConst(const std::string &id) const {
+  if (table_.count(id))
+    return std::get<2>(table_.at(id));
+  if (father_) {
+    return father_->isConst(id);
+  }
+  const std::string strErr{"The variable " + id + " does not exist"};
+  llvm::report_fatal_error(strErr.c_str());
+}
+
 void VariableTable::addVariable(const std::string &id,
                                 const GenericType *idType, llvm::Value *value,
                                 llvm::AllocaInst *alloca, const bool isConst) {
   if (!hasVariable(id)) {
-    table_[id] =
-        std::make_tuple(idType, std::pair{value, alloca}, isConst);
+    table_[id] = std::make_tuple(idType, std::pair{value, alloca}, isConst);
     return;
   }
   const std::string strErr{"The variable " + id + " already exist"};

@@ -1,5 +1,6 @@
 #include "../../../inc/visitors/codeGeneration.h"
 
+#include "../../../inc/parsingAnalysis/ast/calls/variableCall.h"
 #include "../../../inc/parsingAnalysis/ast/conditionals/nodeCase.h"
 #include "../../../inc/parsingAnalysis/ast/conditionals/nodeIfStatement.h"
 #include "../../../inc/parsingAnalysis/ast/conditionals/nodeSwitch.h"
@@ -37,8 +38,23 @@ llvm::Value *CodeGeneration::visit(const NodeSwitchStatement *node) const {
   // Añadir casos
   auto cases{node->cases()};
   for (size_t i{0}; i < casesBB.size(); ++i) {
-    llvm::Value *caseMatch{cases[i]->match()->accept(this)};
+    llvm::Value *caseMatch{nullptr};
+    // checks if a case is a const variable or a literal
+    if (cases[i]->match()->type() == NodeType::CALL_VAR) {
+      const auto varCall{
+          dynamic_cast<const NodeVariableCall *>(cases[i]->match())};
+      if (varCall->table()->isConst(varCall->id())) {
+        caseMatch = varCall->table()->variableValue(varCall->id());
+      } else {
+        const std::string strErr{"Error: the variable " + varCall->id() +
+                                 " is not const"};
+        llvm::report_fatal_error(strErr.c_str());
+      }
+    } else {
+      caseMatch = cases[i]->match()->accept(this);
+    }
     // comprobar tipo de caseMatch con match
+    // FALTA COMRPOBAR CUANDO CONST VIENE DADO POR UNA SUMA 0 ASSIGNACION POR EJEMPLO
     if (auto *constInt = llvm::dyn_cast<llvm::ConstantInt>(caseMatch)) {
       switchInst->addCase(constInt, casesBB[i]);
     } else {
@@ -50,7 +66,8 @@ llvm::Value *CodeGeneration::visit(const NodeSwitchStatement *node) const {
   }
 
   if (node->hasDefault()) {
-    defaultBlock = llvm::BasicBlock::Create(*context_, "default", currentFunction, endBB);
+    defaultBlock =
+        llvm::BasicBlock::Create(*context_, "default", currentFunction, endBB);
     switchInst->setDefaultDest(defaultBlock);
     builder_.SetInsertPoint(defaultBlock);
     node->defaultCase()->accept(this);

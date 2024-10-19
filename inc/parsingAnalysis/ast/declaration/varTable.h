@@ -25,16 +25,18 @@ class VariableTable final {
   VariableTable(std::shared_ptr<VariableTable> father = nullptr)
       : father_{father} {};
 
-  std::shared_ptr<VariableTable> father() { return father_; }
+  std::shared_ptr<VariableTable> father() const { return father_; }
 
   auto begin() const { return table_.begin(); }
 
   auto end() const { return table_.end(); }
 
-  bool hasVariable(const std::string& id);
+  bool hasVariable(const std::string& id) const;
+
+  bool isConst(const std::string& id) const;
 
   void addVariable(const std::string& id, const GenericType* idType,
-                   llvm::Value* value, llvm::AllocaInst* alloca, const bool = false);
+                   llvm::Value* value, llvm::AllocaInst* alloca, const bool isConst = false);
 
   void setVariable(const std::string& id, llvm::Value* value);
 
