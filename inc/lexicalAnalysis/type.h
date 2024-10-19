@@ -28,6 +28,7 @@ enum class TokenType {
   ELSE,
   SWITCH,
   CASE,
+  DEFAULT,
   WHILE,
   FOR,
   DO,

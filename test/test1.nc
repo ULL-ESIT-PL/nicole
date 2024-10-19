@@ -27,13 +27,15 @@ print("Finbonacci: ", fibonacci(37),
 */
 
 let x: int = 0;
-let y: double = 20.0;
-do {
- print("hola");
- if (true) {
-  print("adios\n");
- }
- ++x;
-} while (x < 10)
 
-1+1;
+switch (x) {
+  case 0: {
+    print("c++");
+  }
+  case 1: {
+    print("adios");
+  }
+  default: {
+    print("hola");
+  }
+}

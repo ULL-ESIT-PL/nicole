@@ -26,6 +26,7 @@ Lexer NicoleSintax::createLexer() const {
 
       Category{TokenType::SWITCH, "switch", false},
       Category{TokenType::CASE, "case", false},
+      Category{TokenType::DEFAULT, "default", false},
 
       Category{TokenType::IF, "if", false},
       Category{TokenType::ELSE, "else", false},

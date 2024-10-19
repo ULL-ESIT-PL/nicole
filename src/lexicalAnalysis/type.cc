@@ -44,6 +44,8 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "SWITCH";
   case TokenType::CASE:
     return "CASE";
+  case TokenType::DEFAULT:
+    return "DEFAULT";
   case TokenType::WHILE:
     return "WHILE";
   case TokenType::FOR:

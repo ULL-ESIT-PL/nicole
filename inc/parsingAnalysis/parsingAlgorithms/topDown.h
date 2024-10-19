@@ -44,6 +44,10 @@ private:
   std::shared_ptr<NodeCaseStatement>
   parseCaseStatement(std::shared_ptr<VariableTable> currentScope,
                    std::shared_ptr<Node> father) const;
+  
+  std::shared_ptr<NodeCaseStatement>
+  parseDefault(std::shared_ptr<VariableTable> currentScope,
+                   std::shared_ptr<Node> father) const;
 
   std::shared_ptr<NodeIfStatement>
   parseIfStatement(std::shared_ptr<VariableTable> currentScope,

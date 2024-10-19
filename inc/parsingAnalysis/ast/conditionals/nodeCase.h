@@ -21,7 +21,7 @@ public:
 
   const Node *match() const { return match_.get(); }
 
-  const NodeStatementList* body() const { return body_.get(); }
+  const NodeStatementList *body() const { return body_.get(); }
 
   llvm::Value *accept(const CodeGeneration *visitor) const override {
     return visitor->visit(this);

@@ -1,8 +1,8 @@
 #include "../../../../inc/parsingAnalysis/parsingAlgorithms/topDown.h"
 #include "llvm/Support/ErrorHandling.h"
 #include <cstdio>
-#include <filesystem>
 #include <memory>
+#include <vector>
 
 namespace nicole {
 
@@ -47,7 +47,21 @@ TopDown::parseSwitchStatement(std::shared_ptr<VariableTable> currentScope,
                              tkStream_.current().locInfo()};
     llvm::report_fatal_error(strErr.c_str());
   }
-  auto cases{parseCaseStatement(currentScope, father)};
+  std::vector<std::shared_ptr<NodeCaseStatement>> cases{};
+  while (!tkStream_.isCurrentTokenType(TokenType::DEFAULT)) {
+    cases.push_back(parseCaseStatement(currentScope, father));
+  }
+  auto defaultCase{parseDefault(currentScope, father)};
+  if (tkStream_.isCurrentTokenType(TokenType::RB)) {
+    tkStream_.eat();
+  } else {
+    const std::string strErr{"Error: missing right bracket, found " +
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+
+  return ASTBuilder::createSwitch(match, cases, defaultCase);
   /*
   switch (true) {
     case 0: {
@@ -62,7 +76,61 @@ TopDown::parseSwitchStatement(std::shared_ptr<VariableTable> currentScope,
 
 std::shared_ptr<NodeCaseStatement>
 TopDown::parseCaseStatement(std::shared_ptr<VariableTable> currentScope,
-                            std::shared_ptr<Node> father) const {}
+                            std::shared_ptr<Node> father) const {
+
+  if (tkStream_.isCurrentTokenType(TokenType::CASE)) {
+    tkStream_.eat();
+  } else {
+    const std::string strErr{"Error: missing case, found " +
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+
+  auto match{parseLogicalOr(currentScope, father)};
+
+  if (tkStream_.isCurrentTokenType(TokenType::DOTDOT)) {
+    tkStream_.eat();
+  } else {
+    const std::string strErr{"Error: missing :, found " +
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+
+  auto bodyScope{TBBuilder::createScope(currentScope)};
+  auto body{parseBody(bodyScope, father)};
+
+  return ASTBuilder::createCase(match, body);
+}
+
+std::shared_ptr<NodeCaseStatement>
+TopDown::parseDefault(std::shared_ptr<VariableTable> currentScope,
+                      std::shared_ptr<Node> father) const {
+
+  if (tkStream_.isCurrentTokenType(TokenType::DEFAULT)) {
+    tkStream_.eat();
+  } else {
+    const std::string strErr{"Error: missing default, found " +
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+
+  if (tkStream_.isCurrentTokenType(TokenType::DOTDOT)) {
+    tkStream_.eat();
+  } else {
+    const std::string strErr{"Error: missing :, found " +
+                             tkStream_.current().raw() + " at " +
+                             tkStream_.current().locInfo()};
+    llvm::report_fatal_error(strErr.c_str());
+  }
+
+  auto bodyScope{TBBuilder::createScope(currentScope)};
+  auto body{parseBody(bodyScope, father)};
+
+  return ASTBuilder::createCase(nullptr, body);
+}
 
 std::shared_ptr<NodeIfStatement>
 TopDown::parseIfStatement(std::shared_ptr<VariableTable> currentScope,

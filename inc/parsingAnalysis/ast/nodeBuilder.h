@@ -199,8 +199,7 @@ public:
                std::vector<std::shared_ptr<NodeCaseStatement>> cases,
                std::shared_ptr<NodeCaseStatement> defaultCase,
                std::shared_ptr<Node> father = nullptr) {
-    return std::make_shared<NodeSwitchStatement>(match, cases, defaultCase,
-                                                 father);
+    return std::make_shared<NodeSwitchStatement>(match, cases, defaultCase, father);
   };
 
   static std::shared_ptr<NodeCaseStatement>

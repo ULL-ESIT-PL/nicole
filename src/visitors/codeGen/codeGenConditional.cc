@@ -4,18 +4,53 @@
 #include "../../../inc/parsingAnalysis/ast/conditionals/nodeIfStatement.h"
 #include "../../../inc/parsingAnalysis/ast/conditionals/nodeSwitch.h"
 #include "../../../inc/parsingAnalysis/ast/statements/statementList.h"
+#include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Value.h"
 #include "llvm/Support/ErrorHandling.h"
+#include <cstddef>
+#include <string>
+#include <vector>
 
 namespace nicole {
 
 llvm::Value *CodeGeneration::visit(const NodeSwitchStatement *node) const {
+  llvm::Value *match{node->match()->accept(this)};
+
+  std::vector<llvm::BasicBlock *> casesBB{};
+  for (const auto caseStatement : *node) {
+    casesBB.push_back(llvm::BasicBlock::Create(*context_, "case"));
+  }
+  // Crear bloques de destino para el switch
+  llvm::BasicBlock *defaultBlock{
+      llvm::BasicBlock::Create(*context_, "default")};
+  // Crear la instrucción switch
+  llvm::SwitchInst *switchInst{
+      builder_.CreateSwitch(match, defaultBlock, casesBB.size())};
+
+  // Añadir casos
+  auto cases{node->cases()};
+  for (size_t i{0}; i < casesBB.size(); ++i) {
+    llvm::Value *caseMatch{cases[i]->match()->accept(this)};
+    // comprobar tipo de caseMatch con match
+    if (auto *constInt = llvm::dyn_cast<llvm::ConstantInt>(caseMatch)) {
+      switchInst->addCase(constInt, casesBB[i]);
+    } else {
+      llvm::errs() << "Error: caseMatch no es un valor constante entero.\n";
+    }
+    builder_.SetInsertPoint(casesBB[i]);
+    cases[i]->accept(this);
+  }
+  builder_.SetInsertPoint(defaultBlock);
+  node->defaultCase()->accept(this);
   return nullptr;
 }
 
 llvm::Value *CodeGeneration::visit(const NodeCaseStatement *node) const {
+  //llvm::report_fatal_error(std::to_string(node->body()->statements().size()).c_str());
+  node->body()->accept(this);
+  llvm::report_fatal_error("holña");
   return nullptr;
 }
 
