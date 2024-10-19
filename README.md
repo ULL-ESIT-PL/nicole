@@ -43,6 +43,8 @@ Combine an user friendly sintax and the speed of a compiled language, example: M
 
 - If conditional with else as optional
 
+- Switch conditional with optional default (still gotta check that every case has the right type)
+
 - Loops while, do while, for
 
 - Every time a function, loop or conditional is being created it inherits the outer scope
@@ -54,8 +56,6 @@ Combine an user friendly sintax and the speed of a compiled language, example: M
 ## Features yet to implement
 
 - Better error messages (missing print more than one error per compilation)
-
-- switch
 
 - Vectors / Array
 

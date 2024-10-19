@@ -26,7 +26,7 @@ print("Finbonacci: ", fibonacci(37),
       "\nE approximation: ", eApprox(30), "\n");
 */
 
-let x: int = 14;
+let x: int = 1;
 
 switch (x) {
   case 0: {
