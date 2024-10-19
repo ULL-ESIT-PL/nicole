@@ -26,7 +26,7 @@ print("Finbonacci: ", fibonacci(37),
       "\nE approximation: ", eApprox(30), "\n");
 */
 
-let x: int = 0;
+let x: int = 14;
 
 switch (x) {
   case 0: {
@@ -35,7 +35,6 @@ switch (x) {
   case 1: {
     print("adios");
   }
-  default: {
-    print("hola");
-  }
 }
+
+x = 10;

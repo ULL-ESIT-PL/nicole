@@ -5,6 +5,7 @@
 #include "../../../inc/parsingAnalysis/parsingAlgorithms/tree.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Value.h"
+#include <ostream>
 
 namespace nicole {
 
@@ -15,6 +16,7 @@ llvm::Value *CodeGeneration::visit(const NodeStatement *node) const {
 llvm::Value *CodeGeneration::visit(const NodeStatementList *node) const {
   llvm::Value *lastValue{nullptr};
   for (const auto &statement : *node) {
+    std::cout << nodeTypeToString(statement->expression()->type()) + "\n" << std::flush;
     llvm::Value *value{statement->accept(this)};
     if (/* statement->expression()->type() == NodeType::VAR_DECL ||
         statement->expression()->type() == NodeType::CONST_DECL ||

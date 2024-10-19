@@ -10,7 +10,6 @@
 #include "llvm/IR/Value.h"
 #include "llvm/Support/ErrorHandling.h"
 #include <cstddef>
-#include <string>
 #include <vector>
 
 namespace nicole {
@@ -18,16 +17,22 @@ namespace nicole {
 llvm::Value *CodeGeneration::visit(const NodeSwitchStatement *node) const {
   llvm::Value *match{node->match()->accept(this)};
 
+  llvm::Function *currentFunction = builder_.GetInsertBlock()->getParent();
+
   std::vector<llvm::BasicBlock *> casesBB{};
   for (const auto caseStatement : *node) {
-    casesBB.push_back(llvm::BasicBlock::Create(*context_, "case"));
+    casesBB.push_back(
+        llvm::BasicBlock::Create(*context_, "case", currentFunction));
   }
-  // Crear bloques de destino para el switch
-  llvm::BasicBlock *defaultBlock{
-      llvm::BasicBlock::Create(*context_, "default")};
+
+  llvm::BasicBlock *defaultBlock{nullptr};
+
+  llvm::BasicBlock *endBB =
+      llvm::BasicBlock::Create(*context_, "end", currentFunction);
+
   // Crear la instrucción switch
   llvm::SwitchInst *switchInst{
-      builder_.CreateSwitch(match, defaultBlock, casesBB.size())};
+      builder_.CreateSwitch(match, endBB, casesBB.size())};
 
   // Añadir casos
   auto cases{node->cases()};
@@ -41,16 +46,24 @@ llvm::Value *CodeGeneration::visit(const NodeSwitchStatement *node) const {
     }
     builder_.SetInsertPoint(casesBB[i]);
     cases[i]->accept(this);
+    builder_.CreateBr(endBB);
   }
-  builder_.SetInsertPoint(defaultBlock);
-  node->defaultCase()->accept(this);
+
+  if (node->hasDefault()) {
+    defaultBlock = llvm::BasicBlock::Create(*context_, "default", currentFunction, endBB);
+    switchInst->setDefaultDest(defaultBlock);
+    builder_.SetInsertPoint(defaultBlock);
+    node->defaultCase()->accept(this);
+    builder_.CreateBr(endBB);
+  }
+
+  builder_.SetInsertPoint(endBB);
   return nullptr;
 }
 
 llvm::Value *CodeGeneration::visit(const NodeCaseStatement *node) const {
-  //llvm::report_fatal_error(std::to_string(node->body()->statements().size()).c_str());
+  // llvm::report_fatal_error(std::to_string(node->body()->statements().size()).c_str());
   node->body()->accept(this);
-  llvm::report_fatal_error("holña");
   return nullptr;
 }
 

@@ -17,7 +17,7 @@ private:
 public:
   NodeSwitchStatement(std::shared_ptr<Node> match,
                       std::vector<std::shared_ptr<NodeCaseStatement>> cases,
-                      std::shared_ptr<NodeCaseStatement> defaultCase,
+                      std::shared_ptr<NodeCaseStatement> defaultCase = nullptr,
                       std::shared_ptr<Node> father = nullptr)
       : Node{NodeType::SWITCH, father}, match_{match}, cases_{cases},
         default_{defaultCase} {};
@@ -27,6 +27,8 @@ public:
   std::vector<std::shared_ptr<NodeCaseStatement>> cases() const {
     return cases_;
   }
+
+  bool hasDefault() const { return default_ != nullptr; }
 
   std::shared_ptr<NodeCaseStatement> defaultCase() const {
     return default_;

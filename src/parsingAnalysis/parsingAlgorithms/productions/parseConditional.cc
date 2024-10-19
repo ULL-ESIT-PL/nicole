@@ -48,7 +48,8 @@ TopDown::parseSwitchStatement(std::shared_ptr<VariableTable> currentScope,
     llvm::report_fatal_error(strErr.c_str());
   }
   std::vector<std::shared_ptr<NodeCaseStatement>> cases{};
-  while (!tkStream_.isCurrentTokenType(TokenType::DEFAULT)) {
+  while (!tkStream_.isCurrentTokenType(TokenType::DEFAULT) &&
+         !tkStream_.isCurrentTokenType(TokenType::RB)) {
     cases.push_back(parseCaseStatement(currentScope, father));
   }
   auto defaultCase{parseDefault(currentScope, father)};
@@ -110,6 +111,8 @@ TopDown::parseDefault(std::shared_ptr<VariableTable> currentScope,
 
   if (tkStream_.isCurrentTokenType(TokenType::DEFAULT)) {
     tkStream_.eat();
+  } else if (tkStream_.isCurrentTokenType(TokenType::RB)) {
+    return nullptr;
   } else {
     const std::string strErr{"Error: missing default, found " +
                              tkStream_.current().raw() + " at " +
