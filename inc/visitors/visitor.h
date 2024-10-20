@@ -37,6 +37,7 @@ class NodeStructDeclaration;
 class NodeFunctionDeclaration;
 class NodeStructConstructor;
 class NodeStructAcces;
+class NodeStructSetAttr;
 class NodeVariableCall;
 class NodeFunctionCall;
 class NodeVariableReassignment;
@@ -94,6 +95,8 @@ public:
   virtual T visit(const NodeStructConstructor *node) const = 0;
 
   virtual T visit(const NodeStructAcces *node) const = 0;
+
+  virtual T visit(const NodeStructSetAttr *node) const = 0;
 
   virtual T visit(const NodeVariableCall *node) const = 0;
 

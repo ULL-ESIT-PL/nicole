@@ -25,6 +25,7 @@ enum class NodeType {
   AUTO_DECL,
   STRUCT_DECL,
   FUN_DECL,
+  STRUCT_SET_ATTR,
   VAR_REG,
   SELF_REG,
   STRUCT_ACS,

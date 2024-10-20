@@ -13,6 +13,7 @@
 #include "../../inc/parsingAnalysis/ast/declaration/nodeReturn.h"
 #include "../../inc/parsingAnalysis/ast/declaration/selfAssignment.h"
 #include "../../inc/parsingAnalysis/ast/declaration/structDeclaration.h"
+#include "../../inc/parsingAnalysis/ast/declaration/structSetAttr.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralBool.h"
@@ -171,6 +172,16 @@ std::string PrintTree::visit(const NodeStructAcces *node) const {
   result << indent_ << "Struct Access:\n";
   increaseIndent();
   result << indent_ << "Attr:\n" << node->attribute();
+  decreaseIndent();
+  return result.str();
+}
+
+std::string PrintTree::visit(const NodeStructSetAttr *node) const {
+  std::ostringstream result;
+  result << indent_ << "Struct Set attr:\n";
+  increaseIndent();
+  result << indent_ << "Attr:\n" << node->attribute();
+  result << indent_ << "Value:\n" << node->value()->accept(this);
   decreaseIndent();
   return result.str();
 }

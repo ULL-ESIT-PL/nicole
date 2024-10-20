@@ -8,6 +8,7 @@
 #include "../../../inc/parsingAnalysis/ast/declaration/structDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
+#include "../../../inc/parsingAnalysis/ast/declaration/structSetAttr.h"
 #include "../../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "llvm/ADT/APFloat.h"
 #include "llvm/IR/DerivedTypes.h"
@@ -23,6 +24,32 @@
 #include <vector>
 
 namespace nicole {
+
+llvm::Value *CodeGeneration::visit(const NodeStructSetAttr *node) const {
+  std::cout << "---------\n" << *node->table() << std::flush;
+
+  const auto varTable{node->table()};
+  auto structType{node->typeTable()
+                      ->type(varTable->variableType(node->id())->name())
+                      .get()};
+  const auto structTypeCasted = dynamic_cast<const UserType *>(structType);
+  const auto index{structTypeCasted->attribute(node->attribute())};
+
+  // Obtener el puntero al objeto de la estructura
+  llvm::Value *structPtr = builder_.CreateLoad(varTable->variableAddress(node->id())->getType(), 
+                                               varTable->variableAddress(node->id()), node->id());
+
+  // Obtener el puntero al atributo específico dentro de la estructura
+  llvm::Value *fieldPtr = builder_.CreateStructGEP(
+      structType->type(context_), structPtr, index.first, node->attribute());
+
+  // Crear un load para el atributo específico
+  llvm::Type *fieldType = structType->type(context_)->getStructElementType(index.first);
+
+  llvm::Value* expression = node->value()->accept(this);
+  builder_.CreateStore(expression, fieldPtr);
+  return nullptr;
+}
 
 llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
   llvm::Value *value{node->expression()->accept(this)};

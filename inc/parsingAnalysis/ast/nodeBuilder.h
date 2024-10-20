@@ -16,12 +16,14 @@
 #include "conditionals/nodeIfStatement.h"
 #include "conditionals/nodeSwitch.h"
 #include "declaration/constDeclaration.h"
+#include "declaration/structSetAttr.h"
 #include "declaration/functionTable.h"
 #include "declaration/nodeFunDeclaration.h"
 #include "declaration/nodeReturn.h"
 #include "declaration/paramsDeclaration.h"
 #include "declaration/selfAssignment.h"
 #include "declaration/structDeclaration.h"
+#include "declaration/structSetAttr.h"
 #include "declaration/varDeclaration.h"
 #include "declaration/varReassignment.h"
 #include "declaration/varTable.h"
@@ -168,6 +170,16 @@ public:
                     std::shared_ptr<Node> father = nullptr) {
     return std::make_shared<NodeStructAcces>(id, attribute, currentScope,
                                              typeTable, father);
+  };
+
+  static std::shared_ptr<NodeStructSetAttr>
+  createStructSetAttr(const std::string &id, const std::string &attribute,
+                      std::shared_ptr<Node> value,
+                      std::shared_ptr<VariableTable> currentScope,
+                      std::shared_ptr<TypeTable> typeTable,
+                      std::shared_ptr<Node> father = nullptr) {
+    return std::make_shared<NodeStructSetAttr>(id, attribute, value,
+                                               currentScope, typeTable, father);
   };
 
   static std::shared_ptr<NodeStructConstructor>

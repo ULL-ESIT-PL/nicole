@@ -81,7 +81,14 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
       if (tkStream_.current().type() == TokenType::ID) {
         const auto attribute{tkStream_.current().raw()};
         tkStream_.eat();
-        return ASTBuilder::createStructAcces(id, attribute, currentScope, typeTable_);
+        if (tkStream_.current().type() == TokenType::ASSIGNMENT) {
+          tkStream_.eat();
+          auto expression{parseLogicalOr(currentScope, father)};
+          return ASTBuilder::createStructSetAttr(id, attribute, expression,
+                                                 currentScope, typeTable_);
+        }
+        return ASTBuilder::createStructAcces(id, attribute, currentScope,
+                                             typeTable_);
       } else {
         const std::string strErr{"Error: accessing attribute, found " +
                                  tkStream_.current().raw() + " at" +

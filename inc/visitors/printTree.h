@@ -55,6 +55,8 @@ public:
 
   std::string visit(const NodeStructAcces *node) const override;
 
+  std::string visit(const NodeStructSetAttr *node) const override;
+
   std::string visit(const NodeVariableCall *node) const override;
 
   std::string visit(const NodeFunctionCall *node) const override;
