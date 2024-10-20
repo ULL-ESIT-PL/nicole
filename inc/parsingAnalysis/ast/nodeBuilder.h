@@ -140,10 +140,10 @@ public:
   };
 
   static std::shared_ptr<NodeStructDeclaration>
-  createStructDecl(std::shared_ptr<GenericType> idType,
-                   std::shared_ptr<NodeStatementList> body,
+  createStructDecl(std::shared_ptr<UserType> idType,
+                   std::shared_ptr<ParamsDeclaration> attributes,
                    std::shared_ptr<Node> father = nullptr) {
-    return std::make_shared<NodeStructDeclaration>(idType, body, father);
+    return std::make_shared<NodeStructDeclaration>(idType, attributes, father);
   };
 
   static std::shared_ptr<NodeFunctionDeclaration>
@@ -162,10 +162,10 @@ public:
 
   static std::shared_ptr<NodeStructConstructor>
   createStructConstr(const std::string &id,
-                     std::shared_ptr<NodeStatementList> parameters,
+                     std::vector<std::shared_ptr<Node>> params,
                      std::shared_ptr<TypeTable> typeTable,
                      std::shared_ptr<Node> father = nullptr) {
-    return std::make_shared<NodeStructConstructor>(id, parameters, typeTable,
+    return std::make_shared<NodeStructConstructor>(id, params, typeTable,
                                                    father);
   };
 

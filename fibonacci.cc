@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <iostream>
 int fibonacci(int n) {
     if (n == 0 or n == 1) {
         return n;
@@ -10,5 +11,7 @@ int fibonacci(int n) {
 
 int main() {
     printf("%d", fibonacci(37));
+    int x = (true) ? ((true) ? 10 : 20) : 30;
+    std::cout << std::endl << x << std::endl;
     return 0;
 }

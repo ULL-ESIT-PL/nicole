@@ -6,6 +6,7 @@
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Value.h"
 #include "llvm/Support/ErrorHandling.h"
+#include <cstddef>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -13,8 +14,19 @@
 namespace nicole {
 
 llvm::Value *CodeGeneration::visit(const NodeStructConstructor *node) const {
-  llvm::report_fatal_error("hola");
-  return nullptr;
+  const auto userType{dynamic_cast<const UserType*>(node->table()->type(node->id()).get())};
+  llvm::AllocaInst *structAlloc{builder_.CreateAlloca(
+      userType->type(context_), nullptr, node->id())};
+  std::vector<llvm::Value *> fields{};
+  const auto params{node->parameters()};
+  for (size_t i{0}; i < params.size(); ++i) {
+    fields.push_back(builder_.CreateStructGEP(
+        userType->type(context_), structAlloc, 0, userType->attributes()->paramters()[i].first));
+  }
+  for (size_t i{0}; i < fields.size(); ++i) { 
+    builder_.CreateStore(params[i]->accept(this), fields[i]);
+  }
+  return structAlloc;
 }
 
 llvm::Value *CodeGeneration::visit(const NodeVariableCall *node) const {

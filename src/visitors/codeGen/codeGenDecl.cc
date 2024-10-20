@@ -10,6 +10,7 @@
 #include "../../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
 #include "../../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "llvm/ADT/APFloat.h"
+#include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Type.h"
@@ -29,9 +30,32 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
   if (node->varType()->type(context_) == llvm::Type::getVoidTy(*context_)) {
     llvm::report_fatal_error("Cannot assign to type void");
   }
-  if (node->varType()->type(context_) != valueType) {
+  bool isStruct{false};
+  // Si valueType es un puntero, puede ser el constructor de un struct
+  if (valueType->isPointerTy()) {
+    // convierto el tipo de la variable para saber si valueType es un struct
+    llvm::PointerType *aa =
+        llvm::PointerType::get(node->varType()->type(context_), 0);
+    if (aa == valueType) {
+      isStruct = true;
+    }
+  }
+
+  // Comparamos el tipo base en vez del tipo puntero
+  if (!isStruct && node->varType()->type(context_) != valueType) {
+    auto left = node->varType()->type(context_);
+    std::string typeStr;
+    llvm::raw_string_ostream rso(typeStr);
+    left->print(rso);
+    std::cout << "El tipo de left es: " << rso.str() << std::endl;
+
+    // Imprimir el tipo de valueType después de desreferenciar
+    valueType->print(rso);
+    std::cout << "El tipo de valueType es: " << rso.str() << std::endl;
+
     llvm::report_fatal_error("Type mismatch");
   }
+
   // Crear la instrucción 'alloca' para reservar espacio para la variable
   llvm::AllocaInst *alloca{
       builder_.CreateAlloca(valueType, nullptr, node->id())};
@@ -72,19 +96,11 @@ llvm::Value *CodeGeneration::visit(const NodeStructDeclaration *node) const {
   std::vector<llvm::Type *> fieldTypes;
   // Suponiendo que el cuerpo de la estructura contiene declaraciones de
   // variables
-  for (const auto &declaration : *node->body()) {
-    // Supongamos que declaration es de tipo NodeVariableDeclaration o similar
-    const NodeVariableDeclaration *varDecl =
-        dynamic_cast<const NodeVariableDeclaration *>(
-            declaration->expression());
-    if (varDecl) {
-      // Obtén el tipo de la variable
-      std::cout << varDecl->varType()->name() << std::flush;
-      llvm::Type *fieldType = varDecl->typeTable()
-                                  ->type(varDecl->varType()->name())
-                                  ->type(context_);
-      fieldTypes.push_back(fieldType);
-    }
+  for (const auto &declaration : *node->attributes()) {
+    // Obtén el tipo de la variable
+    // std::cout << declaration.first << std::flush;
+    llvm::Type *fieldType = declaration.second->type(context_);
+    fieldTypes.push_back(fieldType);
   }
   // Crear el tipo de estructura en LLVM
   llvm::StructType *structType =
@@ -187,13 +203,13 @@ llvm::Value *CodeGeneration::visit(const NodeVariableReassignment *node) const {
 
 llvm::Value *CodeGeneration::visit(const NodeSelfReassignment *node) const {
   llvm::AllocaInst *varAddress{node->table()->variableAddress(node->id())};
-  llvm::Value* oldValue{node->table()->variableValue(node->id())};
+  llvm::Value *oldValue{node->table()->variableValue(node->id())};
   llvm::Value *newValue{node->expression()->accept(this)};
   if (node->table()->variableValue(node->id())->getType() !=
       newValue->getType()) {
     llvm::report_fatal_error("Type mismatch at reassignment");
   }
-  
+
   llvm::Value *result{nullptr};
   switch (node->op()) {
   case TokenType::SELF_ADD: {

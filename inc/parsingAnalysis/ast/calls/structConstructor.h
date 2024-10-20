@@ -11,20 +11,20 @@ class NodeStructConstructor : public Node {
 private:
   /* data */
   std::string id_{""};
-  std::shared_ptr<NodeStatementList> parameters_;
+  std::vector<std::shared_ptr<Node>> params_;
   std::shared_ptr<TypeTable> typeTable_;
 
 public:
   NodeStructConstructor(const std::string &id,
-                        std::shared_ptr<NodeStatementList> parameters,
+                        std::vector<std::shared_ptr<Node>> params,
                         std::shared_ptr<TypeTable> typeTable,
                         std::shared_ptr<Node> father = nullptr)
-      : Node{NodeType::CALL_CTR, father}, id_{id}, parameters_{parameters},
+      : Node{NodeType::CALL_CTR, father}, id_{id}, params_{params},
         typeTable_{typeTable} {};
 
   std::string id() const { return id_; }
 
-  const NodeStatementList* parameters() const { return parameters_.get(); }
+  std::vector<std::shared_ptr<Node>> parameters() const { return params_; }
 
   std::shared_ptr<TypeTable> table() const { return typeTable_; }
 

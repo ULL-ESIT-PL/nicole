@@ -26,6 +26,9 @@ print("Finbonacci: ", fibonacci(37),
       "\nE approximation: ", eApprox(30), "\n");
 */
 
-let x: double = 10.0;
-x += 10.0 + 60.0;
-print(x);
+struct Point {
+  x: int,
+  y: int
+}
+
+let point: Point = Point{0, 0};

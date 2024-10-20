@@ -10,23 +10,32 @@ TopDown::parseStructDeclaration(std::shared_ptr<VariableTable> currentScope,
                                 std::shared_ptr<Node> father) const {
   tkStream_.eat();
   auto token{tkStream_.current()};
-  std::shared_ptr<NodeStatementList> body{nullptr};
-  std::shared_ptr<GenericType> idType{nullptr};
+  std::shared_ptr<ParamsDeclaration> attributes{nullptr};
+  std::shared_ptr<UserType> idType{nullptr};
   if (token.type() == TokenType::ID) {
     const std::string idTypeStr{token.raw()};
     idType = std::make_shared<UserType>(idTypeStr);
     typeTable_->addType(idType);
     tkStream_.eat();
     if (tkStream_.current().type() == TokenType::LB) {
+      tkStream_.eat();
       auto structScope{TBBuilder::createScope(nullptr)};
-      body = parseBody(structScope, father);
+      attributes = parseParams(structScope, father);
+      idType->setAttributes(attributes);
+      if (tkStream_.current().type() == TokenType::RB) {
+        tkStream_.eat();
+      } else {
+        const std::string strErr{"Error missing right } of " + idTypeStr +
+                                 " at " + tkStream_.current().locInfo()};
+        llvm::report_fatal_error(strErr.c_str());
+      }
     } else {
       const std::string strErr{"Error missing left { of " + idTypeStr + " at " +
                                tkStream_.current().locInfo()};
       llvm::report_fatal_error(strErr.c_str());
     }
   }
-  return ASTBuilder::createStructDecl(idType, body);
+  return ASTBuilder::createStructDecl(idType, attributes);
 }
 
 std::shared_ptr<NodeFunctionDeclaration>

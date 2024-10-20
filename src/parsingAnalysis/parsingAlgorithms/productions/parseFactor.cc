@@ -71,7 +71,7 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
       return ASTBuilder::createVarRGT(id, expression, currentScope, typeTable_);
     } else if (tkStream_.current().type() == TokenType::LB) {
       tkStream_.eat();
-      auto attributes{parseComma(currentScope, father)};
+      auto attributes{parseParamsCall(currentScope, father)};
       if (tkStream_.current().type() == TokenType::RB) {
         tkStream_.eat();
         return ASTBuilder::createStructConstr(id, attributes, typeTable_);
