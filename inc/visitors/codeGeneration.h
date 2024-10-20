@@ -58,6 +58,8 @@ public:
 
   llvm::Value *visit(const NodeStructConstructor *node) const override;
 
+  llvm::Value *visit(const NodeStructAcces *node) const override;
+
   llvm::Value *visit(const NodeVariableCall *node) const override;
 
   llvm::Value *visit(const NodeFunctionCall *node) const override;

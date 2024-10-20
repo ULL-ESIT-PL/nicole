@@ -39,6 +39,8 @@ std::string nodeTypeToString(const NodeType &nt) {
     return "VAR_REG";
   case NodeType::SELF_REG:
     return "SELF_REG";
+  case NodeType::STRUCT_ACS:
+    return "STRUCT_ACS";
   case NodeType::CALL_VAR:
     return "CALL_VAR";
   case NodeType::CALL_FUNCTION:

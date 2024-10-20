@@ -27,6 +27,7 @@ enum class NodeType {
   FUN_DECL,
   VAR_REG,
   SELF_REG,
+  STRUCT_ACS,
   CALL_VAR,
   CALL_FUNCTION,
   CALL_CTR,

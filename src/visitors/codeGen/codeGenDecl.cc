@@ -34,11 +34,12 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
   // Si valueType es un puntero, puede ser el constructor de un struct
   if (valueType->isPointerTy()) {
     // convierto el tipo de la variable para saber si valueType es un struct
-    llvm::PointerType *aa =
+    llvm::PointerType *expectedType  =
         llvm::PointerType::get(node->varType()->type(context_), 0);
-    if (aa == valueType) {
+    if (expectedType  == valueType) {
       isStruct = true;
     }
+    
   }
 
   // Comparamos el tipo base en vez del tipo puntero

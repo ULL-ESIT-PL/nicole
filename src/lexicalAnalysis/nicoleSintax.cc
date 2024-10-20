@@ -57,6 +57,7 @@ Lexer NicoleSintax::createLexer() const {
       Category{TokenType::COMMA, ",", false},
       Category{TokenType::TERNARY, "\\?", false},
       Category{TokenType::DOTDOT, ":", false},
+      Category{TokenType::DOT, "\\.", false},
 
       Category{TokenType::SELF_ADD, "\\+=", false},
       Category{TokenType::SELF_SUB, "\\-=", false},

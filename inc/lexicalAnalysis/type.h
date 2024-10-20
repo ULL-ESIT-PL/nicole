@@ -50,6 +50,7 @@ enum class TokenType {
   SEMICOLON,
   COMMA,
   TERNARY,
+  DOT,
   DOTDOT,
   SMALLEREQUAL,
   BIGGEREQUAL,

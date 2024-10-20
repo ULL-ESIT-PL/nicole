@@ -3,6 +3,7 @@
 
 #include "../ast/declaration/paramsDeclaration.h"
 #include "genericType.h"
+#include "llvm/Support/ErrorHandling.h"
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Type.h>
 
@@ -32,6 +33,22 @@ public:
 
   void setAttributes(std::shared_ptr<ParamsDeclaration> attributes) {
     attributes_ = attributes;
+  };
+
+  std::pair<size_t, std::string> attribute(const std::string &atribute) const {
+    size_t index{0};
+    bool found{false};
+    const auto attr{attributes_->paramters()};
+    for (size_t i{0}; i < attr.size(); ++i) {
+      if (attr[i].first == atribute) {
+        found = true;
+        index = i;
+      }
+    }
+    if (!found) {
+      llvm::report_fatal_error("Attribute not found");
+    }
+    return {index, atribute};
   };
 };
 

@@ -31,4 +31,7 @@ struct Point {
   y: int
 }
 
-let point: Point = Point{0, 0};
+let point: Point = Point{666, 666};
+
+
+print(point.x, "\n");

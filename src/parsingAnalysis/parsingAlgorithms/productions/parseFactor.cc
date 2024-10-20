@@ -76,6 +76,18 @@ TopDown::parseFactor(std::shared_ptr<VariableTable> currentScope,
         tkStream_.eat();
         return ASTBuilder::createStructConstr(id, attributes, typeTable_);
       }
+    } else if (tkStream_.current().type() == TokenType::DOT) {
+      tkStream_.eat();
+      if (tkStream_.current().type() == TokenType::ID) {
+        const auto attribute{tkStream_.current().raw()};
+        tkStream_.eat();
+        return ASTBuilder::createStructAcces(id, attribute, currentScope, typeTable_);
+      } else {
+        const std::string strErr{"Error: accessing attribute, found " +
+                                 tkStream_.current().raw() + " at" +
+                                 tkStream_.current().locInfo()};
+        llvm::report_fatal_error(strErr.c_str());
+      }
     } else if (tkStream_.current().type() == TokenType::LP) {
       return parseFunctionCall(id, currentScope, father);
     }

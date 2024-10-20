@@ -1,6 +1,7 @@
 #include "../../../inc/visitors/codeGeneration.h"
 
 #include "../../../inc/parsingAnalysis/ast/calls/functionCall.h"
+#include "../../../inc/parsingAnalysis/ast/calls/structAcces.h"
 #include "../../../inc/parsingAnalysis/ast/calls/structConstructor.h"
 #include "../../../inc/parsingAnalysis/ast/calls/variableCall.h"
 #include "llvm/IR/Instructions.h"
@@ -14,19 +15,42 @@
 namespace nicole {
 
 llvm::Value *CodeGeneration::visit(const NodeStructConstructor *node) const {
-  const auto userType{dynamic_cast<const UserType*>(node->table()->type(node->id()).get())};
-  llvm::AllocaInst *structAlloc{builder_.CreateAlloca(
-      userType->type(context_), nullptr, node->id())};
+  const auto userType{
+      dynamic_cast<const UserType *>(node->table()->type(node->id()).get())};
+  llvm::AllocaInst *structAlloc{
+      builder_.CreateAlloca(userType->type(context_), nullptr, node->id())};
   std::vector<llvm::Value *> fields{};
   const auto params{node->parameters()};
   for (size_t i{0}; i < params.size(); ++i) {
-    fields.push_back(builder_.CreateStructGEP(
-        userType->type(context_), structAlloc, 0, userType->attributes()->paramters()[i].first));
+    fields.push_back(
+        builder_.CreateStructGEP(userType->type(context_), structAlloc, i,
+                                 userType->attributes()->paramters()[i].first));
   }
-  for (size_t i{0}; i < fields.size(); ++i) { 
+  for (size_t i{0}; i < fields.size(); ++i) {
     builder_.CreateStore(params[i]->accept(this), fields[i]);
   }
   return structAlloc;
+}
+
+llvm::Value *CodeGeneration::visit(const NodeStructAcces *node) const {
+  std::cout << "---------\n" << *node->table() << std::flush;
+
+  const auto varTable{node->table()};
+  auto structType{node->typeTable()
+                      ->type(varTable->variableType(node->id())->name())
+                      .get()};
+  const auto structTypeCasted = dynamic_cast<const UserType *>(structType);
+  const auto index{structTypeCasted->attribute(node->attribute())};
+  // Obtener el puntero al atributo
+  llvm::Value *structPtr =
+      builder_.CreateLoad(structType->type(context_),
+                          varTable->variableAddress(node->id()), node->id());
+
+  llvm::Value *fieldPtr = builder_.CreateStructGEP(
+      structType->type(context_), structPtr, index.first, index.second);
+
+  return builder_.CreateLoad(fieldPtr->getType(), fieldPtr,
+                             node->attribute() + "Temp");
 }
 
 llvm::Value *CodeGeneration::visit(const NodeVariableCall *node) const {

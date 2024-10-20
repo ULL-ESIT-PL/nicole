@@ -88,6 +88,8 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "COMMA";
   case TokenType::TERNARY:
     return "TERNARY";
+  case TokenType::DOT:
+    return "DOT";
   case TokenType::DOTDOT:
     return "DOTDOT"; // :
   case TokenType::SMALLEREQUAL:

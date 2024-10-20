@@ -9,6 +9,7 @@
 
 #include "../types/typeTable.h"
 #include "calls/functionCall.h"
+#include "calls/structAcces.h"
 #include "calls/structConstructor.h"
 #include "calls/variableCall.h"
 #include "conditionals/nodeCase.h"
@@ -158,6 +159,15 @@ public:
     return std::make_shared<NodeFunctionDeclaration>(
         id, params, returnType, body, currentScope, typeTable, functionTable,
         father);
+  };
+
+  static std::shared_ptr<NodeStructAcces>
+  createStructAcces(const std::string &id, const std::string &attribute,
+                    std::shared_ptr<VariableTable> currentScope,
+                    std::shared_ptr<TypeTable> typeTable,
+                    std::shared_ptr<Node> father = nullptr) {
+    return std::make_shared<NodeStructAcces>(id, attribute, currentScope,
+                                             typeTable, father);
   };
 
   static std::shared_ptr<NodeStructConstructor>

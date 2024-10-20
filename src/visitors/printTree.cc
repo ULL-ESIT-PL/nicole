@@ -2,6 +2,7 @@
 
 #include "../../inc/lexicalAnalysis/type.h"
 #include "../../inc/parsingAnalysis/ast/calls/functionCall.h"
+#include "../../inc/parsingAnalysis/ast/calls/structAcces.h"
 #include "../../inc/parsingAnalysis/ast/calls/structConstructor.h"
 #include "../../inc/parsingAnalysis/ast/calls/variableCall.h"
 #include "../../inc/parsingAnalysis/ast/conditionals/nodeCase.h"
@@ -161,6 +162,15 @@ std::string PrintTree::visit(const NodeStructConstructor *node) const {
   for (const auto param : node->parameters()) {
     result << indent_ << "Param:\n" << param->accept(this);
   }
+  decreaseIndent();
+  return result.str();
+}
+
+std::string PrintTree::visit(const NodeStructAcces *node) const {
+  std::ostringstream result;
+  result << indent_ << "Struct Access:\n";
+  increaseIndent();
+  result << indent_ << "Attr:\n" << node->attribute();
   decreaseIndent();
   return result.str();
 }
