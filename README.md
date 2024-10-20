@@ -33,6 +33,8 @@ Combine an user friendly sintax and the speed of a compiled language, example: M
 
 - Binary operations or, and, +, -, *, /, %, !=, ==, <, <=, >, >=
 
+- - Operators +=, -=, *=, /=
+
 - Operator precedency and parenthesis expressions
 
 - Variable call
@@ -70,8 +72,6 @@ Combine an user friendly sintax and the speed of a compiled language, example: M
 - Pointers and null
 
 - Ternary operator
-
-- Operators +=, -=...
 
 - Concatenation of expression, example: variable[index][index].method... Right now would require create an intermediate variable
 
