@@ -141,6 +141,14 @@ TopDown::parseParamsCall(std::shared_ptr<VariableTable> &currentScope,
 std::shared_ptr<NodeStatement>
 TopDown::parseStatement(std::shared_ptr<VariableTable> currentScope,
                         std::shared_ptr<Node> father) const {
+  if (tkStream_.isCurrentTokenType(TokenType::ID) &&
+      (tkStream_.lookAhead(1).type() == TokenType::SELF_ADD ||
+       tkStream_.lookAhead(1).type() == TokenType::SELF_SUB ||
+       tkStream_.lookAhead(1).type() == TokenType::SELF_MULT ||
+       tkStream_.lookAhead(1).type() == TokenType::SELF_DIV)) {
+    return ASTBuilder::createStatement(
+        parseSelfAssignment(currentScope, father));
+  }
   switch (tkStream_.current().type()) {
   case TokenType::SWITCH: {
     return ASTBuilder::createStatement(

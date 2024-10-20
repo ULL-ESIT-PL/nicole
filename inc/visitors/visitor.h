@@ -39,6 +39,7 @@ class NodeStructConstructor;
 class NodeVariableCall;
 class NodeFunctionCall;
 class NodeVariableReassignment;
+class NodeSelfReassignment;
 class NodeSwitchStatement;
 class NodeCaseStatement;
 class NodeIfStatement;
@@ -96,6 +97,8 @@ public:
   virtual T visit(const NodeFunctionCall *node) const = 0;
 
   virtual T visit(const NodeVariableReassignment *node) const = 0;
+
+  virtual T visit(const NodeSelfReassignment *node) const = 0;
 
   virtual T visit(const NodeSwitchStatement *node) const = 0;
 

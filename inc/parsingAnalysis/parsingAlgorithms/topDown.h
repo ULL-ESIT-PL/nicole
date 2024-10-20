@@ -85,6 +85,10 @@ private:
   parseImport(std::shared_ptr<VariableTable> &currentScope,
               std::shared_ptr<Node> father) const;
 
+  std::shared_ptr<NodeSelfReassignment>
+  parseSelfAssignment(std::shared_ptr<VariableTable> currentScope,
+                      std::shared_ptr<Node> father) const;
+
   std::shared_ptr<Node>
   parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
                       std::shared_ptr<Node> father) const;

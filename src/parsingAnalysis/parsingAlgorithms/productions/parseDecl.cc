@@ -171,4 +171,16 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
   return parseLogicalOr(currentScope, father);
 }
 
+std::shared_ptr<NodeSelfReassignment>
+TopDown::parseSelfAssignment(std::shared_ptr<VariableTable> currentScope,
+                             std::shared_ptr<Node> father) const {
+  const auto tk{tkStream_.current()};
+  tkStream_.eat();
+  const auto op{tkStream_.current()};
+  tkStream_.eat();
+  const auto expression{parseLogicalOr(currentScope, father)};
+  return ASTBuilder::createSelfRGT(tk.raw(), op.type(), expression,
+                                   currentScope, typeTable_);
+}
+
 } // namespace nicole

@@ -19,6 +19,7 @@
 #include "declaration/nodeFunDeclaration.h"
 #include "declaration/nodeReturn.h"
 #include "declaration/paramsDeclaration.h"
+#include "declaration/selfAssignment.h"
 #include "declaration/structDeclaration.h"
 #include "declaration/varDeclaration.h"
 #include "declaration/varReassignment.h"
@@ -194,12 +195,23 @@ public:
         id, expression, currentScope, typeTable, father);
   };
 
+  static std::shared_ptr<NodeSelfReassignment>
+  createSelfRGT(const std::string &id, const TokenType op,
+                std::shared_ptr<Node> expression,
+                std::shared_ptr<VariableTable> currentScope,
+                std::shared_ptr<TypeTable> typeTable,
+                std::shared_ptr<Node> father = nullptr) {
+    return std::make_shared<NodeSelfReassignment>(
+        id, op, expression, currentScope, typeTable, father);
+  };
+
   static std::shared_ptr<NodeSwitchStatement>
   createSwitch(std::shared_ptr<Node> match,
                std::vector<std::shared_ptr<NodeCaseStatement>> cases,
                std::shared_ptr<NodeCaseStatement> defaultCase = nullptr,
                std::shared_ptr<Node> father = nullptr) {
-    return std::make_shared<NodeSwitchStatement>(match, cases, defaultCase, father);
+    return std::make_shared<NodeSwitchStatement>(match, cases, defaultCase,
+                                                 father);
   };
 
   static std::shared_ptr<NodeCaseStatement>

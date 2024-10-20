@@ -120,6 +120,14 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "OPERATOR_NOT"; // '!'
   case TokenType::OPERATOR_MODULE:
     return "OPERATOR_MODULE"; // '%'
+  case TokenType::SELF_ADD:
+    return "SELF_ADD";
+  case TokenType::SELF_SUB:
+    return "SELF_SUB";
+  case TokenType::SELF_MULT:
+    return "SELF_MULT";
+  case TokenType::SELF_DIV:
+    return "SELF_DIV";
   case TokenType::UNMATCHED:
     return "UNMATCHED"; // For unrecognized tokens
   case TokenType::ALL:

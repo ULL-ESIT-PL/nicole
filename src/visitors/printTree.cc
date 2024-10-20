@@ -1,5 +1,6 @@
 #include "../../inc/visitors/printTree.h"
 
+#include "../../inc/parsingAnalysis/ast/declaration/selfAssignment.h"
 #include "../../inc/lexicalAnalysis/type.h"
 #include "../../inc/parsingAnalysis/ast/calls/functionCall.h"
 #include "../../inc/parsingAnalysis/ast/calls/structConstructor.h"
@@ -182,6 +183,17 @@ std::string PrintTree::visit(const NodeVariableReassignment *node) const {
   result << indent_ << "Variable Reassignment:\n";
   increaseIndent();
   result << indent_ << "Var: " << node->id() << "\n";
+  result << indent_ << "Value:\n" << node->expression()->accept(this);
+  decreaseIndent();
+  return result.str();
+}
+
+std::string PrintTree::visit(const NodeSelfReassignment *node) const {
+  std::ostringstream result;
+  result << indent_ << "Self Reassignment:\n";
+  increaseIndent();
+  result << indent_ << "Var: " << node->id() << "\n";
+  result << indent_ << "Op: " << tokenTypeToString(node->op()) << "\n";
   result << indent_ << "Value:\n" << node->expression()->accept(this);
   decreaseIndent();
   return result.str();

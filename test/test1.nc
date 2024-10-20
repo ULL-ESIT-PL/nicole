@@ -26,15 +26,6 @@ print("Finbonacci: ", fibonacci(37),
       "\nE approximation: ", eApprox(30), "\n");
 */
 
-let x: int = 10;
-const z: int = 10;
-const y: int = 10;
-
-switch (x) {
-  case 0: {
-    print("c++");
-  }
-  case y: {
-    print("adios");
-  }
-}
+let x: double = 10.0;
+x += 10.0 + 60.0;
+print(x);

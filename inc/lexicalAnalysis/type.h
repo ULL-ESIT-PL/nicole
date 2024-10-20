@@ -66,6 +66,10 @@ enum class TokenType {
   OPERATOR_GREATER,
   OPERATOR_NOT,
   OPERATOR_MODULE,
+  SELF_ADD,
+  SELF_SUB,
+  SELF_MULT,
+  SELF_DIV,
   UNMATCHED, // Para tokens no reconocidos
   ALL
 };

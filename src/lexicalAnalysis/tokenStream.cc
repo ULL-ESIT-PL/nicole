@@ -20,8 +20,8 @@ Token TokenStream::current() const {
 }
 
 Token TokenStream::lookAhead(const size_t pos) const {
-  if (currentPos_ < pos and pos < tokens_.size())
-    return tokens_[pos];
+  if (currentPos_ + pos < tokens_.size())
+    return tokens_[currentPos_ + pos];
   llvm::report_fatal_error("Error: invalid access to tokens");
 }
 

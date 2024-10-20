@@ -1,8 +1,10 @@
 #include "../../../inc/visitors/codeGeneration.h"
 
+#include "../../../inc/lexicalAnalysis/type.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/nodeFunDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/nodeReturn.h"
+#include "../../../inc/parsingAnalysis/ast/declaration/selfAssignment.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/structDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
@@ -179,6 +181,59 @@ llvm::Value *CodeGeneration::visit(const NodeVariableReassignment *node) const {
   }
   builder_.CreateStore(newValue, varAddress);
   node->table()->setVariable(node->id(), newValue);
+
+  return nullptr;
+}
+
+llvm::Value *CodeGeneration::visit(const NodeSelfReassignment *node) const {
+  llvm::AllocaInst *varAddress{node->table()->variableAddress(node->id())};
+  llvm::Value* oldValue{node->table()->variableValue(node->id())};
+  llvm::Value *newValue{node->expression()->accept(this)};
+  if (node->table()->variableValue(node->id())->getType() !=
+      newValue->getType()) {
+    llvm::report_fatal_error("Type mismatch at reassignment");
+  }
+  
+  llvm::Value *result{nullptr};
+  switch (node->op()) {
+  case TokenType::SELF_ADD: {
+    if (oldValue->getType()->isFloatingPointTy()) {
+      result = builder_.CreateFAdd(oldValue, newValue, "addtmp");
+    } else {
+      result = builder_.CreateAdd(oldValue, newValue, "addtmp");
+    }
+    break;
+  }
+  case TokenType::SELF_SUB: {
+    if (oldValue->getType()->isFloatingPointTy()) {
+      result = builder_.CreateFSub(oldValue, newValue, "addtmp");
+    } else {
+      result = builder_.CreateSub(oldValue, newValue, "addtmp");
+    }
+    break;
+  }
+  case TokenType::SELF_MULT: {
+    if (oldValue->getType()->isFloatingPointTy()) {
+      result = builder_.CreateFMul(oldValue, newValue, "addtmp");
+    } else {
+      result = builder_.CreateMul(oldValue, newValue, "addtmp");
+    }
+    break;
+  }
+  case TokenType::SELF_DIV: {
+    if (oldValue->getType()->isFloatingPointTy()) {
+      result = builder_.CreateFDiv(oldValue, newValue, "addtmp");
+    } else {
+      result = builder_.CreateSDiv(oldValue, newValue, "addtmp");
+    }
+    break;
+  }
+  default: {
+    llvm::report_fatal_error("Undefined self asignment");
+  }
+  }
+  builder_.CreateStore(result, varAddress);
+  node->table()->setVariable(node->id(), result);
 
   return nullptr;
 }

@@ -58,6 +58,11 @@ Lexer NicoleSintax::createLexer() const {
       Category{TokenType::TERNARY, "\\?", false},
       Category{TokenType::DOTDOT, ":", false},
 
+      Category{TokenType::SELF_ADD, "\\+=", false},
+      Category{TokenType::SELF_SUB, "\\-=", false},
+      Category{TokenType::SELF_MULT, "\\*=", false},
+      Category{TokenType::SELF_DIV, "\\/=", false},
+
       Category{TokenType::SMALLEREQUAL, "<=", false},
       Category{TokenType::BIGGEREQUAL, ">=", false},
       Category{TokenType::NOTEQUAL, "!=", false},
