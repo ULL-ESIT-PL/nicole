@@ -55,13 +55,13 @@ Combine an user friendly sintax and the speed of a compiled language, example: M
 
 - Import (still gotta check if every path works and more tests about dependency cycles)
 
+- Structures of data (can access either as a getter or to set the attributes after constructor, just missing methods)
+
 ## Features yet to implement
 
 - Better error messages (missing print more than one error per compilation)
 
 - Vectors / Array
-
-- Structures of data
 
 - Classes
 
