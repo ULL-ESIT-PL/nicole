@@ -32,6 +32,7 @@ struct Point {
 }
 
 let point: Point = Point{666, 666};
+point = Point{777, 666};
+let x: int = point.x;
 
-
-print(point.x, "\n");
+print(point.x + 10);

@@ -61,7 +61,7 @@ printParameters(std::vector<llvm::Value *> values, llvm::LLVMContext *context,
     }
 
     if (!strFormat.size()) {
-      llvm::report_fatal_error("Cannot print this type");
+      llvm::report_fatal_error("Cannot print this type: ");
     }
 
     paramsAndFormats.push_back({value, strFormat});
