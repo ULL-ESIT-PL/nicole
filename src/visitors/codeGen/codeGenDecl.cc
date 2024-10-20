@@ -6,9 +6,9 @@
 #include "../../../inc/parsingAnalysis/ast/declaration/nodeReturn.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/selfAssignment.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/structDeclaration.h"
+#include "../../../inc/parsingAnalysis/ast/declaration/structSetAttr.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
-#include "../../../inc/parsingAnalysis/ast/declaration/structSetAttr.h"
 #include "../../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "llvm/ADT/APFloat.h"
 #include "llvm/IR/DerivedTypes.h"
@@ -29,6 +29,10 @@ llvm::Value *CodeGeneration::visit(const NodeStructSetAttr *node) const {
   std::cout << "---------\n" << *node->table() << std::flush;
 
   const auto varTable{node->table()};
+  if (varTable->isConst(node->id())) {
+    llvm::report_fatal_error(
+        "Cannot modify de object attributes because the object is const");
+  }
   auto structType{node->typeTable()
                       ->type(varTable->variableType(node->id())->name())
                       .get()};
@@ -36,17 +40,19 @@ llvm::Value *CodeGeneration::visit(const NodeStructSetAttr *node) const {
   const auto index{structTypeCasted->attribute(node->attribute())};
 
   // Obtener el puntero al objeto de la estructura
-  llvm::Value *structPtr = builder_.CreateLoad(varTable->variableAddress(node->id())->getType(), 
-                                               varTable->variableAddress(node->id()), node->id());
+  llvm::Value *structPtr =
+      builder_.CreateLoad(varTable->variableAddress(node->id())->getType(),
+                          varTable->variableAddress(node->id()), node->id());
 
   // Obtener el puntero al atributo específico dentro de la estructura
   llvm::Value *fieldPtr = builder_.CreateStructGEP(
       structType->type(context_), structPtr, index.first, node->attribute());
 
   // Crear un load para el atributo específico
-  llvm::Type *fieldType = structType->type(context_)->getStructElementType(index.first);
+  llvm::Type *fieldType =
+      structType->type(context_)->getStructElementType(index.first);
 
-  llvm::Value* expression = node->value()->accept(this);
+  llvm::Value *expression = node->value()->accept(this);
   builder_.CreateStore(expression, fieldPtr);
   return nullptr;
 }
@@ -61,12 +67,11 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
   // Si valueType es un puntero, puede ser el constructor de un struct
   if (valueType->isPointerTy()) {
     // convierto el tipo de la variable para saber si valueType es un struct
-    llvm::PointerType *expectedType  =
+    llvm::PointerType *expectedType =
         llvm::PointerType::get(node->varType()->type(context_), 0);
-    if (expectedType  == valueType) {
+    if (expectedType == valueType) {
       isStruct = true;
     }
-    
   }
 
   // Comparamos el tipo base en vez del tipo puntero
@@ -103,7 +108,29 @@ llvm::Value *CodeGeneration::visit(const NodeConstDeclaration *node) const {
   if (node->varType()->type(context_) == llvm::Type::getVoidTy(*context_)) {
     llvm::report_fatal_error("Cannot assign to type void");
   }
-  if (node->varType()->type(context_) != valueType) {
+  bool isStruct{false};
+  // Si valueType es un puntero, puede ser el constructor de un struct
+  if (valueType->isPointerTy()) {
+    // convierto el tipo de la variable para saber si valueType es un struct
+    llvm::PointerType *expectedType =
+        llvm::PointerType::get(node->varType()->type(context_), 0);
+    if (expectedType == valueType) {
+      isStruct = true;
+    }
+  }
+
+  // Comparamos el tipo base en vez del tipo puntero
+  if (!isStruct && node->varType()->type(context_) != valueType) {
+    auto left = node->varType()->type(context_);
+    std::string typeStr;
+    llvm::raw_string_ostream rso(typeStr);
+    left->print(rso);
+    std::cout << "El tipo de left es: " << rso.str() << std::endl;
+
+    // Imprimir el tipo de valueType después de desreferenciar
+    valueType->print(rso);
+    std::cout << "El tipo de valueType es: " << rso.str() << std::endl;
+
     llvm::report_fatal_error("Type mismatch");
   }
   // Crear la instrucción 'alloca' para reservar espacio para la variable
