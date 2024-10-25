@@ -5,6 +5,7 @@ Toy Compiler written in c++ using LLVM by Evian Concepción Peña
 ## Goals
 
 Combine an user friendly sintax and the speed of a compiled language, example: Mojo (uses MLIR) or Julia
+WARNING: Currently translation to machine code is commented, to develope faster I use the JIT engine of LLVM
 
 ## How to build
 
