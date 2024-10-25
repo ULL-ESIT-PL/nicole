@@ -61,6 +61,8 @@ Combine an user friendly sintax and the speed of a compiled language, example: M
 
 - Better error messages (missing print more than one error per compilation)
 
+- Auto declaration
+
 - Vectors / Array
 
 - Classes
@@ -99,8 +101,6 @@ Combine an user friendly sintax and the speed of a compiled language, example: M
 
 
 ## Folder structure
-
-### I'm aware of the spaghetti code in the parsing algorithm and lack of a few pattern designs and comments, that by lack of time still have not being used.
 
 - The .txt files next to the CMakeLists.txt are just meant for me to install correctly LLVM and the intellisense being able to find the library
 
