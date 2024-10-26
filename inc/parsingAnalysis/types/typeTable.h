@@ -33,8 +33,6 @@ public:
   void addType(std::shared_ptr<GenericType> type) const;
 
   std::shared_ptr<GenericType> type(const std::string &name) const;
-
-  std::shared_ptr<GenericType> type(const llvm::Type* type, llvm::LLVMContext* context) const;
 };
 
 } // namespace nicole

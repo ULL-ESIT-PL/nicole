@@ -58,7 +58,7 @@ WARNING: Currently translation to machine code is commented, to develope faster 
 
 - Import (still gotta check if every path works and more tests about dependency cycles)
 
-- Structures of data (can access either as a getter or to set the attributes after constructor, just missing methods)
+- Structures of data (can access either as a getter or to set the attributes after constructor, just missing methods and nested types)
 
 ## Features yet to implement
 

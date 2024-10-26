@@ -1,5 +1,4 @@
 #include "../../../inc/parsingAnalysis/types/typeTable.h"
-#include "llvm/IR/LLVMContext.h"
 #include "llvm/Support/ErrorHandling.h"
 #include <memory>
 
@@ -37,16 +36,6 @@ std::shared_ptr<GenericType> TypeTable::type(const std::string &name) const {
   }
   
   return table_.at(name);
-}
-
-std::shared_ptr<GenericType> TypeTable::type(const llvm::Type* type, llvm::LLVMContext* context) const {
-  for (const auto& pair : table_) {
-    if (type == pair.second->type(context)) {
-      //llvm::report_fatal_error("Missing type using llvm Type to search");
-      return pair.second;
-    }
-  }
-  llvm::report_fatal_error("Missing type using llvm Type to search");
 }
 
 } // namespace nicole
