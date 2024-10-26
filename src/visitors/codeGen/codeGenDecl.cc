@@ -2,6 +2,7 @@
 
 #include "../../../inc/lexicalAnalysis/type.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
+#include "../../../inc/parsingAnalysis/ast/declaration/autoDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/nodeFunDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/nodeReturn.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/selfAssignment.h"
@@ -98,6 +99,51 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
   const GenericType *varType{node->varType()};
   node->table()->addVariable(node->id(), varType, value, alloca);
 
+  // Devolver el valor almacenado
+  return nullptr;
+}
+
+llvm::Value *CodeGeneration::visit(const NodeAutoDeclaration *node) const {
+  llvm::Value *value{node->expression()->accept(this)};
+  llvm::Type *valueType{value->getType()}; // Tipo de la variable
+  if (valueType == llvm::Type::getVoidTy(*context_)) {
+    llvm::report_fatal_error("Cannot assign to type void");
+  }
+  const auto type{node->typeTable()->type(valueType, context_)};
+
+  bool isStruct{false};
+  // Si valueType es un puntero, puede ser el constructor de un struct
+  if (valueType->isPointerTy()) {
+    // convierto el tipo de la variable para saber si valueType es un struct
+    llvm::PointerType *expectedType =
+        llvm::PointerType::get(type->type(context_), 0);
+    if (expectedType == valueType) {
+      isStruct = true;
+    }
+  }
+
+  // Comparamos el tipo base en vez del tipo puntero
+  if (!isStruct && type->type(context_) != valueType) {
+    auto left = type->type(context_);
+    std::string typeStr;
+    llvm::raw_string_ostream rso(typeStr);
+    left->print(rso);
+    std::cout << "El tipo de left es: " << rso.str() << std::endl;
+
+    // Imprimir el tipo de valueType después de desreferenciar
+    valueType->print(rso);
+    std::cout << "El tipo de valueType es: " << rso.str() << std::endl;
+
+    llvm::report_fatal_error("Type mismatch");
+  }
+  // Crear la instrucción 'alloca' para reservar espacio para la variable
+  llvm::AllocaInst *alloca{
+      builder_.CreateAlloca(valueType, nullptr, node->id())};
+
+  // Almacenar el valor en la variable y tambien en la tabla
+  builder_.CreateStore(value, alloca);
+  const GenericType *varType{type.get()};
+  node->table()->addVariable(node->id(), varType, value, alloca, true);
   // Devolver el valor almacenado
   return nullptr;
 }

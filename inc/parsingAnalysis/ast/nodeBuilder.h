@@ -25,6 +25,7 @@
 #include "declaration/structDeclaration.h"
 #include "declaration/structSetAttr.h"
 #include "declaration/varDeclaration.h"
+#include "declaration/autoDeclaration.h"
 #include "declaration/varReassignment.h"
 #include "declaration/varTable.h"
 #include "literals/nodeLiteralBool.h"
@@ -130,6 +131,16 @@ public:
                 std::shared_ptr<Node> father = nullptr) {
     return std::make_shared<NodeVariableDeclaration>(
         id, varType, expression, currentScope, typeTable, father);
+  };
+
+  static std::shared_ptr<NodeAutoDeclaration>
+  createAutoDecl(const std::string &id,
+                std::shared_ptr<Node> expression,
+                std::shared_ptr<VariableTable> currentScope,
+                std::shared_ptr<TypeTable> typeTable,
+                std::shared_ptr<Node> father = nullptr) {
+    return std::make_shared<NodeAutoDeclaration>(
+        id, expression, currentScope, typeTable, father);
   };
 
   static std::shared_ptr<NodeConstDeclaration>

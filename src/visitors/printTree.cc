@@ -15,6 +15,7 @@
 #include "../../inc/parsingAnalysis/ast/declaration/structDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/structSetAttr.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
+#include "../../inc/parsingAnalysis/ast/declaration/autoDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralBool.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralChar.h"
@@ -113,6 +114,17 @@ std::string PrintTree::visit(const NodeVariableDeclaration *node) const {
   result << indent_ << "Variable Declaration:\n";
   increaseIndent();
   result << indent_ << "Type: " << node->varType()->name() << "\n";
+  result << indent_ << "Value:\n" << node->expression()->accept(this);
+  decreaseIndent();
+  return result.str();
+}
+
+std::string PrintTree::visit(const NodeAutoDeclaration *node) const {
+  std::ostringstream result;
+  result << indent_ << "Autp Declaration:\n";
+  increaseIndent();
+  // const auto type{node->typeTable()->type()};
+  // result << indent_ << "Type: " << node->varType()->name() << "\n";
   result << indent_ << "Value:\n" << node->expression()->accept(this);
   decreaseIndent();
   return result.str();

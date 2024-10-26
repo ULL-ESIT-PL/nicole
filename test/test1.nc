@@ -26,13 +26,14 @@ print("Finbonacci: ", fibonacci(37),
       "\nE approximation: ", eApprox(30), "\n");
 */
 
+
 struct Point {
   x: int,
   y: int
 }
 
 let point: Point = Point{666, 666};
-point = Point{777, 666};
-let x: int = point.x;
-point.x = 10;
-print(point.x + 10);
+
+auto pppp =  Point{666, 666};
+
+pppp.x;

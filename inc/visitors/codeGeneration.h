@@ -50,6 +50,8 @@ public:
 
   llvm::Value *visit(const NodeVariableDeclaration *node) const override;
 
+  llvm::Value *visit(const NodeAutoDeclaration *node) const override;
+
   llvm::Value *visit(const NodeConstDeclaration *node) const override;
 
   llvm::Value *visit(const NodeStructDeclaration *node) const override;

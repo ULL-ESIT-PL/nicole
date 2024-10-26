@@ -36,16 +36,21 @@ llvm::Value *CodeGeneration::visit(const NodeStructAcces *node) const {
   std::cout << "---------\n" << *node->table() << std::flush;
 
   const auto varTable{node->table()};
+  
   auto structType{node->typeTable()
                       ->type(varTable->variableType(node->id())->name())
                       .get()};
+  std::cout << structType->name() + " "<< std::flush;
   const auto structTypeCasted = dynamic_cast<const UserType *>(structType);
+  if (!structTypeCasted) {
+    llvm::report_fatal_error("hola");
+  }
   const auto index{structTypeCasted->attribute(node->attribute())};
-
+  llvm::report_fatal_error("hola");
   // Obtener el puntero al objeto de la estructura
   llvm::Value *structPtr = builder_.CreateLoad(varTable->variableAddress(node->id())->getType(), 
                                                varTable->variableAddress(node->id()), node->id());
-
+  llvm::report_fatal_error("hola");
   // Obtener el puntero al atributo específico dentro de la estructura
   llvm::Value *fieldPtr = builder_.CreateStructGEP(
       structType->type(context_), structPtr, index.first, node->attribute());

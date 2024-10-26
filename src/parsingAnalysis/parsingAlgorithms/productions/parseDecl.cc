@@ -175,6 +175,28 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
         llvm::report_fatal_error(strErr.c_str());
       }
     }
+  } else if (tkStream_.isCurrentTokenType(TokenType::AUTO)) {
+    tkStream_.eat();
+    token = tkStream_.current();
+    std::string id{""};
+    if (token.type() == TokenType::ID) {
+      id = token.raw();
+      tkStream_.eat();
+    } else {
+      const std::string strErr{"Error missing id at " +
+                                   tkStream_.current().locInfo()};
+      llvm::report_fatal_error(strErr.c_str());
+    }
+    if (tkStream_.current().type() == TokenType::ASSIGNMENT) {
+          tkStream_.eat();
+          auto value{parseLogicalOr(currentScope, father)};
+          return ASTBuilder::createAutoDecl(id, value, currentScope,
+                                             typeTable_);
+        } else {
+          const std::string strErr{"Error missing value of " + id + " at " +
+                                   tkStream_.current().locInfo()};
+          llvm::report_fatal_error(strErr.c_str());
+        }
   }
 
   return parseLogicalOr(currentScope, father);
