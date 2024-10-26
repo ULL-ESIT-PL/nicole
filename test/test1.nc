@@ -36,4 +36,4 @@ let point: Point = Point{666, 666};
 
 auto pppp =  Point{666, 666};
 
-pppp.x;
+print(pppp.x + pppp.y)

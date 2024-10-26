@@ -7,6 +7,7 @@
 #include "../../../inc/parsingAnalysis/ast/declaration/nodeReturn.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/selfAssignment.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/structDeclaration.h"
+#include "../../../inc/parsingAnalysis/ast/calls/structConstructor.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/structSetAttr.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
@@ -19,6 +20,7 @@
 #include "llvm/IR/Value.h"
 #include "llvm/Support/ErrorHandling.h"
 #include <cstddef>
+#include <memory>
 #include <ostream>
 #include <regex>
 #include <string>
@@ -106,10 +108,15 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
 llvm::Value *CodeGeneration::visit(const NodeAutoDeclaration *node) const {
   llvm::Value *value{node->expression()->accept(this)};
   llvm::Type *valueType{value->getType()}; // Tipo de la variable
+  std::shared_ptr<GenericType> type{nullptr};
+  if (node->expression()->type() == NodeType::CALL_CTR) {
+    const auto casted{dynamic_cast<const NodeStructConstructor*>(node->expression())};
+    type = casted->type();
+    valueType = casted->type()->type(context_);
+  }
   if (valueType == llvm::Type::getVoidTy(*context_)) {
     llvm::report_fatal_error("Cannot assign to type void");
   }
-  const auto type{node->typeTable()->type(valueType, context_)};
 
   bool isStruct{false};
   // Si valueType es un puntero, puede ser el constructor de un struct

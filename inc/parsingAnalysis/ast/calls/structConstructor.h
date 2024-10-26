@@ -4,10 +4,12 @@
 #include "../../types/typeTable.h"
 #include "../declaration/varTable.h"
 #include "../node.h"
+#include "../../types/userType.h"
+#include "../literals/typedExpression.h"
 
 namespace nicole {
 
-class NodeStructConstructor : public Node {
+class NodeStructConstructor : public Node, TypedExpression {
 private:
   /* data */
   std::string id_{""};
@@ -31,6 +33,8 @@ public:
   llvm::Value *accept(const CodeGeneration *visitor) const override {
     return visitor->visit(this);
   }
+
+  std::shared_ptr<GenericType> type() const override { return typeTable_->type(id_); }
 
   std::string accept(const PrintTree *visitor) const override {
     return visitor->visit(this);

@@ -2,10 +2,12 @@
 #define NODE_LITERAL_DOUBLE_H
 
 #include "../node.h"
+#include "../../types/doubleType.h"
+#include "typedExpression.h"
 
 namespace nicole {
 
-class NodeLiteralDouble final : public Node {
+class NodeLiteralDouble final : public Node, TypedExpression {
 private:
   double value_{};
 
@@ -20,6 +22,8 @@ public:
   std::string accept(const PrintTree *visitor) const override {
     return visitor->visit(this);
   }
+
+  std::shared_ptr<GenericType> type() const override { return std::make_shared<DoubleType>(); }
 
   double value() const { return value_; }
 };

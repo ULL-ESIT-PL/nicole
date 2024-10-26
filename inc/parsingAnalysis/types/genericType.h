@@ -28,6 +28,8 @@ public:
   std::string name() const { return name_; }
 
   std::shared_ptr<GenericType> father() const { return father_.lock(); }
+
+  bool isSameType(const GenericType& type) const { return name_ == type.name(); }
 };
 
 } // namespace nicole

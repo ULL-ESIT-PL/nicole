@@ -2,10 +2,12 @@
 #define NODE_LITERAL_STRING_H
 
 #include "../node.h"
+#include "../../types/stringType.h"
+#include "typedExpression.h"
 
 namespace nicole {
 
-class NodeLiteralString final : public Node {
+class NodeLiteralString final : public Node, TypedExpression {
 private:
   std::string value_{};
 
@@ -25,6 +27,8 @@ public:
   std::string accept(const PrintTree *visitor) const override {
     return visitor->visit(this);
   }
+
+  std::shared_ptr<GenericType> type() const override { return std::make_shared<StringType>(); }
 
   std::string value() const { return value_; }
 };

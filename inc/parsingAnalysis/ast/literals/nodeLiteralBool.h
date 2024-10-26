@@ -2,10 +2,13 @@
 #define NODE_LITERAL_BOOL_H
 
 #include "../node.h"
+#include "typedExpression.h"
+#include "../../types/boolType.h"
+#include <memory>
 
 namespace nicole {
 
-class NodeLiteralBool final : public Node {
+class NodeLiteralBool final : public Node, TypedExpression {
 private:
   bool value_{};
 
@@ -20,6 +23,8 @@ public:
   std::string accept(const PrintTree *visitor) const override {
     return visitor->visit(this);
   }
+
+  std::shared_ptr<GenericType> type() const override { return std::make_shared<BoolType>(); }
 
   bool value() const { return value_; }
 };

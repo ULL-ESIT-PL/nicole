@@ -5,6 +5,7 @@
 #include "../../../inc/parsingAnalysis/ast/calls/structConstructor.h"
 #include "../../../inc/parsingAnalysis/ast/calls/variableCall.h"
 #include "llvm/IR/Instructions.h"
+#include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Value.h"
 #include "llvm/Support/ErrorHandling.h"
 #include <cstddef>
@@ -46,11 +47,9 @@ llvm::Value *CodeGeneration::visit(const NodeStructAcces *node) const {
     llvm::report_fatal_error("hola");
   }
   const auto index{structTypeCasted->attribute(node->attribute())};
-  llvm::report_fatal_error("hola");
   // Obtener el puntero al objeto de la estructura
   llvm::Value *structPtr = builder_.CreateLoad(varTable->variableAddress(node->id())->getType(), 
                                                varTable->variableAddress(node->id()), node->id());
-  llvm::report_fatal_error("hola");
   // Obtener el puntero al atributo específico dentro de la estructura
   llvm::Value *fieldPtr = builder_.CreateStructGEP(
       structType->type(context_), structPtr, index.first, node->attribute());

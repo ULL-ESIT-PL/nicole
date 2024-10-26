@@ -42,9 +42,6 @@ std::shared_ptr<GenericType> TypeTable::type(const std::string &name) const {
 std::shared_ptr<GenericType> TypeTable::type(const llvm::Type* type, llvm::LLVMContext* context) const {
   for (const auto& pair : table_) {
     if (type == pair.second->type(context)) {
-      
-    }
-    if (type == pair.second->type(context)) {
       //llvm::report_fatal_error("Missing type using llvm Type to search");
       return pair.second;
     }

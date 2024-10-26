@@ -2,10 +2,12 @@
 #define NODE_LITERAL_CHAR_H
 
 #include "../node.h"
+#include "../../types/charType.h"
+#include "typedExpression.h"
 
 namespace nicole {
 
-class NodeLiteralChar final : public Node {
+class NodeLiteralChar final : public Node, TypedExpression {
 private:
   char value_{};
   char unEscape(const std::string &val) const;
@@ -23,6 +25,8 @@ public:
   std::string accept(const PrintTree *visitor) const override {
     return visitor->visit(this);
   }
+
+  std::shared_ptr<GenericType> type() const override { return std::make_shared<CharType>(); }
 
   char value() const { return value_; }
 };
