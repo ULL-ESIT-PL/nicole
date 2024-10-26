@@ -30,6 +30,8 @@ WARNING: Currently translation to machine code is commented, to develope faster 
 
 - Const Variable Declaration
 
+- Auto declaration (still not with const)
+
 - Unary operations -- (decrement), ++ (increment), -, ! (not)
 
 - Binary operations or, and, +, -, *, /, %, !=, ==, <, <=, >, >=
