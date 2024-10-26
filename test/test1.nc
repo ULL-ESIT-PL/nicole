@@ -26,14 +26,19 @@ print("Finbonacci: ", fibonacci(37),
       "\nE approximation: ", eApprox(30), "\n");
 */
 
+struct FOO {
+  z: int
+}
 
 struct Point {
   x: int,
-  y: int
+  y: int,
+  w: FOO
 }
 
-let point: Point = Point{666, 666};
+let f: FOO = FOO{100};
+let point: Point = Point{666, 666, f};
 
-auto pppp =  Point{666, 666};
+let ff: FOO = point.w;
 
-print(pppp.x + pppp.y)
+print(ff.z)
