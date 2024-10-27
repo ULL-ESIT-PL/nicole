@@ -64,8 +64,6 @@ WARNING: Currently translation to machine code is commented, to develope faster 
 
 - Better error messages (missing print more than one error per compilation)
 
-- Auto declaration
-
 - Vectors / Array
 
 - Classes

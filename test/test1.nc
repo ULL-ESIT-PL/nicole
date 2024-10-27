@@ -36,8 +36,7 @@ struct Point {
   w: FOO
 }
 
-let f: FOO = FOO{100};
-let point: Point = Point{666, 666, f};
+let point: Point = Point{666, 666, FOO{100}};
 
 let ff: FOO = point.w;
 
