@@ -13,6 +13,7 @@
 #include "calls/structConstructor.h"
 #include "calls/variableCall.h"
 #include "conditionals/nodeCase.h"
+#include "conditionals/nodeTernary.h"
 #include "conditionals/nodeIfStatement.h"
 #include "conditionals/nodeSwitch.h"
 #include "declaration/constDeclaration.h"
@@ -252,6 +253,14 @@ public:
              std::shared_ptr<NodeStatementList> body,
              std::shared_ptr<Node> father = nullptr) {
     return std::make_shared<NodeCaseStatement>(match, body, father);
+  };
+
+  static std::shared_ptr<NodeTernary>
+  createTernary(std::shared_ptr<Node> condition,
+           std::shared_ptr<Node> first,
+           std::shared_ptr<Node> second,
+           std::shared_ptr<Node> father = nullptr) {
+    return std::make_shared<NodeTernary>(condition, first, second, father);
   };
 
   static std::shared_ptr<NodeIfStatement>

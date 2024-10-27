@@ -76,6 +76,8 @@ public:
 
   llvm::Value *visit(const NodeCaseStatement *node) const override;
 
+  llvm::Value *visit(const NodeTernary *node) const override;
+
   llvm::Value *visit(const NodeIfStatement *node) const override;
 
   llvm::Value *visit(const NodeWhileStatement *node) const override;

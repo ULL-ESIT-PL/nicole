@@ -94,6 +94,10 @@ private:
                       std::shared_ptr<Node> father) const;
 
   std::shared_ptr<Node>
+  parseTernary(std::shared_ptr<VariableTable> currentScope,
+                 std::shared_ptr<Node> father) const;
+
+  std::shared_ptr<Node>
   parseLogicalOr(std::shared_ptr<VariableTable> currentScope,
                  std::shared_ptr<Node> father) const;
 

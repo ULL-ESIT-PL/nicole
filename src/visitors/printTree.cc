@@ -8,6 +8,8 @@
 #include "../../inc/parsingAnalysis/ast/conditionals/nodeCase.h"
 #include "../../inc/parsingAnalysis/ast/conditionals/nodeIfStatement.h"
 #include "../../inc/parsingAnalysis/ast/conditionals/nodeSwitch.h"
+#include "../../inc/parsingAnalysis/ast/conditionals/nodeTernary.h"
+#include "../../inc/parsingAnalysis/ast/declaration/autoDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/nodeFunDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/nodeReturn.h"
@@ -15,7 +17,6 @@
 #include "../../inc/parsingAnalysis/ast/declaration/structDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/structSetAttr.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
-#include "../../inc/parsingAnalysis/ast/declaration/autoDeclaration.h"
 #include "../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralBool.h"
 #include "../../inc/parsingAnalysis/ast/literals/nodeLiteralChar.h"
@@ -269,6 +270,17 @@ std::string PrintTree::visit(const NodeIfStatement *node) const {
   if (node->hasElse()) {
     result << indent_ << "Else Body:\n" << node->elseBody()->accept(this);
   }
+  decreaseIndent();
+  return result.str();
+}
+
+std::string PrintTree::visit(const NodeTernary *node) const {
+  std::ostringstream result;
+  result << indent_ << "Ternary Statement:\n";
+  increaseIndent();
+  result << indent_ << "Condition:\n" << node->condition()->accept(this);
+  result << indent_ << "First:\n" << node->first()->accept(this);
+  result << indent_ << "Second:\n" << node->second()->accept(this);
   decreaseIndent();
   return result.str();
 }

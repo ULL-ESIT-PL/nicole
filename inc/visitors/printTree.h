@@ -1,9 +1,9 @@
 #ifndef PRINT_TREE_H
 #define PRINT_TREE_H
 
+#include "visitor.h"
 #include <iostream>
 #include <sstream>
-#include "visitor.h"
 
 namespace nicole {
 
@@ -70,6 +70,8 @@ public:
   std::string visit(const NodeSwitchStatement *node) const override;
 
   std::string visit(const NodeCaseStatement *node) const override;
+
+  std::string visit(const NodeTernary *node) const override;
 
   std::string visit(const NodeIfStatement *node) const override;
 

@@ -98,7 +98,7 @@ TopDown::parseReturn(std::shared_ptr<VariableTable> &currentScope,
   if (tkStream_.isCurrentTokenType(TokenType::SEMICOLON)) {
     return ASTBuilder::createReturn(nullptr);
   }
-  return ASTBuilder::createReturn(parseLogicalOr(currentScope, father));
+  return ASTBuilder::createReturn(parseTernary(currentScope, father));
 }
 
 std::shared_ptr<Node>
@@ -125,7 +125,7 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
         tkStream_.eat();
         if (tkStream_.current().type() == TokenType::ASSIGNMENT) {
           tkStream_.eat();
-          auto value{parseLogicalOr(currentScope, father)};
+          auto value{parseTernary(currentScope, father)};
           return ASTBuilder::createVarDecl(id, idType, value, currentScope,
                                            typeTable_);
         } else {
@@ -160,7 +160,7 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
         tkStream_.eat();
         if (tkStream_.current().type() == TokenType::ASSIGNMENT) {
           tkStream_.eat();
-          auto value{parseLogicalOr(currentScope, father)};
+          auto value{parseTernary(currentScope, father)};
           return ASTBuilder::createConstDecl(id, idType, value, currentScope,
                                              typeTable_);
         } else {
@@ -189,7 +189,7 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
     }
     if (tkStream_.current().type() == TokenType::ASSIGNMENT) {
           tkStream_.eat();
-          auto value{parseLogicalOr(currentScope, father)};
+          auto value{parseTernary(currentScope, father)};
           return ASTBuilder::createAutoDecl(id, value, currentScope,
                                              typeTable_);
         } else {
@@ -199,7 +199,7 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
         }
   }
 
-  return parseLogicalOr(currentScope, father);
+  return parseTernary(currentScope, father);
 }
 
 std::shared_ptr<NodeSelfReassignment>
@@ -209,7 +209,7 @@ TopDown::parseSelfAssignment(std::shared_ptr<VariableTable> currentScope,
   tkStream_.eat();
   const auto op{tkStream_.current()};
   tkStream_.eat();
-  const auto expression{parseLogicalOr(currentScope, father)};
+  const auto expression{parseTernary(currentScope, father)};
   return ASTBuilder::createSelfRGT(tk.raw(), op.type(), expression,
                                    currentScope, typeTable_);
 }

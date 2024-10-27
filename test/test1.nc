@@ -24,7 +24,7 @@ def eApprox(n: int): double {
 print("Finbonacci: ", fibonacci(37), 
       "\nFactorial: ", factorial(10), 
       "\nE approximation: ", eApprox(30), "\n");
-*/
+
 
 struct FOO {
   z: int
@@ -41,3 +41,9 @@ let point: Point = Point{666, 666, FOO{100}};
 let ff: FOO = point.w;
 
 print(ff.z)
+
+*/
+
+let x: int = (true) ? 20 : 20;
+
+print(x);

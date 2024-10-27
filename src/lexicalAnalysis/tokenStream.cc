@@ -1,4 +1,5 @@
 #include "../../inc/lexicalAnalysis/tokeStream.h"
+#include <cstddef>
 #include <limits>
 
 namespace nicole {
@@ -29,6 +30,21 @@ bool TokenStream::isCurrentTokenType(const TokenType type) const {
   if (currentPos_ < tokens_.size())
     return tokens_[currentPos_].type() == type;
   llvm::report_fatal_error("Error: invalid access to tokens");
+}
+
+bool TokenStream::isTokenAheadBeforeSemicolon(const TokenType type) const {
+  bool foundToken{false};
+  for (size_t i{currentPos_}; i < tokens_.size(); ++i) {
+    auto tk{tokens_[i]};
+    if (tk.type() == type) {
+      foundToken = true;
+      break;
+    }
+    if (tk.type() == TokenType::SEMICOLON) {
+      break;
+    }
+  }
+  return foundToken;
 }
 
 void TokenStream::insertAfter(const TokenStream &tkStream, size_t pos) const {

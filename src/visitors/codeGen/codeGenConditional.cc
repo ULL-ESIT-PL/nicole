@@ -4,6 +4,7 @@
 #include "../../../inc/parsingAnalysis/ast/conditionals/nodeCase.h"
 #include "../../../inc/parsingAnalysis/ast/conditionals/nodeIfStatement.h"
 #include "../../../inc/parsingAnalysis/ast/conditionals/nodeSwitch.h"
+#include "../../../inc/parsingAnalysis/ast/conditionals/nodeTernary.h"
 #include "../../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Instruction.h"
@@ -139,6 +140,11 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node) const {
   TheFunction->insert(TheFunction->end(), MergeBB);
   builder_.SetInsertPoint(MergeBB);
   // No devolver valor ya que el 'if' solo controla el flujo
+  return nullptr;
+}
+
+llvm::Value *CodeGeneration::visit(const NodeTernary *node) const {
+  llvm::report_fatal_error("hola");
   return nullptr;
 }
 

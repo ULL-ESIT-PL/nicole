@@ -7,7 +7,6 @@ namespace nicole {
 
 // To know with what kind of node are we working
 enum class NodeType {
-  LITERAL,
   VOID,
   CHAR,
   STRING,
@@ -18,6 +17,7 @@ enum class NodeType {
   IMPORT,
   BINARY,
   UNARY,
+  TERNARY,
   INCREMENT,
   STATEMENT,
   STATEMENT_LIST,

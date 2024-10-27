@@ -177,4 +177,36 @@ TopDown::parseIfStatement(std::shared_ptr<VariableTable> currentScope,
   return ASTBuilder::createIf(condition, ifBody, elseBody);
 }
 
+std::shared_ptr<Node>
+TopDown::parseTernary(std::shared_ptr<VariableTable> currentScope,
+                      std::shared_ptr<Node> father) const {
+  if (tkStream_.isCurrentTokenType(TokenType::LP) and
+      tkStream_.isTokenAheadBeforeSemicolon(TokenType::TERNARY)) {
+    tkStream_.eat();
+    if (tkStream_.isCurrentTokenType(TokenType::RP)) {
+      // ERROR
+    }
+    auto condition{parseLogicalOr(currentScope, father)};
+    if (tkStream_.isCurrentTokenType(TokenType::RP)) {
+      tkStream_.eat();
+    } else {
+      // error
+    }
+    if (tkStream_.isCurrentTokenType(TokenType::TERNARY)) {
+      tkStream_.eat();
+    } else {
+      // error
+    }
+    auto first{parseLogicalOr(currentScope, father)};
+    if (tkStream_.isCurrentTokenType(TokenType::DOTDOT)) {
+      tkStream_.eat();
+    } else {
+      // error
+    }
+    auto second{parseLogicalOr(currentScope, father)};
+    return ASTBuilder::createTernary(condition, first, second, father);
+  }
+  return parseLogicalOr(currentScope, father);
+}
+
 } // namespace nicole

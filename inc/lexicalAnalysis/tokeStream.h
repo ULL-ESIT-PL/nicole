@@ -33,6 +33,8 @@ public:
 
   bool isCurrentTokenType(const TokenType type) const;
 
+  bool isTokenAheadBeforeSemicolon(const TokenType type) const;
+
   // needed for whenever an import is found
   void insertAfter(const TokenStream &tkStream,
                    size_t pos = std::numeric_limits<int>::infinity()) const;

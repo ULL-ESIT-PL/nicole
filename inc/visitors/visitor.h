@@ -45,6 +45,7 @@ class NodeVariableReassignment;
 class NodeSelfReassignment;
 class NodeSwitchStatement;
 class NodeCaseStatement;
+class NodeTernary;
 class NodeIfStatement;
 class NodeWhileStatement;
 class NodeDoWhileStatement;
@@ -112,6 +113,8 @@ public:
   virtual T visit(const NodeSwitchStatement *node) const = 0;
 
   virtual T visit(const NodeCaseStatement *node) const = 0;
+
+  virtual T visit(const NodeTernary *node) const = 0;
 
   virtual T visit(const NodeIfStatement *node) const = 0;
 
