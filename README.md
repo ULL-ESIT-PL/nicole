@@ -12,8 +12,8 @@ WARNING: Currently translation to machine code is commented, to develope faster 
 - At parent directory --> ```mkdir build```
 - At parent directory --> ```cd build```
 - At build directory --> ```cmake ..```
-- At build directory --> ```make run```
-- ```make run``` will compile and excute but only will compile those modified files
+- At nicole directory --> ```nicole.sh file.nc```
+- ```nicole.sh``` will compile and excute but only will compile those modified files
 - Still no options from command line so test/test1.nc is the program to be compiled
 
 ## Features Implemented

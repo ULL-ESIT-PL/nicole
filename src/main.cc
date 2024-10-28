@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
 #include <llvm/ExecutionEngine/GenericValue.h>
 #include <llvm/ExecutionEngine/MCJIT.h>
@@ -18,6 +19,11 @@ using namespace nicole;
 
 // Just creates a main function for our program like a wrapper
 int main(int argc, char *argv[]) {
+  if (argc != 2) {
+    llvm::report_fatal_error("Just need to specify one file.nc");
+  }
+  const std::string argument{argv[1]};
+  std::cout << argument << "\n";
   // Start LLVM
   llvm::LLVMContext context;
   llvm::IRBuilder<> builder{context};
@@ -39,11 +45,11 @@ int main(int argc, char *argv[]) {
   // My test
   llvm::LLVMContext *contextPtr{&context};
 
-  const std::filesystem::path path{"../test/test1.nc"};
+  const std::filesystem::path path{argument};
   std::shared_ptr<Sintax> sintax{std::make_shared<NicoleSintax>()};
   const std::shared_ptr<Parser> parser{std::make_shared<TopDown>(sintax)};
   const auto result{parser->parse(path)};
-  
+
   auto tree{result.get()};
   PrintTree printer{};
   // std::cout << printer.print(tree) << "\n";
@@ -103,17 +109,16 @@ int main(int argc, char *argv[]) {
 #include <llvm/IR/Function.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/LegacyPassManager.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Verifier.h>
+#include <llvm/MC/TargetRegistry.h>
+#include <llvm/Support/FileSystem.h>
+#include <llvm/Support/FormattedStream.h>
 #include <llvm/Support/TargetSelect.h>
 #include <llvm/Support/raw_ostream.h>
-#include <llvm/IR/LegacyPassManager.h>
-#include <llvm/TargetParser/Host.h>
 #include <llvm/Target/TargetMachine.h>
-#include <llvm/Support/FileSystem.h>
-#include <llvm/MC/TargetRegistry.h>
-#include <llvm/Support/FormattedStream.h>
-#include <llvm/Support/raw_ostream.h>
+#include <llvm/TargetParser/Host.h>
 
 
 #include "../inc/parsingAnalysis/parsingAlgorithms/topDown.h"
@@ -150,12 +155,12 @@ int main(int argc, char *argv[]) {
   std::shared_ptr<Sintax> sintax{std::make_shared<NicoleSintax>()};
   const std::shared_ptr<Parser> parser{std::make_shared<TopDown>(sintax)};
   const auto result{parser->parse(path)};
-  
+
   auto tree{result.get()};
   PrintTree printer{};
   CodeGeneration codeGen{contextPtr, module.get(), entry};
   llvm::Value *returnValue{codeGen.generate(tree)};
-  
+
   // Verificar el módulo y la función main
   llvm::verifyFunction(*mainFunction);
   llvm::verifyModule(*module);
@@ -184,8 +189,9 @@ int main(int argc, char *argv[]) {
   auto Features = "";
 
   llvm::TargetOptions opt;
-  auto TargetMachine = Target->createTargetMachine(TargetTriple, CPU, Features, opt, llvm::Reloc::PIC_);
-  
+  auto TargetMachine = Target->createTargetMachine(TargetTriple, CPU, Features,
+opt, llvm::Reloc::PIC_);
+
   module->setDataLayout(TargetMachine->createDataLayout());
   module->setTargetTriple(TargetTriple);
 
@@ -209,7 +215,7 @@ int main(int argc, char *argv[]) {
   pass.run(*module);
   dest.flush();
 
-  
+
   return 0;
 }
 
