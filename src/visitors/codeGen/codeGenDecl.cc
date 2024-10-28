@@ -1,13 +1,13 @@
 #include "../../../inc/visitors/codeGeneration.h"
 
 #include "../../../inc/lexicalAnalysis/type.h"
-#include "../../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
+#include "../../../inc/parsingAnalysis/ast/calls/structConstructor.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/autoDeclaration.h"
+#include "../../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/nodeFunDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/nodeReturn.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/selfAssignment.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/structDeclaration.h"
-#include "../../../inc/parsingAnalysis/ast/calls/structConstructor.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/structSetAttr.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/varDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
@@ -110,10 +110,17 @@ llvm::Value *CodeGeneration::visit(const NodeAutoDeclaration *node) const {
   llvm::Type *valueType{value->getType()}; // Tipo de la variable
   std::shared_ptr<GenericType> type{nullptr};
   if (node->expression()->type() == NodeType::CALL_CTR) {
-    const auto casted{dynamic_cast<const NodeStructConstructor*>(node->expression())};
+    const auto casted{
+        dynamic_cast<const NodeStructConstructor *>(node->expression())};
     type = casted->type();
     valueType = casted->type()->type(context_);
+  } else if (const auto casted =
+                 dynamic_cast<const TypedExpression *>(node->expression())) {
+    // NOT WORKING
+    type = casted->type();
   }
+  llvm::report_fatal_error("AUTO NOT IMPLEMENTED, NEED TO FIND A WAY TO DETECT "
+                           "TYPE FROM AN EXPRESSION");
   if (valueType == llvm::Type::getVoidTy(*context_)) {
     llvm::report_fatal_error("Cannot assign to type void");
   }

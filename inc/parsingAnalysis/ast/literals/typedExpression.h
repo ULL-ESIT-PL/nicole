@@ -7,6 +7,8 @@ namespace nicole {
 
 class TypedExpression {
   public:
+    virtual ~TypedExpression() = default;
+
     virtual std::shared_ptr<GenericType> type() const = 0;   
 };
 
