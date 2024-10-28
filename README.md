@@ -48,6 +48,8 @@ WARNING: Currently translation to machine code is commented, to develope faster 
 
 - If conditional with else as optional
 
+- Ternary operator
+
 - Switch conditional with optional default (still gotta check that every case has the right type)
 
 - Loops while, do while, for
@@ -73,8 +75,6 @@ WARNING: Currently translation to machine code is commented, to develope faster 
 - Pass (equivalent to continue in c++)
 
 - Pointers and null
-
-- Ternary operator
 
 - Concatenation of expression, example: variable[index][index].method... Right now would require create an intermediate variable
 

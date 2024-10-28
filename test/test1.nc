@@ -44,6 +44,10 @@ print(ff.z)
 
 */
 
-let x: int = (true) ? 20 : 20;
+def fun(): int {
+  return (false) ? 20 : 10;
+}
 
-print(x);
+let x: int = (false) ? 20 : 10;
+
+print(x, fun() * 4);

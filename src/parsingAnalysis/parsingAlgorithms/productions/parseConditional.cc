@@ -180,6 +180,7 @@ TopDown::parseIfStatement(std::shared_ptr<VariableTable> currentScope,
 std::shared_ptr<Node>
 TopDown::parseTernary(std::shared_ptr<VariableTable> currentScope,
                       std::shared_ptr<Node> father) const {
+  // To break ambiguous situation we need to check for ? before we even process it
   if (tkStream_.isCurrentTokenType(TokenType::LP) and
       tkStream_.isTokenAheadBeforeSemicolon(TokenType::TERNARY)) {
     tkStream_.eat();

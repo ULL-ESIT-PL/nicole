@@ -144,8 +144,44 @@ llvm::Value *CodeGeneration::visit(const NodeIfStatement *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeTernary *node) const {
-  llvm::report_fatal_error("hola");
-  return nullptr;
+  llvm::Value* condition = node->condition()->accept(this);
+  llvm::Value* first = node->first()->accept(this);
+  llvm::Value* second = node->second()->accept(this);
+
+  // Convertir la condición en un valor booleano de 1 bit
+  condition = builder_.CreateICmpNE(condition, llvm::ConstantInt::get(condition->getType(), 0), "cond");
+
+  // Crear los bloques de then y else
+  llvm::Function* function = builder_.GetInsertBlock()->getParent();
+  llvm::BasicBlock* thenBlock = llvm::BasicBlock::Create(*context_, "then", function);
+  llvm::BasicBlock* elseBlock = llvm::BasicBlock::Create(*context_, "else");
+  llvm::BasicBlock* mergeBlock = llvm::BasicBlock::Create(*context_, "ifcont");
+
+  // Instrucción de salto condicional
+  builder_.CreateCondBr(condition, thenBlock, elseBlock);
+
+  // Bloque 'then'
+  builder_.SetInsertPoint(thenBlock);
+  builder_.CreateBr(mergeBlock);
+  thenBlock = builder_.GetInsertBlock();  // actualizar el bloque actual
+
+  // Bloque 'else'
+  function->insert(function->end(), elseBlock);
+  builder_.SetInsertPoint(elseBlock);
+  builder_.CreateBr(mergeBlock);
+  elseBlock = builder_.GetInsertBlock();  // actualizar el bloque actual
+
+  // Bloque de fusión
+  function->insert(function->end(), mergeBlock);
+  builder_.SetInsertPoint(mergeBlock);
+
+  // Phi node para seleccionar el valor basado en la condición
+  llvm::PHINode* phiNode = builder_.CreatePHI(first->getType(), 2, "iftmp");
+  phiNode->addIncoming(first, thenBlock);
+  phiNode->addIncoming(second, elseBlock);
+
+  return phiNode;
 }
+
 
 } // namespace nicole
