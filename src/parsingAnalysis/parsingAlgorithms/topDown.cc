@@ -127,7 +127,7 @@ TopDown::parseParamsCall(std::shared_ptr<VariableTable> &currentScope,
   std::vector<std::shared_ptr<Node>> params{};
   while (tkStream_.currentPos() < tkStream_.size() &&
          !tkStream_.isCurrentTokenType(TokenType::SEMICOLON)) {
-    params.push_back(parseLogicalOr(currentScope, father));
+    params.push_back(parseTernary(currentScope, father));
     if (tkStream_.currentPos() < tkStream_.size() &&
         tkStream_.isCurrentTokenType(TokenType::COMMA)) {
       tkStream_.eat();
