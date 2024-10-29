@@ -75,7 +75,7 @@ llvm::Value *CodeGeneration::visit(const NodeUnaryOp *node) const {
   case TokenType::OPERATOR_SUB: {
     if (expressionType->isIntegerTy()) {
       return builder_.CreateNeg(expressionEvaluated, "arithNegTemp");
-    } else if (expressionType->isDoubleTy()) {
+    } else if (expressionType->isDoubleTy() || expressionType->isFloatTy()) {
       return builder_.CreateFNeg(expressionEvaluated, "arithNegTemp");
     } else {
       llvm::report_fatal_error(
