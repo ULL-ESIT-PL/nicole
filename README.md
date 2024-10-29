@@ -118,6 +118,6 @@ WARNING: Currently translation to machine code is commented, to develope faster 
 
 - src for every source file (.cc)
 
-- test currenty not used (expected to use google test library)
+- test constains tests for the features of the compiler (expected to use google test library)
 
 - build where the binary is
