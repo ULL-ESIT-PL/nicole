@@ -20,6 +20,11 @@ def eApprox(n: int): double {
   return result;
 }
 
+def Iexist(): void {
+  print("I hate you but I wouldn't wish you code in prolog\n");
+}
+
+Iexist();
 print("Finbonacci: ", fibonacci(37), 
       "\nFactorial: ", factorial(10), 
       "\nE approximation: ", eApprox(30), "\n");
