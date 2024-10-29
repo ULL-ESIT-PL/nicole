@@ -13,7 +13,14 @@ TopDown::parseImport(std::shared_ptr<VariableTable> &currentScope,
   std::filesystem::path fileName{""};
   if (tkStream_.isCurrentTokenType(TokenType::STRING)) {
     const auto raw{tkStream_.current().raw()};
-    fileName = "../test/" + raw.substr(1, raw.size() - 2);
+    // path of the file that uses import
+    std::filesystem::path currentFilePath{
+        tkStream_.current().location().file()};
+    // Gets the base path of the current file
+    currentFilePath = currentFilePath.parent_path();
+
+    // builds the path based on the import in the current file's directory
+    fileName = currentFilePath / raw.substr(1, raw.size() - 2);
   } else {
     const std::string strErr{
         "Error missing path after import, found: " + tkStream_.current().raw() +
@@ -64,4 +71,4 @@ TopDown::parsePrintStatement(std::shared_ptr<VariableTable> currentScope,
   return ASTBuilder::createPrint(expressions);
 }
 
-}
+} // namespace nicole

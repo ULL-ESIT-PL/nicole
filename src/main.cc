@@ -23,7 +23,6 @@ int main(int argc, char *argv[]) {
     llvm::report_fatal_error("Just need to specify one file.nc");
   }
   const std::string argument{argv[1]};
-  std::cout << argument << "\n";
   // Start LLVM
   llvm::LLVMContext context;
   llvm::IRBuilder<> builder{context};
