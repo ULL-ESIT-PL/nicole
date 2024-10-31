@@ -50,10 +50,10 @@ int main(int argc, char *argv[]) {
   const auto result{parser->parse(path)};
 
   auto tree{result.get()};
-  PrintTree printer{};
+  PrintTree printer{}; 
   // std::cout << printer.print(tree) << "\n";
   CodeGeneration codeGen{contextPtr, module.get(), entry};
-  llvm::Value *returnValue{codeGen.generate(tree)};
+  auto returnValue{codeGen.generate(tree)};
   /*
     if (!returnValue) {
       std::cerr << "Error: No return value generated." << std::endl;

@@ -1,9 +1,9 @@
 #ifndef NODE_LITERAL_BOOL_H
 #define NODE_LITERAL_BOOL_H
 
+#include "../../types/boolType.h"
 #include "../node.h"
 #include "typedExpression.h"
-#include "../../types/boolType.h"
 #include <memory>
 
 namespace nicole {
@@ -24,7 +24,9 @@ public:
     return visitor->visit(this);
   }
 
-  std::shared_ptr<GenericType> type() const override { return std::make_shared<BoolType>(); }
+  std::shared_ptr<GenericType> type() const override {
+    return std::make_shared<BoolType>();
+  }
 
   bool value() const { return value_; }
 };

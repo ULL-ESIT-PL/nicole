@@ -93,11 +93,6 @@ llvm::Value *CodeGeneration::visit(const Tree *node) const {
 }
 
 llvm::Value *CodeGeneration::generate(const Tree *tr) const {
-  // std::cout << "Generate--> " << builder_.GetInsertBlock()->getName().str()
-  //         << "\n";
-  auto val{visit(tr)};
-  // std::cout << "Generate--> " << builder_.GetInsertBlock()->getName().str()
-  //       << "\n";
-  return val;
+  return visit(tr);
 }
 } // namespace nicole

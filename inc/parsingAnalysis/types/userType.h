@@ -2,6 +2,7 @@
 #define USER_TYPE_H
 
 #include "../ast/declaration/paramsDeclaration.h"
+#include "../ast/declaration/functionTable.h"
 #include "genericType.h"
 #include "llvm/Support/ErrorHandling.h"
 #include <llvm/IR/DerivedTypes.h>
@@ -17,6 +18,7 @@ namespace nicole {
 class UserType : public GenericType {
 private:
   std::shared_ptr<ParamsDeclaration> attributes_{nullptr};
+  std::shared_ptr<FunctionTable> methods_{nullptr};
 
 public:
   UserType(const std::string &name,

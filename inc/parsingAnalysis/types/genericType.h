@@ -30,6 +30,8 @@ public:
   std::shared_ptr<GenericType> father() const { return father_.lock(); }
 
   bool isSameType(const GenericType& type) const { return name_ == type.name(); }
+
+  bool isSameType(const GenericType* type) const { return name_ == type->name(); }
 };
 
 } // namespace nicole
