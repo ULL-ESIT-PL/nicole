@@ -8,6 +8,12 @@ struct point3D {
     z: int
 }
 
+struct pointD {
+    x: int,
+    y: int,
+    z: int
+}
+
 let p: point3D = point3D{0, 0, 0};
 
 print(p.x, " ", p.y, " ", p.z, "\n");

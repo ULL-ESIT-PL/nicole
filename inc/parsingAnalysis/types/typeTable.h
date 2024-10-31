@@ -4,6 +4,7 @@
 #include "boolType.h"
 #include "charType.h"
 #include "floatType.h"
+#include "genericType.h"
 #include "intType.h"
 #include "stringType.h"
 #include "doubleType.h"
@@ -33,6 +34,10 @@ public:
   void addType(std::shared_ptr<GenericType> type) const;
 
   std::shared_ptr<GenericType> type(const std::string &name) const;
+
+  std::shared_ptr<GenericType> keyFromLLVMType(llvm::Type *llvmType, llvm::LLVMContext &context) const;
+
+  bool areTypesEquivalent(llvm::Type *type1, llvm::Type *type2) const;
 };
 
 } // namespace nicole
