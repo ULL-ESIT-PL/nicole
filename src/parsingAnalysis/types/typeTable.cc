@@ -1,4 +1,5 @@
 #include "../../../inc/parsingAnalysis/types/typeTable.h"
+#include "llvm/IR/LLVMContext.h"
 #include "llvm/Support/ErrorHandling.h"
 #include <memory>
 
@@ -41,10 +42,23 @@ std::shared_ptr<GenericType> TypeTable::type(const std::string &name) const {
 std::shared_ptr<GenericType> TypeTable::keyFromLLVMType(llvm::Type *llvmType, llvm::LLVMContext &context) const {
   // Iteramos sobre todos los tipos en la tabla
   for (const auto &entry : table_) {
-    const std::string &typeName = entry.first;
-    const std::shared_ptr<GenericType> &genType = entry.second;
+    const std::shared_ptr<GenericType> genType = entry.second;
+    std::cout << genType->name() + "\n" << std::flush;
+    llvm::Type* type = genType->type(&context);
+    if (!type) {
+      llvm::report_fatal_error("fff");
+    }
+  }
+  for (const auto &entry : table_) {
+    const std::shared_ptr<GenericType> genType = entry.second;
+    std::cout << genType->name() + "\n" << std::flush;
     llvm::Type *genLLVMType = genType->type(&context);
-
+    if (!llvmType) {
+      llvm::report_fatal_error("llvmtype is null");
+    }
+    if (!genLLVMType) {
+      llvm::report_fatal_error("genLLVMType is null");
+    }
     if (areTypesEquivalent(llvmType, genLLVMType)) {
       return genType;
     }
@@ -54,10 +68,15 @@ std::shared_ptr<GenericType> TypeTable::keyFromLLVMType(llvm::Type *llvmType, ll
 }
 
 bool TypeTable::areTypesEquivalent(llvm::Type *type1, llvm::Type *type2) const {
+  if (!type1) {
+    llvm::report_fatal_error("type1 is null");
+  }
+  if (!type2) {
+    llvm::report_fatal_error("type1 is null");
+  }
   if (type1 == type2) {
     return true;
   }
-
   // Comparamos los IDs de tipo
   if (type1->getTypeID() != type2->getTypeID()) {
     return false;
@@ -90,6 +109,15 @@ bool TypeTable::areTypesEquivalent(llvm::Type *type1, llvm::Type *type2) const {
   default:
     return false;
   }
+}
+
+bool TypeTable::llvmTypeExist(llvm::Type *llvmType, llvm::LLVMContext* context) const {
+  for (const auto type : table_) {
+    if (type.second->type(context)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 } // namespace nicole

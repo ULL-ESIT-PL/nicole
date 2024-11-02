@@ -12,14 +12,14 @@ class NodeConstDeclaration : public Node {
 private:
   /* data */
   std::string id_{""};
-  mutable std::shared_ptr<GenericType> varType_;
+  std::string varType_;
   std::shared_ptr<Node> expression_;
   std::shared_ptr<VariableTable> currentScope_;
   std::shared_ptr<TypeTable> typeTable_;
 
 public:
   NodeConstDeclaration(const std::string &id,
-                       std::shared_ptr<GenericType> varType,
+                       const std::string& varType,
                        std::shared_ptr<Node> expression,
                        std::shared_ptr<VariableTable> currentScope,
                        std::shared_ptr<TypeTable> typeTable,
@@ -30,7 +30,7 @@ public:
 
   std::string id() const { return id_; }
 
-  const GenericType *varType() const { return varType_.get(); }
+  std::string varType() const { return varType_; }
 
   const Node *expression() const { return expression_.get(); }
 

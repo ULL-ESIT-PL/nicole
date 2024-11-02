@@ -38,6 +38,8 @@ public:
   std::shared_ptr<GenericType> keyFromLLVMType(llvm::Type *llvmType, llvm::LLVMContext &context) const;
 
   bool areTypesEquivalent(llvm::Type *type1, llvm::Type *type2) const;
+
+  bool llvmTypeExist(llvm::Type *llvmType, llvm::LLVMContext* context) const;
 };
 
 } // namespace nicole

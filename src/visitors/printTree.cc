@@ -114,7 +114,7 @@ std::string PrintTree::visit(const NodeVariableDeclaration *node) const {
   std::ostringstream result;
   result << indent_ << "Variable Declaration:\n";
   increaseIndent();
-  result << indent_ << "Type: " << node->varType()->name() << "\n";
+  result << indent_ << "Type: " << node->varType() << "\n";
   result << indent_ << "Value:\n" << node->expression()->accept(this);
   decreaseIndent();
   return result.str();
@@ -135,7 +135,7 @@ std::string PrintTree::visit(const NodeConstDeclaration *node) const {
   std::ostringstream result;
   result << indent_ << "Constant Declaration:\n";
   increaseIndent();
-  result << indent_ << "Type: " << node->varType()->name() << "\n";
+  result << indent_ << "Type: " << node->varType() << "\n";
   result << indent_ << "Value:\n" << node->expression()->accept(this);
   decreaseIndent();
   return result.str();

@@ -34,7 +34,9 @@ public:
     return visitor->visit(this);
   }
 
-  std::shared_ptr<GenericType> type() const override { return typeTable_->type(id_); }
+  std::shared_ptr<GenericType> type() const override { 
+    llvm::report_fatal_error("hola");
+    return typeTable_->type(id_); }
 
   std::string accept(const PrintTree *visitor) const override {
     return visitor->visit(this);

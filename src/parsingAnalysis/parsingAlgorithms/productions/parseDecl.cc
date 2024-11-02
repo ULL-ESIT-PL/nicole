@@ -11,17 +11,18 @@ TopDown::parseStructDeclaration(std::shared_ptr<VariableTable> currentScope,
   tkStream_.eat();
   auto token{tkStream_.current()};
   std::shared_ptr<ParamsDeclaration> attributes{nullptr};
-  std::shared_ptr<UserType> idType{nullptr};
+  //std::shared_ptr<UserType> idType{nullptr};
+  std::string idTypeStr{""};
   if (token.type() == TokenType::ID) {
-    const std::string idTypeStr{token.raw()};
-    idType = std::make_shared<UserType>(idTypeStr);
-    typeTable_->addType(idType);
+    idTypeStr = token.raw();
+    //idType = std::make_shared<UserType>(idTypeStr);
+    //typeTable_->addType(idType);
     tkStream_.eat();
     if (tkStream_.current().type() == TokenType::LB) {
       tkStream_.eat();
       auto structScope{TBBuilder::createScope(nullptr)};
       attributes = parseParams(structScope, father);
-      idType->setAttributes(attributes);
+      //idType->setAttributes(attributes);
       if (tkStream_.current().type() == TokenType::RB) {
         tkStream_.eat();
       } else {
@@ -35,7 +36,7 @@ TopDown::parseStructDeclaration(std::shared_ptr<VariableTable> currentScope,
       llvm::report_fatal_error(strErr.c_str());
     }
   }
-  return ASTBuilder::createStructDecl(idType, attributes);
+  return ASTBuilder::createStructDecl(idTypeStr, attributes, typeTable_);
 }
 
 std::shared_ptr<NodeFunctionDeclaration>
@@ -121,12 +122,12 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
       token = tkStream_.current();
       if (token.type() == TokenType::ID) {
         const std::string idTypeStr{token.raw()};
-        std::shared_ptr<GenericType> idType{typeTable_->type(idTypeStr)};
+        //std::shared_ptr<GenericType> idType{typeTable_->type(idTypeStr)};
         tkStream_.eat();
         if (tkStream_.current().type() == TokenType::ASSIGNMENT) {
           tkStream_.eat();
           auto value{parseTernary(currentScope, father)};
-          return ASTBuilder::createVarDecl(id, idType, value, currentScope,
+          return ASTBuilder::createVarDecl(id, idTypeStr, value, currentScope,
                                            typeTable_);
         } else {
           const std::string strErr{"Error missing value of " + id + " at " +
@@ -156,12 +157,12 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
       token = tkStream_.current();
       if (token.type() == TokenType::ID) {
         const std::string idTypeStr{token.raw()};
-        std::shared_ptr<GenericType> idType{typeTable_->type(idTypeStr)};
+        // std::shared_ptr<GenericType> idType{typeTable_->type(idTypeStr)};
         tkStream_.eat();
         if (tkStream_.current().type() == TokenType::ASSIGNMENT) {
           tkStream_.eat();
           auto value{parseTernary(currentScope, father)};
-          return ASTBuilder::createConstDecl(id, idType, value, currentScope,
+          return ASTBuilder::createConstDecl(id, idTypeStr, value, currentScope,
                                              typeTable_);
         } else {
           const std::string strErr{"Error missing value of " + id + " at " +
@@ -198,7 +199,7 @@ TopDown::parseVarDeclaration(std::shared_ptr<VariableTable> currentScope,
           llvm::report_fatal_error(strErr.c_str());
         }
   }
-
+  
   return parseTernary(currentScope, father);
 }
 

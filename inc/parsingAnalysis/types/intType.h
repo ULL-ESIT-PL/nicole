@@ -2,6 +2,7 @@
 #define INT_TYPE_H
 
 #include "genericType.h"
+#include "llvm/Support/ErrorHandling.h"
 #include <llvm/IR/Type.h>
 #include <llvm/IR/DerivedTypes.h>
 

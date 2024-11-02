@@ -52,8 +52,10 @@ int main(int argc, char *argv[]) {
   auto tree{result.get()};
   PrintTree printer{}; 
   // std::cout << printer.print(tree) << "\n";
+
   CodeGeneration codeGen{contextPtr, module.get(), entry};
   auto returnValue{codeGen.generate(tree)};
+
   /*
     if (!returnValue) {
       std::cerr << "Error: No return value generated." << std::endl;

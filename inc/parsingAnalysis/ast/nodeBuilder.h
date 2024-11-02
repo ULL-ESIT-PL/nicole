@@ -125,7 +125,7 @@ public:
   };
 
   static std::shared_ptr<NodeVariableDeclaration>
-  createVarDecl(const std::string &id, std::shared_ptr<GenericType> varType,
+  createVarDecl(const std::string &id, const std::string& varType,
                 std::shared_ptr<Node> expression,
                 std::shared_ptr<VariableTable> currentScope,
                 std::shared_ptr<TypeTable> typeTable,
@@ -145,7 +145,7 @@ public:
   };
 
   static std::shared_ptr<NodeConstDeclaration>
-  createConstDecl(const std::string &id, std::shared_ptr<GenericType> varType,
+  createConstDecl(const std::string &id, const std::string& varType,
                   std::shared_ptr<Node> expression,
                   std::shared_ptr<VariableTable> currentScope,
                   std::shared_ptr<TypeTable> typeTable,
@@ -155,10 +155,11 @@ public:
   };
 
   static std::shared_ptr<NodeStructDeclaration>
-  createStructDecl(std::shared_ptr<UserType> idType,
+  createStructDecl(const std::string idType,
                    std::shared_ptr<ParamsDeclaration> attributes,
+                   std::shared_ptr<TypeTable> typeTable,
                    std::shared_ptr<Node> father = nullptr) {
-    return std::make_shared<NodeStructDeclaration>(idType, attributes, father);
+    return std::make_shared<NodeStructDeclaration>(idType, attributes, typeTable, father);
   };
 
   static std::shared_ptr<NodeFunctionDeclaration>
