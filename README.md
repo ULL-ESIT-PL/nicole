@@ -30,11 +30,13 @@ WARNING: Currently translation to machine code is commented, to develope faster 
 
 - Const Variable Declaration
 
+- Auto declaration (still not supported const auto but it is trivial to implement)
+
 - Unary operations -- (decrement), ++ (increment), -, ! (not)
 
 - Binary operations or, and, +, -, *, /, %, !=, ==, <, <=, >, >=
 
-- - Operators +=, -=, *=, /=
+- Operators +=, -=, *=, /=
 
 - Operator precedency and parenthesis expressions
 
@@ -63,8 +65,6 @@ WARNING: Currently translation to machine code is commented, to develope faster 
 ## Features yet to implement
 
 - Better error messages (missing print more than one error per compilation)
-
-- Auto declaration
 
 - Vectors / Array
 
