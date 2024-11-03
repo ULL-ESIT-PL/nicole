@@ -18,6 +18,8 @@
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Value.h"
+#include "llvm/Support/Casting.h"
+#include "llvm/Support/Error.h"
 #include "llvm/Support/ErrorHandling.h"
 #include <cstddef>
 #include <memory>
@@ -109,6 +111,11 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
 llvm::Value *CodeGeneration::visit(const NodeAutoDeclaration *node) const {
   llvm::Value *value{node->expression()->accept(this)};
   llvm::Type *valueType{value->getType()}; // Tipo de la variable
+  llvm::MDNode *meta = llvm::MDNode::get(*context_, llvm::MDString::get(*context_, "mi_metadata"));
+  if (auto *Instr = llvm::dyn_cast<llvm::Instruction>(value)) {
+    Instr->setMetadata("", meta);
+  }
+  std::shared_ptr<GenericType> varType{node->typeTable()->keyFromLLVMType(valueType, *context_)};
   if (!valueType) {
     llvm::report_fatal_error("valuetype is null");
   }
@@ -118,15 +125,44 @@ llvm::Value *CodeGeneration::visit(const NodeAutoDeclaration *node) const {
   if (valueType == llvm::Type::getVoidTy(*context_)) {
     llvm::report_fatal_error("Cannot assign to type void");
   }
+
+  if (varType->type(context_) == llvm::Type::getVoidTy(*context_)) {
+    llvm::report_fatal_error("Cannot assign to type void");
+  }
+  bool isStruct{false};
+  // Si valueType es un puntero, puede ser el constructor de un struct
+  if (valueType->isPointerTy()) {
+    // convierto el tipo de la variable para saber si valueType es un struct
+    llvm::PointerType *expectedType =
+        llvm::PointerType::get(varType->type(context_), 0);
+    if (expectedType == valueType) {
+      isStruct = true;
+    }
+  }
+
+  // Comparamos el tipo base en vez del tipo puntero
+  if (!isStruct && varType->type(context_) != valueType) {
+    auto left = varType->type(context_);
+    std::string typeStr;
+    llvm::raw_string_ostream rso(typeStr);
+    left->print(rso);
+    std::cout << "El tipo de left es: " << rso.str() << std::endl;
+
+    // Imprimir el tipo de valueType después de desreferenciar
+    valueType->print(rso);
+    std::cout << "El tipo de valueType es: " << rso.str() << std::endl;
+
+    llvm::report_fatal_error("Type mismatch");
+  }
   // Crear la instrucción 'alloca' para reservar espacio para la variable
   llvm::AllocaInst *alloca{
       builder_.CreateAlloca(valueType, nullptr, node->id())};
 
   // Almacenar el valor en la variable y tambien en la tabla
   builder_.CreateStore(value, alloca);
-  std::shared_ptr<GenericType> varType{node->typeTable()->keyFromLLVMType(valueType, *context_)};
-  std::cout << varType->name() << std::flush;
-
+  
+  // std::cout << varType->name() << std::flush;
+  std::cout << node->id() << " " << varType->name();
   node->table()->addVariable(node->id(), varType.get(), value, alloca);
   // Devolver el valor almacenado
   return nullptr;
@@ -185,7 +221,8 @@ llvm::Value *CodeGeneration::visit(const NodeStructDeclaration *node) const {
   for (const auto &declaration : *node->attributes()) {
     // Obtén el tipo de la variable
     // std::cout << declaration.first << std::flush;
-    llvm::Type *fieldType = declaration.second->type(context_);
+    auto type{node->typeTable()->type(declaration.second)};
+    llvm::Type *fieldType = type->type(context_);
     fieldTypes.push_back(fieldType);
   }
   // Crear el tipo de estructura en LLVM
@@ -203,7 +240,7 @@ llvm::Value *CodeGeneration::visit(const NodeFunctionDeclaration *node) const {
   auto params{node->parameters()};
   std::vector<llvm::Type *> paramTypes{};
   for (const auto &param : *params) {
-    paramTypes.push_back(param.second->type(context_));
+    paramTypes.push_back(node->typeTable()->type(param.second)->type(context_));
   }
   llvm::FunctionType *funcType{llvm::FunctionType::get(
       node->returnType()->type(context_), paramTypes, false)};
@@ -221,7 +258,8 @@ llvm::Value *CodeGeneration::visit(const NodeFunctionDeclaration *node) const {
   for (std::size_t i{0}; i < paramsVec.size(); ++i) {
     auto argument{funct->getArg(i)};
     argument->setName(paramsVec[i].first + std::to_string(i));
-    auto type{paramsVec[i].second};
+    auto typeStr{paramsVec[i].second};
+    auto type{node->typeTable()->type(typeStr)};
     llvm::AllocaInst *alloca{builder_.CreateAlloca(
         type->type(context_), nullptr, paramsVec[i].first)};
     builder_.CreateStore(argument, alloca);

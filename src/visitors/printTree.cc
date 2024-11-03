@@ -147,7 +147,7 @@ std::string PrintTree::visit(const NodeStructDeclaration *node) const {
   increaseIndent();
   for (const auto param : node->attributes()->paramters()) {
     result << indent_ << "Attribute:\n"
-           << param.first << " type: " << param.second->name();
+           << param.first << " type: " << param.second;
   }
   decreaseIndent();
   return result.str();
@@ -161,7 +161,7 @@ std::string PrintTree::visit(const NodeFunctionDeclaration *node) const {
   result << indent_ << "Attributes:\n";
   for (const auto &param : *node->parameters()) {
     result << indent_ << "Id: " << param.first
-           << " Type: " << param.second->name();
+           << " Type: " << param.second;
   }
   result << indent_ << "Return:\n" << node->returnType()->name();
   result << indent_ << "Body:\n" << node->body()->accept(this);

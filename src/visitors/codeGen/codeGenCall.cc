@@ -37,7 +37,7 @@ llvm::Value *CodeGeneration::visit(const NodeStructConstructor *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeStructAcces *node) const {
-  std::cout << "---------\n" << *node->table() << std::flush;
+  // std::cout << "---------\n" << *node->table() << std::flush;
 
   const auto varTable{node->table()};
   std::cout << "+++++++" << varTable->variableType(node->id())->name() << std::flush;

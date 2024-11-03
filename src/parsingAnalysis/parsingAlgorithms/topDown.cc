@@ -76,7 +76,7 @@ TopDown::parseComma(std::shared_ptr<VariableTable> &currentScope,
 std::shared_ptr<ParamsDeclaration>
 TopDown::parseParams(std::shared_ptr<VariableTable> &currentScope,
                      std::shared_ptr<Node> father) const {
-  std::vector<std::pair<std::string, std::shared_ptr<GenericType>>> params{};
+  std::vector<std::pair<std::string, std::string>> params{};
   if (tkStream_.current().type() == TokenType::RP) {
     return std::make_shared<ParamsDeclaration>(params, currentScope);
   }
@@ -84,7 +84,7 @@ TopDown::parseParams(std::shared_ptr<VariableTable> &currentScope,
          !tkStream_.isCurrentTokenType(TokenType::SEMICOLON)) {
     auto token{tkStream_.current()};
     std::string id{};
-    std::shared_ptr<GenericType> type{nullptr};
+    std::string type{""};
     if (token.type() == TokenType::ID) {
       id = token.raw();
       tkStream_.eat();
@@ -103,7 +103,7 @@ TopDown::parseParams(std::shared_ptr<VariableTable> &currentScope,
     }
     token = tkStream_.current();
     if (token.type() == TokenType::ID) {
-      type = typeTable_->type(token.raw());
+      type = token.raw();
       tkStream_.eat();
     } else {
       const std::string strErr{"Expected type, found: " + token.raw() + " at " +

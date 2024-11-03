@@ -1,4 +1,6 @@
 #include "../../../inc/parsingAnalysis/types/typeTable.h"
+#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/Instructions.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/Support/ErrorHandling.h"
 #include <memory>
@@ -43,7 +45,7 @@ std::shared_ptr<GenericType> TypeTable::keyFromLLVMType(llvm::Type *llvmType, ll
   // Iteramos sobre todos los tipos en la tabla
   for (const auto &entry : table_) {
     const std::shared_ptr<GenericType> genType = entry.second;
-    std::cout << genType->name() + "\n" << std::flush;
+    //std::cout << genType->name() + "\n" << std::flush;
     llvm::Type* type = genType->type(&context);
     if (!type) {
       llvm::report_fatal_error("fff");
@@ -51,7 +53,7 @@ std::shared_ptr<GenericType> TypeTable::keyFromLLVMType(llvm::Type *llvmType, ll
   }
   for (const auto &entry : table_) {
     const std::shared_ptr<GenericType> genType = entry.second;
-    std::cout << genType->name() + "\n" << std::flush;
+    //std::cout << genType->name() + "\n" << std::flush;
     llvm::Type *genLLVMType = genType->type(&context);
     if (!llvmType) {
       llvm::report_fatal_error("llvmtype is null");
@@ -75,13 +77,14 @@ bool TypeTable::areTypesEquivalent(llvm::Type *type1, llvm::Type *type2) const {
     llvm::report_fatal_error("type1 is null");
   }
   if (type1 == type2) {
-    return true;
+    //llvm::report_fatal_error("hola3");
+    // return true;
   }
   // Comparamos los IDs de tipo
   if (type1->getTypeID() != type2->getTypeID()) {
     return false;
   }
-
+  
   switch (type1->getTypeID()) {
   case llvm::Type::IntegerTyID:
     // Comparación para tipos enteros
@@ -90,6 +93,7 @@ bool TypeTable::areTypesEquivalent(llvm::Type *type1, llvm::Type *type2) const {
   case llvm::Type::PointerTyID:
     // Dado que los punteros son opacos, solo podemos comparar las propiedades
     // que conocemos Podemos verificar el espacio de direcciones
+    // llvm::report_fatal_error("hola3");
     return type1->getPointerAddressSpace() == type2->getPointerAddressSpace();
 
   case llvm::Type::StructTyID: {
@@ -113,7 +117,7 @@ bool TypeTable::areTypesEquivalent(llvm::Type *type1, llvm::Type *type2) const {
 
 bool TypeTable::llvmTypeExist(llvm::Type *llvmType, llvm::LLVMContext* context) const {
   for (const auto type : table_) {
-    if (type.second->type(context)) {
+    if (type.second->type(context) == llvmType) {
       return true;
     }
   }

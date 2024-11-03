@@ -2,13 +2,16 @@
 
 auto x = 10;
 
-struct prueba {
-    x: int,
-    y: str
+struct DD {
+    x: int
 }
 
-auto z = prueba{10, "hola"};
+struct prueba {
+    x: int,
+    y: DD
+}
 
-z.x = 100;
+auto z = prueba{10, DD{100}};
+
 
 print(z.x)
