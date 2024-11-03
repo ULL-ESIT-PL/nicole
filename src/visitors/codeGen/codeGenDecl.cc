@@ -2,6 +2,7 @@
 
 #include "../../../inc/lexicalAnalysis/type.h"
 #include "../../../inc/parsingAnalysis/ast/calls/structConstructor.h"
+#include "../../../inc/parsingAnalysis/ast/calls/structAcces.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/autoDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/nodeFunDeclaration.h"
@@ -51,11 +52,11 @@ llvm::Value *CodeGeneration::visit(const NodeStructSetAttr *node) const {
 
   // Obtener el puntero al atributo específico dentro de la estructura
   llvm::Value *fieldPtr = builder_.CreateStructGEP(
-      structType->type(context_), structPtr, index.first, node->attribute());
+      structType->type(context_), structPtr, std::get<0>(index), node->attribute());
 
   // Crear un load para el atributo específico
   llvm::Type *fieldType =
-      structType->type(context_)->getStructElementType(index.first);
+      structType->type(context_)->getStructElementType(std::get<0>(index));
 
   llvm::Value *expression = node->value()->accept(this);
   builder_.CreateStore(expression, fieldPtr);
@@ -65,7 +66,21 @@ llvm::Value *CodeGeneration::visit(const NodeStructSetAttr *node) const {
 llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
   llvm::Value *value{node->expression()->accept(this)};
   llvm::Type *valueType{value->getType()}; // Tipo de la variable
+  std::shared_ptr<GenericType> fooo{nullptr};
   auto varType{node->typeTable()->type(node->varType())};
+  /*
+  if (node->expression()->type() == NodeType::STRUCT_ACS) {
+    auto casted{dynamic_cast<const NodeStructAcces*>(node->expression())};
+    auto userType = node->table()->variableType(casted->id());
+    if (auto castUserType = dynamic_cast<const UserType*>(userType)) {
+      auto tpl = castUserType->attribute(casted->attribute());
+      //llvm::report_fatal_error(std::get<2>(tpl).c_str());
+      fooo = node->typeTable()->type(std::get<2>(tpl));
+      valueType = fooo->type(context_);
+    }
+    // std::cout << varType->name() << " " << fooo->name() << std::flush;
+  }
+  */
   if (varType->type(context_) == llvm::Type::getVoidTy(*context_)) {
     llvm::report_fatal_error("Cannot assign to type void");
   }
@@ -103,7 +118,7 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
   builder_.CreateStore(value, alloca);
   const GenericType *type{varType.get()};
   node->table()->addVariable(node->id(), type, value, alloca);
-
+  std::cout << "id " << node->id() + "\n";
   // Devolver el valor almacenado
   return nullptr;
 }

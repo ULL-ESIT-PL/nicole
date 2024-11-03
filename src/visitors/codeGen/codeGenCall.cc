@@ -56,11 +56,11 @@ llvm::Value *CodeGeneration::visit(const NodeStructAcces *node) const {
                           varTable->variableAddress(node->id()), node->id());
   // Obtener el puntero al atributo específico dentro de la estructura
   llvm::Value *fieldPtr = builder_.CreateStructGEP(
-      structType->type(context_), structPtr, index.first, node->attribute());
+      structType->type(context_), structPtr, std::get<0>(index), node->attribute());
 
   // Crear un load para el atributo específico
   llvm::Type *fieldType =
-      structType->type(context_)->getStructElementType(index.first);
+      structType->type(context_)->getStructElementType(std::get<0>(index));
 
   return builder_.CreateLoad(fieldType, fieldPtr, node->attribute() + "Temp");
 }

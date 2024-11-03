@@ -37,20 +37,22 @@ public:
     attributes_ = attributes;
   };
 
-  std::pair<size_t, std::string> attribute(const std::string &atribute) const {
+  std::tuple<size_t, std::string, std::string> attribute(const std::string &atribute) const {
     size_t index{0};
     bool found{false};
     const auto attr{attributes_->paramters()};
+    std::pair<std::string, std::string> par;
     for (size_t i{0}; i < attr.size(); ++i) {
       if (attr[i].first == atribute) {
         found = true;
         index = i;
+        par = attr[i];
       }
     }
     if (!found) {
       llvm::report_fatal_error("Attribute not found");
     }
-    return {index, atribute};
+    return {index, atribute, par.second};
   };
 };
 
