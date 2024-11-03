@@ -112,8 +112,10 @@ llvm::Value *CodeGeneration::visit(const NodeAutoDeclaration *node) const {
   llvm::Value *value{node->expression()->accept(this)};
   llvm::Type *valueType{value->getType()}; // Tipo de la variable
   llvm::MDNode *meta = llvm::MDNode::get(*context_, llvm::MDString::get(*context_, "mi_metadata"));
-  if (auto *Instr = llvm::dyn_cast<llvm::Instruction>(value)) {
-    Instr->setMetadata("", meta);
+  // if it is a constructor we cant comapre llvm::PointerType so we need to infer the type from our type table
+  if (node->expression()->type() == NodeType::CALL_CTR) {
+    auto casted{dynamic_cast<const NodeStructConstructor*>(node->expression())};
+    valueType = casted->table()->type(casted->id())->type(context_);
   }
   std::shared_ptr<GenericType> varType{node->typeTable()->keyFromLLVMType(valueType, *context_)};
   if (!valueType) {
