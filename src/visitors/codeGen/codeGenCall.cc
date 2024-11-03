@@ -40,11 +40,11 @@ llvm::Value *CodeGeneration::visit(const NodeStructAcces *node) const {
   // std::cout << "---------\n" << *node->table() << std::flush;
 
   const auto varTable{node->table()};
-  std::cout << "+++++++" << varTable->variableType(node->id())->name() << std::flush;
+  //std::cout << "+++++++" << varTable->variableType(node->id())->name() << std::flush;
   auto structType{node->typeTable()
                       ->type(varTable->variableType(node->id())->name())
                       .get()};
-  std::cout << "||||" << structType->name() + " " << std::flush;
+  //std::cout << "||||" << structType->name() + " " << std::flush;
   const auto structTypeCasted = dynamic_cast<const UserType *>(structType);
   if (!structTypeCasted) {
     llvm::report_fatal_error("hola");
@@ -61,7 +61,9 @@ llvm::Value *CodeGeneration::visit(const NodeStructAcces *node) const {
   // Crear un load para el atributo específico
   llvm::Type *fieldType =
       structType->type(context_)->getStructElementType(std::get<0>(index));
-
+  if (fieldType->isStructTy()) {
+    return fieldPtr;
+  }
   return builder_.CreateLoad(fieldType, fieldPtr, node->attribute() + "Temp");
 }
 

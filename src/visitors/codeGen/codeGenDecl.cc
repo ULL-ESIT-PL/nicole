@@ -1,8 +1,8 @@
 #include "../../../inc/visitors/codeGeneration.h"
 
 #include "../../../inc/lexicalAnalysis/type.h"
-#include "../../../inc/parsingAnalysis/ast/calls/structConstructor.h"
 #include "../../../inc/parsingAnalysis/ast/calls/structAcces.h"
+#include "../../../inc/parsingAnalysis/ast/calls/structConstructor.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/autoDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/constDeclaration.h"
 #include "../../../inc/parsingAnalysis/ast/declaration/nodeFunDeclaration.h"
@@ -51,8 +51,9 @@ llvm::Value *CodeGeneration::visit(const NodeStructSetAttr *node) const {
                           varTable->variableAddress(node->id()), node->id());
 
   // Obtener el puntero al atributo específico dentro de la estructura
-  llvm::Value *fieldPtr = builder_.CreateStructGEP(
-      structType->type(context_), structPtr, std::get<0>(index), node->attribute());
+  llvm::Value *fieldPtr =
+      builder_.CreateStructGEP(structType->type(context_), structPtr,
+                               std::get<0>(index), node->attribute());
 
   // Crear un load para el atributo específico
   llvm::Type *fieldType =
@@ -66,48 +67,38 @@ llvm::Value *CodeGeneration::visit(const NodeStructSetAttr *node) const {
 llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
   llvm::Value *value{node->expression()->accept(this)};
   llvm::Type *valueType{value->getType()}; // Tipo de la variable
-  std::shared_ptr<GenericType> fooo{nullptr};
   auto varType{node->typeTable()->type(node->varType())};
-  /*
+
   if (node->expression()->type() == NodeType::STRUCT_ACS) {
-    auto casted{dynamic_cast<const NodeStructAcces*>(node->expression())};
+    auto casted{dynamic_cast<const NodeStructAcces *>(node->expression())};
     auto userType = node->table()->variableType(casted->id());
-    if (auto castUserType = dynamic_cast<const UserType*>(userType)) {
+    if (auto castUserType = dynamic_cast<const UserType *>(userType)) {
       auto tpl = castUserType->attribute(casted->attribute());
-      //llvm::report_fatal_error(std::get<2>(tpl).c_str());
-      fooo = node->typeTable()->type(std::get<2>(tpl));
-      valueType = fooo->type(context_);
+      // llvm::report_fatal_error(std::get<2>(tpl).c_str());
+      std::shared_ptr<GenericType> attrType{
+          node->typeTable()->type(std::get<2>(tpl))};
+      if (attrType && attrType->type(context_)->isStructTy()) {
+        // llvm::report_fatal_error(attrType->name().c_str());
+        valueType = attrType->type(context_);
+        value =
+            builder_.CreateLoad(valueType, value, node->id() + "_struct_load");
+        std::string varTypeStr, valueTypeStr;
+        llvm::raw_string_ostream varTypeOS(varTypeStr),
+            valueTypeOS(valueTypeStr);
+        varType->type(context_)->print(varTypeOS);
+        valueType->print(valueTypeOS);
+        std::cout << "varType: " << varTypeOS.str()
+                  << ", valueType: " << valueTypeOS.str() << std::endl;
+        std::cout << "Address of varType->type(context_): "
+                  << static_cast<void *>(varType->type(context_)) << std::endl;
+        std::cout << "Address of valueType: " << static_cast<void *>(valueType)
+                  << std::endl;
+      }
     }
-    // std::cout << varType->name() << " " << fooo->name() << std::flush;
   }
-  */
+
   if (varType->type(context_) == llvm::Type::getVoidTy(*context_)) {
     llvm::report_fatal_error("Cannot assign to type void");
-  }
-  bool isStruct{false};
-  // Si valueType es un puntero, puede ser el constructor de un struct
-  if (valueType->isPointerTy()) {
-    // convierto el tipo de la variable para saber si valueType es un struct
-    llvm::PointerType *expectedType =
-        llvm::PointerType::get(varType->type(context_), 0);
-    if (expectedType == valueType) {
-      isStruct = true;
-    }
-  }
-
-  // Comparamos el tipo base en vez del tipo puntero
-  if (!isStruct && varType->type(context_) != valueType) {
-    auto left = varType->type(context_);
-    std::string typeStr;
-    llvm::raw_string_ostream rso(typeStr);
-    left->print(rso);
-    std::cout << "El tipo de left es: " << rso.str() << std::endl;
-
-    // Imprimir el tipo de valueType después de desreferenciar
-    valueType->print(rso);
-    std::cout << "El tipo de valueType es: " << rso.str() << std::endl;
-
-    llvm::report_fatal_error("Type mismatch");
   }
 
   // Crear la instrucción 'alloca' para reservar espacio para la variable
@@ -118,7 +109,7 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
   builder_.CreateStore(value, alloca);
   const GenericType *type{varType.get()};
   node->table()->addVariable(node->id(), type, value, alloca);
-  std::cout << "id " << node->id() + "\n";
+  // std::cout << "id " << node->id() + "\n";
   // Devolver el valor almacenado
   return nullptr;
 }
@@ -126,13 +117,15 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
 llvm::Value *CodeGeneration::visit(const NodeAutoDeclaration *node) const {
   llvm::Value *value{node->expression()->accept(this)};
   llvm::Type *valueType{value->getType()}; // Tipo de la variable
-  llvm::MDNode *meta = llvm::MDNode::get(*context_, llvm::MDString::get(*context_, "mi_metadata"));
-  // if it is a constructor we cant comapre llvm::PointerType so we need to infer the type from our type table
+  // if it is a constructor we cant comapre llvm::PointerType so we need to
+  // infer the type from our type table
   if (node->expression()->type() == NodeType::CALL_CTR) {
-    auto casted{dynamic_cast<const NodeStructConstructor*>(node->expression())};
+    auto casted{
+        dynamic_cast<const NodeStructConstructor *>(node->expression())};
     valueType = casted->table()->type(casted->id())->type(context_);
   }
-  std::shared_ptr<GenericType> varType{node->typeTable()->keyFromLLVMType(valueType, *context_)};
+  std::shared_ptr<GenericType> varType{
+      node->typeTable()->keyFromLLVMType(valueType, *context_)};
   if (!valueType) {
     llvm::report_fatal_error("valuetype is null");
   }
@@ -177,7 +170,7 @@ llvm::Value *CodeGeneration::visit(const NodeAutoDeclaration *node) const {
 
   // Almacenar el valor en la variable y tambien en la tabla
   builder_.CreateStore(value, alloca);
-  
+
   // std::cout << varType->name() << std::flush;
   std::cout << node->id() << " " << varType->name();
   node->table()->addVariable(node->id(), varType.get(), value, alloca);
@@ -240,6 +233,12 @@ llvm::Value *CodeGeneration::visit(const NodeStructDeclaration *node) const {
     // std::cout << declaration.first << std::flush;
     auto type{node->typeTable()->type(declaration.second)};
     llvm::Type *fieldType = type->type(context_);
+    /*
+    if (fieldType->isStructTy()) {
+      fieldType = llvm::PointerType::get(fieldType, 0);
+      //llvm::report_fatal_error(type->name().c_str());
+    }
+    */
     fieldTypes.push_back(fieldType);
   }
   // Crear el tipo de estructura en LLVM
@@ -249,7 +248,7 @@ llvm::Value *CodeGeneration::visit(const NodeStructDeclaration *node) const {
   auto userType{std::make_shared<UserType>(structName)};
   userType->setAttributes(node->attributes());
   node->typeTable()->addType(userType);
-  
+
   return nullptr;
 }
 
