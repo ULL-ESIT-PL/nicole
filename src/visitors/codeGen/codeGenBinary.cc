@@ -41,7 +41,7 @@ llvm::Value *CodeGeneration::visit(const NodeBinaryOp *node) const {
   case TokenType::OPERATOR_ADD:
     if (leftEvaluated->getType()->isFloatingPointTy()) {
       return builder_.CreateFAdd(leftEvaluated, rightEvaluated, "addtmp");
-    } else {
+    } else if (leftEvaluated->getType()->isIntegerTy(32)) {
       return builder_.CreateAdd(leftEvaluated, rightEvaluated, "addtmp");
     }
   case TokenType::OPERATOR_SUB:
