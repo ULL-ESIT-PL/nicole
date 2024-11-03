@@ -17,3 +17,5 @@ let z: prueba = prueba{10, DD{100}};
 let aux: DD = z.y;
 
 print(aux.x)
+
+print("\n", z.x)

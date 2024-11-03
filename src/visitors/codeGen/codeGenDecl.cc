@@ -14,6 +14,7 @@
 #include "../../../inc/parsingAnalysis/ast/declaration/varReassignment.h"
 #include "../../../inc/parsingAnalysis/ast/statements/statementList.h"
 #include "llvm/ADT/APFloat.h"
+#include "llvm/IR/DataLayout.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Instructions.h"
@@ -32,8 +33,6 @@
 namespace nicole {
 
 llvm::Value *CodeGeneration::visit(const NodeStructSetAttr *node) const {
-  std::cout << "---------\n" << *node->table() << std::flush;
-
   const auto varTable{node->table()};
   if (varTable->isConst(node->id())) {
     llvm::report_fatal_error(
@@ -68,35 +67,24 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
   llvm::Value *value{node->expression()->accept(this)};
   llvm::Type *valueType{value->getType()}; // Tipo de la variable
   auto varType{node->typeTable()->type(node->varType())};
-
-  if (node->expression()->type() == NodeType::STRUCT_ACS) {
-    auto casted{dynamic_cast<const NodeStructAcces *>(node->expression())};
-    auto userType = node->table()->variableType(casted->id());
-    if (auto castUserType = dynamic_cast<const UserType *>(userType)) {
-      auto tpl = castUserType->attribute(casted->attribute());
-      // llvm::report_fatal_error(std::get<2>(tpl).c_str());
-      std::shared_ptr<GenericType> attrType{
-          node->typeTable()->type(std::get<2>(tpl))};
-      if (attrType && attrType->type(context_)->isStructTy()) {
-        // llvm::report_fatal_error(attrType->name().c_str());
-        valueType = attrType->type(context_);
-        value =
-            builder_.CreateLoad(valueType, value, node->id() + "_struct_load");
-        std::string varTypeStr, valueTypeStr;
-        llvm::raw_string_ostream varTypeOS(varTypeStr),
-            valueTypeOS(valueTypeStr);
-        varType->type(context_)->print(varTypeOS);
-        valueType->print(valueTypeOS);
-        std::cout << "varType: " << varTypeOS.str()
-                  << ", valueType: " << valueTypeOS.str() << std::endl;
-        std::cout << "Address of varType->type(context_): "
-                  << static_cast<void *>(varType->type(context_)) << std::endl;
-        std::cout << "Address of valueType: " << static_cast<void *>(valueType)
-                  << std::endl;
-      }
-    }
+  if (auto allo = llvm::dyn_cast<llvm::AllocaInst>(value)) {
+    std::string typeStr;
+    llvm::raw_string_ostream rso(typeStr);
+    allo->getAllocatedType()->print(rso);
+    std::cout << "El tipo de alloca es: " << rso.str() << std::endl;
+  } else if (auto loaded = llvm::dyn_cast<llvm::LoadInst>(value)) {
+    std::string typeStr;
+    llvm::raw_string_ostream rso(typeStr);
+    loaded->getType()->print(rso);
+    valueType = loaded->getType();
+    std::cout << "El tipo de laod es: " << rso.str() << std::endl;
+  } else if (valueType->isStructTy()) {
+    std::string typeStr;
+    llvm::raw_string_ostream rso(typeStr);
+    valueType->print(rso);
+    std::cout << "El tipo de struct es: " << rso.str() << std::endl;
   }
-
+  
   if (varType->type(context_) == llvm::Type::getVoidTy(*context_)) {
     llvm::report_fatal_error("Cannot assign to type void");
   }
