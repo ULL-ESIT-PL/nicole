@@ -78,11 +78,14 @@ llvm::Value *CodeGeneration::visit(const NodeVariableDeclaration *node) const {
     loaded->getType()->print(rso);
     valueType = loaded->getType();
     std::cout << "El tipo de laod es: " << rso.str() << std::endl;
-  } else if (valueType->isStructTy()) {
+  } else if (valueType->isPointerTy()) {
     std::string typeStr;
     llvm::raw_string_ostream rso(typeStr);
-    valueType->print(rso);
-    std::cout << "El tipo de struct es: " << rso.str() << std::endl;
+    valueType = node->typeTable()->type(node->varType())->type(context_);
+    if (valueType->isStructTy()) {
+      valueType->print(rso);
+      std::cout << "El tipo de struct es: " << rso.str() << std::endl;
+    }
   }
   
   if (varType->type(context_) == llvm::Type::getVoidTy(*context_)) {
@@ -232,7 +235,7 @@ llvm::Value *CodeGeneration::visit(const NodeStructDeclaration *node) const {
   // Crear el tipo de estructura en LLVM
   llvm::StructType *structType =
       llvm::StructType::create(*context_, fieldTypes, structName);
-  // ADD TO TABLE ???
+  // ADD TO TABLE
   auto userType{std::make_shared<UserType>(structName)};
   userType->setAttributes(node->attributes());
   node->typeTable()->addType(userType);

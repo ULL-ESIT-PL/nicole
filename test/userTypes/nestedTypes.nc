@@ -2,20 +2,17 @@
 IT FAILS BY TE MOMENT
 */
 
-struct DD {
+struct A {
     x: int
 }
 
-struct prueba {
-    x: int,
-    y: DD
+struct B {
+    y: A
 }
 
-let z: prueba = prueba{10, DD{100}};
+let z: B = B{A{100}};
 
 
-let aux: DD = z.y;
+let aux: A = z.y;
 
-print(aux.x)
-
-print("\n", z.x)
+print(aux.x);

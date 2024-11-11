@@ -16,13 +16,10 @@
 namespace nicole {
 
 llvm::Value *CodeGeneration::visit(const NodeStructConstructor *node) const {
-  //std::cout << "Typeeeeeeeeees"<< node->table()->areTypesEquivalent(
-  //    node->table()->type("pointD")->type(context_),
-  //    node->table()->type("str")->type(context_)) << std::flush;
   const auto userType{
       dynamic_cast<const UserType *>(node->table()->type(node->id()).get())};
   llvm::AllocaInst *structAlloc{
-      builder_.CreateAlloca(userType->type(context_), nullptr, node->id())};
+      builder_.CreateAlloca(userType->type(context_), nullptr, node->id() + ".struct")};
   std::vector<llvm::Value *> fields{};
   const auto params{node->parameters()};
   for (size_t i{0}; i < params.size(); ++i) {
@@ -37,17 +34,13 @@ llvm::Value *CodeGeneration::visit(const NodeStructConstructor *node) const {
 }
 
 llvm::Value *CodeGeneration::visit(const NodeStructAcces *node) const {
-  // std::cout << "---------\n" << *node->table() << std::flush;
-
   const auto varTable{node->table()};
-  //std::cout << "+++++++" << varTable->variableType(node->id())->name() << std::flush;
   auto structType{node->typeTable()
                       ->type(varTable->variableType(node->id())->name())
                       .get()};
-  //std::cout << "||||" << structType->name() + " " << std::flush;
   const auto structTypeCasted = dynamic_cast<const UserType *>(structType);
   if (!structTypeCasted) {
-    llvm::report_fatal_error("hola");
+    llvm::report_fatal_error("Tipo de estructura no válido");
   }
   const auto index{structTypeCasted->attribute(node->attribute())};
   // Obtener el puntero al objeto de la estructura
@@ -62,7 +55,7 @@ llvm::Value *CodeGeneration::visit(const NodeStructAcces *node) const {
   llvm::Type *fieldType =
       structType->type(context_)->getStructElementType(std::get<0>(index));
   if (fieldType->isStructTy()) {
-    return fieldPtr;
+    return fieldPtr;  // Retornamos el puntero a la estructura anidada
   }
   return builder_.CreateLoad(fieldType, fieldPtr, node->attribute() + "Temp");
 }
