@@ -64,7 +64,7 @@ WARNING: Currently translation to machine code is commented, to develope faster 
 
 ## Features yet to implement
 
-- Better error messages (missing print more than one error per compilation)
+- Better error messages
 
 - Vectors / Array
 
@@ -87,8 +87,6 @@ WARNING: Currently translation to machine code is commented, to develope faster 
 - Optimization analysis (let the user decide between differnt levels, Default, None, Agressive...)
 
 - System calls
-
-- Garbage recollector for variable lifetime
 
 - Threads (not sure)
 
