@@ -1,6 +1,21 @@
 # Minimum CMake version
 cmake_minimum_required(VERSION 3.10)
 
+# Detectar y configurar el compilador
+if(NOT DEFINED CMAKE_CXX_COMPILER)
+    find_program(CLANG_COMPILER clang++)
+    if(CLANG_COMPILER)
+        set(CMAKE_CXX_COMPILER "${CLANG_COMPILER}" CACHE STRING "C++ compiler" FORCE)
+    else()
+        find_program(GNU_COMPILER g++)
+        if(GNU_COMPILER)
+            set(CMAKE_CXX_COMPILER "${GNU_COMPILER}" CACHE STRING "C++ compiler" FORCE)
+        else()
+            message(FATAL_ERROR "No se encontró un compilador compatible (clang++ o g++).")
+        endif()
+    endif()
+endif()
+
 # Project name
 project(MyProject LANGUAGES CXX)
 
@@ -9,9 +24,9 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Check if Clang is being used, and if not, set it as the default
-if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_COMPILER "clang++")
-endif()
+#if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+#    set(CMAKE_CXX_COMPILER "clang++")
+#endif()
 
 # Get LLVM configuration using llvm-config
 execute_process(

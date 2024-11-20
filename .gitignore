@@ -1,2 +1,3 @@
 # for anyone using cmake
 build/
+.cache/
