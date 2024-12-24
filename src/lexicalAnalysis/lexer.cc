@@ -1,11 +1,9 @@
 #include "../../inc/lexicalAnalysis/lexer.h"
 #include <cstddef>
+#include <expected>
 #include <regex>
 
 namespace nicole {
-
-Lexer::Lexer(const std::vector<Category> &categories)
-    : categories_{categories} {}
 
 Category Lexer::concatCategories() const {
   std::string pattern{""};
@@ -16,7 +14,8 @@ Category Lexer::concatCategories() const {
   return Category{TokenType::ALL, pattern, false};
 }
 
-void Lexer::checkUnmatched(const std::vector<Token> &tokens) const {
+std::expected<void, Error>
+Lexer::checkUnmatched(const std::vector<Token> &tokens) const {
   bool unmatchedFlag{false};
   std::string everyUnmatched{"Unmatched tokens:\n"};
   for (const auto &TOKEN : tokens) {
@@ -26,15 +25,19 @@ void Lexer::checkUnmatched(const std::vector<Token> &tokens) const {
     }
   }
   if (unmatchedFlag) {
-    llvm::report_fatal_error(everyUnmatched.c_str());
+    return std::unexpected{Error{ERROR_TYPE::CHECK_UNMATCHED, everyUnmatched}};
   }
+  return std::expected<void, Error>{};
 }
 
-std::string Lexer::readFile(const std::filesystem::path &fileName) const {
-  const std::regex fileNameFormat{"[a-zA-Z]+[a-zA-Z0-9]*\\.nc", std::regex_constants::optimize};
+std::expected<std::string, Error>
+Lexer::readFile(const std::filesystem::path &fileName) const {
+  const std::regex fileNameFormat{"[a-zA-Z]+[a-zA-Z0-9]*\\.nc",
+                                  std::regex_constants::optimize};
   // method fileName returns just the file
   if (!std::regex_match(fileName.filename().string(), fileNameFormat)) {
-    const std::string strErr{"The file " + fileName.string() + " does not have extension: nc"};
+    const std::string strErr{"The file " + fileName.string() +
+                             " does not have extension: nc"};
     llvm::report_fatal_error(strErr.c_str());
   }
   std::fstream file{fileName};
@@ -51,14 +54,17 @@ std::string Lexer::readFile(const std::filesystem::path &fileName) const {
   return text;
 }
 
-TokenStream Lexer::analyze(const std::filesystem::path &fileName,
-                           bool verbose) const {
-  const std::string TEXT{readFile(fileName)};
+std::expected<TokenStream, Error>
+Lexer::analyze(const std::filesystem::path &fileName, bool verbose) const {
+  const std::expected<std::string, Error> TEXT{readFile(fileName)};
+  if (!TEXT) {
+    return std::unexpected{TEXT.error()};
+  }
   const Category expression{concatCategories()};
   std::vector<Token> result{};
   std::string::const_iterator start, end, lastMatchEnd;
-  start = TEXT.begin();
-  end = TEXT.end();
+  start = TEXT->begin();
+  end = TEXT->end();
   lastMatchEnd = start;
   std::match_results<std::string::const_iterator> what;
   std::size_t row{1};
@@ -128,7 +134,10 @@ TokenStream Lexer::analyze(const std::filesystem::path &fileName,
     result.push_back(
         Token{TokenType::UNMATCHED, UNMATCHED, Location{fileName, row, col}});
   }
-  checkUnmatched(result);
+  const std::expected<void, Error> check{checkUnmatched(result)};
+  if (!check) {
+    return std::unexpected{check.error()};
+  }
   return TokenStream{result};
 }
 

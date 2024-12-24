@@ -75,7 +75,8 @@ enum class TokenType {
   ALL
 };
 
-std::string tokenTypeToString(const TokenType &tk);
+[[nodiscard]] std::string tokenTypeToString(const TokenType &tk);
+
 } // namespace nicole
 
 #endif

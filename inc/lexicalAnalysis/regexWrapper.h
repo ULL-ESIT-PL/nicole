@@ -15,15 +15,15 @@ private:
   std::regex pattern_{""};
 
 public:
-  RegexWrapper(const std::string &rawPattern)
+  explicit RegexWrapper(const std::string &rawPattern) noexcept
       : rawPattern_{rawPattern},
         pattern_{rawPattern, std::regex_constants::optimize} {};
 
-  std::string str() const { return rawPattern_; }
+  [[nodiscard]] std::string str() const { return rawPattern_; }
 
-  std::regex pattern() const { return pattern_; }
+  [[nodiscard]] std::regex pattern() const { return pattern_; }
 
-  bool match(const std::string &str) const {
+  [[nodiscard]] bool match(const std::string &str) const {
     return std::regex_match(str, pattern_);
   }
 };

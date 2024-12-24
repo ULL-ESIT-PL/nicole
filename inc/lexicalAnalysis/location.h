@@ -1,7 +1,6 @@
 #ifndef LOCATION_H
 #define LOCATION_H
 
-#include <cstddef>
 #include <filesystem>
 
 namespace nicole {
@@ -14,14 +13,15 @@ private:
   std::size_t col_{0};
 
 public:
-  Location(const std::filesystem::path &file, std::size_t row, std::size_t col)
+  explicit Location(const std::filesystem::path &file, std::size_t row,
+                    std::size_t col) noexcept
       : file_{file}, row_{row}, col_{col} {};
 
-  std::filesystem::path file() const { return file_; }
+  [[nodiscard]] std::filesystem::path file() const { return file_; }
 
-  std::size_t row() const { return row_; }
+  [[nodiscard]] std::size_t row() const { return row_; }
 
-  std::size_t col() const { return col_; }
+  [[nodiscard]] std::size_t col() const { return col_; }
 };
 
 } // namespace nicole

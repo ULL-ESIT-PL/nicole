@@ -8,9 +8,9 @@ namespace nicole {
 // The sintax used for the Nicole language
 class NicoleSintax final : public Sintax {
  public:
-  NicoleSintax() = default;
+  explicit NicoleSintax() noexcept = default;
 
-  Lexer createLexer() const override;
+  [[nodiscard]] Lexer createLexer() const override;
 };
 
 }  // namespace nicole

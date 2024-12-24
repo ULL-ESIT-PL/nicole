@@ -23,10 +23,24 @@ project(MyProject LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Check if Clang is being used, and if not, set it as the default
-#if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-#    set(CMAKE_CXX_COMPILER "clang++")
-#endif()
+# Detectar el compilador
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(COMPILER_WARNINGS "-Wall -Wextra -Werror -Wpedantic \
+                           -Wshadow -Wnon-virtual-dtor -Wold-style-cast \
+                           -Wcast-align -Wunused -Woverloaded-virtual \
+                           -Wconversion -Wsign-conversion -Wnull-dereference \
+                           -Wdouble-promotion -Wformat=2 -Wmisleading-indentation")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(COMPILER_WARNINGS "-Wall -Wextra -Werror -Wpedantic \
+                           -Wshadow -Wnon-virtual-dtor -Wold-style-cast \
+                           -Wcast-align -Wunused -Woverloaded-virtual \
+                           -Wconversion -Wsign-conversion -Wnull-dereference \
+                           -Wdouble-promotion -Wformat=2 -Wmisleading-indentation \
+                           -Wduplicated-cond -Wduplicated-branches -Wlogical-op \
+                           -Wuseless-cast")
+else()
+    message(WARNING "No se aplicaron flags específicos para el compilador.")
+endif()
 
 # Get LLVM configuration using llvm-config
 execute_process(
@@ -54,7 +68,7 @@ execute_process(
 )
 
 # Set compiler and linker flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O3 ${LLVM_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O3 ${COMPILER_WARNINGS} ${LLVM_CXX_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LLVM_LDFLAGS} ${LLVM_SYSTEM_LIBS} ${LLVM_LIBS}")
 
 # Source files
@@ -64,29 +78,29 @@ set(SRC_FILES
     src/lexicalAnalysis/tokenStream.cc
     src/lexicalAnalysis/lexer.cc
     src/lexicalAnalysis/nicoleSintax.cc
-    src/parsingAnalysis/ast/nodeType.cc
-    src/parsingAnalysis/ast/literals/nodeLiteralChar.cc
-    src/parsingAnalysis/ast/literals/nodeLiteralString.cc
-    src/parsingAnalysis/ast/declaration/varTable.cc
-    src/parsingAnalysis/ast/declaration/functionTable.cc
-    src/parsingAnalysis/ast/utils/convert.cc
-    src/parsingAnalysis/types/typeTable.cc
-    src/parsingAnalysis/parsingAlgorithms/topDown.cc
-    src/parsingAnalysis/parsingAlgorithms/productions/parseBinary.cc
-    src/parsingAnalysis/parsingAlgorithms/productions/parseFactor.cc
-    src/parsingAnalysis/parsingAlgorithms/productions/parseUtils.cc
-    src/parsingAnalysis/parsingAlgorithms/productions/parseLoop.cc
-    src/parsingAnalysis/parsingAlgorithms/productions/parseConditional.cc
-    src/parsingAnalysis/parsingAlgorithms/productions/parseDecl.cc
-    src/visitors/codeGen/codeGeneration.cc
-    src/visitors/codeGen/codeGenFactor.cc
-    src/visitors/codeGen/codeGenLoop.cc
-    src/visitors/codeGen/codeGenConditional.cc
-    src/visitors/codeGen/codeGenBinary.cc
-    src/visitors/codeGen/codeGenDecl.cc
-    src/visitors/codeGen/codeGenCall.cc
-    src/visitors/codeGen/codeGenUtils.cc
-    src/visitors/printTree.cc
+   # src/parsingAnalysis/ast/nodeType.cc
+   # src/parsingAnalysis/ast/literals/nodeLiteralChar.cc
+   # src/parsingAnalysis/ast/literals/nodeLiteralString.cc
+   # src/parsingAnalysis/ast/declaration/varTable.cc
+   #  src/parsingAnalysis/ast/declaration/functionTable.cc
+   #  src/parsingAnalysis/ast/utils/convert.cc
+   #  src/parsingAnalysis/types/typeTable.cc
+   #  src/parsingAnalysis/parsingAlgorithms/topDown.cc
+   #  src/parsingAnalysis/parsingAlgorithms/productions/parseBinary.cc
+   #  src/parsingAnalysis/parsingAlgorithms/productions/parseFactor.cc
+   #  src/parsingAnalysis/parsingAlgorithms/productions/parseUtils.cc
+   #  src/parsingAnalysis/parsingAlgorithms/productions/parseLoop.cc
+   #  src/parsingAnalysis/parsingAlgorithms/productions/parseConditional.cc
+   #  src/parsingAnalysis/parsingAlgorithms/productions/parseDecl.cc
+   #  src/visitors/codeGen/codeGeneration.cc
+   #  src/visitors/codeGen/codeGenFactor.cc
+   #  src/visitors/codeGen/codeGenLoop.cc
+   #  src/visitors/codeGen/codeGenConditional.cc
+   #  src/visitors/codeGen/codeGenBinary.cc
+   #  src/visitors/codeGen/codeGenDecl.cc
+   #  src/visitors/codeGen/codeGenCall.cc
+   #  src/visitors/codeGen/codeGenUtils.cc
+   #  src/visitors/printTree.cc
 )
 
 # Output directories

@@ -18,16 +18,16 @@ private:
   std::vector<Category> categories_{};
 
   // makes a category that matches with every token of our sintax
-  Category concatCategories() const;
+  [[nodiscard]] Category concatCategories() const;
 
-  std::string readFile(const std::filesystem::path &fileName) const;
+  [[nodiscard]] std::expected<std::string, Error> readFile(const std::filesystem::path &fileName) const;
 
-  void checkUnmatched(const std::vector<Token> &tokens) const;
+  [[nodiscard]] std::expected<void, Error> checkUnmatched(const std::vector<Token> &tokens) const;
 
 public:
-  Lexer(const std::vector<Category> &categories);
+  explicit Lexer(const std::vector<Category> &categories) noexcept : categories_{categories} {};
 
-  TokenStream analyze(const std::filesystem::path &fileName,
+  [[nodiscard]] std::expected<TokenStream, Error> analyze(const std::filesystem::path &fileName,
                              bool verbose = false) const;
 };
 

@@ -1,35 +1,45 @@
 #include "../../inc/lexicalAnalysis/tokeStream.h"
 #include <cstddef>
+#include <expected>
 #include <limits>
 
 namespace nicole {
 
-void TokenStream::eat() const {
+std::expected<void, Error> TokenStream::eat() const {
   if (currentPos_ <= tokens_.size()) {
     ++currentPos_;
-    return;
+    return std::expected<void, Error>{};
   }
-  llvm::report_fatal_error("Error: invalid access to tokens while eating");
+  return std::unexpected{
+      Error{ERROR_TYPE::EAT, "invalid access to tokens while eating"}};
+  // llvm::report_fatal_error("Error: invalid access to tokens while eating");
 }
 
 bool TokenStream::isEnd() const { return currentPos_ == tokens_.size(); }
 
-Token TokenStream::current() const {
+std::expected<Token, Error> TokenStream::current() const {
   if (currentPos_ < tokens_.size())
     return tokens_[currentPos_];
-  llvm::report_fatal_error("Error: invalid access to tokens");
+  // llvm::report_fatal_error("Error: invalid access to tokens");
+  return std::unexpected{
+      Error{ERROR_TYPE::CURRENT, "invalid access to tokens"}};
 }
 
-Token TokenStream::lookAhead(const size_t pos) const {
+std::expected<Token, Error> TokenStream::lookAhead(const size_t pos) const {
   if (currentPos_ + pos < tokens_.size())
     return tokens_[currentPos_ + pos];
-  llvm::report_fatal_error("Error: invalid access to tokens");
+  // llvm::report_fatal_error("Error: invalid access to tokens");
+  return std::unexpected{
+      Error{ERROR_TYPE::LOOK_AHEAD, "invalid access to tokens"}};
 }
 
-bool TokenStream::isCurrentTokenType(const TokenType type) const {
+std::expected<bool, Error>
+TokenStream::isCurrentTokenType(const TokenType type) const {
   if (currentPos_ < tokens_.size())
     return tokens_[currentPos_].type() == type;
-  llvm::report_fatal_error("Error: invalid access to tokens");
+  // llvm::report_fatal_error("Error: invalid access to tokens");
+  return std::unexpected{
+      Error{ERROR_TYPE::IS_CURRENT_TOKEN_TYPE, "invalid access to tokens"}};
 }
 
 bool TokenStream::isTokenAheadBeforeSemicolon(const TokenType type) const {
@@ -47,12 +57,14 @@ bool TokenStream::isTokenAheadBeforeSemicolon(const TokenType type) const {
   return foundToken;
 }
 
-void TokenStream::insertAfter(const TokenStream &tkStream, size_t pos) const {
+std::expected<void, Error> TokenStream::insertAfter(const TokenStream &tkStream,
+                                                    const size_t pos) const {
   if (pos == std::numeric_limits<int>::infinity()) {
-    pos = currentPos_;
+    return std::unexpected{Error{ERROR_TYPE::INSERT_AFTER,
+                                 "cannot insert after the given position"}};
   }
-  tokens_.insert(tokens_.begin() + pos, tkStream.begin(),
-                 tkStream.end());
+  tokens_.insert(tokens_.begin() + static_cast<long>(pos), tkStream.begin(), tkStream.end());
+  return std::expected<void, Error>{};
 }
 
 } // namespace nicole
