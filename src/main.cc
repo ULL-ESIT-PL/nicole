@@ -15,6 +15,9 @@ int main(int argc, char *argv[]) {
   const nicole::Lexer lexer{sintax->createLexer()};
 
   auto result{lexer.analyze(path)};
+  if (!result) {
+    std::cerr << result.error() << "\n";
+  }
   for (const auto &token : *result) {
     std::cout << "Type: " << nicole::tokenTypeToString(token.type())
               << " ---> Raw: " << token.raw()
