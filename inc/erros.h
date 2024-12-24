@@ -6,6 +6,12 @@
 namespace nicole {
 
 enum class ERROR_TYPE {
+  // Options
+  MISSING_ARGUMENTS,
+  MISSING_BINARY_NAME,
+  MISSING_ENTRY_FILE,
+  ENTRY_FILE_NOT_FOUND,
+  UNKOWN_ARGUMENT,
 
   // Lexer
   CHECK_UNMATCHED,
@@ -23,6 +29,18 @@ enum class ERROR_TYPE {
 
 [[nodiscard]] inline std::string errorToStr(const ERROR_TYPE type) {
   switch (type) {
+  // Options
+  case ERROR_TYPE::MISSING_ARGUMENTS:
+    return "MISSING_ARGUMENTS";
+  case ERROR_TYPE::MISSING_BINARY_NAME:
+    return "MISSING_BINARY_NAME";
+  case ERROR_TYPE::MISSING_ENTRY_FILE:
+    return "MISSING_ENTRY_FILE";
+  case ERROR_TYPE::ENTRY_FILE_NOT_FOUND:
+    return "ENTRY_FILE_NOT_FOUND";
+  case ERROR_TYPE::UNKOWN_ARGUMENT:
+    return "UNKOWN_ARGUMENT";
+
   // Lexer
   case ERROR_TYPE::CHECK_UNMATCHED:
     return "CHECK_UNMATCHED";

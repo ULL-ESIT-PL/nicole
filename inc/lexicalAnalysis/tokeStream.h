@@ -13,7 +13,7 @@
 namespace nicole {
 
 // represents the tokens returned by the lexer
-class TokenStream {
+class TokenStream final {
 private:
   mutable std::vector<Token> tokens_{};
   mutable std::size_t currentPos_{0};

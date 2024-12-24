@@ -1,23 +1,32 @@
 #include "../inc/lexicalAnalysis/nicoleSintax.h"
-#include <filesystem>
+#include "../inc/options/optionsParser.h"
+#include <cstdlib>
 
 // Just creates a main function for our program like a wrapper
 int main(int argc, char *argv[]) {
-  if (argc != 2) {
-    std::cerr << "Just need to specify one file.nc\n";
+  const std::vector<std::string_view> arguments(argv + 1, argv + argc);
+  std::expected<nicole::Options, nicole::Error> options{
+      nicole::OptionParser::parse(arguments)};
+
+  if (!options) {
+    std::cerr << options.error() << "\n";
     return 1;
+  } else if (options->help()) {
+    // Mostrar help
+    return EXIT_SUCCESS;
   }
 
-  const std::filesystem::path path{argv[1]};
-  std::shared_ptr<nicole::Sintax> sintax{
+  const std::shared_ptr<nicole::Sintax> sintax{
       std::make_shared<nicole::NicoleSintax>()};
-
   const nicole::Lexer lexer{sintax->createLexer()};
+  const std::expected<nicole::TokenStream, nicole::Error> result{
+      lexer.analyze(options->entryFilePath())};
 
-  auto result{lexer.analyze(path)};
   if (!result) {
     std::cerr << result.error() << "\n";
+    return 2;
   }
+
   for (const auto &token : *result) {
     std::cout << "Type: " << nicole::tokenTypeToString(token.type())
               << " ---> Raw: " << token.raw()

@@ -13,4 +13,4 @@ make
 
 cd ..
 
-./build/bin/binaries "$1"
+./build/bin/binaries "$@"

@@ -74,6 +74,9 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LLVM_LDFLAGS} ${LLVM_SYS
 # Source files
 set(SRC_FILES
     src/main.cc
+    # Options
+    src/options/optionsParser.cc
+    # Lexer
     src/lexicalAnalysis/type.cc
     src/lexicalAnalysis/tokenStream.cc
     src/lexicalAnalysis/lexer.cc
