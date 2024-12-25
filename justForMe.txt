@@ -10,3 +10,11 @@ int main() {
 }
 
 clang++ m.cc output.o -o main
+
+
+
+
+
+
+
+# clang++ -std=c++23 -g -O3 $(llvm-config --cxxflags) -o programa test/test.cc $(llvm-config --ldflags) $(llvm-config --libs core)
