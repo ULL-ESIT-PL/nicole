@@ -1,6 +1,10 @@
 # Minimum CMake version
 cmake_minimum_required(VERSION 3.10)
 
+# usar en la linea de comandos para generar compile_commands.json y que .clangd detecte catch2
+# cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
+
+
 # Detectar y configurar el compilador
 if(NOT DEFINED CMAKE_CXX_COMPILER)
     find_program(CLANG_COMPILER clang++)
@@ -55,7 +59,9 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 
-add_executable(tests test/test.cc)
+add_executable(tests test/test.cc
+    test/test1.cc
+)
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)

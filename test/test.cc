@@ -13,5 +13,5 @@ TEST_CASE( "Factorials are computed", "[factorial]" ) {
     REQUIRE( factorial(10) == 3'628'800 );
     REQUIRE( nicole::Location{"", 10, 10}.col() == 10);
     REQUIRE( nicole::Location{"", 10, 10}.col() == 10);
-    REQUIRE( nicole::Location{"", 10, 10}.col() == 10);
+    REQUIRE( nicole::Location{"", 10, 10}.col() == 10); 
 } 
