@@ -6,7 +6,7 @@
 int main(int argc, char *argv[]) {
   const std::vector<std::string_view> arguments(argv + 1, argv + argc);
   std::expected<nicole::Options, nicole::Error> options{
-      nicole::OptionParser::parse(arguments)};
+      nicole::OptionsParser::parse(arguments)};
 
   if (!options) {
     std::cerr << options.error() << "\n";

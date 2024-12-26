@@ -4,7 +4,7 @@
 
 namespace nicole {
 
-bool OptionParser::isOption(const std::string_view argument) {
+bool OptionsParser::isOption(const std::string_view argument) {
   if (argument == "-o" or argument == "--optimize" or argument == "-n" or
       argument == "--name" or argument == "-h" or argument == "--help") {
     return true;
@@ -13,13 +13,7 @@ bool OptionParser::isOption(const std::string_view argument) {
 }
 
 std::expected<Options, Error>
-OptionParser::parse(const std::vector<std::string_view> &arguments) {
-  bool help{false};
-  bool optimize{false};
-  std::string binaryName{"a.out"};
-  std::filesystem::path entryFilePath{""};
-
-  bool entryFileParsed{false};
+OptionsParser::parse(const std::vector<std::string_view> &arguments) {
   const std::size_t size{arguments.size()};
 
   if (!size) {
@@ -28,10 +22,18 @@ OptionParser::parse(const std::vector<std::string_view> &arguments) {
               "at least must give the name of the entry file"}};
   }
 
+  bool help{false}; 
+  bool optimize{false};
+  std::string binaryName{"a.out"};
+  std::filesystem::path entryFilePath{""};
+
+  bool entryFileParsed{false};
+
   for (std::size_t i{0}; i < size; ++i) {
     const std::string_view argument{arguments[i]};
     if (argument == "-h" or argument == "--help") {
       help = true;
+      // break; not using break in case that we let the user use help and execute
     } else if (argument == "-o" or argument == "--optimize") {
       optimize = true;
     } else if (argument == "-n" or argument == "--name") {
@@ -50,8 +52,8 @@ OptionParser::parse(const std::vector<std::string_view> &arguments) {
       entryFileParsed = true;
     }
   }
-
-  if (entryFilePath.empty()) {
+  // in case that help exists we skip the error
+  if (entryFilePath.empty() and !help) {
     return std::unexpected{
         Error{ERROR_TYPE::MISSING_ENTRY_FILE, "must specify the entry file"}};
   }

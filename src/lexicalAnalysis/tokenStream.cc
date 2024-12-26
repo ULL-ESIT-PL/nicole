@@ -6,7 +6,7 @@
 namespace nicole {
 
 std::expected<void, Error> TokenStream::eat() const {
-  if (currentPos_ <= tokens_.size()) {
+  if (currentPos_ < tokens_.size()) {
     ++currentPos_;
     return std::expected<void, Error>{};
   }

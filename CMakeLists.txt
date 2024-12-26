@@ -65,14 +65,26 @@ add_executable(tests
     # options
     test/options/test_options.cc
     test/options/test_optionsParser.cc
+    src/options/optionsParser.cc
     # lexicalAnalysis
     test/lexicalAnalysis/test_category.cc
+
     test/lexicalAnalysis/test_lexer.cc
+    src/lexicalAnalysis/lexer.cc
+    src/lexicalAnalysis/type.cc
+    
     test/lexicalAnalysis/test_location.cc
+    
     test/lexicalAnalysis/test_regexWrapper.cc
+    
     test/lexicalAnalysis/test_sintax.cc
+    src/lexicalAnalysis/nicoleSintax.cc
+    
     test/lexicalAnalysis/test_token.cc
+    
     test/lexicalAnalysis/test_tokenStream.cc
+    src/lexicalAnalysis/tokenStream.cc
+    
     test/lexicalAnalysis/test_type.cc
 )
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)

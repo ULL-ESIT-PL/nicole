@@ -1,5 +1,5 @@
-#ifndef OPTION_PARSER_H
-#define OPTION_PARSER_H
+#ifndef OPTIONS_PARSER_H
+#define OPTIONS_PARSER_H
 
 #include "../errors.h"
 #include "options.h"
@@ -9,9 +9,9 @@
 
 namespace nicole {
 
-class OptionParser final {
+class OptionsParser final {
 private:
-  OptionParser() = delete;
+  OptionsParser() = delete;
 
   [[nodiscard]] static bool isOption(const std::string_view argument);
 

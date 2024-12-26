@@ -72,6 +72,10 @@ public:
   explicit Error(const ERROR_TYPE type, const std::string &info) noexcept
       : type_{type}, info_{info} {}
 
+  [[nodiscard]] ERROR_TYPE type() const { return type_; }
+
+  [[nodiscard]] std::string info() const { return info_; }
+
   friend std::ostream &operator<<(std::ostream &os, const Error &error) {
     return os << "Error " << errorToStr(error.type_) << ": " << error.info_;
   }
