@@ -1,4 +1,4 @@
-#include "../../inc/lexicalAnalysis/tokeStream.h"
+#include "../../inc/lexicalAnalysis/tokenStream.h"
 #include <cstddef>
 #include <expected>
 #include <limits>

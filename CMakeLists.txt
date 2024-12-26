@@ -59,8 +59,21 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 
-add_executable(tests test/test.cc
-    test/test1.cc
+add_executable(tests
+    # errors
+    test/errors/test_error.cc
+    # options
+    test/options/test_options.cc
+    test/options/test_optionsParser.cc
+    # lexicalAnalysis
+    test/lexicalAnalysis/test_category.cc
+    test/lexicalAnalysis/test_lexer.cc
+    test/lexicalAnalysis/test_location.cc
+    test/lexicalAnalysis/test_regexWrapper.cc
+    test/lexicalAnalysis/test_sintax.cc
+    test/lexicalAnalysis/test_token.cc
+    test/lexicalAnalysis/test_tokenStream.cc
+    test/lexicalAnalysis/test_type.cc
 )
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 

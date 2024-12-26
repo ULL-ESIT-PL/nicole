@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "category.h"
-#include "tokeStream.h"
+#include "tokenStream.h"
 
 namespace nicole {
 

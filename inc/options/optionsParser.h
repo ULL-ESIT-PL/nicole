@@ -1,7 +1,7 @@
 #ifndef OPTION_PARSER_H
 #define OPTION_PARSER_H
 
-#include "../erros.h"
+#include "../errors.h"
 #include "options.h"
 #include <expected>
 #include <string_view>

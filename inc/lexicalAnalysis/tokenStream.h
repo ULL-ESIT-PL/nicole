@@ -1,7 +1,7 @@
-#ifndef TOKE_STREAM_H
-#define TOKE_STREAM_H
+#ifndef TOKEN_STREAM_H
+#define TOKEN_STREAM_H
 
-#include "../erros.h"
+#include "../errors.h"
 #include "token.h"
 #include "type.h"
 #include <cstddef>

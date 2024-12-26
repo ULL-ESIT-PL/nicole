@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
   }
 
   const std::shared_ptr<nicole::Sintax> sintax{
-      std::make_shared<nicole::NicoleSintax>()}; 
+      std::make_shared<nicole::NicoleSintax>()};
   const nicole::Lexer lexer{sintax->createLexer()};
   const std::expected<nicole::TokenStream, nicole::Error> result{
       lexer.analyze(options->entryFilePath())};
