@@ -56,6 +56,7 @@ Lexer NicoleSintax::createLexer() const {
       Category{TokenType::METHOD, "method", false},
       Category{TokenType::ATTR, "attr", false},
       Category{TokenType::THIS, "this", false},
+      Category{TokenType::OVERRIDE, "override", false},
 
       Category{TokenType::SUPER, "super", false},
 
