@@ -25,12 +25,6 @@
 },
 {
   "directory": "/home/evian/Escritorio/nicole",
-  "command": "/usr/bin/clang++  -I/home/evian/Escritorio/nicole/src -I/home/evian/Escritorio/nicole/_deps/catch2-src/src/catch2/.. -I/home/evian/Escritorio/nicole/_deps/catch2-build/generated-includes  -g -O3 -Wall -Wextra -Werror -Wpedantic                            -Wshadow -Wnon-virtual-dtor -Wold-style-cast                            -Wcast-align -Wunused -Woverloaded-virtual                            -Wconversion -Wsign-conversion -Wnull-dereference                            -Wdouble-promotion -Wformat=2 -Wmisleading-indentation -I/usr/include -std=c++17    -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++23 -o CMakeFiles/tests.dir/src/utils/utils.cc.o -c /home/evian/Escritorio/nicole/src/utils/utils.cc",
-  "file": "/home/evian/Escritorio/nicole/src/utils/utils.cc",
-  "output": "CMakeFiles/tests.dir/src/utils/utils.cc.o"
-},
-{
-  "directory": "/home/evian/Escritorio/nicole",
   "command": "/usr/bin/clang++  -I/home/evian/Escritorio/nicole/src -I/home/evian/Escritorio/nicole/_deps/catch2-src/src/catch2/.. -I/home/evian/Escritorio/nicole/_deps/catch2-build/generated-includes  -g -O3 -Wall -Wextra -Werror -Wpedantic                            -Wshadow -Wnon-virtual-dtor -Wold-style-cast                            -Wcast-align -Wunused -Woverloaded-virtual                            -Wconversion -Wsign-conversion -Wnull-dereference                            -Wdouble-promotion -Wformat=2 -Wmisleading-indentation -I/usr/include -std=c++17    -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++23 -o CMakeFiles/tests.dir/test/lexicalAnalysis/test_category.cc.o -c /home/evian/Escritorio/nicole/test/lexicalAnalysis/test_category.cc",
   "file": "/home/evian/Escritorio/nicole/test/lexicalAnalysis/test_category.cc",
   "output": "CMakeFiles/tests.dir/test/lexicalAnalysis/test_category.cc.o"
@@ -112,12 +106,6 @@
   "command": "/usr/bin/clang++  -I/home/evian/Escritorio/nicole/src  -g -O3 -Wall -Wextra -Werror -Wpedantic                            -Wshadow -Wnon-virtual-dtor -Wold-style-cast                            -Wcast-align -Wunused -Woverloaded-virtual                            -Wconversion -Wsign-conversion -Wnull-dereference                            -Wdouble-promotion -Wformat=2 -Wmisleading-indentation -I/usr/include -std=c++17    -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++23 -o CMakeFiles/binaries.dir/src/options/optionsParser.cc.o -c /home/evian/Escritorio/nicole/src/options/optionsParser.cc",
   "file": "/home/evian/Escritorio/nicole/src/options/optionsParser.cc",
   "output": "CMakeFiles/binaries.dir/src/options/optionsParser.cc.o"
-},
-{
-  "directory": "/home/evian/Escritorio/nicole",
-  "command": "/usr/bin/clang++  -I/home/evian/Escritorio/nicole/src  -g -O3 -Wall -Wextra -Werror -Wpedantic                            -Wshadow -Wnon-virtual-dtor -Wold-style-cast                            -Wcast-align -Wunused -Woverloaded-virtual                            -Wconversion -Wsign-conversion -Wnull-dereference                            -Wdouble-promotion -Wformat=2 -Wmisleading-indentation -I/usr/include -std=c++17    -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++23 -o CMakeFiles/binaries.dir/src/utils/utils.cc.o -c /home/evian/Escritorio/nicole/src/utils/utils.cc",
-  "file": "/home/evian/Escritorio/nicole/src/utils/utils.cc",
-  "output": "CMakeFiles/binaries.dir/src/utils/utils.cc.o"
 },
 {
   "directory": "/home/evian/Escritorio/nicole",
