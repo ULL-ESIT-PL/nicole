@@ -17,7 +17,7 @@ Category Lexer::concatCategories() const {
 std::expected<void, Error>
 Lexer::checkUnmatched(const std::vector<Token> &tokens) const {
   bool unmatchedFlag{false};
-  std::string everyUnmatched{"Unmatched tokens:\n"};
+  std::string everyUnmatched{"Unmatched tokens:\n"}; 
   for (const auto &TOKEN : tokens) {
     if (TOKEN.type() == TokenType::UNMATCHED) {
       everyUnmatched += TOKEN.raw() + "\n";
@@ -36,14 +36,16 @@ Lexer::readFile(const std::filesystem::path &fileName) const {
                                   std::regex_constants::optimize};
   // method fileName returns just the file
   if (!std::regex_match(fileName.filename().string(), fileNameFormat)) {
-    const std::string strErr{"The file " + fileName.string() +
-                             " does not have extension: nc"};
-    llvm::report_fatal_error(strErr.c_str());
+    return std::unexpected{
+        Error{ERROR_TYPE::FILE_EXTENSION, "The file " + fileName.string() +
+                                              " does not have extension: nc"}};
   }
   std::fstream file{fileName};
   if (!file.is_open()) {
     const std::string strErr{"The file " + fileName.string() + " is not open"};
-    llvm::report_fatal_error(strErr.c_str());
+    return std::unexpected{
+        Error{ERROR_TYPE::FILE_NOT_OPEN,
+              "The file " + fileName.string() + " is not open"}};
   }
   std::string text{""};
   std::string line{""};

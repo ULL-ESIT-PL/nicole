@@ -10,7 +10,7 @@ namespace nicole {
 enum class TokenType {
   SPACE,
   COMMENT,
-  ENDLINE,
+
   NUMBER_FLOAT,
   NUMBER_DOUBLE,
   NUMBER_INT,
@@ -18,47 +18,79 @@ enum class TokenType {
   STRING,
   TRUE,
   FALSE,
+  NULLPTR,
+
   LET,
   CONST,
   AUTO,
+  PTR,
+
+  NEW,
+  DELETE,
+  
   IMPORT,
   PRINT,
   SYSTEM,
   TYPE,
+  
   IF,
   ELSE,
   SWITCH,
   CASE,
   DEFAULT,
+  
   WHILE,
   FOR,
   DO,
   STOP,
   PASS,
+  
   RETURN,
   FUNCTION,
+  
   STRUCT,
+  CLASS,
+  PRIVATE,
+  PUBLIC,
+  PROTECTED,
+  EXTENDS,
+  METHOD,
+  ATTR,
+  THIS,
+  OVERRIDE,
+  CONSTRUCTOR,
+  SUPER,
+
   OR,
   AND,
+
   ID,
+
   RP,
   LP,
   RB,
   LB,
   RC,
   LC,
+
   SEMICOLON,
+
   COMMA,
+
   TERNARY,
+  
   DOT,
   DOTDOT,
+  
   SMALLEREQUAL,
   BIGGEREQUAL,
   NOTEQUAL,
   EQUAL,
   ASSIGNMENT,
+  
   INCREMENT,
   DECREMENT,
+  
   OPERATOR_ADD,
   OPERATOR_SUB,
   OPERATOR_MULT,
@@ -67,10 +99,12 @@ enum class TokenType {
   OPERATOR_GREATER,
   OPERATOR_NOT,
   OPERATOR_MODULE,
+  
   SELF_ADD,
   SELF_SUB,
   SELF_MULT,
   SELF_DIV,
+  
   UNMATCHED, // Para tokens no reconocidos
   ALL
 };

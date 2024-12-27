@@ -71,8 +71,10 @@ TEST_CASE("TokenStream: Manejo de errores", "[TokenStream]") {
   using namespace nicole;
   // Tokens de ejemplo para las pruebas
   std::vector<Token> tokens = {
-      Token(TokenType::NUMBER_INT, "1", Location{"", 0, 0}), Token(TokenType::OPERATOR_ADD, "+", Location{"", 0, 0}),
-      Token(TokenType::NUMBER_INT, "2", Location{"", 0, 0}), Token(TokenType::SEMICOLON, ";", Location{"", 0, 0})};
+      Token(TokenType::NUMBER_INT, "1", Location{"", 0, 0}),
+      Token(TokenType::OPERATOR_ADD, "+", Location{"", 0, 0}),
+      Token(TokenType::NUMBER_INT, "2", Location{"", 0, 0}),
+      Token(TokenType::SEMICOLON, ";", Location{"", 0, 0})};
 
   TokenStream tokenStream(tokens);
 
@@ -121,7 +123,8 @@ TEST_CASE("TokenStream: Manejo de errores", "[TokenStream]") {
   }
 
   SECTION("Error en 'insertAfter' con posición inválida") {
-    TokenStream newTokens({Token(TokenType::NUMBER_INT, "3", Location{"", 0, 0})});
+    TokenStream newTokens(
+        {Token(TokenType::NUMBER_INT, "3", Location{"", 0, 0})});
     // Intentar insertar en una posición inválida
     auto result = tokenStream.insertAfter(newTokens,
                                           std::numeric_limits<int>::infinity());

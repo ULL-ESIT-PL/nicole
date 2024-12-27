@@ -14,13 +14,20 @@ Lexer NicoleSintax::createLexer() const {
       Category{TokenType::STRING, "\"(?:\\\\.|[^\"\\\\])*\"", false},
       Category{TokenType::TRUE, "true", false},
       Category{TokenType::FALSE, "false", false},
+      Category{TokenType::NULLPTR, "null", false},
+
+      // constructor here to avoid conflict eith const
+      Category{TokenType::CONSTRUCTOR, "constructor", false},
 
       Category{TokenType::CONST, "const", false},
       Category{TokenType::LET, "let", false},
       Category{TokenType::AUTO, "auto", false},
+      Category{TokenType::PTR, "ptr", false},
+
+      Category{TokenType::NEW, "new", false},
+      Category{TokenType::DELETE, "delete", false},
 
       Category{TokenType::IMPORT, "import", false},
-
       Category{TokenType::PRINT, "print", false},
       Category{TokenType::SYSTEM, "system", false},
       Category{TokenType::TYPE, "type", false},
@@ -31,19 +38,32 @@ Lexer NicoleSintax::createLexer() const {
 
       Category{TokenType::IF, "if", false},
       Category{TokenType::ELSE, "else", false},
+
       Category{TokenType::WHILE, "while", false},
       Category{TokenType::FOR, "for", false},
       Category{TokenType::STOP, "stop", false},
       Category{TokenType::PASS, "pass", false},
+
       Category{TokenType::RETURN, "return", false},
       Category{TokenType::FUNCTION, "def", false},
+
       Category{TokenType::STRUCT, "struct", false},
+      Category{TokenType::CLASS, "class", false},
+      Category{TokenType::PRIVATE, "private", false},
+      Category{TokenType::PUBLIC, "public", false},
+      Category{TokenType::PROTECTED, "protected", false},
+      Category{TokenType::EXTENDS, "extends", false},
+      Category{TokenType::METHOD, "method", false},
+      Category{TokenType::ATTR, "attr", false},
+      Category{TokenType::THIS, "this", false},
+
+      Category{TokenType::SUPER, "super", false},
 
       Category{TokenType::OR, "or", false},
       Category{TokenType::AND, "and", false},
 
       // avoids the conflic between do and double
-      Category{TokenType::ID, "(?!\\b(do)\\b)[a-zA-Z]+[a-zA-Z0-9]*", false},
+      Category{TokenType::ID, "(?!\\b(do)\\b)[a-zA-Z]+[a-zA-Z0-9_]*", false},
 
       Category{TokenType::DO, "do", false},
 
@@ -80,8 +100,7 @@ Lexer NicoleSintax::createLexer() const {
       Category{TokenType::OPERATOR_SMALLER, "[<]", false},
       Category{TokenType::OPERATOR_GREATER, "[>]", false},
       Category{TokenType::OPERATOR_NOT, "[!]", false},
-      Category{TokenType::OPERATOR_MODULE, "[%]", false},
-  }};
+      Category{TokenType::OPERATOR_MODULE, "[%]", false}}};
 };
 
 } // namespace nicole

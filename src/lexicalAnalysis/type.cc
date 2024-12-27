@@ -8,8 +8,7 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "SPACE";
   case TokenType::COMMENT:
     return "COMMENT";
-  case TokenType::ENDLINE:
-    return "ENDLINE";
+
   case TokenType::NUMBER_FLOAT:
     return "NUMBER_FLOAT";
   case TokenType::NUMBER_DOUBLE:
@@ -24,12 +23,23 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "TRUE";
   case TokenType::FALSE:
     return "FALSE";
+  case TokenType::NULLPTR:
+    return "NULLPTR";
+
   case TokenType::LET:
     return "LET";
   case TokenType::CONST:
     return "CONST";
   case TokenType::AUTO:
     return "AUTO";
+  case TokenType::PTR:
+    return "PTR";
+
+  case TokenType::NEW:
+    return "NEW";
+  case TokenType::DELETE:
+    return "DELETE";
+
   case TokenType::IMPORT:
     return "IMPORT";
   case TokenType::PRINT:
@@ -38,6 +48,7 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "SYSTEM";
   case TokenType::TYPE:
     return "TYPE";
+
   case TokenType::IF:
     return "IF";
   case TokenType::ELSE:
@@ -48,6 +59,7 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "CASE";
   case TokenType::DEFAULT:
     return "DEFAULT";
+
   case TokenType::WHILE:
     return "WHILE";
   case TokenType::FOR:
@@ -58,18 +70,45 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "STOP";
   case TokenType::PASS:
     return "PASS";
+
   case TokenType::RETURN:
     return "RETURN";
   case TokenType::FUNCTION:
     return "FUNCTION";
+
   case TokenType::STRUCT:
     return "STRUCT";
+  case TokenType::CLASS:
+    return "CLASS";
+  case TokenType::PRIVATE:
+    return "PRIVATE";
+  case TokenType::PUBLIC:
+    return "PUBLIC";
+  case TokenType::PROTECTED:
+    return "PROTECTED";
+  case TokenType::EXTENDS:
+    return "EXTENDS";
+  case TokenType::METHOD:
+    return "METHOD";
+  case TokenType::ATTR:
+    return "ATTR";
+  case TokenType::THIS:
+    return "THIS";
+  case TokenType::OVERRIDE:
+    return "OVERRIDE";
+  case TokenType::CONSTRUCTOR:
+    return "CONSTRUCTOR";
+  case TokenType::SUPER:
+    return "SUPER";
+
   case TokenType::OR:
     return "OR";
   case TokenType::AND:
     return "AND";
+
   case TokenType::ID:
     return "ID";
+
   case TokenType::RP:
     return "RP"; // Right Parenthesis ')'
   case TokenType::LP:
@@ -82,16 +121,21 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "RC"; // Right Curly Brace '}'
   case TokenType::LC:
     return "LC"; // Left Curly Brace '{'
+  
   case TokenType::SEMICOLON:
     return "SEMICOLON";
+  
   case TokenType::COMMA:
     return "COMMA";
+  
   case TokenType::TERNARY:
     return "TERNARY";
+  
   case TokenType::DOT:
     return "DOT";
   case TokenType::DOTDOT:
     return "DOTDOT"; // :
+  
   case TokenType::SMALLEREQUAL:
     return "SMALLEREQUAL";
   case TokenType::BIGGEREQUAL:
@@ -102,10 +146,12 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "EQUAL";
   case TokenType::ASSIGNMENT:
     return "ASSIGNMENT"; // '='
+  
   case TokenType::INCREMENT:
     return "INCREMENT"; // '++'
   case TokenType::DECREMENT:
     return "DECREMENT"; // '--'
+  
   case TokenType::OPERATOR_ADD:
     return "OPERATOR_ADD"; // '+'
   case TokenType::OPERATOR_SUB:
@@ -122,6 +168,7 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "OPERATOR_NOT"; // '!'
   case TokenType::OPERATOR_MODULE:
     return "OPERATOR_MODULE"; // '%'
+  
   case TokenType::SELF_ADD:
     return "SELF_ADD";
   case TokenType::SELF_SUB:
@@ -130,6 +177,7 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "SELF_MULT";
   case TokenType::SELF_DIV:
     return "SELF_DIV";
+  
   case TokenType::UNMATCHED:
     return "UNMATCHED"; // For unrecognized tokens
   case TokenType::ALL:
