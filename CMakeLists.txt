@@ -86,6 +86,9 @@ add_executable(tests
     src/lexicalAnalysis/tokenStream.cc
     
     test/lexicalAnalysis/test_type.cc
+
+    # parsingAnalysis
+    src/parsingAnalysis/ast/astType.cc
 )
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 
@@ -135,6 +138,10 @@ set(SRC_FILES
     src/lexicalAnalysis/tokenStream.cc
     src/lexicalAnalysis/lexer.cc
     src/lexicalAnalysis/nicoleSintax.cc
+
+    # parsingAnalysis
+    src/parsingAnalysis/ast/astType.cc
+    
    # src/parsingAnalysis/ast/nodeType.cc
    # src/parsingAnalysis/ast/literals/nodeLiteralChar.cc
    # src/parsingAnalysis/ast/literals/nodeLiteralString.cc
