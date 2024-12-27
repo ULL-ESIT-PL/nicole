@@ -1,7 +1,4 @@
 #include "../../inc/lexicalAnalysis/lexer.h"
-#include <cstddef>
-#include <expected>
-#include <regex>
 
 namespace nicole {
 

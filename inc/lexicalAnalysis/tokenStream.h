@@ -7,7 +7,6 @@
 #include <cstddef>
 #include <expected>
 #include <limits>
-#include <llvm/Support/ErrorHandling.h>
 #include <vector>
 
 namespace nicole {

@@ -1,9 +1,7 @@
 #ifndef CATEGORY_H
 #define CATEGORY_H
 
-#include <iostream>
 #include <string>
-#include <vector>
 
 #include "regexWrapper.h"
 #include "token.h"

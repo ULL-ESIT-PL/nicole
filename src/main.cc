@@ -1,6 +1,5 @@
 #include "../inc/lexicalAnalysis/nicoleSintax.h"
 #include "../inc/options/optionsParser.h"
-#include <cstdlib>
 
 // Just creates a main function for our program like a wrapper
 int main(int argc, char *argv[]) {

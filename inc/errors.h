@@ -3,6 +3,7 @@
 
 #include <llvm/IR/Attributes.h>
 #include <ostream>
+
 namespace nicole {
 
 enum class ERROR_TYPE {

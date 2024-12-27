@@ -1,10 +1,9 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#include <llvm/Support/ErrorHandling.h>
-
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <vector>
 
 #include "category.h"

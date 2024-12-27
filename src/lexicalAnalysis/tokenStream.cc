@@ -1,7 +1,4 @@
 #include "../../inc/lexicalAnalysis/tokenStream.h"
-#include <cstddef>
-#include <expected>
-#include <limits>
 
 namespace nicole {
 
@@ -12,7 +9,6 @@ std::expected<void, Error> TokenStream::eat() const {
   }
   return std::unexpected{
       Error{ERROR_TYPE::EAT, "invalid access to tokens while eating"}};
-  // llvm::report_fatal_error("Error: invalid access to tokens while eating");
 }
 
 bool TokenStream::isEnd() const { return currentPos_ == tokens_.size(); }
@@ -20,7 +16,6 @@ bool TokenStream::isEnd() const { return currentPos_ == tokens_.size(); }
 std::expected<Token, Error> TokenStream::current() const {
   if (currentPos_ < tokens_.size())
     return tokens_[currentPos_];
-  // llvm::report_fatal_error("Error: invalid access to tokens");
   return std::unexpected{
       Error{ERROR_TYPE::CURRENT, "invalid access to tokens"}};
 }
@@ -28,7 +23,6 @@ std::expected<Token, Error> TokenStream::current() const {
 std::expected<Token, Error> TokenStream::lookAhead(const size_t pos) const {
   if (currentPos_ + pos < tokens_.size())
     return tokens_[currentPos_ + pos];
-  // llvm::report_fatal_error("Error: invalid access to tokens");
   return std::unexpected{
       Error{ERROR_TYPE::LOOK_AHEAD, "invalid access to tokens"}};
 }
@@ -37,7 +31,6 @@ std::expected<bool, Error>
 TokenStream::isCurrentTokenType(const TokenType type) const {
   if (currentPos_ < tokens_.size())
     return tokens_[currentPos_].type() == type;
-  // llvm::report_fatal_error("Error: invalid access to tokens");
   return std::unexpected{
       Error{ERROR_TYPE::IS_CURRENT_TOKEN_TYPE, "invalid access to tokens"}};
 }
