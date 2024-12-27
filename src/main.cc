@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
               << " ---> Raw: " << token.raw()
               << " ---> Loc: " << token.locInfo() << "\n";
   }
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 /*
