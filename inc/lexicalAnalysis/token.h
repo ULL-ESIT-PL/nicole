@@ -19,13 +19,13 @@ public:
                  const Location &loc) noexcept
       : type_{type}, raw_{raw}, loc_{loc} {};
 
-  [[nodiscard]] TokenType type() const { return type_; };
+  [[nodiscard]] TokenType type() const noexcept { return type_; };
 
-  [[nodiscard]] std::string raw() const { return raw_; }
+  [[nodiscard]] std::string raw() const noexcept { return raw_; }
 
-  [[nodiscard]] Location location() const { return loc_; }
+  [[nodiscard]] Location location() const noexcept { return loc_; }
 
-  [[nodiscard]] std::string locInfo() const {
+  [[nodiscard]] std::string locInfo() const noexcept {
     return loc_.file().string() + " " + std::to_string(loc_.row()) + ':' +
            std::to_string(loc_.col());
   }

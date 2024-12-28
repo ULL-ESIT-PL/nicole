@@ -11,13 +11,13 @@ namespace nicole {
 
 class OptionsParser final {
 private:
-  OptionsParser() = delete;
+  OptionsParser() noexcept = delete;
 
-  [[nodiscard]] static bool isOption(const std::string_view argument);
+  [[nodiscard]] static bool isOption(const std::string_view argument) noexcept;
 
 public:
   [[nodiscard]] static std::expected<Options, Error>
-  parse(const std::vector<std::string_view> &arguments);
+  parse(const std::vector<std::string_view> &arguments) noexcept;
 };
 
 } // namespace nicole

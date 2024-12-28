@@ -27,27 +27,27 @@ enum class TokenType {
 
   NEW,
   DELETE,
-  
+
   IMPORT,
   PRINT,
   SYSTEM,
   TYPE,
-  
+
   IF,
   ELSE,
   SWITCH,
   CASE,
   DEFAULT,
-  
+
   WHILE,
   FOR,
   DO,
   STOP,
   PASS,
-  
+
   RETURN,
   FUNCTION,
-  
+
   STRUCT,
   CLASS,
   PRIVATE,
@@ -78,19 +78,19 @@ enum class TokenType {
   COMMA,
 
   TERNARY,
-  
+
   DOT,
   DOTDOT,
-  
+
   SMALLEREQUAL,
   BIGGEREQUAL,
   NOTEQUAL,
   EQUAL,
   ASSIGNMENT,
-  
+
   INCREMENT,
   DECREMENT,
-  
+
   OPERATOR_ADD,
   OPERATOR_SUB,
   OPERATOR_MULT,
@@ -99,17 +99,17 @@ enum class TokenType {
   OPERATOR_GREATER,
   OPERATOR_NOT,
   OPERATOR_MODULE,
-  
+
   SELF_ADD,
   SELF_SUB,
   SELF_MULT,
   SELF_DIV,
-  
+
   UNMATCHED, // Para tokens no reconocidos
   ALL
 };
 
-[[nodiscard]] std::string tokenTypeToString(const TokenType &tk);
+[[nodiscard]] std::string tokenTypeToString(const TokenType &tk) noexcept;
 
 } // namespace nicole
 
