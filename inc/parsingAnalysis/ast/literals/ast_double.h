@@ -14,9 +14,9 @@ public:
                    const std::shared_ptr<AST> &father = nullptr) noexcept
       : AST{AST_TYPE::DOUBLE, father}, value_{value} {}
 
-  ~AST_DOUBLE() = default;
+  ~AST_DOUBLE() noexcept = default;
 
-  [[nodiscard]] double value() const { return value_; }
+  [[nodiscard]] double value() const noexcept { return value_; }
 };
 
 } // namespace nicole

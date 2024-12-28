@@ -11,12 +11,12 @@ private:
 
 public:
   explicit AST_FLOAT(const float value,
-                   const std::shared_ptr<AST> &father = nullptr) noexcept
+                     const std::shared_ptr<AST> &father = nullptr) noexcept
       : AST{AST_TYPE::FLOAT, father}, value_{value} {}
 
-  ~AST_FLOAT() = default;
+  ~AST_FLOAT() noexcept = default;
 
-  [[nodiscard]] float value() const { return value_; }
+  [[nodiscard]] float value() const noexcept { return value_; }
 };
 
 } // namespace nicole

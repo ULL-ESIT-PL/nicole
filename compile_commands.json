@@ -103,6 +103,12 @@
 },
 {
   "directory": "/home/evian/Escritorio/nicole",
+  "command": "/usr/bin/clang++  -I/home/evian/Escritorio/nicole/src -I/home/evian/Escritorio/nicole/_deps/catch2-src/src/catch2/.. -I/home/evian/Escritorio/nicole/_deps/catch2-build/generated-includes  -g -O3 -Wall -Wextra -Werror -Wpedantic                            -Wshadow -Wnon-virtual-dtor -Wold-style-cast                            -Wcast-align -Wunused -Woverloaded-virtual                            -Wconversion -Wsign-conversion -Wnull-dereference                            -Wdouble-promotion -Wformat=2 -Wmisleading-indentation -I/usr/include -std=c++17    -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++23 -o CMakeFiles/tests.dir/src/parsingAnalysis/builder.cc.o -c /home/evian/Escritorio/nicole/src/parsingAnalysis/builder.cc",
+  "file": "/home/evian/Escritorio/nicole/src/parsingAnalysis/builder.cc",
+  "output": "CMakeFiles/tests.dir/src/parsingAnalysis/builder.cc.o"
+},
+{
+  "directory": "/home/evian/Escritorio/nicole",
   "command": "/usr/bin/clang++  -I/home/evian/Escritorio/nicole/src  -g -O3 -Wall -Wextra -Werror -Wpedantic                            -Wshadow -Wnon-virtual-dtor -Wold-style-cast                            -Wcast-align -Wunused -Woverloaded-virtual                            -Wconversion -Wsign-conversion -Wnull-dereference                            -Wdouble-promotion -Wformat=2 -Wmisleading-indentation -I/usr/include -std=c++17    -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++23 -o CMakeFiles/binaries.dir/src/main.cc.o -c /home/evian/Escritorio/nicole/src/main.cc",
   "file": "/home/evian/Escritorio/nicole/src/main.cc",
   "output": "CMakeFiles/binaries.dir/src/main.cc.o"
@@ -142,6 +148,12 @@
   "command": "/usr/bin/clang++  -I/home/evian/Escritorio/nicole/src  -g -O3 -Wall -Wextra -Werror -Wpedantic                            -Wshadow -Wnon-virtual-dtor -Wold-style-cast                            -Wcast-align -Wunused -Woverloaded-virtual                            -Wconversion -Wsign-conversion -Wnull-dereference                            -Wdouble-promotion -Wformat=2 -Wmisleading-indentation -I/usr/include -std=c++17    -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++23 -o CMakeFiles/binaries.dir/src/parsingAnalysis/ast/astType.cc.o -c /home/evian/Escritorio/nicole/src/parsingAnalysis/ast/astType.cc",
   "file": "/home/evian/Escritorio/nicole/src/parsingAnalysis/ast/astType.cc",
   "output": "CMakeFiles/binaries.dir/src/parsingAnalysis/ast/astType.cc.o"
+},
+{
+  "directory": "/home/evian/Escritorio/nicole",
+  "command": "/usr/bin/clang++  -I/home/evian/Escritorio/nicole/src  -g -O3 -Wall -Wextra -Werror -Wpedantic                            -Wshadow -Wnon-virtual-dtor -Wold-style-cast                            -Wcast-align -Wunused -Woverloaded-virtual                            -Wconversion -Wsign-conversion -Wnull-dereference                            -Wdouble-promotion -Wformat=2 -Wmisleading-indentation -I/usr/include -std=c++17    -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++23 -o CMakeFiles/binaries.dir/src/parsingAnalysis/builder.cc.o -c /home/evian/Escritorio/nicole/src/parsingAnalysis/builder.cc",
+  "file": "/home/evian/Escritorio/nicole/src/parsingAnalysis/builder.cc",
+  "output": "CMakeFiles/binaries.dir/src/parsingAnalysis/builder.cc.o"
 },
 {
   "directory": "/home/evian/Escritorio/nicole/_deps/catch2-build/src",

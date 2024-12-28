@@ -94,7 +94,7 @@ CHAIN
 
 };
 
-[[nodiscard]] std::string astTypeToStr(const AST_TYPE type);
+[[nodiscard]] std::string astTypeToStr(const AST_TYPE type) noexcept;
 
 }
 

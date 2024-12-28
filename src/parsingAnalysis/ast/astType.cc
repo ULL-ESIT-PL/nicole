@@ -2,7 +2,7 @@
 
 namespace nicole {
 
-std::string astTypeToStr(const AST_TYPE type) {
+std::string astTypeToStr(const AST_TYPE type) noexcept {
   switch (type) {
     // Literals
   case AST_TYPE::BOOL:

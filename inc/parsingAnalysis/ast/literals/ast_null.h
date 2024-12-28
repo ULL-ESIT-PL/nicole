@@ -10,7 +10,7 @@ public:
   explicit AST_NULL(const std::shared_ptr<AST> &father = nullptr) noexcept
       : AST{AST_TYPE::NULLPTR, father} {}
 
-  ~AST_NULL() = default;
+  ~AST_NULL() noexcept = default;
 };
 
 } // namespace nicole

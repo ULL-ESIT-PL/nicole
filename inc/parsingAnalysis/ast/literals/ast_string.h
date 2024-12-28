@@ -11,12 +11,12 @@ private:
 
 public:
   explicit AST_STRING(const std::string value,
-                   const std::shared_ptr<AST> &father = nullptr) noexcept
+                      const std::shared_ptr<AST> &father = nullptr) noexcept
       : AST{AST_TYPE::STRING, father}, value_{value} {}
 
-  ~AST_STRING() = default;
+  ~AST_STRING() noexcept = default;
 
-  [[nodiscard]] std::string value() const { return value_; }
+  [[nodiscard]] std::string value() const noexcept { return value_; }
 };
 
 } // namespace nicole

@@ -88,7 +88,7 @@ add_executable(tests
     test/lexicalAnalysis/test_type.cc
 
     # parsingAnalysis
-    src/parsingAnalysis/ast/astType.cc
+    src/parsingAnalysis/ast/astType.cc 
     src/parsingAnalysis/builder.cc
 )
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)

@@ -16,11 +16,11 @@ public:
                const std::shared_ptr<AST> &father = nullptr) noexcept
       : type_{type}, father_{father} {}
 
-  virtual ~AST() = default;
+  virtual ~AST() noexcept = default;
 
-  [[nodiscard]] AST_TYPE type() const { return type_; }
+  [[nodiscard]] AST_TYPE type() const noexcept { return type_; }
 
-  [[nodiscard]] std::shared_ptr<AST> father() const { return father_.lock(); }
+  [[nodiscard]] std::shared_ptr<AST> father() const noexcept { return father_.lock(); }
 };
 
 } // namespace nicole

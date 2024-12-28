@@ -14,9 +14,9 @@ public:
                     const std::shared_ptr<AST> &father = nullptr) noexcept
       : AST{AST_TYPE::BOOL, father}, value_{value} {}
 
-  ~AST_BOOL() = default;
+  ~AST_BOOL() noexcept = default;
 
-  [[nodiscard]] bool value() const { return value_; }
+  [[nodiscard]] bool value() const noexcept { return value_; }
 };
 
 } // namespace nicole
