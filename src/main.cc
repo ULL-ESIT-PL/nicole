@@ -1,12 +1,6 @@
 #include "../inc/lexicalAnalysis/nicoleSintax.h"
 #include "../inc/options/optionsParser.h"
-#include "../inc/parsingAnalysis/ast/literals/ast_int.h"
-#include "../inc/parsingAnalysis/ast/literals/ast_bool.h"
-#include "../inc/parsingAnalysis/ast/literals/ast_char.h"
-#include "../inc/parsingAnalysis/ast/literals/ast_double.h"
-#include "../inc/parsingAnalysis/ast/literals/ast_float.h"
-#include "../inc/parsingAnalysis/ast/literals/ast_null.h"
-#include "../inc/parsingAnalysis/ast/literals/ast_string.h"
+#include "../inc/parsingAnalysis/builder.h"
 
 // Just creates a main function for our program like a wrapper
 int main(int argc, char *argv[]) {
@@ -39,8 +33,8 @@ int main(int argc, char *argv[]) {
               << " ---> Loc: " << token.locInfo() << "\n";
   }
 
-  std::shared_ptr<nicole::AST_BOOL> node{std::make_shared<nicole::AST_BOOL>(true, nullptr)};
-  std::shared_ptr<nicole::AST_INT> node1{std::make_shared<nicole::AST_INT>(100, node)};
+  std::shared_ptr<nicole::AST_BOOL> node{nicole::Builder::createBool(true, nullptr)};
+  std::shared_ptr<nicole::AST_INT> node1{nicole::Builder::createInt(100, node)};
 
   std::cout << node1->value() << " " << nicole::astTypeToStr(node1->father()->type()) << "\n";
 
