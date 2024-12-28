@@ -1,0 +1,24 @@
+#ifndef AST_DOUBLE_H
+#define AST_DOUBLE_H
+
+#include "../ast.h"
+
+namespace nicole {
+
+class AST_DOUBLE final : public AST {
+private:
+  double value_;
+
+public:
+  explicit AST_DOUBLE(const double value,
+                   const std::shared_ptr<AST> &father = nullptr) noexcept
+      : AST{AST_TYPE::DOUBLE, father}, value_{value} {}
+
+  ~AST_DOUBLE() = default;
+
+  [[nodiscard]] double value() const { return value_; }
+};
+
+} // namespace nicole
+
+#endif // AST_H

@@ -1,0 +1,24 @@
+#ifndef AST_INT_H
+#define AST_INT_H
+
+#include "../ast.h"
+
+namespace nicole {
+
+class AST_INT final : public AST {
+private:
+  int value_;
+
+public:
+  explicit AST_INT(const int value,
+                   const std::shared_ptr<AST> &father = nullptr) noexcept
+      : AST{AST_TYPE::INT, father}, value_{value} {}
+
+  ~AST_INT() = default;
+
+  [[nodiscard]] int value() const { return value_; }
+};
+
+} // namespace nicole
+
+#endif // AST_H

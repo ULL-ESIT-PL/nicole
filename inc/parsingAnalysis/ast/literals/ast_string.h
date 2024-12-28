@@ -1,0 +1,24 @@
+#ifndef AST_STRING_H
+#define AST_STRING_H
+
+#include "../ast.h"
+
+namespace nicole {
+
+class AST_STRING final : public AST {
+private:
+  std::string value_;
+
+public:
+  explicit AST_STRING(const std::string value,
+                   const std::shared_ptr<AST> &father = nullptr) noexcept
+      : AST{AST_TYPE::STRING, father}, value_{value} {}
+
+  ~AST_STRING() = default;
+
+  [[nodiscard]] std::string value() const { return value_; }
+};
+
+} // namespace nicole
+
+#endif // AST_H
