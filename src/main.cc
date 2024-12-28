@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
   if (!result) {
     std::cerr << result.error() << "\n";
     return 2;
-  }
+  } 
 
   for (const auto &token : *result) {
     std::cout << "Type: " << nicole::tokenTypeToString(token.type())
