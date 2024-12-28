@@ -2,7 +2,7 @@
 
 namespace nicole {
 
-Category Lexer::concatCategories() const {
+Category Lexer::concatCategories() const noexcept {
   std::string pattern{""};
   for (const auto &category : categories_) {
     pattern += category.rawPattern() + "|";
@@ -12,9 +12,9 @@ Category Lexer::concatCategories() const {
 }
 
 std::expected<void, Error>
-Lexer::checkUnmatched(const std::vector<Token> &tokens) const {
+Lexer::checkUnmatched(const std::vector<Token> &tokens) const noexcept {
   bool unmatchedFlag{false};
-  std::string everyUnmatched{"Unmatched tokens:\n"}; 
+  std::string everyUnmatched{"Unmatched tokens:\n"};
   for (const auto &TOKEN : tokens) {
     if (TOKEN.type() == TokenType::UNMATCHED) {
       everyUnmatched += TOKEN.raw() + "\n";
@@ -28,7 +28,7 @@ Lexer::checkUnmatched(const std::vector<Token> &tokens) const {
 }
 
 std::expected<std::string, Error>
-Lexer::readFile(const std::filesystem::path &fileName) const {
+Lexer::readFile(const std::filesystem::path &fileName) const noexcept {
   const std::regex fileNameFormat{"[a-zA-Z]+[a-zA-Z0-9]*\\.nc",
                                   std::regex_constants::optimize};
   // method fileName returns just the file
@@ -54,7 +54,8 @@ Lexer::readFile(const std::filesystem::path &fileName) const {
 }
 
 std::expected<TokenStream, Error>
-Lexer::analyze(const std::filesystem::path &fileName, bool verbose) const {
+Lexer::analyze(const std::filesystem::path &fileName,
+               bool verbose) const noexcept {
   const std::expected<std::string, Error> TEXT{readFile(fileName)};
   if (!TEXT) {
     return std::unexpected{TEXT.error()};

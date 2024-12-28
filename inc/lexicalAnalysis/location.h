@@ -17,11 +17,11 @@ public:
                     std::size_t col) noexcept
       : file_{file}, row_{row}, col_{col} {};
 
-  [[nodiscard]] std::filesystem::path file() const { return file_; }
+  [[nodiscard]] std::filesystem::path file() const noexcept { return file_; }
 
-  [[nodiscard]] std::size_t row() const { return row_; }
+  [[nodiscard]] std::size_t row() const noexcept { return row_; }
 
-  [[nodiscard]] std::size_t col() const { return col_; }
+  [[nodiscard]] std::size_t col() const noexcept { return col_; }
 };
 
 } // namespace nicole

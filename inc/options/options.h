@@ -19,13 +19,13 @@ public:
       : help_{help}, optimize_{optimize}, binaryName_{binaryName},
         entryFilePath_{entryFilePath} {}
 
-  [[nodiscard]] bool help() const { return help_; }
+  [[nodiscard]] bool help() const noexcept { return help_; }
 
-  [[nodiscard]] bool optimize() const { return optimize_; }
+  [[nodiscard]] bool optimize() const noexcept { return optimize_; }
 
-  [[nodiscard]] std::string binaryName() const { return binaryName_; }
+  [[nodiscard]] std::string binaryName() const noexcept { return binaryName_; }
 
-  [[nodiscard]] std::filesystem::path entryFilePath() const {
+  [[nodiscard]] std::filesystem::path entryFilePath() const noexcept {
     return entryFilePath_;
   }
 };

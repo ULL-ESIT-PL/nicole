@@ -20,17 +20,19 @@ public:
                     const bool skip) noexcept
       : type_{type}, pattern_{matcher}, skip_{skip} {};
 
-  [[nodiscard]] TokenType type() const { return type_; }
+  [[nodiscard]] TokenType type() const noexcept { return type_; }
 
-  [[nodiscard]] RegexWrapper pattern() const { return pattern_; }
+  [[nodiscard]] RegexWrapper pattern() const noexcept { return pattern_; }
 
-  [[nodiscard]] std::string rawPattern() const { return pattern_.str(); }
+  [[nodiscard]] std::string rawPattern() const noexcept {
+    return pattern_.str();
+  }
 
   // to know if it must be skipped like comments
-  [[nodiscard]] bool skip() const { return skip_; }
+  [[nodiscard]] bool skip() const noexcept { return skip_; }
 
-  [[nodiscard]] bool matchToken(const Token &token) const {
-    return regex_match(token.raw(), pattern_.pattern());
+  [[nodiscard]] bool matchToken(const Token &token) const noexcept {
+    return pattern_.match(token.raw());
   };
 };
 

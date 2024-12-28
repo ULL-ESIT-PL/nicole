@@ -2,7 +2,7 @@
 
 namespace nicole {
 
-std::string tokenTypeToString(const TokenType &tk) {
+std::string tokenTypeToString(const TokenType &tk) noexcept {
   switch (tk) {
   case TokenType::SPACE:
     return "SPACE";
@@ -121,21 +121,21 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "RC"; // Right Curly Brace '}'
   case TokenType::LC:
     return "LC"; // Left Curly Brace '{'
-  
+
   case TokenType::SEMICOLON:
     return "SEMICOLON";
-  
+
   case TokenType::COMMA:
     return "COMMA";
-  
+
   case TokenType::TERNARY:
     return "TERNARY";
-  
+
   case TokenType::DOT:
     return "DOT";
   case TokenType::DOTDOT:
     return "DOTDOT"; // :
-  
+
   case TokenType::SMALLEREQUAL:
     return "SMALLEREQUAL";
   case TokenType::BIGGEREQUAL:
@@ -146,12 +146,12 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "EQUAL";
   case TokenType::ASSIGNMENT:
     return "ASSIGNMENT"; // '='
-  
+
   case TokenType::INCREMENT:
     return "INCREMENT"; // '++'
   case TokenType::DECREMENT:
     return "DECREMENT"; // '--'
-  
+
   case TokenType::OPERATOR_ADD:
     return "OPERATOR_ADD"; // '+'
   case TokenType::OPERATOR_SUB:
@@ -168,7 +168,7 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "OPERATOR_NOT"; // '!'
   case TokenType::OPERATOR_MODULE:
     return "OPERATOR_MODULE"; // '%'
-  
+
   case TokenType::SELF_ADD:
     return "SELF_ADD";
   case TokenType::SELF_SUB:
@@ -177,7 +177,7 @@ std::string tokenTypeToString(const TokenType &tk) {
     return "SELF_MULT";
   case TokenType::SELF_DIV:
     return "SELF_DIV";
-  
+
   case TokenType::UNMATCHED:
     return "UNMATCHED"; // For unrecognized tokens
   case TokenType::ALL:

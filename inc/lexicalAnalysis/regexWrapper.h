@@ -19,11 +19,11 @@ public:
       : rawPattern_{rawPattern},
         pattern_{rawPattern, std::regex_constants::optimize} {};
 
-  [[nodiscard]] std::string str() const { return rawPattern_; }
+  [[nodiscard]] std::string str() const noexcept { return rawPattern_; }
 
-  [[nodiscard]] std::regex pattern() const { return pattern_; }
+  [[nodiscard]] std::regex pattern() const noexcept { return pattern_; }
 
-  [[nodiscard]] bool match(const std::string &str) const {
+  [[nodiscard]] bool match(const std::string &str) const noexcept {
     return std::regex_match(str, pattern_);
   }
 };

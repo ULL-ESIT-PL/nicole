@@ -28,7 +28,7 @@ enum class ERROR_TYPE {
 
 };
 
-[[nodiscard]] inline std::string errorToStr(const ERROR_TYPE type) {
+[[nodiscard]] inline std::string errorToStr(const ERROR_TYPE type) noexcept {
   switch (type) {
   // Options
   case ERROR_TYPE::MISSING_ARGUMENTS:
@@ -73,11 +73,12 @@ public:
   explicit Error(const ERROR_TYPE type, const std::string &info) noexcept
       : type_{type}, info_{info} {}
 
-  [[nodiscard]] ERROR_TYPE type() const { return type_; }
+  [[nodiscard]] ERROR_TYPE type() const noexcept { return type_; }
 
-  [[nodiscard]] std::string info() const { return info_; }
+  [[nodiscard]] std::string info() const noexcept { return info_; }
 
-  friend std::ostream &operator<<(std::ostream &os, const Error &error) {
+  friend std::ostream &operator<<(std::ostream &os,
+                                  const Error &error) noexcept {
     return os << "Error " << errorToStr(error.type_) << ": " << error.info_;
   }
 };

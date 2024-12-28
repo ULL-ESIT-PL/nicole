@@ -21,29 +21,35 @@ public:
   explicit TokenStream(const std::vector<Token> &tokens) noexcept
       : tokens_{tokens} {}
 
-  [[nodiscard]] size_t size() const { return tokens_.size(); };
+  [[nodiscard]] size_t size() const noexcept { return tokens_.size(); };
 
-  [[nodiscard]] std::expected<void, Error> eat() const;
+  [[nodiscard]] std::expected<void, Error> eat() const noexcept;
 
-  [[nodiscard]] std::expected<size_t, Error> currentPos() const { return currentPos_; }
+  [[nodiscard]] std::expected<size_t, Error> currentPos() const noexcept {
+    return currentPos_;
+  }
 
-  [[nodiscard]] bool isEnd() const;
+  [[nodiscard]] bool isEnd() const noexcept;
 
-  [[nodiscard]] std::expected<Token, Error> current() const;
+  [[nodiscard]] std::expected<Token, Error> current() const noexcept;
 
-  [[nodiscard]] std::expected<Token, Error> lookAhead(const size_t pos) const;
+  [[nodiscard]] std::expected<Token, Error>
+  lookAhead(const size_t pos) const noexcept;
 
-  [[nodiscard]] std::expected<bool, Error> isCurrentTokenType(const TokenType type) const;
+  [[nodiscard]] std::expected<bool, Error>
+  isCurrentTokenType(const TokenType type) const noexcept;
 
-  [[nodiscard]] bool isTokenAheadBeforeSemicolon(const TokenType type) const;
+  [[nodiscard]] bool
+  isTokenAheadBeforeSemicolon(const TokenType type) const noexcept;
 
   // needed for whenever an import is found
-  [[nodiscard]] std::expected<void, Error> insertAfter(const TokenStream &tkStream,
-                   const size_t pos = std::numeric_limits<int>::infinity()) const;
+  [[nodiscard]] std::expected<void, Error> insertAfter(
+      const TokenStream &tkStream,
+      const size_t pos = std::numeric_limits<int>::infinity()) const noexcept;
 
-  [[nodiscard]] auto begin() const { return tokens_.begin(); }
+  [[nodiscard]] auto begin() const noexcept { return tokens_.begin(); }
 
-  [[nodiscard]] auto end() const { return tokens_.end(); }
+  [[nodiscard]] auto end() const noexcept { return tokens_.end(); }
 };
 
 } // namespace nicole

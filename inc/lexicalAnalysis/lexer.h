@@ -17,22 +17,25 @@ private:
   std::vector<Category> categories_{};
 
   // makes a category that matches with every token of our sintax
-  [[nodiscard]] Category concatCategories() const;
+  [[nodiscard]] Category concatCategories() const noexcept;
 
   [[nodiscard]] std::expected<std::string, Error>
-  readFile(const std::filesystem::path &fileName) const;
+  readFile(const std::filesystem::path &fileName) const noexcept;
 
   [[nodiscard]] std::expected<void, Error>
-  checkUnmatched(const std::vector<Token> &tokens) const;
+  checkUnmatched(const std::vector<Token> &tokens) const noexcept;
 
 public:
   explicit Lexer(const std::vector<Category> &categories) noexcept
       : categories_{categories} {};
 
-  [[nodiscard]] std::vector<Category> categories() const { return categories_; }
+  [[nodiscard]] std::vector<Category> categories() const noexcept {
+    return categories_;
+  }
 
   [[nodiscard]] std::expected<TokenStream, Error>
-  analyze(const std::filesystem::path &fileName, bool verbose = false) const;
+  analyze(const std::filesystem::path &fileName,
+          bool verbose = false) const noexcept;
 };
 
 } // namespace nicole

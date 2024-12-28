@@ -7,12 +7,12 @@ namespace nicole {
 
 // Abstract class that represents the sintax of a language
 class Sintax {
- public:
+public:
   virtual ~Sintax() = default;
 
-  [[nodiscard]] virtual Lexer createLexer() const = 0;
+  [[nodiscard]] virtual Lexer createLexer() const noexcept = 0;
 };
 
-}  // namespace nicole
+} // namespace nicole
 
 #endif
