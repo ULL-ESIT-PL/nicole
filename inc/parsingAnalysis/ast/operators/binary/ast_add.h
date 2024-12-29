@@ -7,7 +7,7 @@
 namespace nicole {
 
 enum class OPERATOR : unsigned {
-  ADD = static_cast<unsigned>(AST_TYPE::ADD),
+  ADD,
 };
 
 class AST_ADD : public AST {
