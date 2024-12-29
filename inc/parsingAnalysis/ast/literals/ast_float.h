@@ -10,9 +10,9 @@ private:
   float value_;
 
 public:
-  explicit AST_FLOAT(const float value,
+  explicit AST_FLOAT(const float value, const SourceLocation &sourceLocation,
                      const std::shared_ptr<AST> &father = nullptr) noexcept
-      : AST{AST_TYPE::FLOAT, father}, value_{value} {}
+      : AST{AST_TYPE::FLOAT, sourceLocation, father}, value_{value} {}
 
   ~AST_FLOAT() noexcept = default;
 

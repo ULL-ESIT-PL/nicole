@@ -10,9 +10,9 @@ private:
   double value_;
 
 public:
-  explicit AST_DOUBLE(const double value,
-                   const std::shared_ptr<AST> &father = nullptr) noexcept
-      : AST{AST_TYPE::DOUBLE, father}, value_{value} {}
+  explicit AST_DOUBLE(const double value, const SourceLocation &sourceLocation,
+                      const std::shared_ptr<AST> &father = nullptr) noexcept
+      : AST{AST_TYPE::DOUBLE, sourceLocation, father}, value_{value} {}
 
   ~AST_DOUBLE() noexcept = default;
 

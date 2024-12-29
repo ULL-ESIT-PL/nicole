@@ -10,9 +10,9 @@ private:
   bool value_;
 
 public:
-  explicit AST_BOOL(const bool value,
+  explicit AST_BOOL(const bool value, const SourceLocation &sourceLocation,
                     const std::shared_ptr<AST> &father = nullptr) noexcept
-      : AST{AST_TYPE::BOOL, father}, value_{value} {}
+      : AST{AST_TYPE::BOOL, sourceLocation, father}, value_{value} {}
 
   ~AST_BOOL() noexcept = default;
 

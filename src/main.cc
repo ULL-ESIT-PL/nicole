@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
   if (!result) {
     std::cerr << result.error() << "\n";
     return 2;
-  } 
+  }
 
   for (const auto &token : *result) {
     std::cout << "Type: " << nicole::tokenTypeToString(token.type())
@@ -33,10 +33,19 @@ int main(int argc, char *argv[]) {
               << " ---> Loc: " << token.locInfo() << "\n";
   }
 
-  std::shared_ptr<nicole::AST_BOOL> node{nicole::Builder::createBool(true, nullptr)};
-  std::shared_ptr<nicole::AST_INT> node1{nicole::Builder::createInt(100, node)};
+  std::shared_ptr<nicole::AST_BOOL> node{nicole::Builder::createBool(
+      true,
+      nicole::SourceLocation{nicole::Location{"", 0, 0},
+                             nicole::Location{"", 0, 0}},
+      nullptr)};
+  std::shared_ptr<nicole::AST_INT> node1{nicole::Builder::createInt(
+      100,
+      nicole::SourceLocation{nicole::Location{"", 0, 0},
+                             nicole::Location{"", 0, 0}},
+      node)};
 
-  std::cout << node1->value() << " " << nicole::astTypeToStr(node1->father()->type()) << "\n";
+  std::cout << node1->value() << " "
+            << nicole::astTypeToStr(node1->father()->type()) << "\n";
 
   return EXIT_SUCCESS;
 }

@@ -11,8 +11,9 @@ private:
 
 public:
   explicit AST_STRING(const std::string value,
+                      const SourceLocation &sourceLocation,
                       const std::shared_ptr<AST> &father = nullptr) noexcept
-      : AST{AST_TYPE::STRING, father}, value_{value} {}
+      : AST{AST_TYPE::STRING, sourceLocation, father}, value_{value} {}
 
   ~AST_STRING() noexcept = default;
 

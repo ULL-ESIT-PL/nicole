@@ -10,9 +10,9 @@ private:
   int value_;
 
 public:
-  explicit AST_INT(const int value,
+  explicit AST_INT(const int value, const SourceLocation &sourceLocation,
                    const std::shared_ptr<AST> &father = nullptr) noexcept
-      : AST{AST_TYPE::INT, father}, value_{value} {}
+      : AST{AST_TYPE::INT, sourceLocation, father}, value_{value} {}
 
   ~AST_INT() noexcept = default;
 
