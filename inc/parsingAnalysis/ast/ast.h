@@ -7,7 +7,7 @@
 
 namespace nicole {
 
-class AST {
+class AST : public std::enable_shared_from_this<AST> {
 private:
   AST_TYPE type_;
   SourceLocation sourceLocation_;
@@ -15,9 +15,8 @@ private:
 
 public:
   explicit AST(const AST_TYPE type,
-                const SourceLocation& sourceLocation,
-               const std::shared_ptr<AST> &father = nullptr) noexcept
-      : type_{type}, sourceLocation_{sourceLocation}, father_{father} {}
+                const SourceLocation& sourceLocation) noexcept
+      : type_{type}, sourceLocation_{sourceLocation} {}
 
   virtual ~AST() noexcept = default;
 
@@ -25,7 +24,9 @@ public:
 
   [[nodiscard]] SourceLocation sourceLocation() const noexcept { return sourceLocation_; }
 
-  [[nodiscard]] std::shared_ptr<AST> father() const noexcept { return father_.lock(); }
+  [[nodiscard]] const std::shared_ptr<AST> father() const noexcept { return father_.lock(); }
+
+  void setFather(const std::shared_ptr<AST>& father) noexcept { father_ = father; }
 };
 
 } // namespace nicole

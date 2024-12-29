@@ -34,18 +34,18 @@ int main(int argc, char *argv[]) {
   }
 
   std::shared_ptr<nicole::AST_BOOL> node{nicole::Builder::createBool(
-      true,
-      nicole::SourceLocation{nicole::Location{"", 0, 0},
-                             nicole::Location{"", 0, 0}},
-      nullptr)};
+      true, nicole::SourceLocation{nicole::Location{"", 0, 0},
+                                   nicole::Location{"", 0, 0}})};
   std::shared_ptr<nicole::AST_INT> node1{nicole::Builder::createInt(
-      100,
+      100, nicole::SourceLocation{nicole::Location{"", 0, 0},
+                                  nicole::Location{"", 0, 0}})};
+  std::shared_ptr<nicole::AST_ADD>  node2 = nicole::Builder::createAdd(
+      node, node1,
       nicole::SourceLocation{nicole::Location{"", 0, 0},
-                             nicole::Location{"", 0, 0}},
-      node)};
+                             nicole::Location{"", 0, 0}});
 
   std::cout << node1->value() << " "
-            << nicole::astTypeToStr(node1->father()->type()) << "\n";
+            << nicole::astTypeToStr(node1->father()->type()) << " " << nicole::astTypeToStr(node2->left()->type()) << "\n";
 
   return EXIT_SUCCESS;
 }

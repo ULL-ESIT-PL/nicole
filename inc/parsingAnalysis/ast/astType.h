@@ -5,7 +5,7 @@
 
 namespace nicole {
 
-enum class AST_TYPE {
+enum class AST_TYPE: int {
 // Literals
 BOOL,
 INT,

@@ -7,9 +7,8 @@ namespace nicole {
 
 class AST_NULL final : public AST {
 public:
-  explicit AST_NULL(const SourceLocation &sourceLocation,
-                    const std::shared_ptr<AST> &father = nullptr) noexcept
-      : AST{AST_TYPE::NULLPTR, sourceLocation, father} {}
+  explicit AST_NULL(const SourceLocation &sourceLocation) noexcept
+      : AST{AST_TYPE::NULLPTR, sourceLocation} {}
 
   ~AST_NULL() noexcept = default;
 };
