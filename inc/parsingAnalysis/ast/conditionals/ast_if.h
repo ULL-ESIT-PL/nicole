@@ -1,0 +1,46 @@
+#ifndef AST_IF_H
+#define AST_IF_H
+
+#include "../statements/ast_body.h"
+#include <memory>
+#include <vector>
+
+namespace nicole {
+
+class AST_IF : public AST {
+private:
+  std::shared_ptr<AST> condition_;
+  std::shared_ptr<AST_BODY> body_;
+  std::vector<std::shared_ptr<AST_IF>> elseIf_;
+  std::shared_ptr<AST_BODY> elseBody_;
+
+public:
+  explicit AST_IF(const std::shared_ptr<AST> &condition,
+                  const std::shared_ptr<AST_BODY> &body,
+                  const std::vector<std::shared_ptr<AST_IF>> &elseIf,
+                  const std::shared_ptr<AST_BODY> &elseBody,
+                  const SourceLocation &sourceLocation) noexcept
+      : AST(AST_TYPE::IF, sourceLocation), condition_{condition}, body_{body},
+        elseIf_{elseIf}, elseBody_{elseBody} {}
+
+  [[nodiscard]] const std::shared_ptr<AST> &condition() const noexcept {
+    return condition_;
+  }
+
+  [[nodiscard]] const std::shared_ptr<AST_BODY> &body() const noexcept {
+    return body_;
+  }
+
+  [[nodiscard]] const std::vector<std::shared_ptr<AST_IF>> &
+  elseIf() const noexcept {
+    return elseIf_;
+  }
+
+  [[nodiscard]] const std::shared_ptr<AST_BODY> &elseBody() const noexcept {
+    return body_;
+  }
+};
+
+} // namespace nicole
+
+#endif

@@ -1,5 +1,5 @@
-#ifndef AST_ADD_H
-#define AST_ADD_H
+#ifndef AST_SMALLER_EQUAL_H
+#define AST_SMALLER_EQUAL_H
 
 #include "../../../../lexicalAnalysis/token.h"
 #include "../../ast.h"
@@ -7,17 +7,17 @@
 
 namespace nicole {
 
-class AST_ADD : public AST {
+class AST_SMALLER_EQUAL : public AST {
 private:
   Token op_;
   std::shared_ptr<AST> left_;
   std::shared_ptr<AST> right_;
 
 public:
-  explicit AST_ADD(const Token &op, const std::shared_ptr<AST> &left,
+  explicit AST_SMALLER_EQUAL(const Token &op, const std::shared_ptr<AST> &left,
                    const std::shared_ptr<AST> &right,
                    const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::ADD, sourceLocation), op_{op}, left_{left},
+      : AST(AST_TYPE::SMALLER_EQUAL, sourceLocation), op_{op}, left_{left},
         right_{right} {}
 
   [[nodiscard]] Token op() const noexcept { return op_; }

@@ -38,7 +38,6 @@ OR,
 AND,
 
 // Unary operators
-
 NOT,
 INCREMENT,
 DECREMENT,
