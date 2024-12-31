@@ -181,6 +181,14 @@ Builder::createAnd(const Token &op, const std::shared_ptr<AST> &left,
   return astAnd;
 }
 
+[[nodiscard]] static std::shared_ptr<AST_NEG>
+createNeg(const Token &op, const std::shared_ptr<AST> &value,
+          const SourceLocation &sourceLocation) noexcept {
+  const auto astNeg{std::make_shared<AST_NEG>(op, value, sourceLocation)};
+  value->setFather(astNeg);
+  return astNeg;
+}
+
 [[nodiscard]] static std::shared_ptr<AST_NOT>
 createNot(const Token &op, const std::shared_ptr<AST> &value,
           const SourceLocation &sourceLocation) noexcept {

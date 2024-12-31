@@ -24,6 +24,7 @@
 
 #include "ast/operators/unary/ast_decrement.h"
 #include "ast/operators/unary/ast_increment.h"
+#include "ast/operators/unary/ast_neg.h"
 #include "ast/operators/unary/ast_not.h"
 
 #include "ast/utils/ast_import.h"
@@ -137,6 +138,10 @@ public:
   [[nodiscard]] static std::shared_ptr<AST_AND>
   createAnd(const Token &op, const std::shared_ptr<AST> &left,
             const std::shared_ptr<AST> &right,
+            const SourceLocation &sourceLocation) noexcept;
+
+  [[nodiscard]] static std::shared_ptr<AST_NEG>
+  createNeg(const Token &op, const std::shared_ptr<AST> &value,
             const SourceLocation &sourceLocation) noexcept;
 
   [[nodiscard]] static std::shared_ptr<AST_NOT>

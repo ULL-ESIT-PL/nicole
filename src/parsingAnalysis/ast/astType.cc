@@ -29,6 +29,10 @@ std::string astTypeToStr(const AST_TYPE type) noexcept {
     return "PTR";
   case AST_TYPE::PTR_DEREFENCE:
     return "PTR_DEREFENCE";
+  case AST_TYPE::NEW:
+    return "NEW";
+  case AST_TYPE::DELETE:
+    return "DELETE";
 
     // Binary operators
   case AST_TYPE::ADD:
@@ -58,7 +62,9 @@ std::string astTypeToStr(const AST_TYPE type) noexcept {
   case AST_TYPE::AND:
     return "AND";
 
-    // Unary operators
+  // Unary operators
+  case AST_TYPE::NEG:
+    return "NEG";
   case AST_TYPE::NOT:
     return "NOT";
   case AST_TYPE::INCREMENT:
@@ -139,6 +145,10 @@ std::string astTypeToStr(const AST_TYPE type) noexcept {
     // Classes
   case AST_TYPE::CLASS_DECL:
     return "CLASS_DECL";
+
+    // Enum
+  case AST_TYPE::ENUM:
+    return "ENUM";
 
   // Chained expression
   case AST_TYPE::CHAIN:

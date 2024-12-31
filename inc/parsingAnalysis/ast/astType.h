@@ -21,6 +21,8 @@ VECTOR,
 // Pointers
 PTR,
 PTR_DEREFENCE,
+NEW,
+DELETE,
 
 // Binary operators
 ADD,
@@ -38,6 +40,7 @@ OR,
 AND,
 
 // Unary operators
+NEG,
 NOT,
 INCREMENT,
 DECREMENT,
@@ -87,6 +90,9 @@ STRUCT_DECL,
 
 // Classes
 CLASS_DECL,
+
+// Enum
+ENUM,
 
 // Chained expression
 CHAIN
