@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
     return 2;
   }
 
-  for (const auto &token : *result) {
+  for (const auto &token : *result) { 
     std::cout << "Type: " << nicole::tokenTypeToString(token.type())
               << " ---> Raw: " << token.raw()
               << " ---> Loc: " << token.locInfo() << "\n";
