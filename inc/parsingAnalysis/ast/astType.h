@@ -81,7 +81,7 @@ CASE,
 TERNARY,
 
 // Functions
-FUN_DECL,
+FUNC_DECL,
 RETURN,
 FUN_CALL,
 

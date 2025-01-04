@@ -7,7 +7,7 @@
 
 namespace nicole {
 
-class AST : public std::enable_shared_from_this<AST> {
+class AST {
 private:
   AST_TYPE type_;
   SourceLocation sourceLocation_;

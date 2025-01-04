@@ -20,7 +20,7 @@ public:
       : AST(AST_TYPE::SMALLER, sourceLocation), op_{op}, left_{left},
         right_{right} {}
 
-  [[nodiscard]] Token op() const noexcept { return op_; }
+  [[nodiscard]] const Token &op() const noexcept { return op_; }
 
   [[nodiscard]] const std::shared_ptr<AST> &left() const noexcept {
     return left_;

@@ -16,7 +16,7 @@ public:
 
   ~AST_STRING() noexcept = default;
 
-  [[nodiscard]] std::string value() const noexcept { return value_; }
+  [[nodiscard]] const std::string &value() const noexcept { return value_; }
 };
 
 } // namespace nicole

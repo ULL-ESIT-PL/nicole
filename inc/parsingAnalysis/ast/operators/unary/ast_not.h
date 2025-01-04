@@ -17,7 +17,7 @@ public:
                    const SourceLocation &sourceLocation) noexcept
       : AST(AST_TYPE::NOT, sourceLocation), op_{op}, value_{value} {}
 
-  [[nodiscard]] Token op() const noexcept { return op_; }
+  [[nodiscard]] const Token &op() const noexcept { return op_; }
 
   [[nodiscard]] const std::shared_ptr<AST> &value() const noexcept {
     return value_;
