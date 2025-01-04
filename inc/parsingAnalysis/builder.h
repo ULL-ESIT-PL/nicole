@@ -45,6 +45,8 @@
 #include "ast/conditionals/ast_switch.h"
 #include "ast/conditionals/ast_ternary.h"
 
+#include "checkPosition.h"
+
 namespace nicole {
 
 class Builder final {

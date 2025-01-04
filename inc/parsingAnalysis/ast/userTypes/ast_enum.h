@@ -14,7 +14,7 @@ private:
 public:
   explicit AST_ASSIGNMENT(const std::vector<std::string> &enumIdentifiers,
                           const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::CASE, sourceLocation), enumIdentifiers_{enumIdentifiers} {
+      : AST(AST_TYPE::ENUM, sourceLocation), enumIdentifiers_{enumIdentifiers} {
   }
 
   [[nodiscard]] const std::vector<std::string> &identifiers() const noexcept {
