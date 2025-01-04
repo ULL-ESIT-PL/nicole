@@ -10,7 +10,7 @@ class Sintax {
 public:
   virtual ~Sintax() = default;
 
-  [[nodiscard]] virtual Lexer createLexer() const noexcept = 0;
+  [[nodiscard]] virtual const Lexer createLexer() const noexcept = 0;
 };
 
 } // namespace nicole

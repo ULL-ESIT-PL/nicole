@@ -2,7 +2,7 @@
 
 namespace nicole {
 
-Lexer NicoleSintax::createLexer() const noexcept {
+const Lexer NicoleSintax::createLexer() const noexcept {
   return Lexer{std::vector<Category>{
       Category{TokenType::SPACE, "\\s+", true},
       Category{TokenType::COMMENT, "\\/\\*(.|\\n)*?\\*\\/", true},
@@ -18,6 +18,7 @@ Lexer NicoleSintax::createLexer() const noexcept {
 
       // constructor here to avoid conflict eith const
       Category{TokenType::CONSTRUCTOR, "constructor", false},
+      Category{TokenType::DESTRUCTOR, "destructor", false},
 
       Category{TokenType::CONST, "const", false},
       Category{TokenType::LET, "let", false},
@@ -47,6 +48,7 @@ Lexer NicoleSintax::createLexer() const noexcept {
       Category{TokenType::RETURN, "return", false},
       Category{TokenType::FUNCTION, "def", false},
 
+      Category{TokenType::ENUM, "enum", false},
       Category{TokenType::STRUCT, "struct", false},
       Category{TokenType::CLASS, "class", false},
       Category{TokenType::PRIVATE, "private", false},

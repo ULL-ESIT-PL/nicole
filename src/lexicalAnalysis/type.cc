@@ -76,6 +76,8 @@ std::string tokenTypeToString(const TokenType &tk) noexcept {
   case TokenType::FUNCTION:
     return "FUNCTION";
 
+  case TokenType::ENUM:
+    return "ENUM";
   case TokenType::STRUCT:
     return "STRUCT";
   case TokenType::CLASS:
@@ -98,6 +100,8 @@ std::string tokenTypeToString(const TokenType &tk) noexcept {
     return "OVERRIDE";
   case TokenType::CONSTRUCTOR:
     return "CONSTRUCTOR";
+  case TokenType::DESTRUCTOR:
+    return "DESTRUCTOR";
   case TokenType::SUPER:
     return "SUPER";
 

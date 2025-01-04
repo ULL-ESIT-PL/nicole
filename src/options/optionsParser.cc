@@ -10,7 +10,7 @@ bool OptionsParser::isOption(const std::string_view argument) noexcept {
   return false;
 }
 
-std::expected<Options, Error>
+const std::expected<Options, Error>
 OptionsParser::parse(const std::vector<std::string_view> &arguments) noexcept {
   const std::size_t size{arguments.size()};
 

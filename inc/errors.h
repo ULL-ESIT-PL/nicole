@@ -67,7 +67,7 @@ enum class ERROR_TYPE {
 class Error final {
 private:
   ERROR_TYPE type_;
-  std::string info_{""};
+  std::string info_;
 
 public:
   explicit Error(const ERROR_TYPE type, const std::string &info) noexcept
@@ -75,7 +75,7 @@ public:
 
   [[nodiscard]] ERROR_TYPE type() const noexcept { return type_; }
 
-  [[nodiscard]] std::string info() const noexcept { return info_; }
+  [[nodiscard]] const std::string &info() const noexcept { return info_; }
 
   friend std::ostream &operator<<(std::ostream &os,
                                   const Error &error) noexcept {

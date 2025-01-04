@@ -10,9 +10,9 @@ namespace nicole {
 // Used to simplify the parsing analysis
 class Token final {
 private:
-  TokenType type_{};
-  std::string raw_{""};
-  Location loc_{"", 0, 0};
+  TokenType type_;
+  std::string raw_;
+  Location loc_;
 
 public:
   explicit Token(const TokenType &type, const std::string &raw,
@@ -21,11 +21,11 @@ public:
 
   [[nodiscard]] TokenType type() const noexcept { return type_; };
 
-  [[nodiscard]] std::string raw() const noexcept { return raw_; }
+  [[nodiscard]] const std::string &raw() const noexcept { return raw_; }
 
-  [[nodiscard]] Location location() const noexcept { return loc_; }
+  [[nodiscard]] const Location &location() const noexcept { return loc_; }
 
-  [[nodiscard]] std::string locInfo() const noexcept {
+  [[nodiscard]] const std::string locInfo() const noexcept {
     return loc_.file().string() + " " + std::to_string(loc_.row()) + ':' +
            std::to_string(loc_.col());
   }

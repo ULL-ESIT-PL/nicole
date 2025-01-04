@@ -2,10 +2,10 @@
 
 namespace nicole {
 
-std::expected<void, Error> TokenStream::eat() const noexcept {
+const std::expected<std::monostate, Error> TokenStream::eat() noexcept {
   if (currentPos_ < tokens_.size()) {
     ++currentPos_;
-    return std::expected<void, Error>{};
+    return std::expected<std::monostate, Error>{std::monostate{}};
   }
   return std::unexpected{
       Error{ERROR_TYPE::EAT, "invalid access to tokens while eating"}};
@@ -15,14 +15,14 @@ bool TokenStream::isEnd() const noexcept {
   return currentPos_ == tokens_.size();
 }
 
-std::expected<Token, Error> TokenStream::current() const noexcept {
+const std::expected<Token, Error> TokenStream::current() const noexcept {
   if (currentPos_ < tokens_.size())
     return tokens_[currentPos_];
   return std::unexpected{
       Error{ERROR_TYPE::CURRENT, "invalid access to tokens"}};
 }
 
-std::expected<Token, Error>
+const std::expected<Token, Error>
 TokenStream::lookAhead(const size_t pos) const noexcept {
   if (currentPos_ + pos < tokens_.size())
     return tokens_[currentPos_ + pos];
@@ -30,7 +30,7 @@ TokenStream::lookAhead(const size_t pos) const noexcept {
       Error{ERROR_TYPE::LOOK_AHEAD, "invalid access to tokens"}};
 }
 
-std::expected<bool, Error>
+const std::expected<bool, Error>
 TokenStream::isCurrentTokenType(const TokenType type) const noexcept {
   if (currentPos_ < tokens_.size())
     return tokens_[currentPos_].type() == type;
@@ -54,16 +54,16 @@ bool TokenStream::isTokenAheadBeforeSemicolon(
   return foundToken;
 }
 
-std::expected<void, Error>
+const std::expected<std::monostate, Error>
 TokenStream::insertAfter(const TokenStream &tkStream,
-                         const size_t pos) const noexcept {
+                         const size_t pos) noexcept {
   if (pos == std::numeric_limits<int>::infinity()) {
     return std::unexpected{Error{ERROR_TYPE::INSERT_AFTER,
                                  "cannot insert after the given position"}};
   }
   tokens_.insert(tokens_.begin() + static_cast<long>(pos), tkStream.begin(),
                  tkStream.end());
-  return std::expected<void, Error>{};
+  return std::expected<std::monostate, Error>{std::monostate{}};
 }
 
 } // namespace nicole

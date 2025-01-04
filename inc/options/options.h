@@ -7,10 +7,10 @@ namespace nicole {
 
 class Options final {
 private:
-  bool help_{false};
-  bool optimize_{false};
-  std::string binaryName_{""};
-  std::filesystem::path entryFilePath_{""};
+  bool help_;
+  bool optimize_;
+  std::string binaryName_;
+  std::filesystem::path entryFilePath_;
 
 public:
   explicit Options(const bool help, const bool optimize,
@@ -23,9 +23,11 @@ public:
 
   [[nodiscard]] bool optimize() const noexcept { return optimize_; }
 
-  [[nodiscard]] std::string binaryName() const noexcept { return binaryName_; }
+  [[nodiscard]] const std::string &binaryName() const noexcept {
+    return binaryName_;
+  }
 
-  [[nodiscard]] std::filesystem::path entryFilePath() const noexcept {
+  [[nodiscard]] const std::filesystem::path &entryFilePath() const noexcept {
     return entryFilePath_;
   }
 };

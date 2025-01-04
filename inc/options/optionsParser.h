@@ -16,7 +16,7 @@ private:
   [[nodiscard]] static bool isOption(const std::string_view argument) noexcept;
 
 public:
-  [[nodiscard]] static std::expected<Options, Error>
+  [[nodiscard]] static const std::expected<Options, Error>
   parse(const std::vector<std::string_view> &arguments) noexcept;
 };
 

@@ -48,6 +48,7 @@ enum class TokenType {
   RETURN,
   FUNCTION,
 
+  ENUM,
   STRUCT,
   CLASS,
   PRIVATE,
@@ -59,6 +60,7 @@ enum class TokenType {
   THIS,
   OVERRIDE,
   CONSTRUCTOR,
+  DESTRUCTOR,
   SUPER,
 
   OR,
