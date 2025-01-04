@@ -22,9 +22,11 @@ public:
 
   [[nodiscard]] TokenType type() const noexcept { return type_; }
 
-  [[nodiscard]] RegexWrapper pattern() const noexcept { return pattern_; }
+  [[nodiscard]] const RegexWrapper &pattern() const noexcept {
+    return pattern_;
+  }
 
-  [[nodiscard]] std::string rawPattern() const noexcept {
+  [[nodiscard]] const std::string rawPattern() const noexcept {
     return pattern_.str();
   }
 
