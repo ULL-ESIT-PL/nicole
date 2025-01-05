@@ -1,10 +1,16 @@
+#CompileFlags:
+ # Add:
+  #  - "-I/usr/lib/gcc/x86_64-redhat-linux/14/../../../../include/c++/14"
+   # - "-I/usr/lib/gcc/x86_64-redhat-linux/14/../../../../include/c++/14/x86_64-redhat-linux"
+    #- "-I/usr/lib/gcc/x86_64-redhat-linux/14/../../../../include/c++/14/backward"
+#    - "-I/usr/bin/../lib/clang/19/include"
+ #   - "-I/usr/local/include"
+  #  - "-I/usr/include"
+   # - "compile_commands.json"
+    #- "--std=c++23"
+    
 CompileFlags:
   Add:
-    - "-I/usr/lib/gcc/x86_64-redhat-linux/14/../../../../include/c++/14"
-    - "-I/usr/lib/gcc/x86_64-redhat-linux/14/../../../../include/c++/14/x86_64-redhat-linux"
-    - "-I/usr/lib/gcc/x86_64-redhat-linux/14/../../../../include/c++/14/backward"
-    - "-I/usr/bin/../lib/clang/19/include"
-    - "-I/usr/local/include"
     - "-I/usr/include"
-    #- "compile_commands.json"
+    - "-I/usr/local/include"
     - "--std=c++23"
