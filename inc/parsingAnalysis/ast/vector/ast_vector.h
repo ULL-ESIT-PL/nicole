@@ -1,5 +1,5 @@
-#ifndef AST_CASE_H
-#define AST_CASE_H
+#ifndef AST_VECTOR_H
+#define AST_VECTOR_H
 
 #include "../ast.h"
 #include <memory>
@@ -7,16 +7,16 @@
 
 namespace nicole {
 
-class AST_CASE : public AST {
+class AST_VECTOR : public AST {
 private:
   std::string type_;
   std::vector<std::shared_ptr<AST>> values_;
 
 public:
-  explicit AST_CASE(const std::string &type,
+  explicit AST_VECTOR(const std::string &type,
                     const std::vector<std::shared_ptr<AST>> &values,
                     const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::CASE, sourceLocation), type_{type}, values_{values} {}
+      : AST(AST_TYPE::VECTOR, sourceLocation), type_{type}, values_{values} {}
 
   [[nodiscard]] const std::string &type() const noexcept { return type_; }
 

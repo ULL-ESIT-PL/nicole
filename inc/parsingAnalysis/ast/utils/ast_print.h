@@ -1,22 +1,22 @@
 #ifndef AST_PRINT_H
 #define AST_PRINT_H
 
-#include "../ast.h"
+#include "../statements/ast_comma.h"
 #include <memory>
 
 namespace nicole {
 
 class AST_PRINT : public AST {
 private:
-  std::shared_ptr<AST> value_;
+  std::shared_ptr<AST_COMMA> values_;
 
 public:
-  explicit AST_PRINT(const std::shared_ptr<AST> &value,
+  explicit AST_PRINT(const std::shared_ptr<AST_COMMA> &values,
                      const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::PRINT, sourceLocation), value_{value} {}
+      : AST(AST_TYPE::PRINT, sourceLocation), values_{values} {}
 
-  [[nodiscard]] const std::shared_ptr<AST> &value() const noexcept {
-    return value_;
+  [[nodiscard]] const std::shared_ptr<AST_COMMA> &values() const noexcept {
+    return values_;
   }
 };
 

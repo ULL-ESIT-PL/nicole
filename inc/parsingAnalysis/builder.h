@@ -7,6 +7,10 @@
 #include "ast/assignments/ast_selfMult.h"
 #include "ast/assignments/ast_selfSub.h"
 
+#include "ast/functions/ast_funcCall.h"
+#include "ast/functions/ast_funcDecl.h"
+#include "ast/functions/ast_return.h"
+
 #include "ast/literals/ast_bool.h"
 #include "ast/literals/ast_char.h"
 #include "ast/literals/ast_double.h"
@@ -33,7 +37,12 @@
 #include "ast/operators/unary/ast_neg.h"
 #include "ast/operators/unary/ast_not.h"
 
+#include "ast/vector/ast_vector.h"
+
+#include "ast/userTypes/ast_class.h"
 #include "ast/userTypes/ast_enum.h"
+#include "ast/userTypes/ast_struct.h"
+
 #include "ast/utils/ast_import.h"
 #include "ast/utils/ast_print.h"
 
@@ -88,6 +97,10 @@ public:
                const SourceLocation &sourceLocation) noexcept;
 
   // Vectors
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_VECTOR>, Error>
+  createVector(const std::string type,
+               const std::vector<std::shared_ptr<AST_VECTOR>> values,
+               const SourceLocation &sourceLocation) noexcept;
 
   // Pointers
 
@@ -197,7 +210,7 @@ public:
 
   // Utils
   [[nodiscard]] static std::expected<std::shared_ptr<AST_PRINT>, Error>
-  createPrint(const std::shared_ptr<AST> &value,
+  createPrint(const std::shared_ptr<AST_COMMA> &values,
               const SourceLocation &sourceLocation) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_IMPORT>, Error>
@@ -268,8 +281,41 @@ public:
                 const SourceLocation &sourceLocation) noexcept;
 
   // Functions
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_FUNC_CALL>, Error>
+  createFunCall(const std::string &id,
+                const std::vector<std::shared_ptr<AST>> &parameters,
+                const SourceLocation &sourceLocation) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
+  createFuncDecl(const std::string &id, const Parameters &params,
+                 const std::string &returnType,
+                 const std::shared_ptr<AST_BODY> &body,
+                 const SourceLocation &sourceLocation) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_RETURN>, Error>
+  createReturn(const std::shared_ptr<AST> &value,
+               const SourceLocation &sourceLocation) noexcept;
 
   // Usert types
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_ENUM>, Error>
+  createEnum(const std::vector<std::string> &enumIdentifiers,
+             const SourceLocation &sourceLocation) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_STRUCT>, Error>
+  createStruct(const std::string &id, const Attributes &attributes,
+               const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
+               const std::shared_ptr<AST_FUNC_DECL> &constructor,
+               const std::shared_ptr<AST_FUNC_DECL> &destructor,
+               const std::shared_ptr<AST_FUNC_DECL> &addOverloading,
+               const SourceLocation &sourceLocation) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_CLASS>, Error>
+  createClass(const std::string &id, const Attributes &attributes,
+              const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
+              const std::shared_ptr<AST_FUNC_DECL> &constructor,
+              const std::shared_ptr<AST_FUNC_DECL> &destructor,
+              const std::shared_ptr<AST_FUNC_DECL> &addOverloading,
+              const SourceLocation &sourceLocation) noexcept;
 
   // Chained expression
 };

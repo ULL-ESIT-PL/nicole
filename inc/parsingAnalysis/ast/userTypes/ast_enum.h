@@ -13,7 +13,7 @@ private:
 
 public:
   explicit AST_ENUM(const std::vector<std::string> &enumIdentifiers,
-                          const SourceLocation &sourceLocation) noexcept
+                    const SourceLocation &sourceLocation) noexcept
       : AST(AST_TYPE::ENUM, sourceLocation), enumIdentifiers_{enumIdentifiers} {
   }
 
