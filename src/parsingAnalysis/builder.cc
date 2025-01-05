@@ -181,24 +181,24 @@ Builder::createAnd(const Token &op, const std::shared_ptr<AST> &left,
   return astAnd;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_NEG>
-createNeg(const Token &op, const std::shared_ptr<AST> &value,
+std::shared_ptr<AST_NEG>
+Builder::createNeg(const Token &op, const std::shared_ptr<AST> &value,
           const SourceLocation &sourceLocation) noexcept {
   const auto astNeg{std::make_shared<AST_NEG>(op, value, sourceLocation)};
   value->setFather(astNeg);
   return astNeg;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_NOT>
-createNot(const Token &op, const std::shared_ptr<AST> &value,
+std::shared_ptr<AST_NOT>
+Builder::createNot(const Token &op, const std::shared_ptr<AST> &value,
           const SourceLocation &sourceLocation) noexcept {
   const auto astNot{std::make_shared<AST_NOT>(op, value, sourceLocation)};
   value->setFather(astNot);
   return astNot;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_INCREMENT>
-createIncrement(const Token &op, const std::shared_ptr<AST> &value,
+std::shared_ptr<AST_INCREMENT>
+Builder::createIncrement(const Token &op, const std::shared_ptr<AST> &value,
                 const SourceLocation &sourceLocation) noexcept {
   const auto astIncrement{
       std::make_shared<AST_INCREMENT>(op, value, sourceLocation)};
@@ -206,8 +206,8 @@ createIncrement(const Token &op, const std::shared_ptr<AST> &value,
   return astIncrement;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_DECREMENT>
-createDecrement(const Token &op, const std::shared_ptr<AST> &value,
+std::shared_ptr<AST_DECREMENT>
+Builder::createDecrement(const Token &op, const std::shared_ptr<AST> &value,
                 const SourceLocation &sourceLocation) noexcept {
   const auto astDecrement{
       std::make_shared<AST_DECREMENT>(op, value, sourceLocation)};
@@ -215,23 +215,68 @@ createDecrement(const Token &op, const std::shared_ptr<AST> &value,
   return astDecrement;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_PRINT>
-createPrint(const std::shared_ptr<AST> &value,
+std::shared_ptr<AST_ASSIGNMENT>
+Builder::createAssignment(const std::string &id, const std::shared_ptr<AST> &value,
+                 const SourceLocation &sourceLocation) noexcept {
+  const auto astAssignment{
+      std::make_shared<AST_ASSIGNMENT>(id, value, sourceLocation)};
+  value->setFather(astAssignment);
+  return astAssignment;
+}
+
+std::shared_ptr<AST_SELF_ADD>
+Builder::createSelfAdd(const std::string &id, const std::shared_ptr<AST> &value,
+              const SourceLocation &sourceLocation) noexcept {
+  const auto astSelfAdd{
+      std::make_shared<AST_SELF_ADD>(id, value, sourceLocation)};
+  value->setFather(astSelfAdd);
+  return astSelfAdd;
+}
+
+std::shared_ptr<AST_SELF_SUB>
+Builder::createSelfSub(const std::string &id, const std::shared_ptr<AST> &value,
+              const SourceLocation &sourceLocation) noexcept {
+  const auto astSelfSub{
+      std::make_shared<AST_SELF_SUB>(id, value, sourceLocation)};
+  value->setFather(astSelfSub);
+  return astSelfSub;
+}
+
+std::shared_ptr<AST_SELF_MULT>
+Builder::createSelfMult(const std::string &id, const std::shared_ptr<AST> &value,
+               const SourceLocation &sourceLocation) noexcept {
+  const auto astSelfMult{
+      std::make_shared<AST_SELF_MULT>(id, value, sourceLocation)};
+  value->setFather(astSelfMult);
+  return astSelfMult;
+}
+
+std::shared_ptr<AST_SELF_DIV>
+Builder::createSelfDiv(const std::string &id, const std::shared_ptr<AST> &value,
+              const SourceLocation &sourceLocation) noexcept {
+  const auto astSelfDiv{
+      std::make_shared<AST_SELF_DIV>(id, value, sourceLocation)};
+  value->setFather(astSelfDiv);
+  return astSelfDiv;
+}
+
+std::shared_ptr<AST_PRINT>
+Builder::createPrint(const std::shared_ptr<AST> &value,
             const SourceLocation &sourceLocation) noexcept {
   const auto astPrint{std::make_shared<AST_PRINT>(value, sourceLocation)};
   value->setFather(astPrint);
   return astPrint;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_IMPORT>
-createImport(const std::filesystem::path &path,
+std::shared_ptr<AST_IMPORT>
+Builder::createImport(const std::filesystem::path &path,
              const SourceLocation &sourceLocation) noexcept {
   const auto astImport{std::make_shared<AST_IMPORT>(path, sourceLocation)};
   return astImport;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_STATEMENT>
-createStatement(const std::shared_ptr<AST> &expression,
+std::shared_ptr<AST_STATEMENT>
+Builder::createStatement(const std::shared_ptr<AST> &expression,
                 const SourceLocation &sourceLocation) noexcept {
   const auto astStatement{
       std::make_shared<AST_STATEMENT>(expression, sourceLocation)};
@@ -239,8 +284,8 @@ createStatement(const std::shared_ptr<AST> &expression,
   return astStatement;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_BODY>
-createBody(const std::vector<std::shared_ptr<AST_STATEMENT>> &body,
+std::shared_ptr<AST_BODY>
+Builder::createBody(const std::vector<std::shared_ptr<AST_STATEMENT>> &body,
            const SourceLocation &sourceLocation) noexcept {
   const auto astBody{std::make_shared<AST_BODY>(body, sourceLocation)};
   const std::vector<std::shared_ptr<AST_STATEMENT>> &statements{
@@ -251,8 +296,8 @@ createBody(const std::vector<std::shared_ptr<AST_STATEMENT>> &body,
   return astBody;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_COMMA>
-createCOMMA(const std::vector<std::shared_ptr<AST_STATEMENT>> &body,
+std::shared_ptr<AST_COMMA>
+Builder::createCOMMA(const std::vector<std::shared_ptr<AST_STATEMENT>> &body,
             const SourceLocation &sourceLocation) noexcept {
   const auto astComma{std::make_shared<AST_COMMA>(body, sourceLocation)};
   const std::vector<std::shared_ptr<AST_STATEMENT>> &statements{
@@ -263,8 +308,8 @@ createCOMMA(const std::vector<std::shared_ptr<AST_STATEMENT>> &body,
   return astComma;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_WHILE>
-createWhile(const std::shared_ptr<AST> &condition,
+std::shared_ptr<AST_WHILE>
+Builder::createWhile(const std::shared_ptr<AST> &condition,
             const std::shared_ptr<AST_BODY> &body,
             const SourceLocation &sourceLocation) noexcept {
   const auto astWhile{
@@ -274,8 +319,8 @@ createWhile(const std::shared_ptr<AST> &condition,
   return astWhile;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_FOR>
-createFor(const std::shared_ptr<AST_COMMA> &init,
+std::shared_ptr<AST_FOR>
+Builder::createFor(const std::shared_ptr<AST_COMMA> &init,
           const std::shared_ptr<AST> &condition,
           const std::shared_ptr<AST_COMMA> &update,
           const std::shared_ptr<AST_BODY> &body,
@@ -289,8 +334,8 @@ createFor(const std::shared_ptr<AST_COMMA> &init,
   return astFor;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_DO_WHILE>
-createDoWhile(const std::shared_ptr<AST_BODY> &body,
+std::shared_ptr<AST_DO_WHILE>
+Builder::createDoWhile(const std::shared_ptr<AST_BODY> &body,
               const std::shared_ptr<AST> &condition,
               const SourceLocation &sourceLocation) noexcept {
   const auto astDoWhile{
@@ -300,31 +345,31 @@ createDoWhile(const std::shared_ptr<AST_BODY> &body,
   return astDoWhile;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_PASS>
-createPass(const std::shared_ptr<AST> &fatherLoop,
+std::shared_ptr<AST_PASS>
+Builder::createPass(const std::shared_ptr<AST> &fatherLoop,
            const SourceLocation &sourceLocation) noexcept {
   const auto astPass{std::make_shared<AST_PASS>(fatherLoop, sourceLocation)};
   return astPass;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_STOP>
-createStop(const std::shared_ptr<AST> &fatherLoop,
+std::shared_ptr<AST_STOP>
+Builder::createStop(const std::shared_ptr<AST> &fatherLoop,
            const SourceLocation &sourceLocation) noexcept {
   const auto astStop{std::make_shared<AST_STOP>(fatherLoop, sourceLocation)};
   return astStop;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_IF>
-createIf(const std::shared_ptr<AST> &condition,
+std::shared_ptr<AST_IF>
+Builder::createIf(const std::shared_ptr<AST> &condition,
          const std::shared_ptr<AST_BODY> &body,
          const std::vector<std::shared_ptr<AST_IF>> &elseIf,
          const std::shared_ptr<AST_BODY> &elseBody,
          const SourceLocation &sourceLocation) noexcept {
-  const auto astIf{std::make_shared<AST_IF>(condition, body, elseIf, elseBody, sourceLocation)};
+  const auto astIf{std::make_shared<AST_IF>(condition, body, elseIf, elseBody,
+                                            sourceLocation)};
   condition->setFather(astIf);
   body->setFather(astIf);
-  const std::vector<std::shared_ptr<AST_IF>> &elseIfs{
-      astIf->elseIf()};
+  const std::vector<std::shared_ptr<AST_IF>> &elseIfs{astIf->elseIf()};
   for (const auto &elseIf_ : elseIfs) {
     elseIf_->setFather(astIf);
   }
@@ -332,8 +377,8 @@ createIf(const std::shared_ptr<AST> &condition,
   return astIf;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_SWITCH>
-createSwitch(const std::shared_ptr<AST> &condition,
+std::shared_ptr<AST_SWITCH>
+Builder::createSwitch(const std::shared_ptr<AST> &condition,
              const std::vector<std::shared_ptr<AST_CASE>> &cases,
              const SourceLocation &sourceLocation) noexcept {
   const auto astSwitch{
@@ -346,8 +391,8 @@ createSwitch(const std::shared_ptr<AST> &condition,
   return astSwitch;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_CASE>
-createCase(const std::shared_ptr<AST> &match,
+std::shared_ptr<AST_CASE>
+Builder::createCase(const std::shared_ptr<AST> &match,
            const std::shared_ptr<AST_BODY> &body,
            const SourceLocation &sourceLocation) noexcept {
   const auto astCase{std::make_shared<AST_CASE>(match, body, sourceLocation)};
@@ -356,8 +401,8 @@ createCase(const std::shared_ptr<AST> &match,
   return astCase;
 }
 
-[[nodiscard]] static std::shared_ptr<AST_TERNARY>
-createTernary(const std::shared_ptr<AST> &condition,
+std::shared_ptr<AST_TERNARY>
+Builder::createTernary(const std::shared_ptr<AST> &condition,
               const std::shared_ptr<AST> &first,
               const std::shared_ptr<AST> &second,
               const SourceLocation &sourceLocation) noexcept {

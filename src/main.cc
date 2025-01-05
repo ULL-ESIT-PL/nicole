@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
   std::shared_ptr<nicole::AST_INT> node1{nicole::Builder::createInt(
       100, nicole::SourceLocation{nicole::Location{"", 0, 0},
                                   nicole::Location{"", 0, 0}})};
-  std::shared_ptr<nicole::AST_ADD>  node2 = nicole::Builder::createAdd(
+  std::shared_ptr<nicole::AST_ADD>  node2 = nicole::Builder::createAdd(nicole::Token{nicole::TokenType::OPERATOR_ADD, "+", nicole::Location{"", 0, 0}}, 
       node, node1,
       nicole::SourceLocation{nicole::Location{"", 0, 0},
                              nicole::Location{"", 0, 0}});

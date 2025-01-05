@@ -15,7 +15,7 @@ public:
   explicit AST_SELF_MULT(const std::string &id,
                           const std::shared_ptr<AST> &value,
                           const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::CASE, sourceLocation), id_{id}, value_{value} {}
+      : AST(AST_TYPE::SELF_MULT, sourceLocation), id_{id}, value_{value} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 

@@ -1,5 +1,5 @@
-#ifndef AST_ASSIGNMENT_H
-#define AST_ASSIGNMENT_H
+#ifndef AST_ENUM_H
+#define AST_ENUM_H
 
 #include "../ast.h"
 #include <string>
@@ -7,12 +7,12 @@
 
 namespace nicole {
 
-class AST_ASSIGNMENT final : public AST {
+class AST_ENUM final : public AST {
 private:
   std::vector<std::string> enumIdentifiers_;
 
 public:
-  explicit AST_ASSIGNMENT(const std::vector<std::string> &enumIdentifiers,
+  explicit AST_ENUM(const std::vector<std::string> &enumIdentifiers,
                           const SourceLocation &sourceLocation) noexcept
       : AST(AST_TYPE::ENUM, sourceLocation), enumIdentifiers_{enumIdentifiers} {
   }

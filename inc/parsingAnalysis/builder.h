@@ -1,6 +1,12 @@
 #ifndef BUILDER_H
 #define BUILDER_H
 
+#include "ast/assignments/ast_selfAdd.h"
+#include "ast/assignments/ast_selfDiv.h"
+#include "ast/assignments/ast_selfMult.h"
+#include "ast/assignments/ast_selfSub.h"
+#include "ast/assignments/ast_assignment.h"
+
 #include "ast/literals/ast_bool.h"
 #include "ast/literals/ast_char.h"
 #include "ast/literals/ast_double.h"
@@ -27,6 +33,7 @@
 #include "ast/operators/unary/ast_neg.h"
 #include "ast/operators/unary/ast_not.h"
 
+#include "ast/userTypes/ast_enum.h"
 #include "ast/utils/ast_import.h"
 #include "ast/utils/ast_print.h"
 
@@ -54,6 +61,7 @@ private:
   Builder() noexcept = delete;
 
 public:
+  // Literals
   [[nodiscard]] static std::shared_ptr<AST_BOOL>
   createBool(const bool value, const SourceLocation &sourceLocation) noexcept;
 
@@ -77,6 +85,11 @@ public:
   createString(const std::string value,
                const SourceLocation &sourceLocation) noexcept;
 
+  // Vectors
+
+  // Pointers
+
+  // Binary
   [[nodiscard]] static std::shared_ptr<AST_ADD>
   createAdd(const Token &op, const std::shared_ptr<AST> &left,
             const std::shared_ptr<AST> &right,
@@ -142,6 +155,7 @@ public:
             const std::shared_ptr<AST> &right,
             const SourceLocation &sourceLocation) noexcept;
 
+  // Unary
   [[nodiscard]] static std::shared_ptr<AST_NEG>
   createNeg(const Token &op, const std::shared_ptr<AST> &value,
             const SourceLocation &sourceLocation) noexcept;
@@ -158,6 +172,28 @@ public:
   createDecrement(const Token &op, const std::shared_ptr<AST> &value,
                   const SourceLocation &sourceLocation) noexcept;
 
+  // Asignment
+  [[nodiscard]] static std::shared_ptr<AST_ASSIGNMENT>
+  createAssignment(const std::string &id, const std::shared_ptr<AST> &value,
+                   const SourceLocation &sourceLocation) noexcept;
+
+  [[nodiscard]] static std::shared_ptr<AST_SELF_ADD>
+  createSelfAdd(const std::string &id, const std::shared_ptr<AST> &value,
+                const SourceLocation &sourceLocation) noexcept;
+
+  [[nodiscard]] static std::shared_ptr<AST_SELF_SUB>
+  createSelfSub(const std::string &id, const std::shared_ptr<AST> &value,
+                const SourceLocation &sourceLocation) noexcept;
+
+  [[nodiscard]] static std::shared_ptr<AST_SELF_MULT>
+  createSelfMult(const std::string &id, const std::shared_ptr<AST> &value,
+                 const SourceLocation &sourceLocation) noexcept;
+
+  [[nodiscard]] static std::shared_ptr<AST_SELF_DIV>
+  createSelfDiv(const std::string &id, const std::shared_ptr<AST> &value,
+                const SourceLocation &sourceLocation) noexcept;
+
+  // Utils
   [[nodiscard]] static std::shared_ptr<AST_PRINT>
   createPrint(const std::shared_ptr<AST> &value,
               const SourceLocation &sourceLocation) noexcept;
@@ -166,6 +202,7 @@ public:
   createImport(const std::filesystem::path &path,
                const SourceLocation &sourceLocation) noexcept;
 
+  // Statements
   [[nodiscard]] static std::shared_ptr<AST_STATEMENT>
   createStatement(const std::shared_ptr<AST> &expression,
                   const SourceLocation &sourceLocation) noexcept;
@@ -178,9 +215,10 @@ public:
   createCOMMA(const std::vector<std::shared_ptr<AST_STATEMENT>> &body,
               const SourceLocation &sourceLocation) noexcept;
 
+  // Loops
   [[nodiscard]] static std::shared_ptr<AST_WHILE>
-  createWhile(const std::shared_ptr<AST_BODY> &body,
-              const std::shared_ptr<AST> &condition,
+  createWhile(const std::shared_ptr<AST> &condition,
+              const std::shared_ptr<AST_BODY> &body,
               const SourceLocation &sourceLocation) noexcept;
 
   [[nodiscard]] static std::shared_ptr<AST_FOR>
@@ -191,8 +229,8 @@ public:
             const SourceLocation &sourceLocation) noexcept;
 
   [[nodiscard]] static std::shared_ptr<AST_DO_WHILE>
-  createDoWhile(const std::shared_ptr<AST> &condition,
-                const std::shared_ptr<AST_BODY> &body,
+  createDoWhile(const std::shared_ptr<AST_BODY> &body,
+                const std::shared_ptr<AST> &condition,
                 const SourceLocation &sourceLocation) noexcept;
 
   [[nodiscard]] static std::shared_ptr<AST_PASS>
@@ -203,6 +241,7 @@ public:
   createStop(const std::shared_ptr<AST> &fatherLoop,
              const SourceLocation &sourceLocation) noexcept;
 
+  // Conditionals
   [[nodiscard]] static std::shared_ptr<AST_IF>
   createIf(const std::shared_ptr<AST> &condition,
            const std::shared_ptr<AST_BODY> &body,
@@ -225,6 +264,12 @@ public:
                 const std::shared_ptr<AST> &first,
                 const std::shared_ptr<AST> &second,
                 const SourceLocation &sourceLocation) noexcept;
+
+  // Functions
+
+  // Usert types
+
+  // Chained expression
 };
 
 } // namespace nicole

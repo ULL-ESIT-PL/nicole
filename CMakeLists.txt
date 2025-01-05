@@ -91,6 +91,7 @@ add_executable(tests
     src/parsingAnalysis/ast/astType.cc 
     src/parsingAnalysis/builder.cc
     src/parsingAnalysis/checkPosition.cc
+    src/parsingAnalysis/ast/functions/parameters.cc
 )
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 
@@ -145,6 +146,7 @@ set(SRC_FILES
     src/parsingAnalysis/ast/astType.cc
     src/parsingAnalysis/builder.cc
     src/parsingAnalysis/checkPosition.cc
+    src/parsingAnalysis/ast/functions/parameters.cc
     
    # src/parsingAnalysis/ast/nodeType.cc
    # src/parsingAnalysis/ast/literals/nodeLiteralChar.cc
