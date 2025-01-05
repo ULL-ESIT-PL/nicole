@@ -1,0 +1,60 @@
+Nicole Grammar
+
+Start -> StatementList
+
+StatementList -> Statement
+
+Statement -> If | switch | while | for | do | def | struct | class | return | import | enum | pass | stop | let | const | auto
+
+If -> if ( or ) { StatementList } elseIfList else { StatementList }
+
+elseIfList -> else if ( or ) { StatementList } elseIfList
+    |
+    |-- empty
+
+switch -> switch ( int | char | bool ) { cases }
+
+cases -> case int | char | bool: { StatementList } cases default { StatementList }
+
+while -> while ( or ) { StatementList }
+
+for -> for ( init; or; comma ) { StatementList }
+
+do -> do { StatementList } while ( or )
+
+def -> def id ( parameters ): id { StatementList }
+
+parameters -> id : type,  parameters
+    |
+    |-- empty
+
+struct -> NOT YET DECIDED
+
+class -> NOT YET DECIDED
+
+return -> return Statement ;
+    |
+    |-- return;
+
+import -> import string;
+
+enum -> enum id { enumValues }
+
+enumValues -> id, enumValues
+    |
+    |-- empty
+
+pass -> pass
+
+stop -> stop
+
+let|const -> let|const id: type = or;
+
+auto -> auto id = or;
+
+or -> and or and
+
+and -> equal and equal
+
+
+SIN ACABAR
