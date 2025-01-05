@@ -1,6 +1,6 @@
 #include "../inc/lexicalAnalysis/nicoleSintax.h"
 #include "../inc/options/optionsParser.h"
-#include "../inc/parsingAnalysis/builder.h"
+#include "../inc/parsingAnalysis/algorithm/topDown.h"
 
 // Just creates a main function for our program like a wrapper
 int main(int argc, char *argv[]) {
@@ -27,25 +27,31 @@ int main(int argc, char *argv[]) {
     return 2;
   }
 
-  for (const auto &token : *result) { 
+  for (const auto &token : *result) {
     std::cout << "Type: " << nicole::tokenTypeToString(token.type())
               << " ---> Raw: " << token.raw()
               << " ---> Loc: " << token.locInfo() << "\n";
   }
 
-  std::shared_ptr<nicole::AST_BOOL> node{nicole::Builder::createBool(
-      true, nicole::SourceLocation{nicole::Location{"", 0, 0},
-                                   nicole::Location{"", 0, 0}})};
-  std::shared_ptr<nicole::AST_INT> node1{nicole::Builder::createInt(
-      100, nicole::SourceLocation{nicole::Location{"", 0, 0},
-                                  nicole::Location{"", 0, 0}})};
-  std::shared_ptr<nicole::AST_ADD>  node2 = nicole::Builder::createAdd(nicole::Token{nicole::TokenType::OPERATOR_ADD, "+", nicole::Location{"", 0, 0}}, 
-      node, node1,
-      nicole::SourceLocation{nicole::Location{"", 0, 0},
-                             nicole::Location{"", 0, 0}});
+  const std::expected<std::shared_ptr<nicole::AST_BOOL>, nicole::Error> node{
+      nicole::Builder::createBool(
+          true, nicole::SourceLocation{nicole::Location{"", 0, 0},
+                                       nicole::Location{"", 0, 0}})};
+  const std::expected<std::shared_ptr<nicole::AST_INT>, nicole::Error> node1{
+      nicole::Builder::createInt(
+          100, nicole::SourceLocation{nicole::Location{"", 0, 0},
+                                      nicole::Location{"", 0, 0}})};
+  const std::expected<std::shared_ptr<nicole::AST_ADD>, nicole::Error> node2 =
+      nicole::Builder::createAdd(
+          nicole::Token{nicole::TokenType::OPERATOR_ADD, "+",
+                        nicole::Location{"", 0, 0}},
+          *node, *node1,
+          nicole::SourceLocation{nicole::Location{"", 0, 0},
+                                 nicole::Location{"", 0, 0}});
 
-  std::cout << node1->value() << " "
-            << nicole::astTypeToStr(node1->father()->type()) << " " << nicole::astTypeToStr(node2->left()->type()) << "\n";
+  std::cout << node1.value() << " "
+            << nicole::astTypeToStr(node1->father()->type()) << " "
+            << nicole::astTypeToStr(node2->left()->type()) << "\n";
 
   return EXIT_SUCCESS;
 }
