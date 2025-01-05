@@ -107,6 +107,8 @@ enum class TokenType {
   SELF_MULT,
   SELF_DIV,
 
+  MAIN,
+
   UNMATCHED, // Para tokens no reconocidos
   ALL
 };

@@ -65,6 +65,8 @@ const Lexer NicoleSintax::createLexer() const noexcept {
       Category{TokenType::OR, "or", false},
       Category{TokenType::AND, "and", false},
 
+      Category{TokenType::MAIN, "main", false},
+
       // avoids the conflic between do and double
       Category{TokenType::ID, "(?!\\b(do)\\b)[a-zA-Z]+[a-zA-Z0-9_]*", false},
 

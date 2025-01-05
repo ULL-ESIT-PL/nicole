@@ -182,6 +182,9 @@ std::string tokenTypeToString(const TokenType &tk) noexcept {
   case TokenType::SELF_DIV:
     return "SELF_DIV";
 
+  case TokenType::MAIN:
+    return "SELF_DIV";
+
   case TokenType::UNMATCHED:
     return "UNMATCHED"; // For unrecognized tokens
   case TokenType::ALL:
