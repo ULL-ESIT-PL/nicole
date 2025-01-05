@@ -49,9 +49,9 @@ int main(int argc, char *argv[]) {
           nicole::SourceLocation{nicole::Location{"", 0, 0},
                                  nicole::Location{"", 0, 0}});
 
-  std::cout << node1.value() << " "
-            << nicole::astTypeToStr(node1->father()->type()) << " "
-            << nicole::astTypeToStr(node2->left()->type()) << "\n";
+  std::cout << (*node1)->value() << " "
+            << nicole::astTypeToStr((*node1)->father()->type()) << " "
+            << nicole::astTypeToStr((*node2)->left()->type()) << "\n";
 
   return EXIT_SUCCESS;
 }
