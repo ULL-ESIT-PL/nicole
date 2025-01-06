@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
     std::cerr << options.error() << "\n";
     return 1;
   } else if (options->help()) {
-    // Mostrar help 
+    // Mostrar help
     return EXIT_SUCCESS;
   }
 

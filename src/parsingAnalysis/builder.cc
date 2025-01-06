@@ -426,6 +426,14 @@ Builder::createCase(const std::shared_ptr<AST> &match,
   return astCase;
 }
 
+std::expected<std::shared_ptr<AST_DEFAULT>, Error>
+Builder::createDefault(const std::shared_ptr<AST_BODY> &body,
+                       const SourceLocation &sourceLocation) noexcept {
+  const auto astDefault{std::make_shared<AST_DEFAULT>(body, sourceLocation)};
+  body->setFather(astDefault);
+  return astDefault;
+}
+
 std::expected<std::shared_ptr<AST_TERNARY>, Error>
 Builder::createTernary(const std::shared_ptr<AST> &condition,
                        const std::shared_ptr<AST> &first,

@@ -129,6 +129,8 @@ std::string astTypeToStr(const AST_TYPE type) noexcept {
     return "SWITCH";
   case AST_TYPE::CASE:
     return "CASE";
+  case AST_TYPE::DEFAULT:
+    return "DEFAULT";
   case AST_TYPE::TERNARY:
     return "TERNARY";
 

@@ -5,14 +5,16 @@
 #include "../builder.h"
 #include "../ast/tree.h"
 #include <set>
+#include <vector>
 
 namespace nicole {
 
 class Parser {
 private:
   Lexer lexer_;
-  TokenStream tkStream_{{}};
+  mutable TokenStream tkStream_{{}};
   std::set<std::filesystem::path> parsedFiles_{};
+  std::vector<Error> erros_{};
 
 public:
   explicit Parser(const std::shared_ptr<Sintax> &sintax) noexcept

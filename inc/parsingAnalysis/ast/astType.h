@@ -79,6 +79,7 @@ IF,
 ELSE_IF,
 SWITCH,
 CASE,
+DEFAULT,
 TERNARY,
 
 // Functions

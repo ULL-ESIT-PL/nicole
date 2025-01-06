@@ -4,7 +4,7 @@ Start -> StatementList
 
 StatementList -> Statement
 
-Statement -> IF | SWITCH | WHILE | FOR | DO | DEF | STRUCT | CLASS | RETURN | IMPORT | ENUM | LET | CONST | AUTO
+Statement -> IF | SWITCH | WHILE | FOR | DO | DEF | STRUCT | CLASS | RETURN | IMPORT | ENUM | LET | CONST | AUTO | selfOperation
 
 IF -> if ( or ) { StatementList } elseIfList else { StatementList }
 
@@ -51,6 +51,8 @@ LET|CONST -> let|const id: type = TERNARY;
 AUTO -> auto id = TERNARY;
     |
     |-- TERNARY
+
+selfOperation -> id posibilities (+=|-=|*=|/=) TERNARY
 
 TERNARY -> ( OR ) ? OR : OR;
     | 

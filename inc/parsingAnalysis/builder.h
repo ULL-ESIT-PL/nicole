@@ -7,6 +7,7 @@
 #include "ast/assignments/ast_selfMult.h"
 #include "ast/assignments/ast_selfSub.h"
 
+#include "ast/conditionals/ast_default.h"
 #include "ast/functions/ast_funcCall.h"
 #include "ast/functions/ast_funcDecl.h"
 #include "ast/functions/ast_return.h"
@@ -266,8 +267,8 @@ public:
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_IF>, Error>
   createElseIf(const std::shared_ptr<AST> &condition,
-           const std::shared_ptr<AST_BODY> &body,
-           const SourceLocation &sourceLocation) noexcept;
+               const std::shared_ptr<AST_BODY> &body,
+               const SourceLocation &sourceLocation) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_SWITCH>, Error>
   createSwitch(const std::shared_ptr<AST> &condition,
@@ -278,6 +279,10 @@ public:
   createCase(const std::shared_ptr<AST> &match,
              const std::shared_ptr<AST_BODY> &body,
              const SourceLocation &sourceLocation) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_DEFAULT>, Error>
+  createDefault(const std::shared_ptr<AST_BODY> &body,
+                const SourceLocation &sourceLocation) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_TERNARY>, Error>
   createTernary(const std::shared_ptr<AST> &condition,
