@@ -4,57 +4,92 @@ Start -> StatementList
 
 StatementList -> Statement
 
-Statement -> If | switch | while | for | do | def | struct | class | return | import | enum | pass | stop | let | const | auto
+Statement -> IF | SWITCH | WHILE | FOR | DO | DEF | STRUCT | CLASS | RETURN | IMPORT | ENUM | LET | CONST | AUTO
 
-If -> if ( or ) { StatementList } elseIfList else { StatementList }
+IF -> if ( or ) { StatementList } elseIfList else { StatementList }
 
 elseIfList -> else if ( or ) { StatementList } elseIfList
     |
     |-- empty
 
-switch -> switch ( int | char | bool ) { cases }
+SWITCH -> switch ( int | char | bool ) { cases }
 
-cases -> case int | char | bool: { StatementList } cases default { StatementList }
+CASES -> case int | char | bool: { StatementList } cases default { StatementList }
 
-while -> while ( or ) { StatementList }
+WHILE -> while ( or ) { StatementList }
 
-for -> for ( init; or; comma ) { StatementList }
+FOR -> for ( init; or; comma ) { StatementList }
 
-do -> do { StatementList } while ( or )
+DO -> do { StatementList } while ( or )
 
-def -> def id ( parameters ): id { StatementList }
+DEF -> def id ( parameters ): id { StatementList }
 
 parameters -> id : type,  parameters
     |
     |-- empty
 
-struct -> NOT YET DECIDED
+STRUCT -> NOT YET DECIDED
 
-class -> NOT YET DECIDED
+CLASS -> NOT YET DECIDED
 
-return -> return Statement ;
+RETURN -> return Statement ;
     |
     |-- return;
 
-import -> import string;
+IMPORT -> import string;
 
-enum -> enum id { enumValues }
+ENUM -> enum id { enumValues }
 
 enumValues -> id, enumValues
     |
     |-- empty
 
-pass -> pass
+LET|CONST -> let|const id: type = TERNARY;
+    |
+    |-- TERNARY
 
-stop -> stop
+AUTO -> auto id = TERNARY;
+    |
+    |-- TERNARY
 
-let|const -> let|const id: type = or;
+TERNARY -> ( OR ) ? OR : OR;
+    | 
+    |-- OR
 
-auto -> auto id = or;
+OR -> AND or AND
+    |
+    |-- AND
 
-or -> and or and
+AND -> EQUAL and EQUAL
+    |
+    |-- EQUAL
 
-and -> equal and equal
+EQUAL -> COMPARE ==|!= COMPARE
+    |
+    |-- COMPARE
 
+COMPARE -> ADD_SUB <|<=|>|>= ADD_SUB
+    |
+    |-- ADD_SUB
 
-SIN ACABAR
+ADD_SUB -> MULT_DIV_MODULE +|- MULT_DIV_MODULE
+    |
+    |-- MULT_DIV_MODULE
+
+MULT_DIV_MODULE -> FACTOR *|/|% FACTOR
+    |
+    |-- FACTOR
+
+FACTOR -> Bool | Int | Double | Float | Char | String | Null | True | False | Vector | (Not|++|--|-) OR | stop | pass | ( OR ) | ID posibilities
+    |
+    |-- empty
+
+Vector -> [ list ]
+
+list -> OR, list
+    |
+    |-- empty
+
+posibilities -> . posibilities | [ OR ] posibilities | ( parameters ) posibilities | { parameters } posibilities
+    |
+    |-- empty
