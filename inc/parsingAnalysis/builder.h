@@ -100,7 +100,7 @@ public:
   // Vectors
   [[nodiscard]] static std::expected<std::shared_ptr<AST_VECTOR>, Error>
   createVector(const std::string type,
-               const std::vector<std::shared_ptr<AST_VECTOR>> values,
+               const std::vector<std::shared_ptr<AST>> values,
                const SourceLocation &sourceLocation) noexcept;
 
   // Pointers
@@ -265,7 +265,7 @@ public:
            const std::shared_ptr<AST_BODY> &elseBody,
            const SourceLocation &sourceLocation) noexcept;
 
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_IF>, Error>
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_ELSE_IF>, Error>
   createElseIf(const std::shared_ptr<AST> &condition,
                const std::shared_ptr<AST_BODY> &body,
                const SourceLocation &sourceLocation) noexcept;
@@ -273,6 +273,7 @@ public:
   [[nodiscard]] static std::expected<std::shared_ptr<AST_SWITCH>, Error>
   createSwitch(const std::shared_ptr<AST> &condition,
                const std::vector<std::shared_ptr<AST_CASE>> &cases,
+               const std::shared_ptr<AST_DEFAULT> &default_,
                const SourceLocation &sourceLocation) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_CASE>, Error>

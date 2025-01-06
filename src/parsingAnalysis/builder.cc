@@ -45,7 +45,7 @@ Builder::createString(const std::string value,
 
 std::expected<std::shared_ptr<AST_VECTOR>, Error>
 Builder::createVector(const std::string type,
-                      const std::vector<std::shared_ptr<AST_VECTOR>> values,
+                      const std::vector<std::shared_ptr<AST>> values,
                       const SourceLocation &sourceLocation) noexcept {
   const auto astVector{
       std::make_shared<AST_VECTOR>(type, values, sourceLocation)};
@@ -392,11 +392,11 @@ Builder::createIf(const std::shared_ptr<AST> &condition,
   return astIf;
 }
 
-std::expected<std::shared_ptr<AST_IF>, Error>
+std::expected<std::shared_ptr<AST_ELSE_IF>, Error>
 Builder::createElseIf(const std::shared_ptr<AST> &condition,
                       const std::shared_ptr<AST_BODY> &body,
                       const SourceLocation &sourceLocation) noexcept {
-  const auto astIf{std::make_shared<AST_IF>(condition, body, sourceLocation)};
+  const auto astIf{std::make_shared<AST_ELSE_IF>(condition, body, sourceLocation)};
   condition->setFather(astIf);
   body->setFather(astIf);
   return astIf;
@@ -405,14 +405,16 @@ Builder::createElseIf(const std::shared_ptr<AST> &condition,
 std::expected<std::shared_ptr<AST_SWITCH>, Error>
 Builder::createSwitch(const std::shared_ptr<AST> &condition,
                       const std::vector<std::shared_ptr<AST_CASE>> &cases,
+                      const std::shared_ptr<AST_DEFAULT> &default_,
                       const SourceLocation &sourceLocation) noexcept {
   const auto astSwitch{
-      std::make_shared<AST_SWITCH>(condition, cases, sourceLocation)};
+      std::make_shared<AST_SWITCH>(condition, cases, default_, sourceLocation)};
   condition->setFather(astSwitch);
   const std::vector<std::shared_ptr<AST_CASE>> &cases_{astSwitch->cases()};
   for (const auto &statement : cases_) {
     statement->setFather(astSwitch);
   }
+  default_->setFather(astSwitch);
   return astSwitch;
 }
 

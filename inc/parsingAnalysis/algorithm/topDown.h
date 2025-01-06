@@ -65,28 +65,28 @@ private:
   [[nodiscard]] const std::expected<std::shared_ptr<AST_DEFAULT>, Error>
   parseDefault() const noexcept;
 
-  [[nodiscard]] const std::expected<std::shared_ptr<AST_BODY>, Error>
+  [[nodiscard]] const std::expected<std::shared_ptr<AST>, Error>
   parseSelfAssigment() const noexcept;
 
-  [[nodiscard]] const std::expected<std::shared_ptr<AST_BODY>, Error>
+  [[nodiscard]] const std::expected<std::shared_ptr<AST>, Error>
   parseVarDecl() const noexcept;
 
-  [[nodiscard]] const std::expected<std::shared_ptr<AST_BODY>, Error>
+  [[nodiscard]] const std::expected<std::shared_ptr<AST>, Error>
   parseTernary() const noexcept;
 
-  [[nodiscard]] const std::expected<std::shared_ptr<AST_BODY>, Error>
-  parseAnd() const noexcept;
-
-  [[nodiscard]] const std::expected<std::shared_ptr<AST_BODY>, Error>
+  [[nodiscard]] const std::expected<std::shared_ptr<AST>, Error>
   parseOr() const noexcept;
 
-  [[nodiscard]] const std::expected<std::shared_ptr<AST_BODY>, Error>
+  [[nodiscard]] const std::expected<std::shared_ptr<AST>, Error>
+  parseAnd() const noexcept;
+
+  [[nodiscard]] const std::expected<std::shared_ptr<AST>, Error>
   parseEqual_NotEqual() const noexcept;
 
-  [[nodiscard]] const std::expected<std::shared_ptr<AST_BODY>, Error>
+  [[nodiscard]] const std::expected<std::shared_ptr<AST>, Error>
   parseCompare() const noexcept;
 
-  [[nodiscard]] const std::expected<std::shared_ptr<AST_BODY>, Error>
+  [[nodiscard]] const std::expected<std::shared_ptr<AST>, Error>
   parseAdd_Sub() const noexcept;
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST>, Error>
@@ -95,11 +95,14 @@ private:
   [[nodiscard]] const std::expected<std::shared_ptr<AST>, Error>
   parseFactor() const noexcept;
 
-  [[nodiscard]] const std::expected<std::shared_ptr<AST_BODY>, Error>
+  [[nodiscard]] const std::expected<std::shared_ptr<AST_VECTOR>, Error>
   parseVector() const noexcept;
 
-  [[nodiscard]] const std::expected<std::shared_ptr<AST_BODY>, Error>
+  [[nodiscard]] const std::expected<Parameters, Error>
   parseParams() const noexcept;
+
+  [[nodiscard]] const std::expected<std::vector<std::shared_ptr<AST>>, Error>
+  parseArguments() const noexcept;
 
 public:
   explicit TopDown(const std::shared_ptr<Sintax> &sintax) noexcept

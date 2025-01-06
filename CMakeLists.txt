@@ -93,6 +93,17 @@ add_executable(tests
     src/parsingAnalysis/checkPosition.cc
     src/parsingAnalysis/ast/functions/parameters.cc
     src/parsingAnalysis/algorithm/topDown.cc
+
+    src/parsingAnalysis/algorithm/productions/parseBinary.cc
+    src/parsingAnalysis/algorithm/productions/parseConditionals.cc
+    src/parsingAnalysis/algorithm/productions/parseDecl.cc
+    src/parsingAnalysis/algorithm/productions/parseFactor.cc
+    src/parsingAnalysis/algorithm/productions/parseFunctions.cc
+    src/parsingAnalysis/algorithm/productions/parseGeneric.cc
+    src/parsingAnalysis/algorithm/productions/parseLoops.cc
+    src/parsingAnalysis/algorithm/productions/parseSelfAssignment.cc
+    src/parsingAnalysis/algorithm/productions/parseUserTypes.cc
+    src/parsingAnalysis/algorithm/productions/parseUtils.cc
 )
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 
@@ -149,6 +160,17 @@ set(SRC_FILES
     src/parsingAnalysis/checkPosition.cc
     src/parsingAnalysis/ast/functions/parameters.cc
     src/parsingAnalysis/algorithm/topDown.cc
+
+    src/parsingAnalysis/algorithm/productions/parseBinary.cc
+    src/parsingAnalysis/algorithm/productions/parseConditionals.cc
+    src/parsingAnalysis/algorithm/productions/parseDecl.cc
+    src/parsingAnalysis/algorithm/productions/parseFactor.cc
+    src/parsingAnalysis/algorithm/productions/parseFunctions.cc
+    src/parsingAnalysis/algorithm/productions/parseGeneric.cc
+    src/parsingAnalysis/algorithm/productions/parseLoops.cc
+    src/parsingAnalysis/algorithm/productions/parseSelfAssignment.cc
+    src/parsingAnalysis/algorithm/productions/parseUserTypes.cc
+    src/parsingAnalysis/algorithm/productions/parseUtils.cc
     
    # src/parsingAnalysis/ast/nodeType.cc
    # src/parsingAnalysis/ast/literals/nodeLiteralChar.cc
