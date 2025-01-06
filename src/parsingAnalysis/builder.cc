@@ -377,18 +377,28 @@ Builder::createStop(const std::shared_ptr<AST> &fatherLoop,
 std::expected<std::shared_ptr<AST_IF>, Error>
 Builder::createIf(const std::shared_ptr<AST> &condition,
                   const std::shared_ptr<AST_BODY> &body,
-                  const std::vector<std::shared_ptr<AST_IF>> &elseIf,
+                  const std::vector<std::shared_ptr<AST_ELSE_IF>> &elseIf,
                   const std::shared_ptr<AST_BODY> &elseBody,
                   const SourceLocation &sourceLocation) noexcept {
   const auto astIf{std::make_shared<AST_IF>(condition, body, elseIf, elseBody,
                                             sourceLocation)};
   condition->setFather(astIf);
   body->setFather(astIf);
-  const std::vector<std::shared_ptr<AST_IF>> &elseIfs{astIf->elseIf()};
+  const std::vector<std::shared_ptr<AST_ELSE_IF>> &elseIfs{astIf->elseIf()};
   for (const auto &elseIf_ : elseIfs) {
     elseIf_->setFather(astIf);
   }
   elseBody->setFather(astIf);
+  return astIf;
+}
+
+std::expected<std::shared_ptr<AST_IF>, Error>
+Builder::createElseIf(const std::shared_ptr<AST> &condition,
+                      const std::shared_ptr<AST_BODY> &body,
+                      const SourceLocation &sourceLocation) noexcept {
+  const auto astIf{std::make_shared<AST_IF>(condition, body, sourceLocation)};
+  condition->setFather(astIf);
+  body->setFather(astIf);
   return astIf;
 }
 
@@ -500,7 +510,7 @@ Builder::createClass(const std::string &id, const Attributes &attributes,
                      const SourceLocation &sourceLocation) noexcept {
   const auto astClass{
       std::make_shared<AST_CLASS>(id, attributes, methods, constructor,
-                                   destructor, addOverloading, sourceLocation)};
+                                  destructor, addOverloading, sourceLocation)};
   const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods__{
       astClass->methods()};
   for (const auto &methods_ : methods__) {

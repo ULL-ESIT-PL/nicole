@@ -1,7 +1,7 @@
 #ifndef AST_IF_H
 #define AST_IF_H
 
-#include "../statements/ast_body.h"
+#include "ast_elseIf.h"
 #include <memory>
 #include <vector>
 
@@ -11,13 +11,13 @@ class AST_IF : public AST {
 private:
   std::shared_ptr<AST> condition_;
   std::shared_ptr<AST_BODY> body_;
-  std::vector<std::shared_ptr<AST_IF>> elseIf_;
+  std::vector<std::shared_ptr<AST_ELSE_IF>> elseIf_;
   std::shared_ptr<AST_BODY> elseBody_;
 
 public:
   explicit AST_IF(const std::shared_ptr<AST> &condition,
                   const std::shared_ptr<AST_BODY> &body,
-                  const std::vector<std::shared_ptr<AST_IF>> &elseIf,
+                  const std::vector<std::shared_ptr<AST_ELSE_IF>> &elseIf,
                   const std::shared_ptr<AST_BODY> &elseBody,
                   const SourceLocation &sourceLocation) noexcept
       : AST(AST_TYPE::IF, sourceLocation), condition_{condition}, body_{body},
@@ -31,7 +31,7 @@ public:
     return body_;
   }
 
-  [[nodiscard]] const std::vector<std::shared_ptr<AST_IF>> &
+  [[nodiscard]] const std::vector<std::shared_ptr<AST_ELSE_IF>> &
   elseIf() const noexcept {
     return elseIf_;
   }

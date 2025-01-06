@@ -76,6 +76,7 @@ STOP,
 
 // Conditionals
 IF,
+ELSE_IF,
 SWITCH,
 CASE,
 TERNARY,

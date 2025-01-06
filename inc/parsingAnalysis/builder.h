@@ -260,8 +260,13 @@ public:
   [[nodiscard]] static std::expected<std::shared_ptr<AST_IF>, Error>
   createIf(const std::shared_ptr<AST> &condition,
            const std::shared_ptr<AST_BODY> &body,
-           const std::vector<std::shared_ptr<AST_IF>> &elseIf,
+           const std::vector<std::shared_ptr<AST_ELSE_IF>> &elseIf,
            const std::shared_ptr<AST_BODY> &elseBody,
+           const SourceLocation &sourceLocation) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_IF>, Error>
+  createElseIf(const std::shared_ptr<AST> &condition,
+           const std::shared_ptr<AST_BODY> &body,
            const SourceLocation &sourceLocation) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_SWITCH>, Error>

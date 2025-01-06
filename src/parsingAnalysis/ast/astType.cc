@@ -123,6 +123,8 @@ std::string astTypeToStr(const AST_TYPE type) noexcept {
     // Conditionals
   case AST_TYPE::IF:
     return "IF";
+  case AST_TYPE::ELSE_IF:
+    return "ELSE_IF";
   case AST_TYPE::SWITCH:
     return "SWITCH";
   case AST_TYPE::CASE:
