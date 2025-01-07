@@ -20,16 +20,15 @@ TEST_CASE("TokenStream operations", "[TokenStream]") {
 
   SECTION("Initial state") {
     REQUIRE(tokenStream.size() == tokens.size());
-    REQUIRE(tokenStream.currentPos().has_value());
-    REQUIRE(tokenStream.currentPos().value() == 0);
+    REQUIRE(tokenStream.currentPos() == 0);
     REQUIRE_FALSE(tokenStream.isEnd());
   }
 
   SECTION("Eating tokens") {
     REQUIRE(tokenStream.eat().has_value());
-    REQUIRE(tokenStream.currentPos().value() == 1);
+    REQUIRE(tokenStream.currentPos() == 1);
     REQUIRE(tokenStream.eat().has_value());
-    REQUIRE(tokenStream.currentPos().value() == 2);
+    REQUIRE(tokenStream.currentPos() == 2);
   }
 
   SECTION("Current token") {

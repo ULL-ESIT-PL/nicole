@@ -26,9 +26,7 @@ public:
 
   [[nodiscard]] const std::expected<std::monostate, Error> eat() noexcept;
 
-  [[nodiscard]] const std::expected<size_t, Error> currentPos() const noexcept {
-    return currentPos_;
-  }
+  [[nodiscard]] size_t currentPos() const noexcept { return currentPos_; }
 
   [[nodiscard]] bool isEnd() const noexcept;
 
