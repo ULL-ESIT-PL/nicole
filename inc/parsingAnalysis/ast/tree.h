@@ -8,14 +8,14 @@ namespace nicole {
 
 class Tree final {
 private:
-  std::shared_ptr<AST_BODY> statements_;
+  std::shared_ptr<AST_BODY> root_;
 
 public:
-  explicit Tree(const std::shared_ptr<AST_BODY> &statements) noexcept
-      : statements_{statements} {}
+  explicit Tree(const std::shared_ptr<AST_BODY> &root) noexcept
+      : root_{root} {}
 
-  [[nodiscard]] const std::shared_ptr<AST_BODY> &statements() const noexcept {
-    return statements_;
+  [[nodiscard]] const std::shared_ptr<AST_BODY> &root() const noexcept {
+    return root_;
   }
 };
 

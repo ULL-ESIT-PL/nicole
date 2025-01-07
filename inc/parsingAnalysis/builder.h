@@ -62,6 +62,10 @@
 #include "ast/conditionals/ast_switch.h"
 #include "ast/conditionals/ast_ternary.h"
 
+#include "ast/chained/ast_chained.h"
+
+#include "ast/tree.h"
+
 #include "../errors.h"
 #include "checkPosition.h"
 #include <expected>
@@ -329,6 +333,14 @@ public:
               const SourceLocation &sourceLocation) noexcept;
 
   // Chained expression
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_CHAINED>, Error>
+  createChained(const std::shared_ptr<AST> &base,
+                const std::vector<std::shared_ptr<AST>> &operations,
+                const SourceLocation &sourceLocation) noexcept;
+
+  // Tree
+  [[nodiscard]] static std::expected<std::shared_ptr<Tree>, Error>
+  createTree(const std::shared_ptr<AST_BODY> &statements) noexcept;
 };
 
 } // namespace nicole

@@ -1,4 +1,5 @@
 #include "../../inc/parsingAnalysis/builder.h"
+#include <cstddef>
 
 namespace nicole {
 
@@ -396,7 +397,8 @@ std::expected<std::shared_ptr<AST_ELSE_IF>, Error>
 Builder::createElseIf(const std::shared_ptr<AST> &condition,
                       const std::shared_ptr<AST_BODY> &body,
                       const SourceLocation &sourceLocation) noexcept {
-  const auto astIf{std::make_shared<AST_ELSE_IF>(condition, body, sourceLocation)};
+  const auto astIf{
+      std::make_shared<AST_ELSE_IF>(condition, body, sourceLocation)};
   condition->setFather(astIf);
   body->setFather(astIf);
   return astIf;
@@ -530,6 +532,33 @@ Builder::createClass(const std::string &id, const Attributes &attributes,
   destructor->setFather(astClass);
   addOverloading->setFather(astClass);
   return astClass;
+}
+
+std::expected<std::shared_ptr<AST_CHAINED>, Error>
+Builder::createChained(const std::shared_ptr<AST> &base,
+                       const std::vector<std::shared_ptr<AST>> &operations,
+                       const SourceLocation &sourceLocation) noexcept {
+  const auto astChained{
+      std::make_shared<AST_CHAINED>(base, operations, sourceLocation)};
+
+  base->setFather(astChained);
+
+  const std::vector<std::shared_ptr<AST>> &operations__{
+      astChained->operations()};
+
+  operations__[0]->setFather(base);
+
+  const std::size_t size{operations__.size()};
+  for (std::size_t i{1}; i < size; ++i) {
+    operations__[i]->setFather(operations__[i - 1]);
+  }
+
+  return astChained;
+}
+
+std::expected<std::shared_ptr<Tree>, Error>
+Builder::createTree(const std::shared_ptr<AST_BODY> &statements) noexcept {
+  return std::make_shared<Tree>(statements);
 }
 
 } // namespace nicole

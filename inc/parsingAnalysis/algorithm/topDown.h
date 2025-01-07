@@ -98,6 +98,9 @@ private:
   [[nodiscard]] const std::expected<std::shared_ptr<AST_VECTOR>, Error>
   parseVector() const noexcept;
 
+  [[nodiscard]] const std::expected<std::shared_ptr<AST_CHAINED>, Error>
+  parseChainedExpression() const noexcept;
+
   [[nodiscard]] const std::expected<Parameters, Error>
   parseParams() const noexcept;
 
@@ -108,7 +111,7 @@ public:
   explicit TopDown(const std::shared_ptr<Sintax> &sintax) noexcept
       : Parser{sintax} {}
 
-  [[nodiscard]] const std::expected<std::shared_ptr<Tree>, Error>
+  [[nodiscard]] const std::expected<std::shared_ptr<Tree>, std::vector<Error>>
   parse(const std::filesystem::path &entryFile) const noexcept override;
 };
 
