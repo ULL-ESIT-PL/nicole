@@ -4,8 +4,7 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_IMPORT>, Error>
 TopDown::parseImport() const noexcept {
-  auto eaten{tkStream_.eat()};
-  if (!eaten) {
+  if (!tkStream_.eat()) {
   }
 
   std::filesystem::path fileName{""};
@@ -38,13 +37,11 @@ TopDown::parseImport() const noexcept {
 
 const std::expected<std::shared_ptr<AST_PRINT>, Error>
 TopDown::parsePrint() const noexcept {
-  auto eaten{tkStream_.eat()};
-  if (!eaten) {
+  if (!tkStream_.eat()) {
   }
 
   if (tkStream_.current()->type() == TokenType::LP) {
-    eaten = tkStream_.eat();
-    if (!eaten) {
+    if (!tkStream_.eat()) {
     }
   } else {
     // error
@@ -56,8 +53,7 @@ TopDown::parsePrint() const noexcept {
   auto expressions{parseComma()};
 
   if (tkStream_.current()->type() == TokenType::RP) {
-    eaten = tkStream_.eat();
-    if (!eaten) {
+    if (!tkStream_.eat()) {
     }
   } else {
     // error
