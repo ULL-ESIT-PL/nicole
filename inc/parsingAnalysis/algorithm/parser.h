@@ -2,8 +2,8 @@
 #define PARSER_H
 
 #include "../../lexicalAnalysis/sintax.h"
-#include "../builder.h"
 #include "../ast/tree.h"
+#include "../builder.h"
 #include <set>
 #include <vector>
 
@@ -15,6 +15,9 @@ protected:
   mutable TokenStream tkStream_{{}};
   mutable std::set<std::filesystem::path> parsedFiles_{};
   mutable std::vector<Error> erros_{};
+  const SourceLocation sourceStub {
+    SourceLocation { Location{"", 0, 0}, Location{"", 0, 0} }
+  };
 
 public:
   explicit Parser(const std::shared_ptr<Sintax> &sintax) noexcept
@@ -22,7 +25,8 @@ public:
 
   virtual ~Parser() noexcept = default;
 
-  [[nodiscard]] virtual const std::expected<std::shared_ptr<Tree>, std::vector<Error>>
+  [[nodiscard]] virtual const std::expected<std::shared_ptr<Tree>,
+                                            std::vector<Error>>
   parse(const std::filesystem::path &entryFile) const noexcept = 0;
 };
 
