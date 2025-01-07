@@ -50,10 +50,72 @@ TopDown::parseStart() const noexcept {
 }
 
 const std::expected<std::shared_ptr<AST_BODY>, Error>
-TopDown::parseBody() const noexcept {}
+TopDown::parseBody() const noexcept {
+  const auto current{tkStream_.current()};
+  if (!current) {
+  }
+
+  if (current->type() == TokenType::LB) {
+    const auto eaten{tkStream_.eat()};
+    if (!eaten) {
+    }
+  } else {
+    // error
+  }
+  std::vector<std::shared_ptr<AST_STATEMENT>> statements;
+  while (tkStream_.currentPos() < tkStream_.size() &&
+         !(*tkStream_.isCurrentTokenType(TokenType::RB))) {
+    const auto node{parseStatement()};
+    if (!node) {}
+    statements.push_back(*node);
+
+    const auto isType{tkStream_.isCurrentTokenType(TokenType::SEMICOLON)};
+    if (!isType) {
+    }
+
+    if (tkStream_.currentPos() < tkStream_.size() && isType) {
+      const auto eaten{tkStream_.eat()};
+      if (!eaten) {
+      }
+    }
+  }
+  const auto eaten{tkStream_.eat()}; // Consume el token "}"
+  if (!eaten) {
+  }
+
+  const auto body{Builder::createBody(statements, sourceStub)};
+  if (!body) {}
+
+  return *body;
+}
 
 const std::expected<std::shared_ptr<AST_COMMA>, Error>
-TopDown::parseComma() const noexcept {}
+TopDown::parseComma() const noexcept {
+  std::vector<std::shared_ptr<AST_STATEMENT>> body;
+  while (tkStream_.currentPos() < tkStream_.size() &&
+         !tkStream_.isCurrentTokenType(TokenType::SEMICOLON)) {
+
+    const auto node{parseVarDecl()};
+
+    if (!node) {
+    }
+
+    const auto statement{Builder::createStatement(*node, sourceStub)};
+    if (!statement) {
+    }
+
+    body.push_back(*statement);
+    if (tkStream_.currentPos() < tkStream_.size() &&
+        tkStream_.isCurrentTokenType(TokenType::COMMA)) {
+      const auto eaten{tkStream_.eat()};
+      if (!eaten) {
+      }
+    } else {
+      break;
+    }
+  }
+  return Builder::createCOMMA(body, sourceStub);
+}
 
 const std::expected<std::shared_ptr<AST_STATEMENT>, Error>
 TopDown::parseStatement() const noexcept {
