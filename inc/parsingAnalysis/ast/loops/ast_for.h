@@ -18,10 +18,9 @@ public:
   explicit AST_FOR(const std::shared_ptr<AST_COMMA> &init,
                    const std::shared_ptr<AST> &condition,
                    const std::shared_ptr<AST_COMMA> &update,
-                   const std::shared_ptr<AST_BODY> &body,
-                   const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::FOR, sourceLocation), init_{init}, condition_{condition},
-        update_{update}, body_{body} {}
+                   const std::shared_ptr<AST_BODY> &body) noexcept
+      : AST(AST_TYPE::FOR), init_{init}, condition_{condition}, update_{update},
+        body_{body} {}
 
   [[nodiscard]] const std::shared_ptr<AST_COMMA> &init() const noexcept {
     return init_;

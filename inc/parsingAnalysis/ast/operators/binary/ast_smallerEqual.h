@@ -15,10 +15,8 @@ private:
 
 public:
   explicit AST_SMALLER_EQUAL(const Token &op, const std::shared_ptr<AST> &left,
-                   const std::shared_ptr<AST> &right,
-                   const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::SMALLER_EQUAL, sourceLocation), op_{op}, left_{left},
-        right_{right} {}
+                             const std::shared_ptr<AST> &right) noexcept
+      : AST(AST_TYPE::SMALLER_EQUAL), op_{op}, left_{left}, right_{right} {}
 
   [[nodiscard]] const Token &p() const noexcept { return op_; }
 

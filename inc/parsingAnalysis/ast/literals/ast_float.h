@@ -10,9 +10,8 @@ private:
   float value_;
 
 public:
-  explicit AST_FLOAT(const float value,
-                     const SourceLocation &sourceLocation) noexcept
-      : AST{AST_TYPE::FLOAT, sourceLocation}, value_{value} {}
+  explicit AST_FLOAT(const float value) noexcept
+      : AST{AST_TYPE::FLOAT}, value_{value} {}
 
   ~AST_FLOAT() noexcept = default;
 

@@ -15,9 +15,6 @@ protected:
   mutable TokenStream tkStream_{{}};
   mutable std::set<std::filesystem::path> parsedFiles_{};
   mutable std::vector<Error> erros_{};
-  const SourceLocation sourceStub {
-    SourceLocation { Location{"", 0, 0}, Location{"", 0, 0} }
-  };
 
 public:
   explicit Parser(const std::shared_ptr<Sintax> &sintax) noexcept

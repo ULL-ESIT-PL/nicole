@@ -13,10 +13,8 @@ private:
 
 public:
   explicit AST_CONST_DECL(const std::string &id, const std::string &type,
-                        const std::shared_ptr<AST> &value,
-                        const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::CONST_DECL, sourceLocation), id_{id}, type_{type},
-        value_{value} {}
+                          const std::shared_ptr<AST> &value) noexcept
+      : AST(AST_TYPE::CONST_DECL), id_{id}, type_{type}, value_{value} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 

@@ -34,20 +34,13 @@ int main(int argc, char *argv[]) {
   }
 
   const std::expected<std::shared_ptr<nicole::AST_BOOL>, nicole::Error> node{
-      nicole::Builder::createBool(
-          true, nicole::SourceLocation{nicole::Location{"", 0, 0},
-                                       nicole::Location{"", 0, 0}})};
+      nicole::Builder::createBool(true)};
   const std::expected<std::shared_ptr<nicole::AST_INT>, nicole::Error> node1{
-      nicole::Builder::createInt(
-          100, nicole::SourceLocation{nicole::Location{"", 0, 0},
-                                      nicole::Location{"", 0, 0}})};
+      nicole::Builder::createInt(100)};
   const std::expected<std::shared_ptr<nicole::AST_ADD>, nicole::Error> node2 =
-      nicole::Builder::createAdd(
-          nicole::Token{nicole::TokenType::OPERATOR_ADD, "+",
-                        nicole::Location{"", 0, 0}},
-          *node, *node1,
-          nicole::SourceLocation{nicole::Location{"", 0, 0},
-                                 nicole::Location{"", 0, 0}});
+      nicole::Builder::createAdd(nicole::Token{nicole::TokenType::OPERATOR_ADD,
+                                               "+", nicole::Location{"", 0, 0}},
+                                 *node, *node1);
 
   std::cout << (*node1)->value() << " "
             << nicole::astTypeToStr((*node1)->father()->type()) << " "

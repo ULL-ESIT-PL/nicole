@@ -15,10 +15,8 @@ private:
 
 public:
   explicit AST_MODULE(const Token &op, const std::shared_ptr<AST> &left,
-                   const std::shared_ptr<AST> &right,
-                   const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::MODULE, sourceLocation), op_{op}, left_{left},
-        right_{right} {}
+                      const std::shared_ptr<AST> &right) noexcept
+      : AST(AST_TYPE::MODULE), op_{op}, left_{left}, right_{right} {}
 
   [[nodiscard]] const Token &op() const noexcept { return op_; }
 

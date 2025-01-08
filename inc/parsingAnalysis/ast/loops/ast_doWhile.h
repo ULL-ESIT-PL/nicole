@@ -13,10 +13,8 @@ private:
 
 public:
   explicit AST_DO_WHILE(const std::shared_ptr<AST_BODY> &body,
-                        const std::shared_ptr<AST> &condition,
-                        const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::DO_WHILE, sourceLocation), body_{body},
-        condition_{condition} {}
+                        const std::shared_ptr<AST> &condition) noexcept
+      : AST(AST_TYPE::DO_WHILE), body_{body}, condition_{condition} {}
 
   [[nodiscard]] const std::shared_ptr<AST_BODY> &body() const noexcept {
     return body_;

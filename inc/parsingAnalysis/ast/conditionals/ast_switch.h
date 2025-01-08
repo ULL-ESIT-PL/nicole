@@ -16,10 +16,9 @@ private:
 public:
   explicit AST_SWITCH(const std::shared_ptr<AST> &condition,
                       const std::vector<std::shared_ptr<AST_CASE>> &cases,
-                      const std::shared_ptr<AST_DEFAULT>& default__,
-                      const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::SWITCH, sourceLocation), condition_{condition},
-        cases_{cases}, default_{default__} {}
+                      const std::shared_ptr<AST_DEFAULT> &default__) noexcept
+      : AST(AST_TYPE::SWITCH), condition_{condition}, cases_{cases},
+        default_{default__} {}
 
   [[nodiscard]] const std::shared_ptr<AST> &condition() const noexcept {
     return condition_;
@@ -30,7 +29,8 @@ public:
     return cases_;
   }
 
-  [[nodiscard]] const std::shared_ptr<AST_DEFAULT> &defaultCase() const noexcept {
+  [[nodiscard]] const std::shared_ptr<AST_DEFAULT> &
+  defaultCase() const noexcept {
     return default_;
   }
 };

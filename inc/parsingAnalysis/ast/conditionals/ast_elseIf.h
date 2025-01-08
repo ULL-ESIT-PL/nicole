@@ -14,9 +14,8 @@ private:
 
 public:
   explicit AST_ELSE_IF(const std::shared_ptr<AST> &condition,
-                  const std::shared_ptr<AST_BODY> &body,
-                  const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::ELSE_IF, sourceLocation), condition_{condition}, body_{body} {}
+                       const std::shared_ptr<AST_BODY> &body) noexcept
+      : AST(AST_TYPE::ELSE_IF), condition_{condition}, body_{body} {}
 
   [[nodiscard]] const std::shared_ptr<AST> &condition() const noexcept {
     return condition_;

@@ -10,9 +10,8 @@ private:
   double value_;
 
 public:
-  explicit AST_DOUBLE(const double value,
-                      const SourceLocation &sourceLocation) noexcept
-      : AST{AST_TYPE::DOUBLE, sourceLocation}, value_{value} {}
+  explicit AST_DOUBLE(const double value) noexcept
+      : AST{AST_TYPE::DOUBLE}, value_{value} {}
 
   ~AST_DOUBLE() noexcept = default;
 

@@ -10,9 +10,8 @@ private:
   bool value_;
 
 public:
-  explicit AST_BOOL(const bool value,
-                    const SourceLocation &sourceLocation) noexcept
-      : AST{AST_TYPE::BOOL, sourceLocation}, value_{value} {}
+  explicit AST_BOOL(const bool value) noexcept
+      : AST{AST_TYPE::BOOL}, value_{value} {}
 
   ~AST_BOOL() noexcept = default;
 

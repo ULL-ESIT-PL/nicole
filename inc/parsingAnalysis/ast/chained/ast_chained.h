@@ -13,11 +13,10 @@ private:
   std::vector<std::shared_ptr<AST>> operations_;
 
 public:
-  explicit AST_CHAINED(const std::shared_ptr<AST> &base,
-                       const std::vector<std::shared_ptr<AST>> &operations,
-                       const SourceLocation &sourceLocation) noexcept
-      : AST{AST_TYPE::CHAIN, sourceLocation}, base_{base},
-        operations_{operations} {}
+  explicit AST_CHAINED(
+      const std::shared_ptr<AST> &base,
+      const std::vector<std::shared_ptr<AST>> &operations) noexcept
+      : AST{AST_TYPE::CHAIN}, base_{base}, operations_{operations} {}
 
   [[nodiscard]] const std::shared_ptr<AST> &base() const noexcept {
     return base_;

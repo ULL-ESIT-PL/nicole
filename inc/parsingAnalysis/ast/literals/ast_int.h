@@ -10,9 +10,8 @@ private:
   int value_;
 
 public:
-  explicit AST_INT(const int value,
-                   const SourceLocation &sourceLocation) noexcept
-      : AST{AST_TYPE::INT, sourceLocation}, value_{value} {}
+  explicit AST_INT(const int value) noexcept
+      : AST{AST_TYPE::INT}, value_{value} {}
 
   ~AST_INT() noexcept = default;
 

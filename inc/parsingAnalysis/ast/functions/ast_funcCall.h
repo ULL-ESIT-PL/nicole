@@ -13,11 +13,10 @@ private:
   std::vector<std::shared_ptr<AST>> parameters_;
 
 public:
-  explicit AST_FUNC_CALL(const std::string &id,
-                         const std::vector<std::shared_ptr<AST>> &parameters,
-                         const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::FUN_CALL, sourceLocation), id_{id},
-        parameters_{parameters} {}
+  explicit AST_FUNC_CALL(
+      const std::string &id,
+      const std::vector<std::shared_ptr<AST>> &parameters) noexcept
+      : AST(AST_TYPE::FUN_CALL), id_{id}, parameters_{parameters} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 

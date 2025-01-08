@@ -12,9 +12,9 @@ private:
   std::vector<std::shared_ptr<AST_STATEMENT>> body_;
 
 public:
-  explicit AST_COMMA(const std::vector<std::shared_ptr<AST_STATEMENT>> &body,
-                     const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::COMMA, sourceLocation), body_{body} {}
+  explicit AST_COMMA(
+      const std::vector<std::shared_ptr<AST_STATEMENT>> &body) noexcept
+      : AST(AST_TYPE::COMMA), body_{body} {}
 
   [[nodiscard]] const std::vector<std::shared_ptr<AST_STATEMENT>> &
   body() const noexcept {

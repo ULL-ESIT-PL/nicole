@@ -11,9 +11,8 @@ private:
   std::shared_ptr<AST> expression_;
 
 public:
-  explicit AST_RETURN(const std::shared_ptr<AST> &expression,
-                   const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::RETURN, sourceLocation), expression_{expression} {}
+  explicit AST_RETURN(const std::shared_ptr<AST> &expression) noexcept
+      : AST(AST_TYPE::RETURN), expression_{expression} {}
 
   [[nodiscard]] const std::shared_ptr<AST> &expression() const noexcept {
     return expression_;

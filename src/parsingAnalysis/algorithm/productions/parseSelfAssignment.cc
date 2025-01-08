@@ -3,6 +3,6 @@
 namespace nicole {
 
 const std::expected<std::shared_ptr<AST>, Error>
-TopDown::parseSelfAssignment() const noexcept {}
+TopDown::parseSelfAssignment() const noexcept { return nullptr; }
 
 } // namespace nicole

@@ -49,7 +49,7 @@ TopDown::parseIf() const noexcept {
     }
   }
 
-  return Builder::createIf(*condition, *ifBody, elseIfs, *elseBody, sourceStub);
+  return Builder::createIf(*condition, *ifBody, elseIfs, *elseBody);
 }
 
 const std::expected<std::shared_ptr<AST_ELSE_IF>, Error>
@@ -81,7 +81,7 @@ TopDown::parseElseIf() const noexcept {
   const auto ifBody{parseBody()};
   if (!ifBody) {
   }
-  return Builder::createElseIf(*condition, *ifBody, sourceStub);
+  return Builder::createElseIf(*condition, *ifBody);
 }
 
 const std::expected<std::shared_ptr<AST_SWITCH>, Error>
@@ -131,8 +131,7 @@ TopDown::parseSwitch() const noexcept {
     // error
   }
 
-  const auto astSwitch{
-      Builder::createSwitch(*match, cases, *defaultCase, sourceStub)};
+  const auto astSwitch{Builder::createSwitch(*match, cases, *defaultCase)};
   if (!astSwitch) {
   }
   return astSwitch;
@@ -169,7 +168,7 @@ TopDown::parseCase() const noexcept {
   const auto body{parseBody()};
   if (!body) {
   }
-  return Builder::createCase(*match, *body, sourceStub);
+  return Builder::createCase(*match, *body);
 }
 
 const std::expected<std::shared_ptr<AST_DEFAULT>, Error>
@@ -193,7 +192,7 @@ TopDown::parseDefault() const noexcept {
   const auto body{parseBody()};
   if (!body) {
   }
-  return Builder::createDefault(*body, sourceStub);
+  return Builder::createDefault(*body);
 }
 
 const std::expected<std::shared_ptr<AST>, Error>
@@ -234,7 +233,7 @@ TopDown::parseTernary() const noexcept {
     const auto second{parseOr()};
     if (!second) {
     }
-    return Builder::createTernary(*condition, *first, *second, sourceStub);
+    return Builder::createTernary(*condition, *first, *second);
   }
   return parseOr();
 }

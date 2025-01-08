@@ -105,6 +105,12 @@ add_executable(tests
     src/parsingAnalysis/algorithm/productions/parseUserTypes.cc
     src/parsingAnalysis/algorithm/productions/parseUtils.cc
     src/parsingAnalysis/algorithm/productions/parseChained.cc
+
+    test/parsingAnalysis/test_ast_literals.cc
+    test/parsingAnalysis/test_ast_vector.cc 
+    test/parsingAnalysis/test_ast_variables.cc 
+    test/parsingAnalysis/test_ast_utils.cc 
+    test/parsingAnalysis/test_ast_statements.cc 
 )
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 

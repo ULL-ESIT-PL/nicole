@@ -12,10 +12,8 @@ private:
   std::vector<std::string> enumIdentifiers_;
 
 public:
-  explicit AST_ENUM(const std::vector<std::string> &enumIdentifiers,
-                    const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::ENUM, sourceLocation), enumIdentifiers_{enumIdentifiers} {
-  }
+  explicit AST_ENUM(const std::vector<std::string> &enumIdentifiers) noexcept
+      : AST(AST_TYPE::ENUM), enumIdentifiers_{enumIdentifiers} {}
 
   [[nodiscard]] const std::vector<std::string> &identifiers() const noexcept {
     return enumIdentifiers_;

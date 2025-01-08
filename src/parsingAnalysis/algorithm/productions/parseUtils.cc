@@ -32,7 +32,7 @@ TopDown::parseImport() const noexcept {
     if (!insertErr) {
     }
   }
-  return Builder::createImport(fileName, sourceStub);
+  return Builder::createImport(fileName);
 }
 
 const std::expected<std::shared_ptr<AST_PRINT>, Error>
@@ -58,7 +58,7 @@ TopDown::parsePrint() const noexcept {
   } else {
     // error
   }
-  return Builder::createPrint(*expressions, sourceStub);
+  return Builder::createPrint(*expressions);
 }
 
 } // namespace nicole

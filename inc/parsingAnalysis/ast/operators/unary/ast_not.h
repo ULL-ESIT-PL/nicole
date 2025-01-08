@@ -13,9 +13,8 @@ private:
   std::shared_ptr<AST> value_;
 
 public:
-  explicit AST_NOT(const Token &op, const std::shared_ptr<AST> &value,
-                   const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::NOT, sourceLocation), op_{op}, value_{value} {}
+  explicit AST_NOT(const Token &op, const std::shared_ptr<AST> &value) noexcept
+      : AST(AST_TYPE::NOT), op_{op}, value_{value} {}
 
   [[nodiscard]] const Token &op() const noexcept { return op_; }
 

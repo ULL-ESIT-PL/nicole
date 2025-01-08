@@ -10,9 +10,8 @@ private:
   char value_;
 
 public:
-  explicit AST_CHAR(const char value,
-                    const SourceLocation &sourceLocation) noexcept
-      : AST{AST_TYPE::CHAR, sourceLocation}, value_{value} {}
+  explicit AST_CHAR(const char value) noexcept
+      : AST{AST_TYPE::CHAR}, value_{value} {}
 
   ~AST_CHAR() noexcept = default;
 

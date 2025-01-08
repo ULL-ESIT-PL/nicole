@@ -13,9 +13,8 @@ private:
 
 public:
   explicit AST_SELF_SUB(const std::string &id,
-                          const std::shared_ptr<AST> &value,
-                          const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::SELF_SUB, sourceLocation), id_{id}, value_{value} {}
+                        const std::shared_ptr<AST> &value) noexcept
+      : AST(AST_TYPE::SELF_SUB), id_{id}, value_{value} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 

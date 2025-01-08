@@ -12,9 +12,8 @@ private:
   std::filesystem::path path_;
 
 public:
-  explicit AST_IMPORT(const std::filesystem::path &path,
-                      const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::IMPORT, sourceLocation), path_{path} {}
+  explicit AST_IMPORT(const std::filesystem::path &path) noexcept
+      : AST(AST_TYPE::IMPORT), path_{path} {}
 
   [[nodiscard]] const std::filesystem::path &path() const noexcept {
     return path_;

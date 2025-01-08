@@ -10,9 +10,8 @@ private:
   std::string value_;
 
 public:
-  explicit AST_STRING(const std::string value,
-                      const SourceLocation &sourceLocation) noexcept
-      : AST{AST_TYPE::STRING, sourceLocation}, value_{value} {}
+  explicit AST_STRING(const std::string value) noexcept
+      : AST{AST_TYPE::STRING}, value_{value} {}
 
   ~AST_STRING() noexcept = default;
 

@@ -19,7 +19,7 @@ TopDown::parseOr() const noexcept {
     const auto right{parseAnd()};
     if (!right) {
     }
-    left = Builder::createOr(*token, *left, *right, sourceStub);
+    left = Builder::createOr(*token, *left, *right);
     if (!left) {
     }
   }
@@ -44,7 +44,7 @@ TopDown::parseAnd() const noexcept {
     const auto right{parseEqual_NotEqual()};
     if (!right) {
     }
-    left = Builder::createAnd(*token, *left, *right, sourceStub);
+    left = Builder::createAnd(*token, *left, *right);
     if (!left) {
     }
   }
@@ -72,10 +72,10 @@ TopDown::parseEqual_NotEqual() const noexcept {
 
     switch (token->type()) {
     case TokenType::EQUAL:
-      left = Builder::createEqual(*token, *left, *right, sourceStub);
+      left = Builder::createEqual(*token, *left, *right);
       break;
     case TokenType::NOTEQUAL:
-      left = Builder::createNotEqual(*token, *left, *right, sourceStub);
+      left = Builder::createNotEqual(*token, *left, *right);
       break;
     default:
       // error
@@ -109,16 +109,16 @@ TopDown::parseCompare() const noexcept {
     }
     switch (token->type()) {
     case TokenType::OPERATOR_SMALLER:
-      left = Builder::createSmaller(*token, *left, *right, sourceStub);
+      left = Builder::createSmaller(*token, *left, *right);
       break;
     case TokenType::SMALLEREQUAL:
-      left = Builder::createSmallerEqual(*token, *left, *right, sourceStub);
+      left = Builder::createSmallerEqual(*token, *left, *right);
       break;
     case TokenType::OPERATOR_GREATER:
-      left = Builder::createBigger(*token, *left, *right, sourceStub);
+      left = Builder::createBigger(*token, *left, *right);
       break;
     case TokenType::BIGGEREQUAL:
-      left = Builder::createBiggerEqual(*token, *left, *right, sourceStub);
+      left = Builder::createBiggerEqual(*token, *left, *right);
       break;
     default:
       // error
@@ -150,10 +150,10 @@ TopDown::parseAdd_Sub() const noexcept {
     }
     switch (token->type()) {
     case TokenType::OPERATOR_ADD:
-      left = Builder::createAdd(*token, *left, *right, sourceStub);
+      left = Builder::createAdd(*token, *left, *right);
       break;
     case TokenType::OPERATOR_SUB:
-      left = Builder::createSub(*token, *left, *right, sourceStub);
+      left = Builder::createSub(*token, *left, *right);
       break;
     default:
       // ERROR
@@ -186,13 +186,13 @@ TopDown::parseMult_Div_Module() const noexcept {
     }
     switch (token->type()) {
     case TokenType::OPERATOR_MULT:
-      left = Builder::createMult(*token, *left, *right, sourceStub);
+      left = Builder::createMult(*token, *left, *right);
       break;
     case TokenType::OPERATOR_DIV:
-      left = Builder::createDiv(*token, *left, *right, sourceStub);
+      left = Builder::createDiv(*token, *left, *right);
       break;
     case TokenType::OPERATOR_MODULE:
-      left = Builder::createModule(*token, *left, *right, sourceStub);
+      left = Builder::createModule(*token, *left, *right);
       break;
     default:
       // error

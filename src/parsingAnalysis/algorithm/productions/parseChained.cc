@@ -3,6 +3,6 @@
 namespace nicole {
 
 const std::expected<std::shared_ptr<AST_CHAINED>, Error>
-TopDown::parseChainedExpression() const noexcept {}
+TopDown::parseChainedExpression() const noexcept { return nullptr; }
 
 } // namespace nicole

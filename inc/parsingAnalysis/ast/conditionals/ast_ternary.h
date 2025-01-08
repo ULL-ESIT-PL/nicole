@@ -15,10 +15,9 @@ private:
 public:
   explicit AST_TERNARY(const std::shared_ptr<AST> &condition,
                        const std::shared_ptr<AST> &first,
-                       const std::shared_ptr<AST> &second,
-                       const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::TERNARY, sourceLocation), condition_{condition},
-        first_{first}, second_{second} {}
+                       const std::shared_ptr<AST> &second) noexcept
+      : AST(AST_TYPE::TERNARY), condition_{condition}, first_{first},
+        second_{second} {}
 
   [[nodiscard]] const std::shared_ptr<AST> &condition() const noexcept {
     return condition_;

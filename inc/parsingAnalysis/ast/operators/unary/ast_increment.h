@@ -13,9 +13,9 @@ private:
   std::shared_ptr<AST> value_;
 
 public:
-  explicit AST_INCREMENT(const Token &op, const std::shared_ptr<AST> &value,
-                         const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::INCREMENT, sourceLocation), op_{op}, value_{value} {}
+  explicit AST_INCREMENT(const Token &op,
+                         const std::shared_ptr<AST> &value) noexcept
+      : AST(AST_TYPE::INCREMENT), op_{op}, value_{value} {}
 
   [[nodiscard]] const Token &op() const noexcept { return op_; }
 

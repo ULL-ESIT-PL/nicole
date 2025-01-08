@@ -43,7 +43,7 @@ TopDown::parseStart() const noexcept {
       }
     }
   }
-  const auto body{Builder::createBody(globalStatements, sourceStub)};
+  const auto body{Builder::createBody(globalStatements)};
   if (!body) {
   }
   return body;
@@ -66,7 +66,8 @@ TopDown::parseBody() const noexcept {
   while (tkStream_.currentPos() < tkStream_.size() &&
          !(*tkStream_.isCurrentTokenType(TokenType::RB))) {
     const auto node{parseStatement()};
-    if (!node) {}
+    if (!node) {
+    }
     statements.push_back(*node);
 
     const auto isType{tkStream_.isCurrentTokenType(TokenType::SEMICOLON)};
@@ -83,8 +84,9 @@ TopDown::parseBody() const noexcept {
   if (!eaten) {
   }
 
-  const auto body{Builder::createBody(statements, sourceStub)};
-  if (!body) {}
+  const auto body{Builder::createBody(statements)};
+  if (!body) {
+  }
 
   return *body;
 }
@@ -100,7 +102,7 @@ TopDown::parseComma() const noexcept {
     if (!node) {
     }
 
-    const auto statement{Builder::createStatement(*node, sourceStub)};
+    const auto statement{Builder::createStatement(*node)};
     if (!statement) {
     }
 
@@ -114,7 +116,7 @@ TopDown::parseComma() const noexcept {
       break;
     }
   }
-  return Builder::createCOMMA(body, sourceStub);
+  return Builder::createCOMMA(body);
 }
 
 const std::expected<std::shared_ptr<AST_STATEMENT>, Error>
@@ -135,7 +137,7 @@ TopDown::parseStatement() const noexcept {
     if (!astSelf) {
     }
 
-    return Builder::createStatement(*astSelf, sourceStub);
+    return Builder::createStatement(*astSelf);
   }
 
   const auto current{tkStream_.current()};
@@ -150,7 +152,7 @@ TopDown::parseStatement() const noexcept {
     if (!astSwitch) {
     }
 
-    return Builder::createStatement(*astSwitch, sourceStub);
+    return Builder::createStatement(*astSwitch);
   }
   case TokenType::IF: {
     const auto astIf{parseIf()};
@@ -158,7 +160,7 @@ TopDown::parseStatement() const noexcept {
     if (!astIf) {
     }
 
-    return Builder::createStatement(*astIf, sourceStub);
+    return Builder::createStatement(*astIf);
   }
   case TokenType::WHILE: {
     const auto astWhile{parseWhile()};
@@ -166,7 +168,7 @@ TopDown::parseStatement() const noexcept {
     if (!astWhile) {
     }
 
-    return Builder::createStatement(*astWhile, sourceStub);
+    return Builder::createStatement(*astWhile);
   }
   case TokenType::DO: {
     const auto astDoWhile{parseDoWhile()};
@@ -174,7 +176,7 @@ TopDown::parseStatement() const noexcept {
     if (!astDoWhile) {
     }
 
-    return Builder::createStatement(*astDoWhile, sourceStub);
+    return Builder::createStatement(*astDoWhile);
   }
   case TokenType::FOR: {
     const auto astFor{parseFor()};
@@ -182,7 +184,7 @@ TopDown::parseStatement() const noexcept {
     if (!astFor) {
     }
 
-    return Builder::createStatement(*astFor, sourceStub);
+    return Builder::createStatement(*astFor);
   }
   case TokenType::PRINT: {
     const auto astPrint{parsePrint()};
@@ -190,7 +192,7 @@ TopDown::parseStatement() const noexcept {
     if (!astPrint) {
     }
 
-    return Builder::createStatement(*astPrint, sourceStub);
+    return Builder::createStatement(*astPrint);
   }
   case TokenType::STRUCT: {
     const auto astStruct{parseStructDecl()};
@@ -198,7 +200,7 @@ TopDown::parseStatement() const noexcept {
     if (!astStruct) {
     }
 
-    return Builder::createStatement(*astStruct, sourceStub);
+    return Builder::createStatement(*astStruct);
   }
   case TokenType::FUNCTION: {
     const auto astFunctionDecl{parseFuncDecl()};
@@ -206,7 +208,7 @@ TopDown::parseStatement() const noexcept {
     if (!astFunctionDecl) {
     }
 
-    return Builder::createStatement(*astFunctionDecl, sourceStub);
+    return Builder::createStatement(*astFunctionDecl);
   }
   case TokenType::RETURN: {
     const auto astReturn{parseReturn()};
@@ -214,7 +216,7 @@ TopDown::parseStatement() const noexcept {
     if (!astReturn) {
     }
 
-    return Builder::createStatement(*astReturn, sourceStub);
+    return Builder::createStatement(*astReturn);
   }
   case TokenType::IMPORT: {
     const auto astImport{parseImport()};
@@ -222,7 +224,7 @@ TopDown::parseStatement() const noexcept {
     if (!astImport) {
     }
 
-    return Builder::createStatement(*astImport, sourceStub);
+    return Builder::createStatement(*astImport);
   }
   default: {
     const auto astVarDecl{parseVarDecl()};
@@ -230,7 +232,7 @@ TopDown::parseStatement() const noexcept {
     if (!astVarDecl) {
     }
 
-    return Builder::createStatement(*astVarDecl, sourceStub);
+    return Builder::createStatement(*astVarDecl);
   }
   }
 }

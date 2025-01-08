@@ -30,7 +30,7 @@ TopDown::parseWhile() const noexcept {
   if (!whileBody) {
   }
 
-  return Builder::createWhile(*condition, *whileBody, sourceStub);
+  return Builder::createWhile(*condition, *whileBody);
 }
 
 const std::expected<std::shared_ptr<AST_FOR>, Error>
@@ -76,7 +76,7 @@ TopDown::parseFor() const noexcept {
   const auto body{parseBody()};
   if (!body) {
   }
-  return Builder::createFor(*init, *condition, *update, *body, sourceStub);
+  return Builder::createFor(*init, *condition, *update, *body);
 }
 
 const std::expected<std::shared_ptr<AST_DO_WHILE>, Error>
@@ -112,7 +112,7 @@ TopDown::parseDoWhile() const noexcept {
   } else {
     // error
   }
-  return Builder::createDoWhile(*body, *condition, sourceStub);
+  return Builder::createDoWhile(*body, *condition);
 }
 
 } // namespace nicole

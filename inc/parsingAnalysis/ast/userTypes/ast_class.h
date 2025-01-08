@@ -18,15 +18,15 @@ private:
   std::shared_ptr<AST_FUNC_DECL> addOverloading_;
 
 public:
-  explicit AST_CLASS(const std::string &id, const Attributes &attributes,
-                     const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
-                     const std::shared_ptr<AST_FUNC_DECL> &constructor,
-                     const std::shared_ptr<AST_FUNC_DECL> &destructor,
-                     const std::shared_ptr<AST_FUNC_DECL> &addOverloading,
-                     const SourceLocation &sourceLocation) noexcept
-      : AST(AST_TYPE::CLASS_DECL, sourceLocation), id_{id},
-        attributes_{attributes}, methods_{methods}, constructor_{constructor},
-        destructor_{destructor}, addOverloading_{addOverloading} {}
+  explicit AST_CLASS(
+      const std::string &id, const Attributes &attributes,
+      const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
+      const std::shared_ptr<AST_FUNC_DECL> &constructor,
+      const std::shared_ptr<AST_FUNC_DECL> &destructor,
+      const std::shared_ptr<AST_FUNC_DECL> &addOverloading) noexcept
+      : AST(AST_TYPE::CLASS_DECL), id_{id}, attributes_{attributes},
+        methods_{methods}, constructor_{constructor}, destructor_{destructor},
+        addOverloading_{addOverloading} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 
