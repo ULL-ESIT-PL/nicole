@@ -9,7 +9,7 @@ Builder::createBool(const bool value) noexcept {
 }
 
 std::expected<std::shared_ptr<AST_CHAR>, Error>
-Builder::createChar(const char value) noexcept {
+Builder::createChar(const std::string &value) noexcept {
   return std::make_shared<AST_CHAR>(value);
 }
 

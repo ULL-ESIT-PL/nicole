@@ -88,7 +88,7 @@ public:
   createBool(const bool value) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_CHAR>, Error>
-  createChar(const char value) noexcept;
+  createChar(const std::string& value) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DOUBLE>, Error>
   createDouble(const double value) noexcept;
