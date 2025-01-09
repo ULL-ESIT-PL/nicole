@@ -36,7 +36,7 @@ public:
   }
 
   [[nodiscard]] const std::shared_ptr<AST_BODY> &elseBody() const noexcept {
-    return body_;
+    return elseBody_;
   }
 };
 

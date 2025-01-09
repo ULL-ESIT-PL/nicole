@@ -18,7 +18,7 @@ public:
                              const std::shared_ptr<AST> &right) noexcept
       : AST(AST_TYPE::SMALLER_EQUAL), op_{op}, left_{left}, right_{right} {}
 
-  [[nodiscard]] const Token &p() const noexcept { return op_; }
+  [[nodiscard]] const Token &op() const noexcept { return op_; }
 
   [[nodiscard]] const std::shared_ptr<AST> &left() const noexcept {
     return left_;
