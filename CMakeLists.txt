@@ -117,6 +117,7 @@ add_executable(tests
     test/parsingAnalysis/test_ast_conditionals.cc
     test/parsingAnalysis/test_ast_loops.cc
     test/parsingAnalysis/test_ast_functions.cc
+    test/parsingAnalysis/test_ast_pointers.cc
 )
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 

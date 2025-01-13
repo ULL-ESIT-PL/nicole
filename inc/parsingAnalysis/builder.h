@@ -68,6 +68,11 @@
 #include "ast/variables/ast_letDecl.h"
 #include "ast/variables/ast_varCall.h"
 
+#include "ast/pointer/ast_delete.h"
+#include "ast/pointer/ast_deref.h"
+#include "ast/pointer/ast_new.h"
+#include "ast/pointer/ast_ptr.h"
+
 #include "ast/chained/ast_chained.h"
 
 #include "ast/tree.h"
@@ -88,7 +93,7 @@ public:
   createBool(const bool value) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_CHAR>, Error>
-  createChar(const std::string& value) noexcept;
+  createChar(const std::string &value) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DOUBLE>, Error>
   createDouble(const double value) noexcept;
@@ -111,6 +116,18 @@ public:
                const std::vector<std::shared_ptr<AST>> values) noexcept;
 
   // Pointers
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_DELETE>, Error>
+  createDelete(const std::shared_ptr<AST> &value) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_NEW>, Error>
+  createNew(const std::shared_ptr<AST> &value) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_DEREF>, Error>
+  createDeref(const std::shared_ptr<AST> &value) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_PTR>, Error>
+  createPtr(const std::string &id, const std::string &type,
+            const std::shared_ptr<AST> &value) noexcept;
 
   // Binary
   [[nodiscard]] static std::expected<std::shared_ptr<AST_ADD>, Error>

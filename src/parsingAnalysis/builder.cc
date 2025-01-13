@@ -48,6 +48,35 @@ Builder::createVector(const std::string type,
   return astVector;
 }
 
+std::expected<std::shared_ptr<AST_DELETE>, Error>
+Builder::createDelete(const std::shared_ptr<AST> &value) noexcept {
+  const auto astDelete{std::make_shared<AST_DELETE>(value)};
+  value->setFather(astDelete);
+  return astDelete;
+}
+
+std::expected<std::shared_ptr<AST_NEW>, Error>
+Builder::createNew(const std::shared_ptr<AST> &value) noexcept {
+  const auto astNew{std::make_shared<AST_NEW>(value)};
+  value->setFather(astNew);
+  return astNew;
+}
+
+std::expected<std::shared_ptr<AST_DEREF>, Error>
+Builder::createDeref(const std::shared_ptr<AST> &value) noexcept {
+  const auto astDeref{std::make_shared<AST_DEREF>(value)};
+  value->setFather(astDeref);
+  return astDeref;
+}
+
+std::expected<std::shared_ptr<AST_PTR>, Error>
+Builder::createPtr(const std::string &id, const std::string &type,
+                   const std::shared_ptr<AST> &value) noexcept {
+  const auto astPtr{std::make_shared<AST_PTR>(id, type, value)};
+  value->setFather(astPtr);
+  return astPtr;
+}
+
 std::expected<std::shared_ptr<AST_ADD>, Error>
 Builder::createAdd(const Token &op, const std::shared_ptr<AST> &left,
                    const std::shared_ptr<AST> &right) noexcept {
