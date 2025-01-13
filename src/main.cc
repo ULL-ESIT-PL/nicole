@@ -1,6 +1,7 @@
 #include "../inc/lexicalAnalysis/nicoleSintax.h"
 #include "../inc/options/optionsParser.h"
 #include "../inc/parsingAnalysis/algorithm/topDown.h"
+#include <expected>
 
 // Just creates a main function for our program like a wrapper
 int main(int argc, char *argv[]) {
@@ -18,19 +19,17 @@ int main(int argc, char *argv[]) {
 
   const std::shared_ptr<nicole::Sintax> sintax{
       std::make_shared<nicole::NicoleSintax>()};
-  const nicole::Lexer lexer{sintax->createLexer()};
-  const std::expected<nicole::TokenStream, nicole::Error> result{
-      lexer.analyze(options->entryFilePath())};
 
-  if (!result) {
-    std::cerr << result.error() << "\n";
+  const nicole::TopDown topDown{sintax};
+
+  const std::expected<std::shared_ptr<nicole::Tree>, std::vector<nicole::Error>>
+      tree{topDown.parse(options->entryFilePath())};
+
+  if (!tree) {
+    for (const auto &err : tree.error()) {
+      std::cerr << err.info() << "\n";
+    }
     return 2;
-  }
-
-  for (const auto &token : *result) {
-    std::cout << "Type: " << nicole::tokenTypeToString(token.type())
-              << " ---> Raw: " << token.raw()
-              << " ---> Loc: " << token.locInfo() << "\n";
   }
 
   const std::expected<std::shared_ptr<nicole::AST_BOOL>, nicole::Error> node{
