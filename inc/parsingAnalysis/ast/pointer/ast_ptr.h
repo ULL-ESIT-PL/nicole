@@ -19,10 +19,15 @@ public:
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 
-  [[nodiscard]] const std::string &type() const noexcept { return type_; }
+  [[nodiscard]] const std::string &valueType() const noexcept { return type_; }
 
   [[nodiscard]] const std::shared_ptr<AST> &value() const noexcept {
     return value_;
+  }
+
+  [[nodiscard]] std::expected<std::string, Error>
+  accept(const PrintTree &visitor) const noexcept override {
+    return visitor.visit(this);
   }
 };
 

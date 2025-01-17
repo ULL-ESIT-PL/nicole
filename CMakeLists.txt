@@ -118,6 +118,9 @@ add_executable(tests
     test/parsingAnalysis/test_ast_loops.cc
     test/parsingAnalysis/test_ast_functions.cc
     test/parsingAnalysis/test_ast_pointers.cc
+
+    # visitors
+    src/visitors/printTree.cc
 )
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 
@@ -186,6 +189,9 @@ set(SRC_FILES
     src/parsingAnalysis/algorithm/productions/parseUserTypes.cc
     src/parsingAnalysis/algorithm/productions/parseUtils.cc
     src/parsingAnalysis/algorithm/productions/parseChained.cc
+
+    # visitors
+    src/visitors/printTree.cc
     
    # src/parsingAnalysis/ast/nodeType.cc
    # src/parsingAnalysis/ast/literals/nodeLiteralChar.cc

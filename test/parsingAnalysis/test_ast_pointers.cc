@@ -40,7 +40,7 @@ TEST_CASE("AST_PTR class methods", "[AST_PTR]") {
   AST_PTR astPtr{"myPtr", "bool", value};
 
   REQUIRE(astPtr.id() == "myPtr");
-  REQUIRE(astPtr.type() == "bool");
+  REQUIRE(astPtr.valueType() == "bool");
   REQUIRE(astPtr.value() == value);
   REQUIRE(std::dynamic_pointer_cast<AST_BOOL>(astPtr.value())->value() ==
           false);

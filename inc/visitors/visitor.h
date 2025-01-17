@@ -1,12 +1,12 @@
 #ifndef VISITOR_H
 #define VISITOR_H
 
-#include "../parsingAnalysis/builder.h"
+#include "../errors.h"
+#include <expected>
 
 namespace nicole {
 
 // Forward declaration to avoid circular dependency
-/*
 enum class TokenType;
 
 class AST;
@@ -82,198 +82,202 @@ class AST_CLASS;
 class AST_AUTO_DECL;
 class AST_LET_DECL;
 class AST_CONST_DECL;
+class AST_VAR_CALL;
 
 class AST_CHAINED;
 
 class Tree;
-*/
+
 // Abstract class that represents the visitor pattern
 template <class T> class Visitor {
 public:
   virtual ~Visitor() = default;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_BOOL> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_BOOL *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_CHAR> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_CHAR *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_DOUBLE> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_DOUBLE *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_FLOAT> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_FLOAT *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_INT> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_INT *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_NULL> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_NULL *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_STRING> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_STRING *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_VECTOR> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_VECTOR *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_DELETE> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_DELETE *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_NEW> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_NEW *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_DEREF> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_DEREF *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_PTR> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_PTR *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_ADD> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_ADD *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_SUB> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_SUB *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_MULT> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_MULT *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_DIV> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_DIV *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_MODULE> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_MODULE *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_SMALLER> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_SMALLER *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_SMALLER_EQUAL> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_SMALLER_EQUAL *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_BIGGER> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_BIGGER *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_BIGGER_EQUAL> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_BIGGER_EQUAL *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_EQUAL> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_EQUAL *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_NOT_EQUAL> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_NOT_EQUAL *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_OR> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_OR *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_AND> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_AND *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_NEG> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_NEG *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_NOT> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_NOT *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_DECREMENT> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_DECREMENT *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_INCREMENT> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_INCREMENT *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_ASSIGNMENT> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_ASSIGNMENT *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_SELF_ADD> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_SELF_ADD *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_SELF_SUB> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_SELF_SUB *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_SELF_MULT> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_SELF_MULT *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_SELF_DIV> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_SELF_DIV *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_PRINT> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_PRINT *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_IMPORT> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_IMPORT *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_STATEMENT> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_STATEMENT *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_BODY> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_BODY *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_COMMA> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_COMMA *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_WHILE> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_WHILE *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_FOR> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_FOR *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_DO_WHILE> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_DO_WHILE *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_PASS> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_PASS *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_STOP> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_STOP *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_IF> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_IF *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_ELSE_IF> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_ELSE_IF *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_SWITCH> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_SWITCH *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_CASE> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_CASE *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_DEFAULT> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_DEFAULT *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_TERNARY> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_TERNARY *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_FUNC_CALL> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_FUNC_CALL *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_FUNC_DECL> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_FUNC_DECL *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_RETURN> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_RETURN *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_ENUM> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_ENUM *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_STRUCT> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_STRUCT *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_CLASS> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_CLASS *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_AUTO_DECL> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_AUTO_DECL *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_LET_DECL> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_LET_DECL *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_CONST_DECL> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_CONST_DECL *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<AST_CHAINED> &node) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_VAR_CALL *node) const noexcept = 0;
 
-  virtual std::expected<T, Error>
-  visit(const std::shared_ptr<Tree> &tree) const noexcept = 0;
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_CHAINED *node) const noexcept = 0;
+
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const Tree *tree) const noexcept = 0;
 };
 
 } // namespace nicole

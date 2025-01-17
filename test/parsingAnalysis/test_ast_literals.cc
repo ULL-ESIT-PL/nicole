@@ -11,7 +11,7 @@
 using namespace nicole;
 
 TEST_CASE("AST class methods", "[AST]") {
-  auto ast = std::make_shared<AST>(AST_TYPE::BOOL);
+  auto ast = std::make_shared<AST_BOOL>(true);
 
   SECTION("Constructor and accessors") {
     REQUIRE(ast->type() == AST_TYPE::BOOL);

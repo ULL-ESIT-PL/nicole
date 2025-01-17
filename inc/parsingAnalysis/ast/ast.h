@@ -1,6 +1,7 @@
 #ifndef AST_H
 #define AST_H
 
+#include "../../visitors/printTree.h"
 #include "astType.h"
 #include <memory>
 
@@ -25,6 +26,9 @@ public:
   void setFather(const std::shared_ptr<AST> &father) noexcept {
     father_ = father;
   }
+
+  [[nodiscard]] virtual std::expected<std::string, Error>
+  accept(const PrintTree &visitor) const noexcept = 0;
 };
 
 } // namespace nicole

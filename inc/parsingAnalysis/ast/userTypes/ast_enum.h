@@ -18,6 +18,11 @@ public:
   [[nodiscard]] const std::vector<std::string> &identifiers() const noexcept {
     return enumIdentifiers_;
   }
+
+  [[nodiscard]] std::expected<std::string, Error>
+  accept(const PrintTree &visitor) const noexcept override {
+    return visitor.visit(this);
+  }
 };
 
 } // namespace nicole

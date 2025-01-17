@@ -17,6 +17,11 @@ public:
   [[nodiscard]] const std::shared_ptr<AST> &value() const noexcept {
     return value_;
   }
+
+  [[nodiscard]] std::expected<std::string, Error>
+  accept(const PrintTree &visitor) const noexcept override {
+    return visitor.visit(this);
+  }
 };
 
 } // namespace nicole

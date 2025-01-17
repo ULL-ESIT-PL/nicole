@@ -24,7 +24,7 @@ TEST_CASE("AST_CONST_DECL class methods", "[AST_CONST_DECL]") {
   AST_CONST_DECL astConstDecl{"myConst", "bool", astBool};
 
   REQUIRE(astConstDecl.id() == "myConst");
-  REQUIRE(astConstDecl.type() == "bool");
+  REQUIRE(astConstDecl.valueType() == "bool");
   REQUIRE(std::dynamic_pointer_cast<AST_BOOL>(astConstDecl.value())->value() ==
           false);
 }
@@ -35,7 +35,7 @@ TEST_CASE("AST_LET_DECL class methods", "[AST_LET_DECL]") {
   AST_LET_DECL astLetDecl{"myLet", "bool", astBool};
 
   REQUIRE(astLetDecl.id() == "myLet");
-  REQUIRE(astLetDecl.type() == "bool");
+  REQUIRE(astLetDecl.valueType() == "bool");
   REQUIRE(std::dynamic_pointer_cast<AST_BOOL>(astLetDecl.value())->value() ==
           true);
 }

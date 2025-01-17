@@ -15,6 +15,11 @@ public:
       : AST(AST_TYPE::VAR_CALL), id_{id} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
+
+  [[nodiscard]] std::expected<std::string, Error>
+  accept(const PrintTree &visitor) const noexcept override {
+    return visitor.visit(this);
+  }
 };
 
 } // namespace nicole

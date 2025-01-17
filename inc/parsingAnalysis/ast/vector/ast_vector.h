@@ -17,11 +17,16 @@ public:
                       const std::vector<std::shared_ptr<AST>> &values) noexcept
       : AST(AST_TYPE::VECTOR), type_{type}, values_{values} {}
 
-  [[nodiscard]] const std::string &type() const noexcept { return type_; }
+  [[nodiscard]] const std::string &valuesType() const noexcept { return type_; }
 
   [[nodiscard]] const std::vector<std::shared_ptr<AST>> &
   values() const noexcept {
     return values_;
+  }
+
+  [[nodiscard]] std::expected<std::string, Error>
+  accept(const PrintTree &visitor) const noexcept override {
+    return visitor.visit(this);
   }
 };
 
