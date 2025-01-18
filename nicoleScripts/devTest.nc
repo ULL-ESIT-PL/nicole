@@ -11,3 +11,4 @@ null;
 --"hola";
 -"hola";
 !"hola";
+(true) ? 10 + 20 : "hola";

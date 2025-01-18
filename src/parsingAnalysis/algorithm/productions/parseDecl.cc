@@ -4,7 +4,7 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseVarDecl() const noexcept {
-  return nullptr;
+  return parseTernary();
 }
 
 } // namespace nicole
