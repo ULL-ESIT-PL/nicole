@@ -7,3 +7,7 @@ false;
 f40.87;
 3.14;
 null;
+++"hola";
+--"hola";
+-"hola";
+!"hola";

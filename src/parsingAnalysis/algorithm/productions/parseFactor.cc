@@ -14,7 +14,7 @@ TopDown::parseFactor() const noexcept {
     }
     return Builder::createBool(true);
   }
-  
+
   case TokenType::FALSE: {
     if (!tkStream_.eat()) {
       break;
@@ -105,9 +105,6 @@ TopDown::parseFactor() const noexcept {
                                  ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                  : expression.error()};
     }
-    if (!tkStream_.eat()) {
-      break;
-    }
     return Builder::createNeg(token, *expression);
   }
 
@@ -121,9 +118,6 @@ TopDown::parseFactor() const noexcept {
       return std::unexpected{expression
                                  ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                  : expression.error()};
-    }
-    if (!tkStream_.eat()) {
-      break;
     }
     return Builder::createNot(token, *expression);
   }
@@ -139,9 +133,6 @@ TopDown::parseFactor() const noexcept {
                                  ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                  : expression.error()};
     }
-    if (!tkStream_.eat()) {
-      break;
-    }
     return Builder::createDecrement(token, *expression);
   }
 
@@ -155,9 +146,6 @@ TopDown::parseFactor() const noexcept {
       return std::unexpected{expression
                                  ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                  : expression.error()};
-    }
-    if (!tkStream_.eat()) {
-      break;
     }
     return Builder::createIncrement(token, *expression);
   }
