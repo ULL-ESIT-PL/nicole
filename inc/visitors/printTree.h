@@ -202,6 +202,9 @@ public:
 
   [[nodiscard]] std::expected<std::string, Error>
   visit(const Tree *tree) const noexcept override;
+
+  [[nodiscard]] std::expected<std::string, Error>
+  print(const Tree *tree) const noexcept { return visit(tree); }
 };
 
 } // namespace nicole

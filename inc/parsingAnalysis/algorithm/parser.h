@@ -14,7 +14,6 @@ protected:
   Lexer lexer_;
   mutable TokenStream tkStream_{{}};
   mutable std::set<std::filesystem::path> parsedFiles_{};
-  mutable std::vector<Error> erros_{};
 
 public:
   explicit Parser(const std::shared_ptr<Sintax> &sintax) noexcept
@@ -22,8 +21,7 @@ public:
 
   virtual ~Parser() noexcept = default;
 
-  [[nodiscard]] virtual const std::expected<std::shared_ptr<Tree>,
-                                            std::vector<Error>>
+  [[nodiscard]] virtual const std::expected<std::shared_ptr<Tree>, Error>
   parse(const std::filesystem::path &entryFile) const noexcept = 0;
 };
 

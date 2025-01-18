@@ -24,8 +24,11 @@ enum class ERROR_TYPE {
   CURRENT,
   LOOK_AHEAD,
   IS_CURRENT_TOKEN_TYPE,
-  INSERT_AFTER
+  INSERT_AFTER,
 
+  SINTAX,
+
+  PRINT_TREE
 };
 
 [[nodiscard]] inline std::string errorToStr(const ERROR_TYPE type) noexcept {
@@ -61,6 +64,12 @@ enum class ERROR_TYPE {
     return "IS_CURRENT_TOKEN_TYPE";
   case ERROR_TYPE::INSERT_AFTER:
     return "INSERT_AFTER";
+
+  case ERROR_TYPE::SINTAX:
+    return "SINTAX";
+
+  case ERROR_TYPE::PRINT_TREE:
+    return "PRINT_TREE";
   }
 }
 

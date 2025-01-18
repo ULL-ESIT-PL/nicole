@@ -9,80 +9,96 @@ TopDown::parseFactor() const noexcept {
   case TokenType::NUMBER_INT: {
     const int value{std::stoi(tkStream_.current()->raw())};
     if (!tkStream_.eat()) {
+    return  std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     return Builder::createInt(value);
   }
   case TokenType::NUMBER_DOUBLE: {
     const double value{std::stod(tkStream_.current()->raw())};
     if (!tkStream_.eat()) {
+    return  std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     return Builder::createDouble(value);
   }
   case TokenType::NUMBER_FLOAT: {
     const float value{std::stof(tkStream_.current()->raw().substr(1))};
     if (!tkStream_.eat()) {
+     return std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     return Builder::createFloat(value);
   }
   case TokenType::STRING: {
     const std::string value{tkStream_.current()->raw()};
     if (!tkStream_.eat()) {
+     return std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     return Builder::createString(value);
   }
   case TokenType::CHAR: {
     const std::string value{tkStream_.current()->raw()};
     if (!tkStream_.eat()) {
+     return std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     return Builder::createChar(value);
   }
   case TokenType::TRUE: {
     if (!tkStream_.eat()) {
+    return  std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     return Builder::createBool(true);
   }
   case TokenType::FALSE: {
     if (!tkStream_.eat()) {
+     return std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     return Builder::createBool(false);
   }
   case TokenType::OPERATOR_NOT: {
     const auto token{tkStream_.current()};
     if (!tkStream_.eat()) {
+    return  std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     const auto expression{parseOr()};
     if (!expression) {
+    return  std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     return Builder::createNot(*token, *expression);
   }
   case TokenType::OPERATOR_SUB: {
     const auto token{tkStream_.current()};
     if (!tkStream_.eat()) {
+    return  std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     const auto expression{parseOr()};
     if (!expression) {
+     return std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     return Builder::createNeg(*token, *expression);
   }
   case TokenType::INCREMENT: {
     const auto token{tkStream_.current()};
     if (!tkStream_.eat()) {
+      return std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     const auto expression{parseOr()};
     if (!expression) {
+      return std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     return Builder::createIncrement(*token, *expression);
   }
   case TokenType::DECREMENT: {
     const auto token{tkStream_.current()};
     if (!tkStream_.eat()) {
+      return std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     const auto expression{parseOr()};
     if (!expression) {
+      return std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     return Builder::createDecrement(*token, *expression);
   }
   case TokenType::ID: {
+    return std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     return nullptr;
     /*
     const std::string id{tkStream_.current()->raw()};
@@ -132,25 +148,31 @@ TopDown::parseFactor() const noexcept {
   }
   case TokenType::STOP: {
     if (!tkStream_.eat()) {
+     return std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     return Builder::createStop(nullptr);
   }
   case TokenType::PASS: {
     if (!tkStream_.eat()) {
+      std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     return Builder::createPass(nullptr);
   }
   case TokenType::LP: {
     if (!tkStream_.eat()) {
+      std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     auto expression{parseOr()};
     if (!expression) {
+      std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     if (tkStream_.current()->type() == TokenType::RP) {
       if (!tkStream_.eat()) {
+        return std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
       }
     } else {
       // error
+      return std::unexpected{Error{ERROR_TYPE::SINTAX, ""}};
     }
     return expression;
   }

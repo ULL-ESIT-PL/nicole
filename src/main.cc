@@ -1,6 +1,7 @@
 #include "../inc/lexicalAnalysis/nicoleSintax.h"
 #include "../inc/options/optionsParser.h"
 #include "../inc/parsingAnalysis/algorithm/topDown.h"
+#include "../inc/visitors/printTree.h"
 #include <expected>
 
 // Just creates a main function for our program like a wrapper
@@ -22,15 +23,22 @@ int main(int argc, char *argv[]) {
 
   const nicole::TopDown topDown{sintax};
 
-  const std::expected<std::shared_ptr<nicole::Tree>, std::vector<nicole::Error>>
-      tree{topDown.parse(options->entryFilePath())};
+  const std::expected<std::shared_ptr<nicole::Tree>, nicole::Error> tree{
+      topDown.parse(options->entryFilePath())};
 
   if (!tree) {
-    for (const auto &err : tree.error()) {
-      std::cerr << err.info() << "\n";
-    }
+    std::cerr << tree.error().info() << "\n" << std::flush;
     return 2;
   }
+
+  const nicole::PrintTree printTree{};
+  const std::expected<std::string, nicole::Error> toStr{
+      printTree.print((*tree).get())};
+  if (!toStr) {
+    std::cout << toStr.error().info();
+    return 3;
+  }
+  std::cout << *toStr << "\n";
 
   const std::expected<std::shared_ptr<nicole::AST_BOOL>, nicole::Error> node{
       nicole::Builder::createBool(true)};
