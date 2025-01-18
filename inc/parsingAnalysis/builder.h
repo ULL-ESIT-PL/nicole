@@ -297,7 +297,8 @@ public:
 
   // Usert types
   [[nodiscard]] static std::expected<std::shared_ptr<AST_ENUM>, Error>
-  createEnum(const std::vector<std::string> &enumIdentifiers) noexcept;
+  createEnum(const std::string &id,
+             const std::vector<std::string> &enumIdentifiers) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_STRUCT>, Error>
   createStruct(const std::string &id, const Attributes &attributes,

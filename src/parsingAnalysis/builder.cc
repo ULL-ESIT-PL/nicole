@@ -499,8 +499,9 @@ Builder::createReturn(const std::shared_ptr<AST> &value) noexcept {
 }
 
 std::expected<std::shared_ptr<AST_ENUM>, Error>
-Builder::createEnum(const std::vector<std::string> &enumIdentifiers) noexcept {
-  const auto astEnum{std::make_shared<AST_ENUM>(enumIdentifiers)};
+Builder::createEnum(const std::string &id,
+                    const std::vector<std::string> &enumIdentifiers) noexcept {
+  const auto astEnum{std::make_shared<AST_ENUM>(id, enumIdentifiers)};
   return astEnum;
 }
 

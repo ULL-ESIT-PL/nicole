@@ -71,7 +71,6 @@
 #include "../../inc/parsingAnalysis/ast/chained/ast_chained.h"
 
 #include "../../inc/parsingAnalysis/ast/tree.h"
-#include <iostream>
 #include <ostream>
 
 namespace nicole {
@@ -711,7 +710,23 @@ PrintTree::visit(const AST_WHILE *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return "";
+  std::ostringstream result;
+  result << indent_ << "While:\n";
+  increaseIndent();
+  result << "Condition: ";
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+  }
+  result << *condition;
+  result << "Body:\n";
+  for (const auto &statement : node->body()->body()) {
+    const auto val{statement->accept(*this)};
+    if (!val) {
+    }
+    result << *val;
+  }
+  decreaseIndent();
+  return result.str();
 }
 
 std::expected<std::string, Error>
@@ -719,7 +734,33 @@ PrintTree::visit(const AST_FOR *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return "";
+  std::ostringstream result;
+  result << indent_ << "For:\n";
+  increaseIndent();
+  result << "Init: ";
+  const auto init{node->init()->accept(*this)};
+  if (!init) {
+  }
+  result << *init;
+  result << "Condition: ";
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+  }
+  result << *condition;
+  result << "Update: ";
+  const auto update{node->update()->accept(*this)};
+  if (!update) {
+  }
+  result << *update;
+  result << "Body:\n";
+  for (const auto &statement : node->body()->body()) {
+    const auto val{statement->accept(*this)};
+    if (!val) {
+    }
+    result << *val;
+  }
+  decreaseIndent();
+  return result.str();
 }
 
 std::expected<std::string, Error>
@@ -727,7 +768,23 @@ PrintTree::visit(const AST_DO_WHILE *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return "";
+  std::ostringstream result;
+  result << indent_ << "Do While:\n";
+  increaseIndent();
+  result << "Body:\n";
+  for (const auto &statement : node->body()->body()) {
+    const auto val{statement->accept(*this)};
+    if (!val) {
+    }
+    result << *val;
+  }
+  result << "Condition: ";
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+  }
+  result << *condition;
+  decreaseIndent();
+  return result.str();
 }
 
 std::expected<std::string, Error>
@@ -759,7 +816,7 @@ PrintTree::visit(const AST_IF *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return "";
+  return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print if"}};
 }
 
 std::expected<std::string, Error>
@@ -767,7 +824,7 @@ PrintTree::visit(const AST_ELSE_IF *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return "";
+  return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print else if"}};
 }
 
 std::expected<std::string, Error>
@@ -775,15 +832,51 @@ PrintTree::visit(const AST_SWITCH *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return "";
+  std::ostringstream result;
+  result << indent_ << "Switch Statement:\n";
+  increaseIndent();
+  result << indent_ << "Expression:\n";
+  const auto expr{node->condition()->accept(*this)};
+  if (!expr) {
+  }
+  result << *expr;
+
+  result << indent_ << "Cases:\n";
+  for (const auto &caseStmt : node->cases()) {
+    const auto caseStr{caseStmt->accept(*this)};
+    if (!caseStr) {
+      return std::unexpected{caseStr.error()};
+    }
+    result << *caseStr;
+  }
+  decreaseIndent();
+  return result.str();
 }
 
 std::expected<std::string, Error>
 PrintTree::visit(const AST_CASE *node) const noexcept {
   if (!node) {
-    // std::unexpected{Error{, ""}};
   }
-  return "";
+  std::ostringstream result;
+  result << indent_ << "Case:\n";
+  increaseIndent();
+  result << indent_ << "Condition:\n";
+  const auto cond{node->match()->accept(*this)};
+  if (!cond) {
+    return std::unexpected{cond.error()};
+  }
+  result << *cond;
+
+  result << indent_ << "Body:\n";
+  for (const auto &statement : node->body()->body()) {
+    const auto stmt{statement->accept(*this)};
+    if (!stmt) {
+      return std::unexpected{stmt.error()};
+    }
+    result << *stmt;
+  }
+  decreaseIndent();
+  return result.str();
 }
 
 std::expected<std::string, Error>
@@ -791,7 +884,18 @@ PrintTree::visit(const AST_DEFAULT *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return "";
+  std::ostringstream result;
+  result << indent_ << "Default Case:\n";
+  increaseIndent();
+  for (const auto &statement : node->body()->body()) {
+    const auto stmt{statement->accept(*this)};
+    if (!stmt) {
+      return std::unexpected{stmt.error()};
+    }
+    result << *stmt;
+  }
+  decreaseIndent();
+  return result.str();
 }
 
 std::expected<std::string, Error>
@@ -799,7 +903,31 @@ PrintTree::visit(const AST_TERNARY *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return "";
+  std::ostringstream result;
+  result << indent_ << "Ternary Expression:\n";
+  increaseIndent();
+  result << indent_ << "Condition:\n";
+  const auto cond{node->condition()->accept(*this)};
+  if (!cond) {
+    return std::unexpected{cond.error()};
+  }
+  result << *cond;
+
+  result << indent_ << "True Branch:\n";
+  const auto trueBranch{node->first()->accept(*this)};
+  if (!trueBranch) {
+    return std::unexpected{trueBranch.error()};
+  }
+  result << *trueBranch;
+
+  result << indent_ << "False Branch:\n";
+  const auto falseBranch{node->second()->accept(*this)};
+  if (!falseBranch) {
+    return std::unexpected{falseBranch.error()};
+  }
+  result << *falseBranch;
+  decreaseIndent();
+  return result.str();
 }
 
 std::expected<std::string, Error>
@@ -807,7 +935,7 @@ PrintTree::visit(const AST_FUNC_CALL *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return "";
+  return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print func call"}};
 }
 
 std::expected<std::string, Error>
@@ -815,7 +943,7 @@ PrintTree::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return "";
+  return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print func decl"}};
 }
 
 std::expected<std::string, Error>
@@ -823,7 +951,12 @@ PrintTree::visit(const AST_RETURN *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return "";
+  std::ostringstream result;
+  result << indent_ << "Return:\n";
+  increaseIndent();
+  result << "value: " << node->expression();
+  decreaseIndent();
+  return result.str();
 }
 
 std::expected<std::string, Error>
@@ -831,7 +964,16 @@ PrintTree::visit(const AST_ENUM *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return "";
+  std::ostringstream result;
+  result << indent_ << "Enum:\n";
+  increaseIndent();
+  result << "id: " << node->id();
+  result << "names:\n";
+  for (const auto &id : node->identifiers()) {
+    result << id << " ";
+  }
+  decreaseIndent();
+  return result.str();
 }
 
 std::expected<std::string, Error>
@@ -839,7 +981,7 @@ PrintTree::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return "";
+  return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print struct"}};
 }
 
 std::expected<std::string, Error>
@@ -847,7 +989,7 @@ PrintTree::visit(const AST_CLASS *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return "";
+  return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print class"}};
 }
 
 std::expected<std::string, Error>
@@ -858,9 +1000,10 @@ PrintTree::visit(const AST_AUTO_DECL *node) const noexcept {
   std::ostringstream result;
   result << "auto decl\n";
   increaseIndent();
-  result << "id: "<< node->id();
+  result << "id: " << node->id();
   const auto val{node->value()->accept(*this)};
-  if (!val) {}
+  if (!val) {
+  }
   result << *val;
   decreaseIndent();
   return result.str();
@@ -874,10 +1017,11 @@ PrintTree::visit(const AST_LET_DECL *node) const noexcept {
   std::ostringstream result;
   result << "let decl\n";
   increaseIndent();
-  result << "id: "<< node->id();
+  result << "id: " << node->id();
   result << "type: " << node->valueType();
   const auto val{node->value()->accept(*this)};
-  if (!val) {}
+  if (!val) {
+  }
   result << *val;
   decreaseIndent();
   return result.str();
@@ -891,10 +1035,11 @@ PrintTree::visit(const AST_CONST_DECL *node) const noexcept {
   std::ostringstream result;
   result << "const decl\n";
   increaseIndent();
-  result << "id: "<< node->id();
+  result << "id: " << node->id();
   result << "type: " << node->valueType();
   const auto val{node->value()->accept(*this)};
-  if (!val) {}
+  if (!val) {
+  }
   result << *val;
   decreaseIndent();
   return result.str();
@@ -918,7 +1063,17 @@ PrintTree::visit(const AST_CHAINED *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return "";
+  std::ostringstream result;
+  result << indent_ << "Chained:\n";
+  increaseIndent();
+  result << "Base: " << node->base();
+  result << "Operations:\n";
+  for (const auto &statement : node->operations()) {
+    const auto val{statement->accept(*this)};
+    result << *val;
+  }
+  decreaseIndent();
+  return result.str();
 }
 
 std::expected<std::string, Error>

@@ -9,11 +9,15 @@ namespace nicole {
 
 class AST_ENUM final : public AST {
 private:
+  std::string id_;
   std::vector<std::string> enumIdentifiers_;
 
 public:
-  explicit AST_ENUM(const std::vector<std::string> &enumIdentifiers) noexcept
-      : AST(AST_TYPE::ENUM), enumIdentifiers_{enumIdentifiers} {}
+  explicit AST_ENUM(const std::string &id,
+                    const std::vector<std::string> &enumIdentifiers) noexcept
+      : AST(AST_TYPE::ENUM), id_{id}, enumIdentifiers_{enumIdentifiers} {}
+
+  [[nodiscard]] const std::string &id() const noexcept { return id_; }
 
   [[nodiscard]] const std::vector<std::string> &identifiers() const noexcept {
     return enumIdentifiers_;
