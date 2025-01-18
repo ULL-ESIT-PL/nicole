@@ -31,10 +31,10 @@ TEST_CASE("AST_BOOL class methods", "[AST_BOOL]") {
 }
 
 TEST_CASE("AST_CHAR class methods", "[AST_CHAR]") {
-  AST_CHAR astChar{"a"};
+  AST_CHAR astChar{'a'};
 
   REQUIRE(astChar.type() == AST_TYPE::CHAR);
-  REQUIRE(astChar.value() == "a");
+  REQUIRE(astChar.value() == 'a');
 }
 
 TEST_CASE("AST_DOUBLE class methods", "[AST_DOUBLE]") {

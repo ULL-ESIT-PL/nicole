@@ -10,7 +10,29 @@ Builder::createBool(const bool value) noexcept {
 
 std::expected<std::shared_ptr<AST_CHAR>, Error>
 Builder::createChar(const std::string &value) noexcept {
-  return std::make_shared<AST_CHAR>(value);
+  const std::string strNoQuotes{value.substr(1, value.size() - 2)};
+  char result;
+  if (strNoQuotes.size() == 1) {
+    result = strNoQuotes[0];
+  }
+  // Si hay un carácter de escape, comprobar cuál es
+  if (strNoQuotes[0] == '\\' && strNoQuotes.size() == 2) {
+    switch (strNoQuotes[1]) {
+    case 'n':
+      result = '\n';
+    case 't':
+      result = '\t';
+    case '\\':
+      result = '\\';
+    case '\'':
+      result = '\'';
+    case '\"':
+      result = '\"';
+    default:
+      result = strNoQuotes[1];
+    }
+  }
+  return std::make_shared<AST_CHAR>(result);
 }
 
 std::expected<std::shared_ptr<AST_DOUBLE>, Error>
@@ -34,7 +56,33 @@ std::expected<std::shared_ptr<AST_NULL>, Error> Builder::createNull() noexcept {
 
 std::expected<std::shared_ptr<AST_STRING>, Error>
 Builder::createString(const std::string value) noexcept {
-  return std::make_shared<AST_STRING>(value);
+  std::string result;
+  const std::string strNoQuotes{value.substr(1, value.size() - 2)};
+  for (size_t i = 0; i < value.length(); ++i) {
+    if (strNoQuotes[i] == '\\' && i + 1 < value.length()) {
+      switch (strNoQuotes[i + 1]) {
+      case 'n':
+        result += '\n';
+        break;
+      case 't':
+        result += '\t';
+        break;
+      case '\\':
+        result += '\\';
+        break;
+      case '\"':
+        result += '\"';
+        break;
+      default:
+        result += strNoQuotes[i + 1];
+        break;
+      }
+      i++;
+    } else {
+      result += strNoQuotes[i]; // Agregar el carácter actual
+    }
+  }
+  return std::make_shared<AST_STRING>(result);
 }
 
 std::expected<std::shared_ptr<AST_VECTOR>, Error>

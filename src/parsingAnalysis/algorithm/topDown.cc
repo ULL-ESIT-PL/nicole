@@ -1,4 +1,5 @@
 #include "../../../inc/parsingAnalysis/algorithm/topDown.h"
+#include <cstddef>
 #include <expected>
 #include <memory>
 #include <ostream>
@@ -11,7 +12,7 @@ TopDown::parse(const std::filesystem::path &entryFile) const noexcept {
   parsedFiles_.insert(entryFile);
 
   const auto tkStream{lexer_.analyze(entryFile)};
-  
+
   if (!tkStream) {
     return std::unexpected{tkStream.error()};
   }
@@ -20,12 +21,9 @@ TopDown::parse(const std::filesystem::path &entryFile) const noexcept {
 
   const std::expected<std::shared_ptr<AST_BODY>, Error> root{parseStart()};
 
-  if (!root) {
-    return std::unexpected{root.error()};
-  }
-
-  if (!(*root)) {
-    return std::unexpected{Error{ERROR_TYPE::SINTAX, "hola"}};
+  if (!root || !*root) {
+    return std::unexpected{root ? Error{ERROR_TYPE::NULL_NODE, "Tree is null"}
+                                : root.error()};
   }
 
   const auto tree{Builder::createTree(*root)};
@@ -39,7 +37,33 @@ TopDown::parse(const std::filesystem::path &entryFile) const noexcept {
 
 const std::expected<std::shared_ptr<AST_BODY>, Error>
 TopDown::parseStart() const noexcept {
-  return nullptr;
+  const std::size_t size{tkStream_.size()};
+  std::vector<std::shared_ptr<AST_STATEMENT>> statements{};
+
+  while (tkStream_.currentPos() < size) {
+    auto statement = parseStatement();
+    if (!statement || !*statement) {
+      return std::unexpected{
+          statement ? Error{ERROR_TYPE::NULL_NODE, "Statement is null"}
+                    : statement.error()};
+    }
+
+    statements.push_back(*statement);
+
+    if (tkStream_.isCurrentTokenType(TokenType::SEMICOLON) &&
+        !tkStream_.eat()) {
+      return std::unexpected{
+          Error{ERROR_TYPE::SINTAX, "Failed to consume semicolon"}};
+    }
+  }
+
+  const std::expected<std::shared_ptr<AST_BODY>, Error> body{
+      Builder::createBody(statements)};
+  if (!body) {
+    return std::unexpected{body.error()};
+  }
+
+  return body;
 }
 
 const std::expected<std::shared_ptr<AST_BODY>, Error>
@@ -54,7 +78,18 @@ TopDown::parseComma() const noexcept {
 
 const std::expected<std::shared_ptr<AST_STATEMENT>, Error>
 TopDown::parseStatement() const noexcept {
-  return nullptr;
+  const std::expected<std::shared_ptr<AST>, Error> factor{parseOr()};
+  if (!factor || !*factor) {
+    return std::unexpected{factor
+                               ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
+                               : factor.error()};
+  }
+
+  const auto statement{Builder::createStatement(*factor)};
+  if (!statement) {
+    return std::unexpected{statement.error()};
+  }
+  return *statement;
 }
 
 } // namespace nicole

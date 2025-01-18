@@ -26,7 +26,11 @@ enum class ERROR_TYPE {
   IS_CURRENT_TOKEN_TYPE,
   INSERT_AFTER,
 
+  BUILDER,
+
   SINTAX,
+
+  NULL_NODE,
 
   PRINT_TREE
 };
@@ -65,8 +69,14 @@ enum class ERROR_TYPE {
   case ERROR_TYPE::INSERT_AFTER:
     return "INSERT_AFTER";
 
+  case ERROR_TYPE::BUILDER:
+    return "BUILDER";
+
   case ERROR_TYPE::SINTAX:
     return "SINTAX";
+
+  case ERROR_TYPE::NULL_NODE:
+    return "NULL_NODE";
 
   case ERROR_TYPE::PRINT_TREE:
     return "PRINT_TREE";

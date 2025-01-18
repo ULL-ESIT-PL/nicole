@@ -1,0 +1,9 @@
+10 or 30 and 40;
+20;
+true;
+false;
+'a';
+"hola";
+f40.87;
+3.14;
+null;

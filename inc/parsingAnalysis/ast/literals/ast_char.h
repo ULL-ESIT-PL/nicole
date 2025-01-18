@@ -8,15 +8,15 @@ namespace nicole {
 
 class AST_CHAR final : public AST {
 private:
-  std::string value_;
+  char value_;
 
 public:
-  explicit AST_CHAR(const std::string &value) noexcept
+  explicit AST_CHAR(const char value) noexcept
       : AST{AST_TYPE::CHAR}, value_{value} {}
 
   ~AST_CHAR() noexcept = default;
 
-  [[nodiscard]] const std::string &value() const noexcept { return value_; }
+  [[nodiscard]] char value() const noexcept { return value_; }
 
   [[nodiscard]] std::expected<std::string, Error>
   accept(const PrintTree &visitor) const noexcept override {

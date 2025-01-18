@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
       topDown.parse(options->entryFilePath())};
 
   if (!tree) {
-    std::cerr << tree.error().info() << "\n" << std::flush;
+    std::cerr << tree.error() << "\n" << std::flush;
     return 2;
   }
 
@@ -35,23 +35,10 @@ int main(int argc, char *argv[]) {
   const std::expected<std::string, nicole::Error> toStr{
       printTree.print((*tree).get())};
   if (!toStr) {
-    std::cout << toStr.error().info();
+    std::cout << toStr.error();
     return 3;
   }
   std::cout << *toStr << "\n";
-
-  const std::expected<std::shared_ptr<nicole::AST_BOOL>, nicole::Error> node{
-      nicole::Builder::createBool(true)};
-  const std::expected<std::shared_ptr<nicole::AST_INT>, nicole::Error> node1{
-      nicole::Builder::createInt(100)};
-  const std::expected<std::shared_ptr<nicole::AST_ADD>, nicole::Error> node2 =
-      nicole::Builder::createAdd(nicole::Token{nicole::TokenType::OPERATOR_ADD,
-                                               "+", nicole::Location{"", 0, 0}},
-                                 *node, *node1);
-
-  std::cout << (*node1)->value() << " "
-            << nicole::astTypeToStr((*node1)->father()->type()) << " "
-            << nicole::astTypeToStr((*node2)->left()->type()) << "\n";
 
   return EXIT_SUCCESS;
 }
