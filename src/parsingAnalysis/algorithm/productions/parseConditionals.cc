@@ -29,7 +29,9 @@ TopDown::parseDefault() const noexcept {
 
 const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseTernary() const noexcept {
-  if (tkStream_.current()->type() == TokenType::LP) {
+  // to avoid ambigious situations like (something) being treated like ternary
+  if (tkStream_.current()->type() == TokenType::LP and
+      tkStream_.isTokenAheadBeforeSemicolon(TokenType::TERNARY)) {
     if (!tkStream_.eat()) {
       return std::unexpected{Error{
           ERROR_TYPE::SINTAX, "failed to eat " + tkStream_.current()->raw() +

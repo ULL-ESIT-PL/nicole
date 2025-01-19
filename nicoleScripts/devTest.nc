@@ -11,4 +11,6 @@ null;
 --"hola";
 -"hola";
 !"hola";
-(true) ? 10 + 20 : "hola";
+(true) ? ("adios") : "hola";
+(true);
+print(10, 20 + 20);

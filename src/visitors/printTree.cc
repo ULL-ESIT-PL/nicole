@@ -633,7 +633,7 @@ PrintTree::visit(const AST_PRINT *node) const noexcept {
   result << indent_ << "Print Statement:\n";
   increaseIndent();
   increaseIndent();
-  for (const auto &expr : node->values()->body()) {
+  for (const auto &expr : node->values()) {
     const auto toStr{expr->accept(*this)};
     if (!toStr) {
     }

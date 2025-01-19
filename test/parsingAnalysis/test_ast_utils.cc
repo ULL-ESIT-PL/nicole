@@ -39,12 +39,12 @@ TEST_CASE("AST_PRINT class methods", "[AST_PRINT]") {
       std::make_shared<AST_STATEMENT>(std::make_shared<AST_BOOL>(true));
   auto astBool2 =
       std::make_shared<AST_STATEMENT>(std::make_shared<AST_BOOL>(false));
-  auto astComma = std::make_shared<AST_COMMA>(
-      std::vector<std::shared_ptr<AST_STATEMENT>>{astBool1, astBool2});
+  auto astComma =
+      std::vector<std::shared_ptr<AST>>{astBool1, astBool2};
 
   AST_PRINT astPrint{astComma};
 
   REQUIRE(astPrint.values() == astComma);
-  REQUIRE(areASTStatementsEqual(astPrint.values()->body()[0], astBool1));
-  REQUIRE(areASTStatementsEqual(astPrint.values()->body()[1], astBool2));
+  REQUIRE(astPrint.values()[0] == astBool1);
+  REQUIRE(astPrint.values()[1] == astBool2);
 }

@@ -8,13 +8,14 @@ namespace nicole {
 
 class AST_PRINT : public AST {
 private:
-  std::shared_ptr<AST_COMMA> values_;
+  std::vector<std::shared_ptr<AST>> values_;
 
 public:
-  explicit AST_PRINT(const std::shared_ptr<AST_COMMA> &values) noexcept
+  explicit AST_PRINT(const std::vector<std::shared_ptr<AST>> &values) noexcept
       : AST(AST_TYPE::PRINT), values_{values} {}
 
-  [[nodiscard]] const std::shared_ptr<AST_COMMA> &values() const noexcept {
+  [[nodiscard]] const std::vector<std::shared_ptr<AST>> &
+  values() const noexcept {
     return values_;
   }
 

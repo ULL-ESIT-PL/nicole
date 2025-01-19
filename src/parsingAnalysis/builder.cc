@@ -317,9 +317,12 @@ Builder::createSelfDiv(const std::string &id,
 }
 
 std::expected<std::shared_ptr<AST_PRINT>, Error>
-Builder::createPrint(const std::shared_ptr<AST_COMMA> &values) noexcept {
+Builder::createPrint(const std::vector<std::shared_ptr<AST>> &values) noexcept {
   const auto astPrint{std::make_shared<AST_PRINT>(values)};
-  values->setFather(astPrint);
+  const std::vector<std::shared_ptr<AST>> &values__{astPrint->values()};
+  for (const auto &values_ : values__) {
+    values_->setFather(astPrint);
+  }
   return astPrint;
 }
 

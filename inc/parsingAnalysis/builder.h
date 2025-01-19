@@ -218,7 +218,7 @@ public:
 
   // Utils
   [[nodiscard]] static std::expected<std::shared_ptr<AST_PRINT>, Error>
-  createPrint(const std::shared_ptr<AST_COMMA> &values) noexcept;
+  createPrint(const std::vector<std::shared_ptr<AST>> &values) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_IMPORT>, Error>
   createImport(const std::filesystem::path &path) noexcept;
