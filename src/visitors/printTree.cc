@@ -652,7 +652,7 @@ PrintTree::visit(const AST_IMPORT *node) const noexcept {
   std::ostringstream result;
   result << indent_ << "Import:\n";
   increaseIndent();
-  result << indent_ << "File:\n" << node->path().string();
+  result << indent_ << "File: " << node->path().string() << "\n";
   decreaseIndent();
   return result.str();
 }

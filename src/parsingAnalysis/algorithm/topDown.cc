@@ -37,19 +37,17 @@ TopDown::parse(const std::filesystem::path &entryFile) const noexcept {
 
 const std::expected<std::shared_ptr<AST_BODY>, Error>
 TopDown::parseStart() const noexcept {
-  const std::size_t size{tkStream_.size()};
   std::vector<std::shared_ptr<AST_STATEMENT>> statements{};
 
-  while (tkStream_.currentPos() < size) {
-    auto statement = parseStatement();
+  while (tkStream_.currentPos() < tkStream_.size()) {
+    const std::expected<std::shared_ptr<AST_STATEMENT>, Error> statement{
+        parseStatement()};
     if (!statement || !*statement) {
       return std::unexpected{
           statement ? Error{ERROR_TYPE::NULL_NODE, "Statement is null"}
                     : statement.error()};
     }
-
     statements.push_back(*statement);
-
     if (tkStream_.isCurrentTokenType(TokenType::SEMICOLON) &&
         !tkStream_.eat()) {
       return std::unexpected{
@@ -131,7 +129,7 @@ TopDown::parseStatement() const noexcept {
     if (!ifStm || !*ifStm) {
       return std::unexpected{
           ifStm ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                 : ifStm.error()};
+                : ifStm.error()};
     }
     const auto statement{Builder::createStatement(*ifStm)};
     if (!statement) {
@@ -145,7 +143,7 @@ TopDown::parseStatement() const noexcept {
     if (!switchSTM || !*switchSTM) {
       return std::unexpected{
           switchSTM ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                 : switchSTM.error()};
+                    : switchSTM.error()};
     }
     const auto statement{Builder::createStatement(*switchSTM)};
     if (!statement) {
@@ -159,7 +157,7 @@ TopDown::parseStatement() const noexcept {
     if (!whileSTM || !*whileSTM) {
       return std::unexpected{
           whileSTM ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                 : whileSTM.error()};
+                   : whileSTM.error()};
     }
     const auto statement{Builder::createStatement(*whileSTM)};
     if (!statement) {
@@ -173,7 +171,7 @@ TopDown::parseStatement() const noexcept {
     if (!doWhile || !*doWhile) {
       return std::unexpected{
           doWhile ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                 : doWhile.error()};
+                  : doWhile.error()};
     }
     const auto statement{Builder::createStatement(*doWhile)};
     if (!statement) {
@@ -201,7 +199,7 @@ TopDown::parseStatement() const noexcept {
     if (!function || !*function) {
       return std::unexpected{
           function ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                 : function.error()};
+                   : function.error()};
     }
     const auto statement{Builder::createStatement(*function)};
     if (!statement) {
@@ -215,7 +213,7 @@ TopDown::parseStatement() const noexcept {
     if (!returnSTM || !*returnSTM) {
       return std::unexpected{
           returnSTM ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                 : returnSTM.error()};
+                    : returnSTM.error()};
     }
     const auto statement{Builder::createStatement(*returnSTM)};
     if (!statement) {
@@ -229,7 +227,7 @@ TopDown::parseStatement() const noexcept {
     if (!enumSTM || !*enumSTM) {
       return std::unexpected{
           enumSTM ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                 : enumSTM.error()};
+                  : enumSTM.error()};
     }
     const auto statement{Builder::createStatement(*enumSTM)};
     if (!statement) {
@@ -239,11 +237,12 @@ TopDown::parseStatement() const noexcept {
   }
 
   case TokenType::STRUCT: {
-    const std::expected<std::shared_ptr<AST>, Error> structSTM{parseStructDecl()};
+    const std::expected<std::shared_ptr<AST>, Error> structSTM{
+        parseStructDecl()};
     if (!structSTM || !*structSTM) {
       return std::unexpected{
           structSTM ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                 : structSTM.error()};
+                    : structSTM.error()};
     }
     const auto statement{Builder::createStatement(*structSTM)};
     if (!statement) {
@@ -257,7 +256,7 @@ TopDown::parseStatement() const noexcept {
     if (!classSTM || !*classSTM) {
       return std::unexpected{
           classSTM ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                 : classSTM.error()};
+                   : classSTM.error()};
     }
     const auto statement{Builder::createStatement(*classSTM)};
     if (!statement) {

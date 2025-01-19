@@ -1,3 +1,4 @@
+/*
 10 or 30 and 40;
 20;
 true;
@@ -14,3 +15,7 @@ null;
 (true) ? ("adios") : "hola";
 (true);
 print(10, 20 + 20);
+*/
+
+import "devTest.nc";
+import "dev2.nc";
