@@ -94,8 +94,6 @@ TopDown::parseBody() const noexcept {
           Error{ERROR_TYPE::SINTAX, "Failed to consume semicolon"}};
     }
   }
-  std::cout << tkStream_.currentPos() << " " << tkStream_.current()->raw()
-            << " " << tkStream_.current()->locInfo() << "\n";
   if (tkStream_.current()->type() != TokenType::RB) {
     return std::unexpected{Error{
         ERROR_TYPE::SINTAX, "missing } at " + tkStream_.current()->locInfo()}};

@@ -28,3 +28,7 @@ while (1) {
     1;
    }
 }
+
+do {
+    while (true) {}
+} while (true);
