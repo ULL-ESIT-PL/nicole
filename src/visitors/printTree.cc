@@ -713,17 +713,17 @@ PrintTree::visit(const AST_WHILE *node) const noexcept {
   std::ostringstream result;
   result << indent_ << "While:\n";
   increaseIndent();
-  result << "Condition: ";
+  result << indent_ << "Condition:\n";
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
   }
-  result << *condition;
-  result << "Body:\n";
+  result << indent_ << *condition;
+  result << indent_ << "Body:\n";
   for (const auto &statement : node->body()->body()) {
     const auto val{statement->accept(*this)};
     if (!val) {
     }
-    result << *val;
+    result << indent_ << *val;
   }
   decreaseIndent();
   return result.str();

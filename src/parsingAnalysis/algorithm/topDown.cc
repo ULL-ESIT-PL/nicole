@@ -48,7 +48,7 @@ TopDown::parseStart() const noexcept {
                     : statement.error()};
     }
     statements.push_back(*statement);
-    if (tkStream_.isCurrentTokenType(TokenType::SEMICOLON) &&
+    if (tkStream_.current()->type() == TokenType::SEMICOLON &&
         !tkStream_.eat()) {
       return std::unexpected{
           Error{ERROR_TYPE::SINTAX, "Failed to consume semicolon"}};
@@ -66,7 +66,7 @@ TopDown::parseStart() const noexcept {
 
 const std::expected<std::shared_ptr<AST_BODY>, Error>
 TopDown::parseBody() const noexcept {
-  if (!(tkStream_.current()->type() == TokenType::LB)) {
+  if (tkStream_.current()->type() != TokenType::LB) {
     return std::unexpected{Error{
         ERROR_TYPE::SINTAX, "missing { at " + tkStream_.current()->locInfo()}};
   }
@@ -76,27 +76,27 @@ TopDown::parseBody() const noexcept {
                                      " at " + tkStream_.current()->locInfo()}};
   }
 
-  const std::size_t size{tkStream_.size()};
   std::vector<std::shared_ptr<AST_STATEMENT>> statements{};
 
-  while (tkStream_.currentPos() < size) {
-    auto statement = parseStatement();
+  while (tkStream_.currentPos() < tkStream_.size() and
+         tkStream_.current()->type() != TokenType::RB) {
+    const std::expected<std::shared_ptr<AST_STATEMENT>, Error> statement{
+        parseStatement()};
     if (!statement || !*statement) {
       return std::unexpected{
           statement ? Error{ERROR_TYPE::NULL_NODE, "Statement is null"}
                     : statement.error()};
     }
-
     statements.push_back(*statement);
-
-    if (tkStream_.isCurrentTokenType(TokenType::SEMICOLON) &&
+    if (tkStream_.current()->type() == TokenType::SEMICOLON &&
         !tkStream_.eat()) {
       return std::unexpected{
           Error{ERROR_TYPE::SINTAX, "Failed to consume semicolon"}};
     }
   }
-
-  if (!(tkStream_.current()->type() == TokenType::RB)) {
+  std::cout << tkStream_.currentPos() << " " << tkStream_.current()->raw()
+            << " " << tkStream_.current()->locInfo() << "\n";
+  if (tkStream_.current()->type() != TokenType::RB) {
     return std::unexpected{Error{
         ERROR_TYPE::SINTAX, "missing } at " + tkStream_.current()->locInfo()}};
   }

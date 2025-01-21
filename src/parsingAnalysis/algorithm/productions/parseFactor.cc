@@ -83,7 +83,7 @@ TopDown::parseFactor() const noexcept {
                                  ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                  : expression.error()};
     }
-    if (!(tkStream_.current()->type() == TokenType::RP)) {
+    if (tkStream_.current()->type() != TokenType::RP) {
       return std::unexpected{
           Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
                                         tkStream_.current()->locInfo()}};

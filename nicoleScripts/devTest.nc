@@ -21,3 +21,10 @@ import "devTest.nc";
 import "dev2.nc";
 
 return (9);
+
+while (1) {
+    1;
+   while(1) {
+    1;
+   }
+}

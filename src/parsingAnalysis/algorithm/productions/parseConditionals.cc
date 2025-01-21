@@ -48,7 +48,7 @@ TopDown::parseTernary() const noexcept {
                                  ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                  : condition.error()};
     }
-    if (!(tkStream_.current()->type() == TokenType::RP)) {
+    if (tkStream_.current()->type() != TokenType::RP) {
       return std::unexpected{
           Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
                                         tkStream_.current()->locInfo()}};
@@ -58,7 +58,7 @@ TopDown::parseTernary() const noexcept {
           ERROR_TYPE::SINTAX, "failed to eat " + tkStream_.current()->raw() +
                                   " at " + tkStream_.current()->locInfo()}};
     }
-    if (!(tkStream_.current()->type() == TokenType::TERNARY)) {
+    if (tkStream_.current()->type() != TokenType::TERNARY) {
       return std::unexpected{
           Error{ERROR_TYPE::SINTAX,
                 "missing ? at " + tkStream_.current()->locInfo()}};
@@ -73,7 +73,7 @@ TopDown::parseTernary() const noexcept {
       return std::unexpected{
           first ? Error{ERROR_TYPE::NULL_NODE, "node is null"} : first.error()};
     }
-    if (!(tkStream_.current()->type() == TokenType::DOTDOT)) {
+    if (tkStream_.current()->type() != TokenType::DOTDOT) {
       return std::unexpected{
           Error{ERROR_TYPE::SINTAX,
                 "missing : at " + tkStream_.current()->locInfo()}};

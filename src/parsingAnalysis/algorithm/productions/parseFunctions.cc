@@ -26,7 +26,6 @@ TopDown::parseReturn() const noexcept {
     return std::unexpected{Error{
         ERROR_TYPE::SINTAX, "missing ; at " + tkStream_.current()->locInfo()}};
   }
-  std::cout << "hola" << std::flush;
   return Builder::createReturn(*value);
 }
 

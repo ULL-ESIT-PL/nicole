@@ -10,7 +10,7 @@ TopDown::parseImport() const noexcept {
                                  "failed to eat " + tkStream_.current()->raw() +
                                      " at " + tkStream_.current()->locInfo()}};
   }
-  if (!(tkStream_.current()->type() == TokenType::STRING)) {
+  if (tkStream_.current()->type() != TokenType::STRING) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX,
               "missing file of import at " + tkStream_.current()->locInfo()}};
@@ -54,7 +54,7 @@ TopDown::parsePrint() const noexcept {
                                  "failed to eat " + tkStream_.current()->raw() +
                                      " at " + tkStream_.current()->locInfo()}};
   }
-  if (!(tkStream_.current()->type() == TokenType::LP)) {
+  if (tkStream_.current()->type() != TokenType::LP) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX,
               "missing left parenthesis at " + tkStream_.current()->locInfo()}};
