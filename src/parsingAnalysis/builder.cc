@@ -497,7 +497,9 @@ Builder::createFuncDecl(const std::string &id, const Parameters &params,
 std::expected<std::shared_ptr<AST_RETURN>, Error>
 Builder::createReturn(const std::shared_ptr<AST> &value) noexcept {
   const auto astReturn{std::make_shared<AST_RETURN>(value)};
-  value->setFather(astReturn);
+  if (value) {
+    value->setFather(astReturn);
+  }
   return astReturn;
 }
 

@@ -954,7 +954,15 @@ PrintTree::visit(const AST_RETURN *node) const noexcept {
   std::ostringstream result;
   result << indent_ << "Return:\n";
   increaseIndent();
-  result << "value: " << node->expression();
+  if (node->expression()) {
+    const auto val{node->expression()->accept(*this)};
+    if (!val) {
+      return std::unexpected{val.error()};
+    }
+    result << indent_ << "value:\n" << *val;
+  } else {
+    result << indent_ << "empty";
+  }
   decreaseIndent();
   return result.str();
 }
