@@ -32,3 +32,8 @@ while (1) {
 do {
     while (true) {}
 } while (true);
+
+enum hola {
+    adios,
+    hola
+}
