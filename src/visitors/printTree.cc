@@ -708,23 +708,32 @@ PrintTree::visit(const AST_COMMA *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_WHILE *node) const noexcept {
   if (!node) {
-    // std::unexpected{Error{, ""}};
+    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print while"}};
   }
   std::ostringstream result;
-  result << indent_ << "While:\n";
+  result << indent_ << "While Loop:\n";
   increaseIndent();
+
   result << indent_ << "Condition:\n";
+  increaseIndent();
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
+    return std::unexpected{condition.error()};
   }
-  result << indent_ << *condition;
+  result << *condition;
+  decreaseIndent();
+
   result << indent_ << "Body:\n";
+  increaseIndent();
   for (const auto &statement : node->body()->body()) {
     const auto val{statement->accept(*this)};
     if (!val) {
+      return std::unexpected{val.error()};
     }
-    result << indent_ << *val;
+    result << *val;
   }
+  decreaseIndent();
+
   decreaseIndent();
   return result.str();
 }
@@ -737,7 +746,7 @@ PrintTree::visit(const AST_FOR *node) const noexcept {
   std::ostringstream result;
   result << indent_ << "For Loop:\n";
   increaseIndent();
-  
+
   result << indent_ << "Init:\n";
   increaseIndent();
   for (const auto &initExpr : node->init()) {
@@ -775,7 +784,7 @@ PrintTree::visit(const AST_FOR *node) const noexcept {
     }
     result << *val;
   }
-  
+
   decreaseIndent();
   return result.str();
 }
@@ -783,23 +792,32 @@ PrintTree::visit(const AST_FOR *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_DO_WHILE *node) const noexcept {
   if (!node) {
-    // std::unexpected{Error{, ""}};
+    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print do while"}};
   }
   std::ostringstream result;
-  result << indent_ << "Do While:\n";
+  result << indent_ << "Do While Loop:\n";
   increaseIndent();
-  result << "Body:\n";
+
+  result << indent_ << "Body:\n";
+  increaseIndent();
   for (const auto &statement : node->body()->body()) {
     const auto val{statement->accept(*this)};
     if (!val) {
+      return std::unexpected{val.error()};
     }
     result << *val;
   }
-  result << "Condition: ";
+  decreaseIndent();
+
+  result << indent_ << "Condition:\n";
+  increaseIndent();
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
+    return std::unexpected{condition.error()};
   }
   result << *condition;
+  decreaseIndent();
+
   decreaseIndent();
   return result.str();
 }
@@ -1061,10 +1079,10 @@ PrintTree::visit(const AST_ENUM *node) const noexcept {
   std::ostringstream result;
   result << indent_ << "Enum:\n";
   increaseIndent();
-  result << "id: " << node->id();
-  result << "names:\n";
+  result << indent_ << "id: " << node->id() << "\n";
+  result << indent_ << "names:\n";
   for (const auto &id : node->identifiers()) {
-    result << id << " ";
+    result << indent_ << id << "\n";
   }
   decreaseIndent();
   return result.str();
