@@ -414,9 +414,13 @@ Builder::createIf(const std::shared_ptr<AST> &condition,
   body->setFather(astIf);
   const std::vector<std::shared_ptr<AST_ELSE_IF>> &elseIfs{astIf->elseIf()};
   for (const auto &elseIf_ : elseIfs) {
-    elseIf_->setFather(astIf);
+    if (elseIf_) {
+      elseIf_->setFather(astIf);
+    }
   }
-  elseBody->setFather(astIf);
+  if (elseBody) {
+    elseBody->setFather(astIf);
+  }
   return astIf;
 }
 

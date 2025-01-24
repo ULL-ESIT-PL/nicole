@@ -816,7 +816,49 @@ PrintTree::visit(const AST_IF *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print if"}};
+  std::ostringstream result;
+  result << indent_ << "If Statement:\n";
+  increaseIndent();
+  result << indent_ << "Condition:\n";
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return std::unexpected{condition.error()};
+  }
+  result << *condition;
+
+  result << indent_ << "Body:\n";
+  for (const auto &statement : node->body()->body()) {
+    const auto stmt{statement->accept(*this)};
+    if (!stmt) {
+      return std::unexpected{stmt.error()};
+    }
+    result << *stmt;
+  }
+
+  if (node->elseIf().size() > 0) {
+    result << indent_ << "Else Ifs:\n";
+    for (const auto &elseIf : node->elseIf()) {
+      const auto elseIfStr{elseIf->accept(*this)};
+      if (!elseIfStr) {
+        return std::unexpected{elseIfStr.error()};
+      }
+      result << *elseIfStr;
+    }
+  }
+
+  if (node->elseBody()) {
+    result << indent_ << "Else:\n";
+    for (const auto &statement : node->elseBody()->body()) {
+      const auto stmt{statement->accept(*this)};
+      if (!stmt) {
+        return std::unexpected{stmt.error()};
+      }
+      result << *stmt;
+    }
+  }
+
+  decreaseIndent();
+  return result.str();
 }
 
 std::expected<std::string, Error>
@@ -824,7 +866,27 @@ PrintTree::visit(const AST_ELSE_IF *node) const noexcept {
   if (!node) {
     // std::unexpected{Error{, ""}};
   }
-  return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print else if"}};
+  std::ostringstream result;
+  result << indent_ << "Else If:\n";
+  increaseIndent();
+  result << indent_ << "Condition:\n";
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return std::unexpected{condition.error()};
+  }
+  result << *condition;
+
+  result << indent_ << "Body:\n";
+  for (const auto &statement : node->body()->body()) {
+    const auto stmt{statement->accept(*this)};
+    if (!stmt) {
+      return std::unexpected{stmt.error()};
+    }
+    result << *stmt;
+  }
+
+  decreaseIndent();
+  return result.str();
 }
 
 std::expected<std::string, Error>

@@ -37,3 +37,17 @@ enum hola {
     adios,
     hola
 }
+
+if (true) {
+    1;
+} else if (true) {
+ 1;
+}
+else if (true) {
+ 1;
+ 1;
+ if (false) {}
+}
+else {
+   1;
+}
