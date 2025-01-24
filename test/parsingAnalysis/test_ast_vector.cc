@@ -9,9 +9,8 @@ TEST_CASE("AST_VECTOR class methods", "[AST_VECTOR]") {
     auto astBool2 = std::make_shared<AST_BOOL>(false);
 
     std::vector<std::shared_ptr<AST>> values{astBool1, astBool2};
-    AST_VECTOR astVector{"bool", values};
+    AST_VECTOR astVector{values};
 
-    REQUIRE(astVector.valuesType() == "bool");
     REQUIRE(astVector.values().size() == 2);
     REQUIRE(std::dynamic_pointer_cast<AST_BOOL>(astVector.values()[0])->value() == true);
     REQUIRE(std::dynamic_pointer_cast<AST_BOOL>(astVector.values()[1])->value() == false);

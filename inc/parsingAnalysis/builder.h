@@ -112,8 +112,7 @@ public:
 
   // Vectors
   [[nodiscard]] static std::expected<std::shared_ptr<AST_VECTOR>, Error>
-  createVector(const std::string type,
-               const std::vector<std::shared_ptr<AST>> values) noexcept;
+  createVector(const std::vector<std::shared_ptr<AST>> values) noexcept;
 
   // Pointers
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DELETE>, Error>
@@ -231,7 +230,7 @@ public:
   createBody(const std::vector<std::shared_ptr<AST_STATEMENT>> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_COMMA>, Error>
-  createCOMMA(const std::vector<std::shared_ptr<AST_STATEMENT>> &body) noexcept;
+  createComma(const std::vector<std::shared_ptr<AST_STATEMENT>> &body) noexcept;
 
   // Loops
   [[nodiscard]] static std::expected<std::shared_ptr<AST_WHILE>, Error>

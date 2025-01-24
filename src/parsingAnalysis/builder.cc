@@ -86,9 +86,8 @@ Builder::createString(const std::string value) noexcept {
 }
 
 std::expected<std::shared_ptr<AST_VECTOR>, Error>
-Builder::createVector(const std::string type,
-                      const std::vector<std::shared_ptr<AST>> values) noexcept {
-  const auto astVector{std::make_shared<AST_VECTOR>(type, values)};
+Builder::createVector(const std::vector<std::shared_ptr<AST>> values) noexcept {
+  const auto astVector{std::make_shared<AST_VECTOR>(values)};
   const std::vector<std::shared_ptr<AST>> &statements{astVector->values()};
   for (const auto &statement : statements) {
     statement->setFather(astVector);
@@ -350,7 +349,7 @@ std::expected<std::shared_ptr<AST_BODY>, Error> Builder::createBody(
   return astBody;
 }
 
-std::expected<std::shared_ptr<AST_COMMA>, Error> Builder::createCOMMA(
+std::expected<std::shared_ptr<AST_COMMA>, Error> Builder::createComma(
     const std::vector<std::shared_ptr<AST_STATEMENT>> &body) noexcept {
   const auto astComma{std::make_shared<AST_COMMA>(body)};
   const std::vector<std::shared_ptr<AST_STATEMENT>> &statements{

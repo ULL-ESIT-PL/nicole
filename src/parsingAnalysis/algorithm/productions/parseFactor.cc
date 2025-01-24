@@ -1,5 +1,6 @@
 #include "../../../../inc/parsingAnalysis/algorithm/topDown.h"
 #include <expected>
+#include <memory>
 
 namespace nicole {
 
@@ -67,6 +68,10 @@ TopDown::parseFactor() const noexcept {
       break;
     }
     return Builder::createNull();
+  }
+
+  case TokenType::LC: {
+    return parseVector();
   }
 
   case TokenType::LP: {
@@ -162,7 +167,53 @@ TopDown::parseFactor() const noexcept {
 
 const std::expected<std::shared_ptr<AST_VECTOR>, Error>
 TopDown::parseVector() const noexcept {
-  return nullptr;
+  if (!tkStream_.eat()) {
+    return std::unexpected{Error{ERROR_TYPE::SINTAX,
+                                 "failed to eat " + tkStream_.current()->raw() +
+                                     " at " + tkStream_.current()->locInfo()}};
+  }
+  std::vector<std::shared_ptr<AST>> expressions{};
+  if (tkStream_.current()->type() == TokenType::RC) {
+    if (!tkStream_.eat()) {
+      return std::unexpected{Error{
+          ERROR_TYPE::SINTAX, "failed to eat " + tkStream_.current()->raw() +
+                                  " at " + tkStream_.current()->locInfo()}};
+    }
+    return Builder::createVector(expressions);
+  }
+  while (tkStream_.currentPos() < tkStream_.size() and
+         tkStream_.current()->type() != TokenType::RC) {
+    const std::expected<std::shared_ptr<AST>, Error> expression{parseOr()};
+    if (!expression || !*expression) {
+      return std::unexpected{
+          expression ? Error{ERROR_TYPE::NULL_NODE, "node is null"} : expression.error()};
+    }
+    expressions.push_back(*expression);
+    if (tkStream_.current()->type() == TokenType::COMMA) {
+      if (!tkStream_.eat()) {
+        return std::unexpected{Error{
+            ERROR_TYPE::SINTAX, "failed to eat " + tkStream_.current()->raw() +
+                                    " at " + tkStream_.current()->locInfo()}};
+      }
+      continue;
+    } else if (tkStream_.current()->type() != TokenType::RC) {
+      return std::unexpected{
+          Error{ERROR_TYPE::SINTAX, "missing comma or ] of vector at " +
+                                        tkStream_.current()->locInfo()}};
+    }
+    break;
+  }
+  if (tkStream_.current()->type() != TokenType::RC) {
+    return std::unexpected{
+        Error{ERROR_TYPE::SINTAX, "missing ] of vector at " +
+                                      tkStream_.current()->locInfo()}};
+  }
+  if (!tkStream_.eat()) {
+    return std::unexpected{Error{ERROR_TYPE::SINTAX,
+                                 "failed to eat " + tkStream_.current()->raw() +
+                                     " at " + tkStream_.current()->locInfo()}};
+  }
+  return Builder::createVector(expressions);
 }
 
 const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {

@@ -1,4 +1,5 @@
 #include "../../../../inc/parsingAnalysis/algorithm/topDown.h"
+#include <memory>
 
 namespace nicole {
 
@@ -50,7 +51,23 @@ TopDown::parseWhile() const noexcept {
 
 const std::expected<std::shared_ptr<AST_FOR>, Error>
 TopDown::parseFor() const noexcept {
-  return nullptr;
+  if (!tkStream_.eat()) {
+    return std::unexpected{Error{ERROR_TYPE::SINTAX,
+                                 "failed to eat " + tkStream_.current()->raw() +
+                                     " at " + tkStream_.current()->locInfo()}};
+  }
+  if (tkStream_.current()->type() != TokenType::LP) {
+    return std::unexpected{
+        Error{ERROR_TYPE::SINTAX,
+              "missing left parenthesis of for at " + tkStream_.current()->locInfo()}};
+  }
+  if (!tkStream_.eat()) {
+    return std::unexpected{Error{ERROR_TYPE::SINTAX,
+                                 "failed to eat " + tkStream_.current()->raw() +
+                                     " at " + tkStream_.current()->locInfo()}};
+  }
+  std::vector<std::shared_ptr<AST>> statements{};
+  return std::unexpected{Error{ERROR_TYPE::SINTAX, "for not parsed yet"}};
 }
 
 const std::expected<std::shared_ptr<AST_DO_WHILE>, Error>
