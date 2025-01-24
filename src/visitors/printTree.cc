@@ -911,6 +911,13 @@ PrintTree::visit(const AST_SWITCH *node) const noexcept {
     }
     result << *caseStr;
   }
+  if (node->defaultCase()) {
+    const auto defaultCase{node->defaultCase()->accept(*this)};
+    if (!defaultCase) {
+      return std::unexpected{defaultCase.error()};
+    }
+    result << *defaultCase;
+  }
   decreaseIndent();
   return result.str();
 }

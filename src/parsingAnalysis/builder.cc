@@ -444,7 +444,9 @@ Builder::createSwitch(const std::shared_ptr<AST> &condition,
   for (const auto &statement : cases_) {
     statement->setFather(astSwitch);
   }
-  default_->setFather(astSwitch);
+  if (default_) {
+    default_->setFather(astSwitch);
+  }
   return astSwitch;
 }
 

@@ -1,4 +1,6 @@
 #include "../../../../inc/parsingAnalysis/algorithm/topDown.h"
+#include <memory>
+#include <vector>
 
 namespace nicole {
 
@@ -128,17 +130,146 @@ TopDown::parseElseIf() const noexcept {
 
 const std::expected<std::shared_ptr<AST_SWITCH>, Error>
 TopDown::parseSwitch() const noexcept {
-  return nullptr;
+  if (!tkStream_.eat()) {
+    return std::unexpected{Error{ERROR_TYPE::SINTAX,
+                                 "failed to eat " + tkStream_.current()->raw() +
+                                     " at " + tkStream_.current()->locInfo()}};
+  }
+  if (tkStream_.current()->type() != TokenType::LP) {
+    return std::unexpected{
+        Error{ERROR_TYPE::SINTAX,
+              "missing left parenthesis at " + tkStream_.current()->locInfo()}};
+  }
+  if (!tkStream_.eat()) {
+    return std::unexpected{Error{ERROR_TYPE::SINTAX,
+                                 "failed to eat " + tkStream_.current()->raw() +
+                                     " at " + tkStream_.current()->locInfo()}};
+  }
+  if (tkStream_.current()->type() == TokenType::RP) {
+    return std::unexpected{
+        Error{ERROR_TYPE::SINTAX,
+              "empty expression at " + tkStream_.current()->locInfo()}};
+  }
+  const std::expected<std::shared_ptr<AST>, Error> conditionIf{parseOr()};
+  if (!conditionIf || !*conditionIf) {
+    return std::unexpected{conditionIf
+                               ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                               : conditionIf.error()};
+  }
+  if (tkStream_.current()->type() != TokenType::RP) {
+    return std::unexpected{
+        Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
+                                      tkStream_.current()->locInfo()}};
+  }
+  if (!tkStream_.eat()) {
+    return std::unexpected{Error{ERROR_TYPE::SINTAX,
+                                 "failed to eat " + tkStream_.current()->raw() +
+                                     " at " + tkStream_.current()->locInfo()}};
+  }
+  if (tkStream_.current()->type() != TokenType::LB) {
+    return std::unexpected{
+        Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
+                                      tkStream_.current()->locInfo()}};
+  }
+  if (!tkStream_.eat()) {
+    return std::unexpected{Error{ERROR_TYPE::SINTAX,
+                                 "failed to eat " + tkStream_.current()->raw() +
+                                     " at " + tkStream_.current()->locInfo()}};
+  }
+  std::vector<std::shared_ptr<AST_CASE>> cases{};
+  while (tkStream_.currentPos() < tkStream_.size() and
+         tkStream_.current()->type() == TokenType::CASE) {
+    const std::expected<std::shared_ptr<AST_CASE>, Error> switchCase{
+        parseCase()};
+    if (!switchCase || !*switchCase) {
+      return std::unexpected{switchCase
+                                 ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                                 : switchCase.error()};
+    }
+    cases.push_back(*switchCase);
+  }
+  if (!cases.size() and tkStream_.current()->type() == TokenType::RB) {
+     return std::unexpected{
+        Error{ERROR_TYPE::SINTAX, "missing at least one case or default at " +
+                                      tkStream_.current()->locInfo()}};
+  }
+  if (tkStream_.current()->type() == TokenType::RB) {
+    if (!tkStream_.eat()) {
+      return std::unexpected{Error{
+          ERROR_TYPE::SINTAX, "failed to eat " + tkStream_.current()->raw() +
+                                  " at " + tkStream_.current()->locInfo()}};
+    }
+    return Builder::createSwitch(*conditionIf, cases, nullptr);
+  }
+  if (tkStream_.current()->type() != TokenType::DEFAULT) {
+    return std::unexpected{
+        Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
+                                      tkStream_.current()->locInfo()}};
+  }
+  const std::expected<std::shared_ptr<AST_DEFAULT>, Error> defaultCase{
+      parseDefault()};
+  if (!defaultCase || !*defaultCase) {
+    return std::unexpected{defaultCase
+                               ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                               : defaultCase.error()};
+  }
+  if (tkStream_.current()->type() != TokenType::RB) {
+    return std::unexpected{
+        Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
+                                      tkStream_.current()->locInfo()}};
+  }
+  if (!tkStream_.eat()) {
+    return std::unexpected{Error{ERROR_TYPE::SINTAX,
+                                 "failed to eat " + tkStream_.current()->raw() +
+                                     " at " + tkStream_.current()->locInfo()}};
+  }
+  return Builder::createSwitch(*conditionIf, cases, *defaultCase);
 }
 
 const std::expected<std::shared_ptr<AST_CASE>, Error>
 TopDown::parseCase() const noexcept {
-  return nullptr;
+  if (!tkStream_.eat()) {
+    return std::unexpected{Error{ERROR_TYPE::SINTAX,
+                                 "failed to eat " + tkStream_.current()->raw() +
+                                     " at " + tkStream_.current()->locInfo()}};
+  }
+  const std::expected<std::shared_ptr<AST>, Error> condition{parseOr()};
+  if (!condition || !*condition) {
+    return std::unexpected{condition
+                               ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                               : condition.error()};
+  }
+  if (tkStream_.current()->type() != TokenType::DOTDOT) {
+    return std::unexpected{
+        Error{ERROR_TYPE::SINTAX,
+              "missing left parenthesis at " + tkStream_.current()->locInfo()}};
+  }
+  if (!tkStream_.eat()) {
+    return std::unexpected{Error{ERROR_TYPE::SINTAX,
+                                 "failed to eat " + tkStream_.current()->raw() +
+                                     " at " + tkStream_.current()->locInfo()}};
+  }
+  const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
+  if (!body || !*body) {
+    return std::unexpected{body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                                : body.error()};
+  }
+  return Builder::createCase(*condition, *body);
 }
 
 const std::expected<std::shared_ptr<AST_DEFAULT>, Error>
 TopDown::parseDefault() const noexcept {
-  return nullptr;
+  if (!tkStream_.eat()) {
+    return std::unexpected{Error{ERROR_TYPE::SINTAX,
+                                 "failed to eat " + tkStream_.current()->raw() +
+                                     " at " + tkStream_.current()->locInfo()}};
+  }
+  const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
+  if (!body || !*body) {
+    return std::unexpected{body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                                : body.error()};
+  }
+  return Builder::createDefault(*body);
 }
 
 const std::expected<std::shared_ptr<AST>, Error>
