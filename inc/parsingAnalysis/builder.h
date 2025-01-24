@@ -238,9 +238,9 @@ public:
               const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_FOR>, Error>
-  createFor(const std::shared_ptr<AST_COMMA> &init,
+  createFor(const std::vector<std::shared_ptr<AST>> &init,
             const std::shared_ptr<AST> &condition,
-            const std::shared_ptr<AST_COMMA> &update,
+            const std::vector<std::shared_ptr<AST>> &update,
             const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DO_WHILE>, Error>

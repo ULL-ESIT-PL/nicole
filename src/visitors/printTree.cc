@@ -732,33 +732,50 @@ PrintTree::visit(const AST_WHILE *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_FOR *node) const noexcept {
   if (!node) {
-    // std::unexpected{Error{, ""}};
+    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print for"}};
   }
   std::ostringstream result;
-  result << indent_ << "For:\n";
+  result << indent_ << "For Loop:\n";
   increaseIndent();
-  result << "Init: ";
-  const auto init{node->init()->accept(*this)};
-  if (!init) {
+  
+  result << indent_ << "Init:\n";
+  increaseIndent();
+  for (const auto &initExpr : node->init()) {
+    const auto initStr{initExpr->accept(*this)};
+    if (!initStr) {
+      return std::unexpected{initStr.error()};
+    }
+    result << *initStr;
   }
-  result << *init;
-  result << "Condition: ";
+  decreaseIndent();
+
+  result << indent_ << "Condition:\n";
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
+    return std::unexpected{condition.error()};
   }
   result << *condition;
-  result << "Update: ";
-  const auto update{node->update()->accept(*this)};
-  if (!update) {
+
+  result << indent_ << "Update:\n";
+  increaseIndent();
+  for (const auto &updateExpr : node->update()) {
+    const auto updateStr{updateExpr->accept(*this)};
+    if (!updateStr) {
+      return std::unexpected{updateStr.error()};
+    }
+    result << *updateStr;
   }
-  result << *update;
-  result << "Body:\n";
+  decreaseIndent();
+
+  result << indent_ << "Body:\n";
   for (const auto &statement : node->body()->body()) {
     const auto val{statement->accept(*this)};
     if (!val) {
+      return std::unexpected{val.error()};
     }
     result << *val;
   }
+  
   decreaseIndent();
   return result.str();
 }

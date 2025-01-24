@@ -21,21 +21,20 @@ TEST_CASE("AST_DO_WHILE class methods", "[AST_DO_WHILE]") {
 }
 
 TEST_CASE("AST_FOR class methods", "[AST_FOR]") {
-  auto init =
-      std::make_shared<AST_COMMA>(std::vector<std::shared_ptr<AST_STATEMENT>>{
-          std::make_shared<AST_STATEMENT>(std::make_shared<AST_BOOL>(true))});
+  auto init = std::vector<std::shared_ptr<AST>>{
+      std::make_shared<AST_STATEMENT>(std::make_shared<AST_BOOL>(true))};
   auto condition = std::make_shared<AST_BOOL>(false);
-  auto update =
-      std::make_shared<AST_COMMA>(std::vector<std::shared_ptr<AST_STATEMENT>>{
-          std::make_shared<AST_STATEMENT>(std::make_shared<AST_BOOL>(false))});
+  auto update = std::vector<std::shared_ptr<AST>>{
+      std::make_shared<AST_STATEMENT>(std::make_shared<AST_BOOL>(false))};
   auto statement = std::make_shared<AST_STATEMENT>(condition);
   auto body = std::make_shared<AST_BODY>(
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
+
   AST_FOR astFor{init, condition, update, body};
 
-  REQUIRE(astFor.init() == init);
+  REQUIRE(astFor.init()[0] == init[0]);
   REQUIRE(astFor.condition() == condition);
-  REQUIRE(astFor.update() == update);
+  REQUIRE(astFor.update()[0] == update[0]);
   REQUIRE(astFor.body() == body);
 }
 
@@ -56,7 +55,9 @@ TEST_CASE("AST_STOP within loops", "[AST_STOP]") {
       std::make_shared<AST_BODY>(std::vector<std::shared_ptr<AST_STATEMENT>>{});
 
   SECTION("AST_STOP in AST_FOR") {
-    auto loop = std::make_shared<AST_FOR>(nullptr, condition, nullptr, body);
+    auto loop = std::make_shared<AST_FOR>(
+        std::vector<std::shared_ptr<AST>>{}, condition,
+        std::vector<std::shared_ptr<AST>>{}, body);
     AST_STOP astStop{loop};
     REQUIRE(astStop.fatherLoop() == loop);
   }
@@ -80,7 +81,9 @@ TEST_CASE("AST_PASS within loops", "[AST_PASS]") {
       std::make_shared<AST_BODY>(std::vector<std::shared_ptr<AST_STATEMENT>>{});
 
   SECTION("AST_PASS in AST_FOR") {
-    auto loop = std::make_shared<AST_FOR>(nullptr, condition, nullptr, body);
+    auto loop = std::make_shared<AST_FOR>(
+        std::vector<std::shared_ptr<AST>>{}, condition,
+        std::vector<std::shared_ptr<AST>>{}, body);
     AST_PASS astPass{loop};
     REQUIRE(astPass.fatherLoop() == loop);
   }

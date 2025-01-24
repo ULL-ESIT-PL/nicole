@@ -9,20 +9,20 @@ namespace nicole {
 
 class AST_FOR : public AST {
 private:
-  std::shared_ptr<AST_COMMA> init_;
+  std::vector<std::shared_ptr<AST>> init_;
   std::shared_ptr<AST> condition_;
-  std::shared_ptr<AST_COMMA> update_;
+  std::vector<std::shared_ptr<AST>> update_;
   std::shared_ptr<AST_BODY> body_;
 
 public:
-  explicit AST_FOR(const std::shared_ptr<AST_COMMA> &init,
+  explicit AST_FOR(const std::vector<std::shared_ptr<AST>> &init,
                    const std::shared_ptr<AST> &condition,
-                   const std::shared_ptr<AST_COMMA> &update,
+                   const std::vector<std::shared_ptr<AST>> &update,
                    const std::shared_ptr<AST_BODY> &body) noexcept
       : AST(AST_TYPE::FOR), init_{init}, condition_{condition}, update_{update},
         body_{body} {}
 
-  [[nodiscard]] const std::shared_ptr<AST_COMMA> &init() const noexcept {
+  [[nodiscard]] const std::vector<std::shared_ptr<AST>> &init() const noexcept {
     return init_;
   }
 
@@ -30,7 +30,8 @@ public:
     return condition_;
   }
 
-  [[nodiscard]] const std::shared_ptr<AST_COMMA> &update() const noexcept {
+  [[nodiscard]] const std::vector<std::shared_ptr<AST>> &
+  update() const noexcept {
     return update_;
   }
 

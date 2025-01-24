@@ -370,14 +370,24 @@ Builder::createWhile(const std::shared_ptr<AST> &condition,
 }
 
 std::expected<std::shared_ptr<AST_FOR>, Error>
-Builder::createFor(const std::shared_ptr<AST_COMMA> &init,
+Builder::createFor(const std::vector<std::shared_ptr<AST>> &init,
                    const std::shared_ptr<AST> &condition,
-                   const std::shared_ptr<AST_COMMA> &update,
+                   const std::vector<std::shared_ptr<AST>> &update,
                    const std::shared_ptr<AST_BODY> &body) noexcept {
   const auto astFor{std::make_shared<AST_FOR>(init, condition, update, body)};
-  init->setFather(astFor);
+  const std::vector<std::shared_ptr<AST>> &init__{astFor->init()};
+  for (const auto &init_ : init__) {
+    if (init_) {
+      astFor->setFather(init_);
+    }
+  }
   condition->setFather(astFor);
-  update->setFather(astFor);
+  const std::vector<std::shared_ptr<AST>> &update__{astFor->update()};
+  for (const auto &update_ : update__) {
+    if (update_) {
+      astFor->setFather(update_);
+    }
+  }
   body->setFather(astFor);
   return astFor;
 }
