@@ -42,7 +42,7 @@ TopDown::parseImport() const noexcept {
   }
   if (tkStream_.current()->type() != TokenType::SEMICOLON) {
     return std::unexpected{Error{
-        ERROR_TYPE::SINTAX, "missing ; at " + tkStream_.current()->locInfo()}};
+        ERROR_TYPE::SINTAX, "missing ; of import statement at " + tkStream_.current()->locInfo()}};
   }
   return Builder::createImport(currentFilePath);
 }
@@ -57,7 +57,7 @@ TopDown::parsePrint() const noexcept {
   if (tkStream_.current()->type() != TokenType::LP) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX,
-              "missing left parenthesis at " + tkStream_.current()->locInfo()}};
+              "missing left parenthesis of print at " + tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
     return std::unexpected{Error{ERROR_TYPE::SINTAX,
@@ -67,7 +67,7 @@ TopDown::parsePrint() const noexcept {
   if (tkStream_.current()->type() == TokenType::RP) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX,
-              "empty expression at " + tkStream_.current()->locInfo()}};
+              "empty expression of print at " + tkStream_.current()->locInfo()}};
   }
   std::vector<std::shared_ptr<AST>> params{};
   while (tkStream_.currentPos() < tkStream_.size() and
@@ -87,14 +87,14 @@ TopDown::parsePrint() const noexcept {
       continue;
     } else if (tkStream_.current()->type() != TokenType::RP) {
       return std::unexpected{
-          Error{ERROR_TYPE::SINTAX, "missing comma or parenthesis at " +
+          Error{ERROR_TYPE::SINTAX, "missing comma or parenthesis of print at " +
                                         tkStream_.current()->locInfo()}};
     }
     break;
   }
   if (tkStream_.current()->type() != TokenType::RP) {
     return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
+        Error{ERROR_TYPE::SINTAX, "missing right parenthesis of print at " +
                                       tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
@@ -104,7 +104,7 @@ TopDown::parsePrint() const noexcept {
   }
   if (tkStream_.current()->type() != TokenType::SEMICOLON) {
     return std::unexpected{Error{
-        ERROR_TYPE::SINTAX, "missing ; at " + tkStream_.current()->locInfo()}};
+        ERROR_TYPE::SINTAX, "missing ; of print statement at " + tkStream_.current()->locInfo()}};
   }
   return Builder::createPrint(params);
 }

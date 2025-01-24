@@ -24,7 +24,7 @@ TopDown::parseReturn() const noexcept {
   }
   if (tkStream_.current()->type() != TokenType::SEMICOLON) {
     return std::unexpected{Error{
-        ERROR_TYPE::SINTAX, "missing ; at " + tkStream_.current()->locInfo()}};
+        ERROR_TYPE::SINTAX, "missing ; of return at " + tkStream_.current()->locInfo()}};
   }
   return Builder::createReturn(*value);
 }

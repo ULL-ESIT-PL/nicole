@@ -12,7 +12,7 @@ TopDown::parseWhile() const noexcept {
   if (tkStream_.current()->type() != TokenType::LP) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX,
-              "missing left parenthesis at " + tkStream_.current()->locInfo()}};
+              "missing left parenthesis of while at " + tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
     return std::unexpected{Error{ERROR_TYPE::SINTAX,
@@ -22,7 +22,7 @@ TopDown::parseWhile() const noexcept {
   if (tkStream_.current()->type() == TokenType::RP) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX,
-              "empty expression at " + tkStream_.current()->locInfo()}};
+              "empty expression of while condition at " + tkStream_.current()->locInfo()}};
   }
   const std::expected<std::shared_ptr<AST>, Error> condition{parseOr()};
   if (!condition || !*condition) {
@@ -32,7 +32,7 @@ TopDown::parseWhile() const noexcept {
   }
   if (tkStream_.current()->type() != TokenType::RP) {
     return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
+        Error{ERROR_TYPE::SINTAX, "missing right parenthesis of while at " +
                                       tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
@@ -68,7 +68,7 @@ TopDown::parseDoWhile() const noexcept {
   if (tkStream_.current()->type() != TokenType::WHILE) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX,
-              "missing while at " + tkStream_.current()->locInfo()}};
+              "missing while keyword of do while at " + tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
     return std::unexpected{Error{ERROR_TYPE::SINTAX,
@@ -78,7 +78,7 @@ TopDown::parseDoWhile() const noexcept {
   if (tkStream_.current()->type() != TokenType::LP) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX,
-              "missing left parenthesis at " + tkStream_.current()->locInfo()}};
+              "missing left parenthesis of do while at " + tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
     return std::unexpected{Error{ERROR_TYPE::SINTAX,
@@ -88,7 +88,7 @@ TopDown::parseDoWhile() const noexcept {
   if (tkStream_.current()->type() == TokenType::RP) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX,
-              "empty expression at " + tkStream_.current()->locInfo()}};
+              "empty expression of do while condition at " + tkStream_.current()->locInfo()}};
   }
   const std::expected<std::shared_ptr<AST>, Error> condition{parseOr()};
   if (!condition || !*condition) {
@@ -98,7 +98,7 @@ TopDown::parseDoWhile() const noexcept {
   }
   if (tkStream_.current()->type() != TokenType::RP) {
     return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
+        Error{ERROR_TYPE::SINTAX, "missing right parenthesis of do while condition at " +
                                       tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
@@ -108,7 +108,7 @@ TopDown::parseDoWhile() const noexcept {
   }
   if (!tkStream_.current() or tkStream_.current()->type() != TokenType::SEMICOLON) {
     return std::unexpected{Error{
-        ERROR_TYPE::SINTAX, "missing ; at "}};
+        ERROR_TYPE::SINTAX, "missing ; of do while statement at "}};
   }
   return Builder::createDoWhile(*body, *condition);
 }

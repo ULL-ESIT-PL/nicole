@@ -22,7 +22,7 @@ TopDown::parseEnum() const noexcept {
   }
   if (tkStream_.current()->type() != TokenType::LB) {
     return std::unexpected{Error{
-        ERROR_TYPE::SINTAX, "missing { at " + tkStream_.current()->locInfo()}};
+        ERROR_TYPE::SINTAX, "missing { of enum at " + tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
     return std::unexpected{Error{ERROR_TYPE::SINTAX,
@@ -52,14 +52,14 @@ TopDown::parseEnum() const noexcept {
       continue;
     } else if (tkStream_.current()->type() != TokenType::RB) {
       return std::unexpected{
-          Error{ERROR_TYPE::SINTAX, "missing comma or parenthesis at " +
+          Error{ERROR_TYPE::SINTAX, "missing comma or parenthesis of enum at " +
                                         tkStream_.current()->locInfo()}};
     }
     break;
   }
   if (tkStream_.current()->type() != TokenType::RB) {
     return std::unexpected{Error{
-        ERROR_TYPE::SINTAX, "missing } at " + tkStream_.current()->locInfo()}};
+        ERROR_TYPE::SINTAX, "missing } of enum at " + tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
     return std::unexpected{Error{ERROR_TYPE::SINTAX,

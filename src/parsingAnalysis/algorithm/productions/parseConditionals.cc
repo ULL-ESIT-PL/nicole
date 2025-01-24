@@ -14,7 +14,7 @@ TopDown::parseIf() const noexcept {
   if (tkStream_.current()->type() != TokenType::LP) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX,
-              "missing left parenthesis at " + tkStream_.current()->locInfo()}};
+              "missing left parenthesis of if at " + tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
     return std::unexpected{Error{ERROR_TYPE::SINTAX,
@@ -24,7 +24,7 @@ TopDown::parseIf() const noexcept {
   if (tkStream_.current()->type() == TokenType::RP) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX,
-              "empty expression at " + tkStream_.current()->locInfo()}};
+              "empty expression of if condition at " + tkStream_.current()->locInfo()}};
   }
   const std::expected<std::shared_ptr<AST>, Error> conditionIf{parseOr()};
   if (!conditionIf || !*conditionIf) {
@@ -34,7 +34,7 @@ TopDown::parseIf() const noexcept {
   }
   if (tkStream_.current()->type() != TokenType::RP) {
     return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
+        Error{ERROR_TYPE::SINTAX, "missing right parenthesis of if at " +
                                       tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
@@ -55,7 +55,7 @@ TopDown::parseIf() const noexcept {
         parseElseIf()};
     if (!elseIf || !*elseIf) {
       return std::unexpected{
-          elseIf ? Error{ERROR_TYPE::NULL_NODE, "Statement is null"}
+          elseIf ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                  : elseIf.error()};
     }
     elseIfs.push_back(*elseIf);
@@ -92,7 +92,7 @@ TopDown::parseElseIf() const noexcept {
   if (tkStream_.current()->type() != TokenType::LP) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX,
-              "missing left parenthesis at " + tkStream_.current()->locInfo()}};
+              "missing left parenthesis of else if at " + tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
     return std::unexpected{Error{ERROR_TYPE::SINTAX,
@@ -102,7 +102,7 @@ TopDown::parseElseIf() const noexcept {
   if (tkStream_.current()->type() == TokenType::RP) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX,
-              "empty expression at " + tkStream_.current()->locInfo()}};
+              "empty expression else if condition at " + tkStream_.current()->locInfo()}};
   }
   const std::expected<std::shared_ptr<AST>, Error> condition{parseOr()};
   if (!condition || !*condition) {
@@ -112,7 +112,7 @@ TopDown::parseElseIf() const noexcept {
   }
   if (tkStream_.current()->type() != TokenType::RP) {
     return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
+        Error{ERROR_TYPE::SINTAX, "missing right parenthesis of else if at " +
                                       tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
@@ -138,7 +138,7 @@ TopDown::parseSwitch() const noexcept {
   if (tkStream_.current()->type() != TokenType::LP) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX,
-              "missing left parenthesis at " + tkStream_.current()->locInfo()}};
+              "missing left parenthesis of switch at " + tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
     return std::unexpected{Error{ERROR_TYPE::SINTAX,
@@ -148,7 +148,7 @@ TopDown::parseSwitch() const noexcept {
   if (tkStream_.current()->type() == TokenType::RP) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX,
-              "empty expression at " + tkStream_.current()->locInfo()}};
+              "empty expression of switch condition at " + tkStream_.current()->locInfo()}};
   }
   const std::expected<std::shared_ptr<AST>, Error> conditionIf{parseOr()};
   if (!conditionIf || !*conditionIf) {
@@ -158,7 +158,7 @@ TopDown::parseSwitch() const noexcept {
   }
   if (tkStream_.current()->type() != TokenType::RP) {
     return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
+        Error{ERROR_TYPE::SINTAX, "missing right parenthesis of switch at " +
                                       tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
@@ -168,7 +168,7 @@ TopDown::parseSwitch() const noexcept {
   }
   if (tkStream_.current()->type() != TokenType::LB) {
     return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
+        Error{ERROR_TYPE::SINTAX, "missing left bracket of switch at " +
                                       tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
@@ -203,7 +203,7 @@ TopDown::parseSwitch() const noexcept {
   }
   if (tkStream_.current()->type() != TokenType::DEFAULT) {
     return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
+        Error{ERROR_TYPE::SINTAX, "missing default case of switch at " +
                                       tkStream_.current()->locInfo()}};
   }
   const std::expected<std::shared_ptr<AST_DEFAULT>, Error> defaultCase{
@@ -215,7 +215,7 @@ TopDown::parseSwitch() const noexcept {
   }
   if (tkStream_.current()->type() != TokenType::RB) {
     return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
+        Error{ERROR_TYPE::SINTAX, "missing right bracket of switch at " +
                                       tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
@@ -242,7 +242,7 @@ TopDown::parseCase() const noexcept {
   if (tkStream_.current()->type() != TokenType::DOTDOT) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX,
-              "missing left parenthesis at " + tkStream_.current()->locInfo()}};
+              "missing : of case at " + tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
     return std::unexpected{Error{ERROR_TYPE::SINTAX,
@@ -285,7 +285,7 @@ TopDown::parseTernary() const noexcept {
     if (tkStream_.current()->type() == TokenType::RP) {
       return std::unexpected{
           Error{ERROR_TYPE::SINTAX,
-                "empty expression at " + tkStream_.current()->locInfo()}};
+                "empty expression of ternary operator condition at " + tkStream_.current()->locInfo()}};
     }
     const std::expected<std::shared_ptr<AST>, Error> condition{parseOr()};
     if (!condition || !*condition) {
@@ -295,7 +295,7 @@ TopDown::parseTernary() const noexcept {
     }
     if (tkStream_.current()->type() != TokenType::RP) {
       return std::unexpected{
-          Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
+          Error{ERROR_TYPE::SINTAX, "missing right parenthesis of ternary condition at " +
                                         tkStream_.current()->locInfo()}};
     }
     if (!tkStream_.eat()) {
@@ -306,7 +306,7 @@ TopDown::parseTernary() const noexcept {
     if (tkStream_.current()->type() != TokenType::TERNARY) {
       return std::unexpected{
           Error{ERROR_TYPE::SINTAX,
-                "missing ? at " + tkStream_.current()->locInfo()}};
+                "missing ? of ternary operator at " + tkStream_.current()->locInfo()}};
     }
     if (!tkStream_.eat()) {
       return std::unexpected{Error{
@@ -321,7 +321,7 @@ TopDown::parseTernary() const noexcept {
     if (tkStream_.current()->type() != TokenType::DOTDOT) {
       return std::unexpected{
           Error{ERROR_TYPE::SINTAX,
-                "missing : at " + tkStream_.current()->locInfo()}};
+                "missing : of terna operator at " + tkStream_.current()->locInfo()}};
     }
     if (!tkStream_.eat()) {
       return std::unexpected{Error{
