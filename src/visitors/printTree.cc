@@ -1045,9 +1045,34 @@ PrintTree::visit(const AST_FUNC_CALL *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node) {
-    // std::unexpected{Error{, ""}};
+    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print func decl"}};
   }
-  return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print func decl"}};
+  std::ostringstream result;
+  result << indent_ << "Function Declaration:\n";
+  increaseIndent();
+  result << indent_ << "Name: " << node->id() << "\n";
+  result << indent_ << "Return Type: " << node->returnType() << "\n";
+  
+  result << indent_ << "Parameters:\n";
+  increaseIndent();
+  for (const auto &param : node->parameters()) {
+    result << indent_ << "var " << param.first << " type " << param.second << "\n";
+  }
+  decreaseIndent();
+
+  result << indent_ << "Body:\n";
+  if (node->body()) {
+    const auto bodyStr{node->body()->accept(*this)};
+    if (!bodyStr) {
+      return std::unexpected{bodyStr.error()};
+    }
+    result << *bodyStr;
+  } else {
+    result << indent_ << "(empty body)\n";
+  }
+  decreaseIndent();
+
+  return result.str();
 }
 
 std::expected<std::string, Error>

@@ -216,11 +216,6 @@ TopDown::parseVector() const noexcept {
   return Builder::createVector(expressions);
 }
 
-const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {
-  std::vector<std::pair<std::string, std::string>> params{};
-  return Parameters{params};
-}
-
 const std::expected<std::vector<std::shared_ptr<AST>>, Error>
 TopDown::parseArguments() const noexcept {
   return {};
