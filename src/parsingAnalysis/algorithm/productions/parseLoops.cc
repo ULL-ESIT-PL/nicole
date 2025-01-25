@@ -225,4 +225,34 @@ TopDown::parseDoWhile() const noexcept {
   return Builder::createDoWhile(*body, *condition);
 }
 
+const std::expected<std::shared_ptr<AST_PASS>, Error>
+TopDown::parsePass() const noexcept {
+  if (!tkStream_.eat()) {
+    return std::unexpected{Error{ERROR_TYPE::SINTAX,
+                                 "failed to eat " + tkStream_.current()->raw() +
+                                     " at " + tkStream_.current()->locInfo()}};
+  }
+  if (tkStream_.current()->type() != TokenType::SEMICOLON) {
+    return std::unexpected{
+        Error{ERROR_TYPE::SINTAX, "missing ; of pass statement at " +
+                                      tkStream_.current()->locInfo()}};
+  }
+  return Builder::createPass(nullptr);
+}
+
+const std::expected<std::shared_ptr<AST_STOP>, Error>
+TopDown::parseStop() const noexcept {
+  if (!tkStream_.eat()) {
+    return std::unexpected{Error{ERROR_TYPE::SINTAX,
+                                 "failed to eat " + tkStream_.current()->raw() +
+                                     " at " + tkStream_.current()->locInfo()}};
+  }
+  if (tkStream_.current()->type() != TokenType::SEMICOLON) {
+    return std::unexpected{
+        Error{ERROR_TYPE::SINTAX, "missing ; of stop statement at " +
+                                      tkStream_.current()->locInfo()}};
+  }
+  return Builder::createStop(nullptr);
+}
+
 } // namespace nicole

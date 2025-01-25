@@ -47,6 +47,12 @@ private:
   [[nodiscard]] const std::expected<std::shared_ptr<AST_FOR>, Error>
   parseFor() const noexcept;
 
+  [[nodiscard]] const std::expected<std::shared_ptr<AST_PASS>, Error>
+  parsePass() const noexcept;
+
+  [[nodiscard]] const std::expected<std::shared_ptr<AST_STOP>, Error>
+  parseStop() const noexcept;
+
   [[nodiscard]] const std::expected<std::shared_ptr<AST_DO_WHILE>, Error>
   parseDoWhile() const noexcept;
 

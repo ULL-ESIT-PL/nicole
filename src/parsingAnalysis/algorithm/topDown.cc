@@ -192,6 +192,32 @@ TopDown::parseStatement() const noexcept {
     return *statement;
   }
 
+  case TokenType::PASS: {
+    const std::expected<std::shared_ptr<AST_PASS>, Error> pass{parsePass()};
+    if (!pass || !*pass) {
+      return std::unexpected{pass ? Error{ERROR_TYPE::NULL_NODE, "pass is null"}
+                                  : pass.error()};
+    }
+    const auto statement{Builder::createStatement(*pass)};
+    if (!statement) {
+      return std::unexpected{statement.error()};
+    }
+    return *statement;
+  }
+
+  case TokenType::STOP: {
+    const std::expected<std::shared_ptr<AST_STOP>, Error> stop{parseStop()};
+    if (!stop || !*stop) {
+      return std::unexpected{
+          stop ? Error{ERROR_TYPE::NULL_NODE, "factor is null"} : stop.error()};
+    }
+    const auto statement{Builder::createStatement(*stop)};
+    if (!statement) {
+      return std::unexpected{statement.error()};
+    }
+    return *statement;
+  }
+
   case TokenType::FUNCTION: {
     const std::expected<std::shared_ptr<AST>, Error> function{parseFuncDecl()};
     if (!function || !*function) {
