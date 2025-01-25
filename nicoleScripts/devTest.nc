@@ -71,7 +71,7 @@ for (1,1;1;1,1) {
 stop;
 pass;
 
-def hola (aa: bb, cc: dd): adios {
+def hola (): adios {
     1;
     1;
 }

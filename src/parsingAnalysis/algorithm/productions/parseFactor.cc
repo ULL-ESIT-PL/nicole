@@ -70,6 +70,10 @@ TopDown::parseFactor() const noexcept {
     return Builder::createNull();
   }
 
+  case TokenType::ID: {
+    return parseChainedExpression();
+  }
+
   case TokenType::LC: {
     return parseVector();
   }

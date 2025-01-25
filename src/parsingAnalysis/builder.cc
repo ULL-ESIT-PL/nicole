@@ -602,13 +602,16 @@ std::expected<std::shared_ptr<AST_CHAINED>, Error> Builder::createChained(
   const std::vector<std::shared_ptr<AST>> &operations__{
       astChained->operations()};
 
-  operations__[0]->setFather(base);
+  if (operations__.size()) {
+    operations__[0]->setFather(base);
 
-  const std::size_t size{operations__.size()};
-  for (std::size_t i{1}; i < size; ++i) {
-    operations__[i]->setFather(operations__[i - 1]);
+    const std::size_t size{operations__.size()};
+    if (size > 1) {
+      for (std::size_t i{1}; i < size; ++i) {
+        operations__[i]->setFather(operations__[i - 1]);
+      }
+    }
   }
-
   return astChained;
 }
 
