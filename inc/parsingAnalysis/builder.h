@@ -40,10 +40,13 @@
 #include "ast/operators/unary/ast_not.h"
 
 #include "ast/vector/ast_vector.h"
+#include "ast/vector/ast_index.h"
 
 #include "ast/userTypes/ast_class.h"
 #include "ast/userTypes/ast_enum.h"
 #include "ast/userTypes/ast_struct.h"
+#include "ast/userTypes/ast_attrAccess.h"
+#include "ast/userTypes/ast_methodCall.h"
 
 #include "ast/utils/ast_import.h"
 #include "ast/utils/ast_print.h"
@@ -113,6 +116,9 @@ public:
   // Vectors
   [[nodiscard]] static std::expected<std::shared_ptr<AST_VECTOR>, Error>
   createVector(const std::vector<std::shared_ptr<AST>> values) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_INDEX>, Error>
+  createIndex(const std::shared_ptr<AST> value) noexcept;
 
   // Pointers
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DELETE>, Error>
@@ -312,6 +318,13 @@ public:
               const std::shared_ptr<AST_FUNC_DECL> &constructor,
               const std::shared_ptr<AST_FUNC_DECL> &destructor,
               const std::shared_ptr<AST_FUNC_DECL> &addOverloading) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_ATTR_ACCESS>, Error>
+  createAttrAccess(const std::string &id) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_METHOD_CALL>, Error>
+  createMethodCall(const std::string &id,
+                const std::vector<std::shared_ptr<AST>> &parameters) noexcept;
 
   // Variables
   [[nodiscard]] static std::expected<std::shared_ptr<AST_AUTO_DECL>, Error>

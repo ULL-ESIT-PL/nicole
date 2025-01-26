@@ -221,8 +221,41 @@ TopDown::parseVector() const noexcept {
 }
 
 const std::expected<std::vector<std::shared_ptr<AST>>, Error>
-TopDown::parseArguments() const noexcept {
-  return {};
+TopDown::parseArguments(const TokenType end) const noexcept {
+  std::vector<std::shared_ptr<AST>> params{};
+  while (tkStream_.currentPos() < tkStream_.size() and
+         tkStream_.current()->type() != end) {
+    const std::expected<std::shared_ptr<AST>, Error> param{parseOr()};
+    if (!param || !*param) {
+      return std::unexpected{
+          param ? Error{ERROR_TYPE::NULL_NODE, "node is null"} : param.error()};
+    }
+    params.push_back(*param);
+    if (tkStream_.current()->type() == TokenType::COMMA) {
+      if (!tkStream_.eat()) {
+        return std::unexpected{Error{
+            ERROR_TYPE::SINTAX, "failed to eat " + tkStream_.current()->raw() +
+                                    " at " + tkStream_.current()->locInfo()}};
+      }
+      continue;
+    } else if (tkStream_.current()->type() != end) {
+      return std::unexpected{
+          Error{ERROR_TYPE::SINTAX, "missing comma or parenthesis of print at " +
+                                        tkStream_.current()->locInfo()}};
+    }
+    break;
+  }
+  if (tkStream_.current()->type() != end) {
+    return std::unexpected{
+        Error{ERROR_TYPE::SINTAX, "missing right parenthesis of print at " +
+                                      tkStream_.current()->locInfo()}};
+  }
+  if (!tkStream_.eat()) {
+    return std::unexpected{Error{ERROR_TYPE::SINTAX,
+                                 "failed to eat " + tkStream_.current()->raw() +
+                                     " at " + tkStream_.current()->locInfo()}};
+  }
+  return params;
 }
 
 } // namespace nicole

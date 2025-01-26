@@ -7,6 +7,7 @@
 #include "../../inc/parsingAnalysis/ast/literals/ast_null.h"
 #include "../../inc/parsingAnalysis/ast/literals/ast_string.h"
 
+#include "../../inc/parsingAnalysis/ast/vector/ast_index.h"
 #include "../../inc/parsingAnalysis/ast/vector/ast_vector.h"
 
 #include "../../inc/parsingAnalysis/ast/pointer/ast_delete.h"
@@ -59,8 +60,10 @@
 #include "../../inc/parsingAnalysis/ast/functions/ast_funcDecl.h"
 #include "../../inc/parsingAnalysis/ast/functions/ast_return.h"
 
+#include "../../inc/parsingAnalysis/ast/userTypes/ast_attrAccess.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_class.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_enum.h"
+#include "../../inc/parsingAnalysis/ast/userTypes/ast_methodCall.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_struct.h"
 
 #include "../../inc/parsingAnalysis/ast/variables/ast_autoDecl.h"
@@ -145,6 +148,22 @@ PrintTree::visit(const AST_VECTOR *node) const noexcept {
     }
     result << *val;
   }
+  decreaseIndent();
+  return result.str();
+}
+
+std::expected<std::string, Error>
+PrintTree::visit(const AST_INDEX *node) const noexcept {
+  if (!node) {
+    // std::unexpected{Error{, ""}};
+  }
+  std::ostringstream result;
+  result << indent_ << "index:\n";
+  increaseIndent();
+  const auto val{node->index()->accept(*this)};
+  if (!val) {
+  }
+  result << *val;
   decreaseIndent();
   return result.str();
 }
@@ -1052,11 +1071,12 @@ PrintTree::visit(const AST_FUNC_DECL *node) const noexcept {
   increaseIndent();
   result << indent_ << "Name: " << node->id() << "\n";
   result << indent_ << "Return Type: " << node->returnType() << "\n";
-  
+
   result << indent_ << "Parameters:\n";
   increaseIndent();
   for (const auto &param : node->parameters()) {
-    result << indent_ << "var " << param.first << " type " << param.second << "\n";
+    result << indent_ << "var " << param.first << " type " << param.second
+           << "\n";
   }
   decreaseIndent();
 
@@ -1127,6 +1147,27 @@ PrintTree::visit(const AST_CLASS *node) const noexcept {
     // std::unexpected{Error{, ""}};
   }
   return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print class"}};
+}
+
+std::expected<std::string, Error>
+PrintTree::visit(const AST_ATTR_ACCESS *node) const noexcept {
+  if (!node) {
+    // std::unexpected{Error{, ""}};
+  }
+  std::ostringstream result;
+  result << indent_ << "attr access:\n";
+  increaseIndent();
+  result << node->id();
+  decreaseIndent();
+  return result.str();
+}
+
+std::expected<std::string, Error>
+PrintTree::visit(const AST_METHOD_CALL *node) const noexcept {
+  if (!node) {
+    // std::unexpected{Error{, ""}};
+  }
+  return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print method call"}};
 }
 
 std::expected<std::string, Error>

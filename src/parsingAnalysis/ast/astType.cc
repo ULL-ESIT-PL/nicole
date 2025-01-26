@@ -23,6 +23,8 @@ std::string astTypeToStr(const AST_TYPE type) noexcept {
     // Vectors
   case AST_TYPE::VECTOR:
     return "VECTOR";
+  case AST_TYPE::INDEX:
+    return "INDEX";
 
     // Pointers
   case AST_TYPE::PTR:
@@ -149,6 +151,12 @@ std::string astTypeToStr(const AST_TYPE type) noexcept {
     // Classes
   case AST_TYPE::CLASS_DECL:
     return "CLASS_DECL";
+
+  case AST_TYPE::ATTR_ACCESS:
+    return "ATTR_ACCESS";
+
+  case AST_TYPE::METHOD_CALL:
+    return "METHOD_CALL";
 
     // Enum
   case AST_TYPE::ENUM:

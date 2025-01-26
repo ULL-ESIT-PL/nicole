@@ -20,6 +20,7 @@ class AST_NULL;
 class AST_STRING;
 
 class AST_VECTOR;
+class AST_INDEX;
 
 class AST_DELETE;
 class AST_NEW;
@@ -78,6 +79,8 @@ class AST_RETURN;
 class AST_ENUM;
 class AST_STRUCT;
 class AST_CLASS;
+class AST_ATTR_ACCESS;
+class AST_METHOD_CALL;
 
 class AST_AUTO_DECL;
 class AST_LET_DECL;
@@ -116,6 +119,9 @@ public:
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_VECTOR *node) const noexcept = 0;
+
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_INDEX *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_DELETE *node) const noexcept = 0;
@@ -260,6 +266,12 @@ public:
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_CLASS *node) const noexcept = 0;
+
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_ATTR_ACCESS *node) const noexcept = 0;
+
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_METHOD_CALL *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_AUTO_DECL *node) const noexcept = 0;

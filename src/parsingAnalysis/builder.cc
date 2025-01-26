@@ -95,6 +95,15 @@ Builder::createVector(const std::vector<std::shared_ptr<AST>> values) noexcept {
   return astVector;
 }
 
+std::expected<std::shared_ptr<AST_INDEX>, Error>
+Builder::createIndex(const std::shared_ptr<AST> value) noexcept {
+  const auto astIndex{std::make_shared<AST_INDEX>(value)};
+  if (value) {
+    value->setFather(astIndex);
+  }
+  return astIndex;
+}
+
 std::expected<std::shared_ptr<AST_DELETE>, Error>
 Builder::createDelete(const std::shared_ptr<AST> &value) noexcept {
   const auto astDelete{std::make_shared<AST_DELETE>(value)};
@@ -561,6 +570,24 @@ std::expected<std::shared_ptr<AST_CLASS>, Error> Builder::createClass(
   destructor->setFather(astClass);
   addOverloading->setFather(astClass);
   return astClass;
+}
+
+std::expected<std::shared_ptr<AST_ATTR_ACCESS>, Error>
+Builder::createAttrAccess(const std::string &id) noexcept {
+  return std::make_shared<AST_ATTR_ACCESS>(id);
+}
+
+std::expected<std::shared_ptr<AST_METHOD_CALL>, Error>
+Builder::createMethodCall(
+    const std::string &id,
+    const std::vector<std::shared_ptr<AST>> &parameters) noexcept {
+  const auto astMethodCall{std::make_shared<AST_METHOD_CALL>(id, parameters)};
+  const std::vector<std::shared_ptr<AST>> &parameters__{
+      astMethodCall->parameters()};
+  for (const auto &parameters_ : parameters__) {
+    parameters_->setFather(astMethodCall);
+  }
+  return astMethodCall;
 }
 
 std::expected<std::shared_ptr<AST_AUTO_DECL>, Error>

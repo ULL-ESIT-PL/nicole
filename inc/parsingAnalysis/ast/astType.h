@@ -17,6 +17,7 @@ NULLPTR,
 
 // Vectors
 VECTOR,
+INDEX,
 
 // Pointers
 PTR,
@@ -92,6 +93,9 @@ STRUCT_DECL,
 
 // Classes
 CLASS_DECL,
+
+METHOD_CALL,
+ATTR_ACCESS,
 
 // Enum
 ENUM,

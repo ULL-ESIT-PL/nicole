@@ -42,6 +42,9 @@ public:
   visit(const AST_VECTOR *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>
+  visit(const AST_INDEX *node) const noexcept override;
+
+  [[nodiscard]] std::expected<std::string, Error>
   visit(const AST_DELETE *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>
@@ -184,6 +187,12 @@ public:
 
   [[nodiscard]] std::expected<std::string, Error>
   visit(const AST_CLASS *node) const noexcept override;
+
+  [[nodiscard]] std::expected<std::string, Error>
+  visit(const AST_ATTR_ACCESS *node) const noexcept override;
+
+  [[nodiscard]] std::expected<std::string, Error>
+  visit(const AST_METHOD_CALL *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>
   visit(const AST_AUTO_DECL *node) const noexcept override;
