@@ -1244,7 +1244,7 @@ PrintTree::visit(const AST_CHAINED *node) const noexcept {
   std::ostringstream result;
   result << indent_ << "Chained:\n";
   increaseIndent();
-  result << "Base: " << node->base();
+  result << "Base: " << *node->base()->accept(*this);
   result << "Operations:\n";
   for (const auto &statement : node->operations()) {
     const auto val{statement->accept(*this)};

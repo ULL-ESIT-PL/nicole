@@ -76,4 +76,4 @@ def hola (): adios {
     1;
 }
 
-a.a.a
+aaa;
