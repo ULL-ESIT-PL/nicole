@@ -74,6 +74,7 @@
 #include "../../inc/parsingAnalysis/ast/chained/ast_chained.h"
 
 #include "../../inc/parsingAnalysis/ast/tree.h"
+#include <iostream>
 #include <ostream>
 
 namespace nicole {
@@ -1056,10 +1057,28 @@ PrintTree::visit(const AST_TERNARY *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_FUNC_CALL *node) const noexcept {
   if (!node) {
-    // std::unexpected{Error{, ""}};
+    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "Invalid AST_FUNC_CALL"}};
   }
-  return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print func call"}};
+
+  std::ostringstream result;
+  result << indent_ << "Function Call:\n";
+  increaseIndent();
+  result << indent_ << "Name: " << node->id() << "\n";
+  result << indent_ << "Arguments:\n";
+  increaseIndent();
+  for (const auto &arg : node->parameters()) {
+    const auto argStr = arg->accept(*this);
+    if (!argStr) {
+      return std::unexpected{argStr.error()};
+    }
+    result << *argStr;
+  }
+  decreaseIndent();
+  decreaseIndent();
+
+  return result.str();
 }
+
 
 std::expected<std::string, Error>
 PrintTree::visit(const AST_FUNC_DECL *node) const noexcept {
@@ -1157,17 +1176,34 @@ PrintTree::visit(const AST_ATTR_ACCESS *node) const noexcept {
   std::ostringstream result;
   result << indent_ << "attr access:\n";
   increaseIndent();
-  result << node->id();
+  result << indent_ << node->id();
   decreaseIndent();
   return result.str();
 }
 
 std::expected<std::string, Error>
 PrintTree::visit(const AST_METHOD_CALL *node) const noexcept {
-  if (!node) {
-    // std::unexpected{Error{, ""}};
+   if (!node) {
+    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL"}};
   }
-  return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print method call"}};
+
+  std::ostringstream result;
+  result << indent_ << "Method Call:\n";
+  increaseIndent();
+  result << indent_ << "Name: " << node->id() << "\n";
+  result << indent_ << "Arguments:\n";
+  increaseIndent();
+  for (const auto &arg : node->parameters()) {
+    const auto argStr = arg->accept(*this);
+    if (!argStr) {
+      return std::unexpected{argStr.error()};
+    }
+    result << *argStr;
+  }
+  decreaseIndent();
+  decreaseIndent();
+
+  return result.str();
 }
 
 std::expected<std::string, Error>
@@ -1244,8 +1280,15 @@ PrintTree::visit(const AST_CHAINED *node) const noexcept {
   std::ostringstream result;
   result << indent_ << "Chained:\n";
   increaseIndent();
-  result << "Base: " << *node->base()->accept(*this);
-  result << "Operations:\n";
+  if (!node->base()) {
+    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print base"}};
+  }
+  const auto base{node->base()->accept(*this)};
+  if (!base) {
+    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print base boo"}};
+  }
+  result << indent_ << "Base:\n" << *base;
+  result << indent_ << "Operations:\n";
   for (const auto &statement : node->operations()) {
     const auto val{statement->accept(*this)};
     result << *val;

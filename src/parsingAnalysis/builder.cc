@@ -1,5 +1,7 @@
 #include "../../inc/parsingAnalysis/builder.h"
 #include <cstddef>
+#include <iostream>
+#include <ostream>
 
 namespace nicole {
 
@@ -623,22 +625,27 @@ std::expected<std::shared_ptr<AST_CHAINED>, Error> Builder::createChained(
     const std::shared_ptr<AST> &base,
     const std::vector<std::shared_ptr<AST>> &operations) noexcept {
   const auto astChained{std::make_shared<AST_CHAINED>(base, operations)};
+  std::cout << "hola" << std::flush;
+  if (base) {
+    base->setFather(astChained);
 
-  base->setFather(astChained);
+    const std::vector<std::shared_ptr<AST>> &operations__{
+        astChained->operations()};
 
-  const std::vector<std::shared_ptr<AST>> &operations__{
-      astChained->operations()};
+    if (operations__.size()) {
+      operations__[0]->setFather(base);
 
-  if (operations__.size()) {
-    operations__[0]->setFather(base);
-
-    const std::size_t size{operations__.size()};
-    if (size > 1) {
-      for (std::size_t i{1}; i < size; ++i) {
-        operations__[i]->setFather(operations__[i - 1]);
+      const std::size_t size{operations__.size()};
+      if (size > 1) {
+        for (std::size_t i{1}; i < size; ++i) {
+          if (operations__[i] and operations__[i - 1]) {
+            operations__[i]->setFather(operations__[i - 1]);
+          }
+        }
       }
     }
   }
+  std::cout << "hola" << std::flush;
   return astChained;
 }
 
