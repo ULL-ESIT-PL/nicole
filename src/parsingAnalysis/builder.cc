@@ -625,7 +625,6 @@ std::expected<std::shared_ptr<AST_CHAINED>, Error> Builder::createChained(
     const std::shared_ptr<AST> &base,
     const std::vector<std::shared_ptr<AST>> &operations) noexcept {
   const auto astChained{std::make_shared<AST_CHAINED>(base, operations)};
-  std::cout << "hola" << std::flush;
   if (base) {
     base->setFather(astChained);
 
@@ -645,7 +644,6 @@ std::expected<std::shared_ptr<AST_CHAINED>, Error> Builder::createChained(
       }
     }
   }
-  std::cout << "hola" << std::flush;
   return astChained;
 }
 
