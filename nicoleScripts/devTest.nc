@@ -17,6 +17,9 @@ null;
 print(10, 20 + 20);
 */
 
+
+
+/*
 import "devTest.nc";
 import "dev2.nc";
 
@@ -75,5 +78,5 @@ def hola (): adios {
     1;
     1;
 }
-
-aaa;
+*/
+a.a.a[19];
