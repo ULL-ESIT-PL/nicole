@@ -9,6 +9,14 @@ TopDown::parseFactor() const noexcept {
   const std::string raw{tkStream_.current()->raw()};
   const std::string loc{tkStream_.current()->locInfo()};
   switch (tkStream_.current()->type()) {
+
+  case TokenType::THIS: {
+    if (!tkStream_.eat()) {
+      break;
+    }
+    return Builder::createThis();
+  }
+
   case TokenType::TRUE: {
     if (!tkStream_.eat()) {
       break;
@@ -202,8 +210,9 @@ TopDown::parseVector() const noexcept {
          tkStream_.current()->type() != TokenType::RC) {
     const std::expected<std::shared_ptr<AST>, Error> expression{parseOr()};
     if (!expression || !*expression) {
-      return std::unexpected{
-          expression ? Error{ERROR_TYPE::NULL_NODE, "node is null"} : expression.error()};
+      return std::unexpected{expression
+                                 ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                                 : expression.error()};
     }
     expressions.push_back(*expression);
     if (tkStream_.current()->type() == TokenType::COMMA) {
@@ -222,8 +231,8 @@ TopDown::parseVector() const noexcept {
   }
   if (tkStream_.current()->type() != TokenType::RC) {
     return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "missing ] of vector at " +
-                                      tkStream_.current()->locInfo()}};
+        Error{ERROR_TYPE::SINTAX,
+              "missing ] of vector at " + tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
     return std::unexpected{Error{ERROR_TYPE::SINTAX,

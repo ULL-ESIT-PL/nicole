@@ -111,3 +111,5 @@ const hola: int = 10;
 for (let a: int = 10, const a: int =19;;) {
     1;
 }
+
+let this: int = 10;

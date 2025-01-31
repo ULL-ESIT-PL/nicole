@@ -39,6 +39,7 @@
 #include "ast/operators/unary/ast_neg.h"
 #include "ast/operators/unary/ast_not.h"
 
+#include "ast/userTypes/ast_this.h"
 #include "ast/vector/ast_index.h"
 #include "ast/vector/ast_vector.h"
 
@@ -324,6 +325,9 @@ public:
   createMethodCall(
       const std::string &id,
       const std::vector<std::shared_ptr<AST>> &parameters) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_THIS>, Error>
+  createThis() noexcept;
 
   // Variables
   [[nodiscard]] static std::expected<std::shared_ptr<AST_AUTO_DECL>, Error>

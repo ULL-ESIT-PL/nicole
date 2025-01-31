@@ -81,6 +81,7 @@ class AST_STRUCT;
 class AST_CLASS;
 class AST_ATTR_ACCESS;
 class AST_METHOD_CALL;
+class AST_THIS;
 
 class AST_AUTO_DECL;
 class AST_LET_DECL;
@@ -272,6 +273,9 @@ public:
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_METHOD_CALL *node) const noexcept = 0;
+
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_THIS *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_AUTO_DECL *node) const noexcept = 0;

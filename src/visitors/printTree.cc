@@ -65,6 +65,7 @@
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_enum.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_methodCall.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_struct.h"
+#include "../../inc/parsingAnalysis/ast/userTypes/ast_this.h"
 
 #include "../../inc/parsingAnalysis/ast/variables/ast_autoDecl.h"
 #include "../../inc/parsingAnalysis/ast/variables/ast_constDecl.h"
@@ -1289,7 +1290,66 @@ PrintTree::visit(const AST_CLASS *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_CLASS"}};
   }
-  return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print class"}};
+  std::ostringstream result;
+  result << indent_ << "Class Declaration:\n";
+  increaseIndent();
+
+  // Nombre de la estructura
+  result << indent_ << "Name: " << node->id() << "\n";
+
+  // Tipo padre (si existe)
+  if (node->fatherType()) {
+    result << indent_ << "Father Type: " << *node->fatherType() << "\n";
+  } else {
+    result << indent_ << "No Father Type\n";
+  }
+
+  // Atributos
+  result << indent_ << "Attributes:\n";
+  increaseIndent();
+  for (const auto &[type, name] : node->attributes().params()) {
+    result << indent_ << type << " " << name << "\n";
+  }
+  decreaseIndent();
+
+  // Métodos
+  result << indent_ << "Methods:\n";
+  increaseIndent();
+  for (const auto &method : node->methods()) {
+    const auto methodStr = method->accept(*this);
+    if (!methodStr) {
+      return std::unexpected{methodStr.error()};
+    }
+    result << *methodStr;
+  }
+  decreaseIndent();
+
+  // Constructor
+  if (node->constructor()) {
+    result << indent_ << "Constructor:\n";
+    increaseIndent();
+    const auto ctorStr = node->constructor()->accept(*this);
+    if (!ctorStr) {
+      return std::unexpected{ctorStr.error()};
+    }
+    result << *ctorStr;
+    decreaseIndent();
+  }
+
+  // Destructor
+  if (node->destructor()) {
+    result << indent_ << "Destructor:\n";
+    increaseIndent();
+    const auto dtorStr = node->destructor()->accept(*this);
+    if (!dtorStr) {
+      return std::unexpected{dtorStr.error()};
+    }
+    result << *dtorStr;
+    decreaseIndent();
+  }
+
+  decreaseIndent();
+  return result.str();
 }
 
 std::expected<std::string, Error>
@@ -1329,6 +1389,17 @@ PrintTree::visit(const AST_METHOD_CALL *node) const noexcept {
   decreaseIndent();
   decreaseIndent();
 
+  return result.str();
+}
+
+std::expected<std::string, Error>
+PrintTree::visit(const AST_THIS *node) const noexcept {
+  if (!node) {
+    return std::unexpected{
+        Error{ERROR_TYPE::NULL_NODE, "invalid AST_THIS"}};
+  }
+  std::ostringstream result;
+  result << indent_ << "this call\n";
   return result.str();
 }
 

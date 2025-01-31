@@ -592,6 +592,12 @@ Builder::createMethodCall(
   return astMethodCall;
 }
 
+std::expected<std::shared_ptr<AST_THIS>, Error>
+ Builder:: createThis() noexcept {
+  const auto astThis{std::make_shared<AST_THIS>()};
+  return astThis;
+ }
+
 std::expected<std::shared_ptr<AST_AUTO_DECL>, Error>
 Builder::createAutoDecl(const std::string &id,
                         const std::shared_ptr<AST> &value) noexcept {
