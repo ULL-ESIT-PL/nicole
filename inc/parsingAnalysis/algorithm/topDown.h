@@ -81,7 +81,7 @@ private:
   parseSelfAssignment() const noexcept;
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST>, Error>
-  parseVarDecl() const noexcept;
+  parseVarDecl(const bool insideFor) const noexcept;
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST>, Error>
   parseTernary() const noexcept;

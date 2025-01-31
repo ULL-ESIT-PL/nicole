@@ -1339,14 +1339,14 @@ PrintTree::visit(const AST_AUTO_DECL *node) const noexcept {
         Error{ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL"}};
   }
   std::ostringstream result;
-  result << "auto decl\n";
+  result << indent_ << "auto decl\n";
   increaseIndent();
-  result << "id: " << node->id();
+  result << indent_ << "id: " << node->id() << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
     return std::unexpected{val.error()};
   }
-  result << *val;
+  result << *val << "\n";
   decreaseIndent();
   return result.str();
 }
@@ -1358,15 +1358,15 @@ PrintTree::visit(const AST_LET_DECL *node) const noexcept {
         Error{ERROR_TYPE::NULL_NODE, "invalid AST_LET_DECL"}};
   }
   std::ostringstream result;
-  result << "let decl\n";
+  result << indent_ << "let decl\n";
   increaseIndent();
-  result << "id: " << node->id();
-  result << "type: " << node->valueType();
+  result << indent_ << "id: " << node->id() << "\n";
+  result << indent_ << "type: " << node->valueType() << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
     return std::unexpected{val.error()};
   }
-  result << *val;
+  result << *val << "\n";
   decreaseIndent();
   return result.str();
 }
@@ -1378,15 +1378,15 @@ PrintTree::visit(const AST_CONST_DECL *node) const noexcept {
         Error{ERROR_TYPE::NULL_NODE, "invalid AST_CONST_DECL"}};
   }
   std::ostringstream result;
-  result << "const decl\n";
+  result << indent_ << "const decl\n";
   increaseIndent();
-  result << "id: " << node->id();
-  result << "type: " << node->valueType();
+  result << indent_ << "id: " << node->id() << "\n";
+  result << indent_ << "type: " << node->valueType() << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
     return std::unexpected{val.error()};
   }
-  result << *val;
+  result << *val << "\n";
   decreaseIndent();
   return result.str();
 }

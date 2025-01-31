@@ -318,7 +318,7 @@ TopDown::parseStatement() const noexcept {
   }
 
   default: {
-    const std::expected<std::shared_ptr<AST>, Error> factor{parseVarDecl()};
+    const std::expected<std::shared_ptr<AST>, Error> factor{parseVarDecl(false)};
     if (!factor || !*factor) {
       return std::unexpected{
           factor ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}

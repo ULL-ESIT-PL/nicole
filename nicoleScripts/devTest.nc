@@ -98,3 +98,16 @@ struct hola extends adios {
     destructor {}
     ccc: int    
 }
+
+let hola: int = 10;
+
+HOLA*(*HOLA);
+
+1 * *(*(1));
+
+
+const hola: int = 10;
+
+for (let a: int = 10, const a: int =19;;) {
+    1;
+}

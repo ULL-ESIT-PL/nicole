@@ -74,7 +74,7 @@ TopDown::parseFor() const noexcept {
   std::vector<std::shared_ptr<AST>> init{};
   while (tkStream_.currentPos() < tkStream_.size() and
          tkStream_.current()->type() != TokenType::SEMICOLON) {
-    const std::expected<std::shared_ptr<AST>, Error> expression{parseVarDecl()};
+    const std::expected<std::shared_ptr<AST>, Error> expression{parseVarDecl(true)};
     if (!expression || !*expression) {
       return std::unexpected{expression
                                  ? Error{ERROR_TYPE::NULL_NODE, "node is null"}

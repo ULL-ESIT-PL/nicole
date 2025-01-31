@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
     }
     std::cout << *toStr << "\n";
   }
-
+  
   return EXIT_SUCCESS;
 }
 
