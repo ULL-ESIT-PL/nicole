@@ -146,6 +146,7 @@ PrintTree::visit(const AST_VECTOR *node) const noexcept {
   for (const auto &statement : node->values()) {
     const auto val{statement->accept(*this)};
     if (!val) {
+      return std::unexpected{val.error()};
     }
     result << *val;
   }
@@ -163,6 +164,7 @@ PrintTree::visit(const AST_INDEX *node) const noexcept {
   increaseIndent();
   const auto val{node->index()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << *val;
   decreaseIndent();
@@ -179,6 +181,7 @@ PrintTree::visit(const AST_DELETE *node) const noexcept {
   increaseIndent();
   const auto val{node->value()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << *val;
   decreaseIndent();
@@ -195,6 +198,7 @@ PrintTree::visit(const AST_NEW *node) const noexcept {
   increaseIndent();
   const auto val{node->value()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << *val;
   decreaseIndent();
@@ -211,6 +215,7 @@ PrintTree::visit(const AST_DEREF *node) const noexcept {
   increaseIndent();
   const auto val{node->value()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << *val;
   decreaseIndent();
@@ -229,6 +234,7 @@ PrintTree::visit(const AST_PTR *node) const noexcept {
   result << indent_ << "type: " << node->valueType();
   const auto val{node->value()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << indent_ << "value:\n" << *val;
   decreaseIndent();
@@ -245,10 +251,12 @@ PrintTree::visit(const AST_ADD *node) const noexcept {
   increaseIndent();
   const auto left{node->left()->accept(*this)};
   if (!left) {
+    return std::unexpected{left.error()};
   }
   result << indent_ << "Left:\n" << *left;
   const auto right{node->right()->accept(*this)};
   if (!right) {
+    return std::unexpected{right.error()};
   }
   result << indent_ << "Right:\n" << *right;
   decreaseIndent();
@@ -265,10 +273,12 @@ PrintTree::visit(const AST_SUB *node) const noexcept {
   increaseIndent();
   const auto left{node->left()->accept(*this)};
   if (!left) {
+    return std::unexpected{left.error()};
   }
   result << indent_ << "Left:\n" << *left;
   const auto right{node->right()->accept(*this)};
   if (!right) {
+    return std::unexpected{right.error()};
   }
   result << indent_ << "Right:\n" << *right;
   decreaseIndent();
@@ -285,10 +295,12 @@ PrintTree::visit(const AST_MULT *node) const noexcept {
   increaseIndent();
   const auto left{node->left()->accept(*this)};
   if (!left) {
+    return std::unexpected{left.error()};
   }
   result << indent_ << "Left:\n" << *left;
   const auto right{node->right()->accept(*this)};
   if (!right) {
+    return std::unexpected{right.error()};
   }
   result << indent_ << "Right:\n" << *right;
   decreaseIndent();
@@ -305,10 +317,12 @@ PrintTree::visit(const AST_DIV *node) const noexcept {
   increaseIndent();
   const auto left{node->left()->accept(*this)};
   if (!left) {
+    return std::unexpected{left.error()};
   }
   result << indent_ << "Left:\n" << *left;
   const auto right{node->right()->accept(*this)};
   if (!right) {
+    return std::unexpected{right.error()};
   }
   result << indent_ << "Right:\n" << *right;
   decreaseIndent();
@@ -325,10 +339,12 @@ PrintTree::visit(const AST_MODULE *node) const noexcept {
   increaseIndent();
   const auto left{node->left()->accept(*this)};
   if (!left) {
+    return std::unexpected{left.error()};
   }
   result << indent_ << "Left:\n" << *left;
   const auto right{node->right()->accept(*this)};
   if (!right) {
+    return std::unexpected{right.error()};
   }
   result << indent_ << "Right:\n" << *right;
   decreaseIndent();
@@ -345,10 +361,12 @@ PrintTree::visit(const AST_SMALLER *node) const noexcept {
   increaseIndent();
   const auto left{node->left()->accept(*this)};
   if (!left) {
+    return std::unexpected{left.error()};
   }
   result << indent_ << "Left:\n" << *left;
   const auto right{node->right()->accept(*this)};
   if (!right) {
+    return std::unexpected{right.error()};
   }
   result << indent_ << "Right:\n" << *right;
   decreaseIndent();
@@ -366,10 +384,12 @@ PrintTree::visit(const AST_SMALLER_EQUAL *node) const noexcept {
   increaseIndent();
   const auto left{node->left()->accept(*this)};
   if (!left) {
+    return std::unexpected{left.error()};
   }
   result << indent_ << "Left:\n" << *left;
   const auto right{node->right()->accept(*this)};
   if (!right) {
+    return std::unexpected{right.error()};
   }
   result << indent_ << "Right:\n" << *right;
   decreaseIndent();
@@ -386,10 +406,12 @@ PrintTree::visit(const AST_BIGGER *node) const noexcept {
   increaseIndent();
   const auto left{node->left()->accept(*this)};
   if (!left) {
+    return std::unexpected{left.error()};
   }
   result << indent_ << "Left:\n" << *left;
   const auto right{node->right()->accept(*this)};
   if (!right) {
+    return std::unexpected{right.error()};
   }
   result << indent_ << "Right:\n" << *right;
   decreaseIndent();
@@ -407,10 +429,12 @@ PrintTree::visit(const AST_BIGGER_EQUAL *node) const noexcept {
   increaseIndent();
   const auto left{node->left()->accept(*this)};
   if (!left) {
+    return std::unexpected{left.error()};
   }
   result << indent_ << "Left:\n" << *left;
   const auto right{node->right()->accept(*this)};
   if (!right) {
+    return std::unexpected{right.error()};
   }
   result << indent_ << "Right:\n" << *right;
   decreaseIndent();
@@ -427,10 +451,12 @@ PrintTree::visit(const AST_EQUAL *node) const noexcept {
   increaseIndent();
   const auto left{node->left()->accept(*this)};
   if (!left) {
+    return std::unexpected{left.error()};
   }
   result << indent_ << "Left:\n" << *left;
   const auto right{node->right()->accept(*this)};
   if (!right) {
+    return std::unexpected{right.error()};
   }
   result << indent_ << "Right:\n" << *right;
   decreaseIndent();
@@ -448,10 +474,12 @@ PrintTree::visit(const AST_NOT_EQUAL *node) const noexcept {
   increaseIndent();
   const auto left{node->left()->accept(*this)};
   if (!left) {
+    return std::unexpected{left.error()};
   }
   result << indent_ << "Left:\n" << *left;
   const auto right{node->right()->accept(*this)};
   if (!right) {
+    return std::unexpected{right.error()};
   }
   result << indent_ << "Right:\n" << *right;
   decreaseIndent();
@@ -468,10 +496,12 @@ PrintTree::visit(const AST_OR *node) const noexcept {
   increaseIndent();
   const auto left{node->left()->accept(*this)};
   if (!left) {
+    return std::unexpected{left.error()};
   }
   result << indent_ << "Left:\n" << *left;
   const auto right{node->right()->accept(*this)};
   if (!right) {
+    return std::unexpected{right.error()};
   }
   result << indent_ << "Right:\n" << *right;
   decreaseIndent();
@@ -488,10 +518,12 @@ PrintTree::visit(const AST_AND *node) const noexcept {
   increaseIndent();
   const auto left{node->left()->accept(*this)};
   if (!left) {
+    return std::unexpected{left.error()};
   }
   result << indent_ << "Left:\n" << *left;
   const auto right{node->right()->accept(*this)};
   if (!right) {
+    return std::unexpected{right.error()};
   }
   result << indent_ << "Right:\n" << *right;
   decreaseIndent();
@@ -508,6 +540,7 @@ PrintTree::visit(const AST_NEG *node) const noexcept {
   increaseIndent();
   const auto val{node->value()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << indent_ << "value:\n" << *val;
   decreaseIndent();
@@ -524,6 +557,7 @@ PrintTree::visit(const AST_NOT *node) const noexcept {
   increaseIndent();
   const auto val{node->value()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << indent_ << "value:\n" << *val;
   decreaseIndent();
@@ -541,6 +575,7 @@ PrintTree::visit(const AST_DECREMENT *node) const noexcept {
   increaseIndent();
   const auto val{node->value()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << indent_ << "value:\n" << *val;
   decreaseIndent();
@@ -558,6 +593,7 @@ PrintTree::visit(const AST_INCREMENT *node) const noexcept {
   increaseIndent();
   const auto val{node->value()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << indent_ << "value:\n" << *val;
   decreaseIndent();
@@ -576,6 +612,7 @@ PrintTree::visit(const AST_ASSIGNMENT *node) const noexcept {
   result << indent_ << "Var: " << node->id() << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << indent_ << "Value:\n" << *val;
   decreaseIndent();
@@ -594,6 +631,7 @@ PrintTree::visit(const AST_SELF_ADD *node) const noexcept {
   result << indent_ << "Var: " << node->id() << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << indent_ << "Value:\n" << *val;
   decreaseIndent();
@@ -612,6 +650,7 @@ PrintTree::visit(const AST_SELF_SUB *node) const noexcept {
   result << indent_ << "Var: " << node->id() << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << indent_ << "Value:\n" << *val;
   decreaseIndent();
@@ -630,6 +669,7 @@ PrintTree::visit(const AST_SELF_MULT *node) const noexcept {
   result << indent_ << "Var: " << node->id() << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << indent_ << "Value:\n" << *val;
   decreaseIndent();
@@ -648,6 +688,7 @@ PrintTree::visit(const AST_SELF_DIV *node) const noexcept {
   result << indent_ << "Var: " << node->id() << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << indent_ << "Value:\n" << *val;
   decreaseIndent();
@@ -666,6 +707,7 @@ PrintTree::visit(const AST_PRINT *node) const noexcept {
   for (const auto &expr : node->values()) {
     const auto toStr{expr->accept(*this)};
     if (!toStr) {
+      return std::unexpected{toStr.error()};
     }
     result << indent_ << "Expression:\n" << *toStr;
   }
@@ -698,6 +740,7 @@ PrintTree::visit(const AST_STATEMENT *node) const noexcept {
   increaseIndent();
   const auto expr{node->expression()->accept(*this)};
   if (!expr) {
+    return std::unexpected{expr.error()};
   }
   result << *expr;
   decreaseIndent();
@@ -714,6 +757,9 @@ PrintTree::visit(const AST_BODY *node) const noexcept {
   increaseIndent();
   for (const auto &statement : node->body()) {
     const auto val{statement->accept(*this)};
+    if (!val) {
+      return std::unexpected{val.error()};
+    }
     result << *val;
   }
   decreaseIndent();
@@ -730,6 +776,9 @@ PrintTree::visit(const AST_COMMA *node) const noexcept {
   increaseIndent();
   for (const auto &statement : node->body()) {
     const auto val{statement->accept(*this)};
+    if (!val) {
+      return std::unexpected{val.error()};
+    }
     result << *val;
   }
   decreaseIndent();
@@ -967,6 +1016,7 @@ PrintTree::visit(const AST_SWITCH *node) const noexcept {
   result << indent_ << "Expression:\n";
   const auto expr{node->condition()->accept(*this)};
   if (!expr) {
+    return std::unexpected{expr.error()};
   }
   result << *expr;
 
@@ -1234,7 +1284,6 @@ PrintTree::visit(const AST_STRUCT *node) const noexcept {
   return result.str();
 }
 
-
 std::expected<std::string, Error>
 PrintTree::visit(const AST_CLASS *node) const noexcept {
   if (!node) {
@@ -1295,6 +1344,7 @@ PrintTree::visit(const AST_AUTO_DECL *node) const noexcept {
   result << "id: " << node->id();
   const auto val{node->value()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << *val;
   decreaseIndent();
@@ -1314,6 +1364,7 @@ PrintTree::visit(const AST_LET_DECL *node) const noexcept {
   result << "type: " << node->valueType();
   const auto val{node->value()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << *val;
   decreaseIndent();
@@ -1333,6 +1384,7 @@ PrintTree::visit(const AST_CONST_DECL *node) const noexcept {
   result << "type: " << node->valueType();
   const auto val{node->value()->accept(*this)};
   if (!val) {
+    return std::unexpected{val.error()};
   }
   result << *val;
   decreaseIndent();
@@ -1372,6 +1424,9 @@ PrintTree::visit(const AST_CHAINED *node) const noexcept {
   result << indent_ << "Operations:\n";
   for (const auto &statement : node->operations()) {
     const auto val{statement->accept(*this)};
+    if (!val) {
+      return std::unexpected{val.error()};
+    }
     result << *val;
   }
   decreaseIndent();
