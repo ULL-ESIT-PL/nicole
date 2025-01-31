@@ -1191,7 +1191,7 @@ PrintTree::visit(const AST_ATTR_ACCESS *node) const noexcept {
   std::ostringstream result;
   result << indent_ << "attr access:\n";
   increaseIndent();
-  result << indent_ << node->id();
+  result << indent_ << node->id() << "\n";
   decreaseIndent();
   return result.str();
 }

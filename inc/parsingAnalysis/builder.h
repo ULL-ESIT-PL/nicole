@@ -39,14 +39,14 @@
 #include "ast/operators/unary/ast_neg.h"
 #include "ast/operators/unary/ast_not.h"
 
-#include "ast/vector/ast_vector.h"
 #include "ast/vector/ast_index.h"
+#include "ast/vector/ast_vector.h"
 
+#include "ast/userTypes/ast_attrAccess.h"
 #include "ast/userTypes/ast_class.h"
 #include "ast/userTypes/ast_enum.h"
-#include "ast/userTypes/ast_struct.h"
-#include "ast/userTypes/ast_attrAccess.h"
 #include "ast/userTypes/ast_methodCall.h"
+#include "ast/userTypes/ast_struct.h"
 
 #include "ast/utils/ast_import.h"
 #include "ast/utils/ast_print.h"
@@ -323,8 +323,9 @@ public:
   createAttrAccess(const std::string &id) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_METHOD_CALL>, Error>
-  createMethodCall(const std::string &id,
-                const std::vector<std::shared_ptr<AST>> &parameters) noexcept;
+  createMethodCall(
+      const std::string &id,
+      const std::vector<std::shared_ptr<AST>> &parameters) noexcept;
 
   // Variables
   [[nodiscard]] static std::expected<std::shared_ptr<AST_AUTO_DECL>, Error>

@@ -81,4 +81,8 @@ def hola (): adios {
 */
 
 
-a;
+a.a.a + b.b.b;
+
+do {
+
+} while (true);

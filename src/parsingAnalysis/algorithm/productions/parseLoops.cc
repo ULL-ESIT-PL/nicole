@@ -212,6 +212,7 @@ TopDown::parseDoWhile() const noexcept {
               "missing right parenthesis of do while condition at " +
                   tkStream_.current()->locInfo()}};
   }
+  const Token possibleLast{*tkStream_.current()};
   if (!tkStream_.eat()) {
     return std::unexpected{Error{ERROR_TYPE::SINTAX,
                                  "failed to eat " + tkStream_.current()->raw() +
@@ -220,7 +221,8 @@ TopDown::parseDoWhile() const noexcept {
   if (!tkStream_.current() or
       tkStream_.current()->type() != TokenType::SEMICOLON) {
     return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "missing ; of do while statement at "}};
+        Error{ERROR_TYPE::SINTAX,
+              "missing ; of do while statement at " + possibleLast.locInfo()}};
   }
   return Builder::createDoWhile(*body, *condition);
 }
