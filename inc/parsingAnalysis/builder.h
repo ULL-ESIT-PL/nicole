@@ -306,18 +306,16 @@ public:
              const std::vector<std::string> &enumIdentifiers) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_STRUCT>, Error>
-  createStruct(const std::string &id, const Attributes &attributes,
+  createStruct(const std::string &id, std::unique_ptr<std::string> fatherType, const Attributes &attributes,
                const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
                const std::shared_ptr<AST_FUNC_DECL> &constructor,
-               const std::shared_ptr<AST_FUNC_DECL> &destructor,
-               const std::shared_ptr<AST_FUNC_DECL> &addOverloading) noexcept;
+               const std::shared_ptr<AST_FUNC_DECL> &destructor) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_CLASS>, Error>
-  createClass(const std::string &id, const Attributes &attributes,
+  createClass(const std::string &id, std::unique_ptr<std::string> fatherType, const Attributes &attributes,
               const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
               const std::shared_ptr<AST_FUNC_DECL> &constructor,
-              const std::shared_ptr<AST_FUNC_DECL> &destructor,
-              const std::shared_ptr<AST_FUNC_DECL> &addOverloading) noexcept;
+              const std::shared_ptr<AST_FUNC_DECL> &destructor) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_ATTR_ACCESS>, Error>
   createAttrAccess(const std::string &id) noexcept;

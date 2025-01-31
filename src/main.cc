@@ -31,14 +31,16 @@ int main(int argc, char *argv[]) {
     return 2;
   }
 
-  const nicole::PrintTree printTree{};
-  const std::expected<std::string, nicole::Error> toStr{
-      printTree.print((*tree).get())};
-  if (!toStr) {
-    std::cout << toStr.error();
-    return 3;
+  if (options->printTree()) {
+    const nicole::PrintTree printTree{};
+    const std::expected<std::string, nicole::Error> toStr{
+        printTree.print((*tree).get())};
+    if (!toStr) {
+      std::cout << toStr.error();
+      return 3;
+    }
+    std::cout << *toStr << "\n";
   }
-  std::cout << *toStr << "\n";
 
   return EXIT_SUCCESS;
 }

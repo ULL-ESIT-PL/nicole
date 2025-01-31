@@ -86,3 +86,15 @@ a.a.a + b.b.b;
 do {
 
 } while (true);
+
+
+struct hola extends adios {
+    a: int
+    b: int
+    def c(): int {}
+    k: int
+    def bb(): int {}
+    constructor(a: int, b: int) {}
+    destructor {}
+    ccc: int    
+}

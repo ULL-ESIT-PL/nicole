@@ -17,7 +17,6 @@ private:
   std::vector<std::shared_ptr<AST_FUNC_DECL>> methods_;
   std::shared_ptr<AST_FUNC_DECL> constructor_;
   std::shared_ptr<AST_FUNC_DECL> destructor_;
-  std::shared_ptr<AST_FUNC_DECL> addOverloading_;
 
 public:
   explicit AST_STRUCT(
@@ -32,7 +31,8 @@ public:
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 
-  [[nodiscard]] const std::unique_ptr<std::string> &fatherType() const noexcept {
+  [[nodiscard]] const std::unique_ptr<std::string> &
+  fatherType() const noexcept {
     return fatherType_;
   }
 
@@ -53,11 +53,6 @@ public:
   [[nodiscard]] const std::shared_ptr<AST_FUNC_DECL> &
   destructor() const noexcept {
     return destructor_;
-  }
-
-  [[nodiscard]] const std::shared_ptr<AST_FUNC_DECL> &
-  addOverloading() const noexcept {
-    return addOverloading_;
   }
 
   [[nodiscard]] std::expected<std::string, Error>

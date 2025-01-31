@@ -6,15 +6,17 @@ TEST_CASE("Pruebas de la clase Options", "[options]") {
   using std::filesystem::path;
 
   SECTION("Constructor y métodos de acceso") {
-    const Options opt{true, true, "binario", "ruta/archivo.cpp"};
+    const Options opt{true, true, true, true, "binario", "ruta/archivo.cpp"};
     REQUIRE(opt.help() == true);
     REQUIRE(opt.optimize() == true);
+    REQUIRE(opt.printTree() == true);
+    REQUIRE(opt.printIR() == true);
     REQUIRE(opt.binaryName() == "binario");
     REQUIRE(opt.entryFilePath() == path{"ruta/archivo.cpp"});
   }
 
   SECTION("Valores por defecto") {
-    const Options opt{false, false, "", ""};
+    const Options opt{false, false, true, true, "", ""};
     REQUIRE(opt.help() == false);
     REQUIRE(opt.optimize() == false);
     REQUIRE(opt.binaryName().empty());
@@ -22,9 +24,14 @@ TEST_CASE("Pruebas de la clase Options", "[options]") {
   }
 
   SECTION("Modificación de atributos") {
-    Options opt{false, false, "binario", "ruta/archivo.cpp"};
+    Options opt{false, false, true, true, "binario", "ruta/archivo.cpp"};
     // Simulando cambios en los atributos
-    opt = Options{true, true, "nuevo_binario", "nueva_ruta/nuevo_archivo.cpp"};
+    opt = Options{true,
+                  true,
+                  true,
+                  true,
+                  "nuevo_binario",
+                  "nueva_ruta/nuevo_archivo.cpp"};
     REQUIRE(opt.help() == true);
     REQUIRE(opt.optimize() == true);
     REQUIRE(opt.binaryName() == "nuevo_binario");
@@ -32,18 +39,22 @@ TEST_CASE("Pruebas de la clase Options", "[options]") {
   }
 
   SECTION("Comparación de objetos Options") {
-    const Options opt1{true, false, "binario", "ruta/archivo.cpp"};
-    const Options opt2{true, false, "binario", "ruta/archivo.cpp"};
-    const Options opt3{false, true, "otro_binario",
-                       "otra_ruta/otro_archivo.cpp"};
+    const Options opt1{true, false, true, true, "binario", "ruta/archivo.cpp"};
+    const Options opt2{true, false, true, true, "binario", "ruta/archivo.cpp"};
+    const Options opt3{false, true,           true,
+                       true,  "otro_binario", "otra_ruta/otro_archivo.cpp"};
 
     REQUIRE(opt1.help() == opt2.help());
     REQUIRE(opt1.optimize() == opt2.optimize());
+    REQUIRE(opt1.printTree() == opt2.printTree());
+    REQUIRE(opt1.printIR() == opt2.printIR());
     REQUIRE(opt1.binaryName() == opt2.binaryName());
     REQUIRE(opt1.entryFilePath() == opt2.entryFilePath());
 
     REQUIRE(opt1.help() != opt3.help());
     REQUIRE(opt1.optimize() != opt3.optimize());
+    REQUIRE(opt1.printTree() == opt3.printTree());
+    REQUIRE(opt1.printIR() == opt3.printIR());
     REQUIRE(opt1.binaryName() != opt3.binaryName());
     REQUIRE(opt1.entryFilePath() != opt3.entryFilePath());
   }

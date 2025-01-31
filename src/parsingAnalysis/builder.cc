@@ -537,32 +537,33 @@ Builder::createEnum(const std::string &id,
 }
 
 std::expected<std::shared_ptr<AST_STRUCT>, Error> Builder::createStruct(
-    const std::string &id, const Attributes &attributes,
+    const std::string &id, std::unique_ptr<std::string> fatherType, const Attributes &attributes,
     const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
     const std::shared_ptr<AST_FUNC_DECL> &constructor,
-    const std::shared_ptr<AST_FUNC_DECL> &destructor,
-    const std::shared_ptr<AST_FUNC_DECL> &addOverloading) noexcept {
+    const std::shared_ptr<AST_FUNC_DECL> &destructor) noexcept {
   const auto astStruct{std::make_shared<AST_STRUCT>(
-      id, attributes, methods, constructor, destructor, addOverloading)};
+      id, std::move(fatherType), attributes, methods, constructor, destructor)};
   const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods__{
       astStruct->methods()};
   for (const auto &methods_ : methods__) {
     methods_->setFather(astStruct);
   }
-  constructor->setFather(astStruct);
-  destructor->setFather(astStruct);
-  addOverloading->setFather(astStruct);
+  if (constructor) {
+    constructor->setFather(astStruct);
+  }
+  if (destructor) {
+    destructor->setFather(astStruct);
+  }
   return astStruct;
 }
 
 std::expected<std::shared_ptr<AST_CLASS>, Error> Builder::createClass(
-    const std::string &id, const Attributes &attributes,
+    const std::string &id, std::unique_ptr<std::string> fatherType, const Attributes &attributes,
     const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
     const std::shared_ptr<AST_FUNC_DECL> &constructor,
-    const std::shared_ptr<AST_FUNC_DECL> &destructor,
-    const std::shared_ptr<AST_FUNC_DECL> &addOverloading) noexcept {
+    const std::shared_ptr<AST_FUNC_DECL> &destructor) noexcept {
   const auto astClass{std::make_shared<AST_CLASS>(
-      id, attributes, methods, constructor, destructor, addOverloading)};
+      id, std::move(fatherType), attributes, methods, constructor, destructor)};
   const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods__{
       astClass->methods()};
   for (const auto &methods_ : methods__) {
@@ -570,7 +571,6 @@ std::expected<std::shared_ptr<AST_CLASS>, Error> Builder::createClass(
   }
   constructor->setFather(astClass);
   destructor->setFather(astClass);
-  addOverloading->setFather(astClass);
   return astClass;
 }
 

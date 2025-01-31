@@ -16,19 +16,17 @@ private:
   std::vector<std::shared_ptr<AST_FUNC_DECL>> methods_;
   std::shared_ptr<AST_FUNC_DECL> constructor_;
   std::shared_ptr<AST_FUNC_DECL> destructor_;
-  std::shared_ptr<AST_FUNC_DECL> addOverloading_;
 
 public:
-  explicit AST_CLASS(
-      const std::string &id, std::unique_ptr<std::string> fatherType,
-      const Attributes &attributes,
-      const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
-      const std::shared_ptr<AST_FUNC_DECL> &constructor,
-      const std::shared_ptr<AST_FUNC_DECL> &destructor,
-      const std::shared_ptr<AST_FUNC_DECL> &addOverloading) noexcept
+  explicit AST_CLASS(const std::string &id,
+                     std::unique_ptr<std::string> fatherType,
+                     const Attributes &attributes,
+                     const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
+                     const std::shared_ptr<AST_FUNC_DECL> &constructor,
+                     const std::shared_ptr<AST_FUNC_DECL> &destructor) noexcept
       : AST(AST_TYPE::CLASS_DECL), id_{id}, fatherType_{std::move(fatherType)},
         attributes_{attributes}, methods_{methods}, constructor_{constructor},
-        destructor_{destructor}, addOverloading_{addOverloading} {}
+        destructor_{destructor} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 
@@ -54,11 +52,6 @@ public:
   [[nodiscard]] const std::shared_ptr<AST_FUNC_DECL> &
   destructor() const noexcept {
     return destructor_;
-  }
-
-  [[nodiscard]] const std::shared_ptr<AST_FUNC_DECL> &
-  addOverloading() const noexcept {
-    return addOverloading_;
   }
 
   [[nodiscard]] std::expected<std::string, Error>
