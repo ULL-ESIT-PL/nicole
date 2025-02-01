@@ -81,6 +81,9 @@ const Lexer NicoleSintax::createLexer() const noexcept {
       Category{TokenType::SEMICOLON, ";", false},
       Category{TokenType::COMMA, ",", false},
       Category{TokenType::TERNARY, "\\?", false},
+
+      Category{TokenType::DOTDOT_ASSIGNMENT, ":=", false},
+
       Category{TokenType::DOTDOT, ":", false},
       Category{TokenType::DOT, "\\.", false},
 

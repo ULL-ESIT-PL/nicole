@@ -67,8 +67,7 @@ TokenStream::insertAfter(const TokenStream &tkStream,
   return std::expected<std::monostate, Error>{std::monostate{}};
 }
 
-void
-TokenStream::shiftToSemicolon() noexcept {
+void TokenStream::shiftToSemicolon() noexcept {
   while (currentPos_ < size()) {
     if (tokens_[currentPos_].type() == TokenType::SEMICOLON) {
       break;

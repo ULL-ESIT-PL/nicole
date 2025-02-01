@@ -121,6 +121,24 @@ TopDown::parseComma() const noexcept {
 const std::expected<std::shared_ptr<AST_STATEMENT>, Error>
 TopDown::parseStatement() const noexcept {
 
+  if ((tkStream_.isTokenAheadBeforeSemicolon(TokenType::DOTDOT_ASSIGNMENT)) or
+      tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_ADD) or
+      tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_SUB) or
+      tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_MULT) or
+      tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_DIV)) {
+    const auto assigment{parseSelfAssignment(false)};
+    if (!assigment || !*assigment) {
+      return std::unexpected{
+          assigment ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
+                    : assigment.error()};
+    }
+    const auto statement{Builder::createStatement(*assigment)};
+    if (!statement) {
+      return std::unexpected{statement.error()};
+    }
+    return *statement;
+  }
+
   switch (tkStream_.current()->type()) {
   case TokenType::IF: {
     const std::expected<std::shared_ptr<AST>, Error> ifStm{parseIf()};
@@ -290,7 +308,8 @@ TopDown::parseStatement() const noexcept {
   }
 
   case TokenType::DELETE: {
-    const std::expected<std::shared_ptr<AST_DELETE>, Error> classSTM{parseDelete()};
+    const std::expected<std::shared_ptr<AST_DELETE>, Error> classSTM{
+        parseDelete()};
     if (!classSTM || !*classSTM) {
       return std::unexpected{
           classSTM ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
@@ -332,7 +351,8 @@ TopDown::parseStatement() const noexcept {
   }
 
   default: {
-    const std::expected<std::shared_ptr<AST>, Error> factor{parseVarDecl(false)};
+    const std::expected<std::shared_ptr<AST>, Error> factor{
+        parseVarDecl(false)};
     if (!factor || !*factor) {
       return std::unexpected{
           factor ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}

@@ -129,7 +129,7 @@ TopDown::parseFor() const noexcept {
   std::vector<std::shared_ptr<AST>> update{};
   while (tkStream_.currentPos() < tkStream_.size() and
          tkStream_.current()->type() != TokenType::RP) {
-    const std::expected<std::shared_ptr<AST>, Error> expression{parseOr()};
+    const std::expected<std::shared_ptr<AST>, Error> expression{parseSelfAssignment(true)};
     if (!expression || !*expression) {
       return std::unexpected{expression
                                  ? Error{ERROR_TYPE::NULL_NODE, "node is null"}

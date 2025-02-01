@@ -106,6 +106,7 @@ enum class TokenType {
   SELF_SUB,
   SELF_MULT,
   SELF_DIV,
+  DOTDOT_ASSIGNMENT,
 
   MAIN,
 

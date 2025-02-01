@@ -181,6 +181,8 @@ std::string tokenTypeToString(const TokenType &tk) noexcept {
     return "SELF_MULT";
   case TokenType::SELF_DIV:
     return "SELF_DIV";
+  case TokenType::DOTDOT_ASSIGNMENT:
+    return "DOTDOT_ASSIGNMENT";
 
   case TokenType::MAIN:
     return "SELF_DIV";
