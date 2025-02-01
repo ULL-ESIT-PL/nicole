@@ -537,7 +537,8 @@ Builder::createEnum(const std::string &id,
 }
 
 std::expected<std::shared_ptr<AST_STRUCT>, Error> Builder::createStruct(
-    const std::string &id, std::unique_ptr<std::string> fatherType, const Attributes &attributes,
+    const std::string &id, std::unique_ptr<std::string> fatherType,
+    const Attributes &attributes,
     const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
     const std::shared_ptr<AST_FUNC_DECL> &constructor,
     const std::shared_ptr<AST_FUNC_DECL> &destructor) noexcept {
@@ -558,7 +559,8 @@ std::expected<std::shared_ptr<AST_STRUCT>, Error> Builder::createStruct(
 }
 
 std::expected<std::shared_ptr<AST_CLASS>, Error> Builder::createClass(
-    const std::string &id, std::unique_ptr<std::string> fatherType, const Attributes &attributes,
+    const std::string &id, std::unique_ptr<std::string> fatherType,
+    const Attributes &attributes,
     const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
     const std::shared_ptr<AST_FUNC_DECL> &constructor,
     const std::shared_ptr<AST_FUNC_DECL> &destructor) noexcept {
@@ -592,11 +594,24 @@ Builder::createMethodCall(
   return astMethodCall;
 }
 
-std::expected<std::shared_ptr<AST_THIS>, Error>
- Builder:: createThis() noexcept {
+std::expected<std::shared_ptr<AST_CONSTRUCTOR_CALL>, Error>
+Builder::createConstructorCall(
+    const std::string &id,
+    const std::vector<std::shared_ptr<AST>> &parameters) noexcept {
+  const auto astConstructorall{
+      std::make_shared<AST_CONSTRUCTOR_CALL>(id, parameters)};
+  const std::vector<std::shared_ptr<AST>> &parameters__{
+      astConstructorall->parameters()};
+  for (const auto &parameters_ : parameters__) {
+    parameters_->setFather(astConstructorall);
+  }
+  return astConstructorall;
+}
+
+std::expected<std::shared_ptr<AST_THIS>, Error> Builder::createThis() noexcept {
   const auto astThis{std::make_shared<AST_THIS>()};
   return astThis;
- }
+}
 
 std::expected<std::shared_ptr<AST_AUTO_DECL>, Error>
 Builder::createAutoDecl(const std::string &id,

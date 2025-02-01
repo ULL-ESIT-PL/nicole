@@ -39,6 +39,7 @@
 #include "ast/operators/unary/ast_neg.h"
 #include "ast/operators/unary/ast_not.h"
 
+#include "ast/userTypes/ast_constructorCall.h"
 #include "ast/userTypes/ast_this.h"
 #include "ast/vector/ast_index.h"
 #include "ast/vector/ast_vector.h"
@@ -307,13 +308,15 @@ public:
              const std::vector<std::string> &enumIdentifiers) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_STRUCT>, Error>
-  createStruct(const std::string &id, std::unique_ptr<std::string> fatherType, const Attributes &attributes,
+  createStruct(const std::string &id, std::unique_ptr<std::string> fatherType,
+               const Attributes &attributes,
                const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
                const std::shared_ptr<AST_FUNC_DECL> &constructor,
                const std::shared_ptr<AST_FUNC_DECL> &destructor) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_CLASS>, Error>
-  createClass(const std::string &id, std::unique_ptr<std::string> fatherType, const Attributes &attributes,
+  createClass(const std::string &id, std::unique_ptr<std::string> fatherType,
+              const Attributes &attributes,
               const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
               const std::shared_ptr<AST_FUNC_DECL> &constructor,
               const std::shared_ptr<AST_FUNC_DECL> &destructor) noexcept;
@@ -328,6 +331,12 @@ public:
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_THIS>, Error>
   createThis() noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_CONSTRUCTOR_CALL>,
+                                     Error>
+  createConstructorCall(
+      const std::string &id,
+      const std::vector<std::shared_ptr<AST>> &parameters) noexcept;
 
   // Variables
   [[nodiscard]] static std::expected<std::shared_ptr<AST_AUTO_DECL>, Error>

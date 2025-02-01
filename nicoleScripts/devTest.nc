@@ -112,4 +112,7 @@ for (let a: int = 10, const a: int =19;;) {
     1;
 }
 
-let this: int = 10;
+let a: int = 10;
+
+
+a{1, 2, 3}.a();

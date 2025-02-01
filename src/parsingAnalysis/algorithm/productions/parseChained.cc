@@ -32,7 +32,7 @@ TopDown::parseChainedExpression() const noexcept {
     std::vector<std::shared_ptr<AST>> args;
     while (tkStream_.currentPos() < tkStream_.size() &&
            tkStream_.current()->type() != TokenType::RP) {
-      auto expr = parseOr(); // parseOr() ya implementado
+      auto expr = parseOr();
       if (!expr || !*expr) {
         return std::unexpected{
             expr ? Error{ERROR_TYPE::NULL_NODE, "node is null"} : expr.error()};
@@ -68,6 +68,54 @@ TopDown::parseChainedExpression() const noexcept {
                    : funcCall.error()};
     }
     basePtr = *funcCall;
+  } else if (tkStream_.current()->type() == TokenType::LB) {
+    // Llamada a función
+    if (!tkStream_.eat()) {
+      return std::unexpected{
+          Error{ERROR_TYPE::SINTAX,
+                "Failed to consume '{' at " + tkStream_.current()->locInfo()}};
+    }
+
+    // Parsear argumentos hasta ')'
+    std::vector<std::shared_ptr<AST>> args;
+    while (tkStream_.currentPos() < tkStream_.size() &&
+           tkStream_.current()->type() != TokenType::RB) {
+      auto expr = parseOr();
+      if (!expr || !*expr) {
+        return std::unexpected{
+            expr ? Error{ERROR_TYPE::NULL_NODE, "node is null"} : expr.error()};
+      }
+      args.push_back(*expr);
+      if (tkStream_.current()->type() == TokenType::COMMA) {
+        if (!tkStream_.eat()) {
+          return std::unexpected{
+              Error{ERROR_TYPE::SINTAX, "Failed to consume ',' at " +
+                                            tkStream_.current()->locInfo()}};
+        }
+        continue;
+      } else if (tkStream_.current()->type() != TokenType::RB) {
+        return std::unexpected{
+            Error{ERROR_TYPE::SINTAX,
+                  "Missing comma or '}' at " + tkStream_.current()->locInfo()}};
+      }
+      break;
+    }
+
+    // Consumir '}'
+    if (tkStream_.current()->type() != TokenType::RB || !tkStream_.eat()) {
+      return std::unexpected{
+          Error{ERROR_TYPE::SINTAX,
+                "Missing ')' at " + tkStream_.current()->locInfo()}};
+    }
+
+    // Crear nodo de función
+    auto constructorCall = Builder::createConstructorCall(baseToken.raw(), args);
+    if (!constructorCall || !*constructorCall) {
+      return std::unexpected{
+          constructorCall ? Error{ERROR_TYPE::NULL_NODE, "Failed to create constructor call"}
+                   : constructorCall.error()};
+    }
+    basePtr = *constructorCall;
   } else {
     // Variable normal
     auto varCall = Builder::createVarCall(baseToken.raw());

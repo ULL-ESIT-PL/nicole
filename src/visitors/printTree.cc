@@ -62,6 +62,7 @@
 
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_attrAccess.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_class.h"
+#include "../../inc/parsingAnalysis/ast/userTypes/ast_constructorCall.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_enum.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_methodCall.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_struct.h"
@@ -1395,11 +1396,36 @@ PrintTree::visit(const AST_METHOD_CALL *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_THIS *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_THIS"}};
+    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_THIS"}};
   }
   std::ostringstream result;
   result << indent_ << "this call\n";
+  return result.str();
+}
+
+std::expected<std::string, Error>
+PrintTree::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
+  if (!node) {
+    return std::unexpected{
+        Error{ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL"}};
+  }
+
+  std::ostringstream result;
+  result << indent_ << "Constructor Call:\n";
+  increaseIndent();
+  result << indent_ << "Name: " << node->id() << "\n";
+  result << indent_ << "Arguments:\n";
+  increaseIndent();
+  for (const auto &arg : node->parameters()) {
+    const auto argStr = arg->accept(*this);
+    if (!argStr) {
+      return std::unexpected{argStr.error()};
+    }
+    result << *argStr;
+  }
+  decreaseIndent();
+  decreaseIndent();
+
   return result.str();
 }
 

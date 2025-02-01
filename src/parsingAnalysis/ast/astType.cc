@@ -161,6 +161,9 @@ std::string astTypeToStr(const AST_TYPE type) noexcept {
   case AST_TYPE::THIS:
     return "THIS";
 
+  case AST_TYPE::CONSTRUCTOR_CALL:
+    return "CONSTRUCTOR_CALL";
+
     // Enum
   case AST_TYPE::ENUM:
     return "ENUM";

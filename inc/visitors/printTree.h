@@ -198,6 +198,9 @@ public:
   visit(const AST_THIS *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>
+  visit(const AST_CONSTRUCTOR_CALL *node) const noexcept override;
+
+  [[nodiscard]] std::expected<std::string, Error>
   visit(const AST_AUTO_DECL *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>
@@ -216,7 +219,9 @@ public:
   visit(const Tree *tree) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>
-  print(const Tree *tree) const noexcept { return visit(tree); }
+  print(const Tree *tree) const noexcept {
+    return visit(tree);
+  }
 };
 
 } // namespace nicole
