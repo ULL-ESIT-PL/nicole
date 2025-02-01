@@ -142,4 +142,24 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
   }
 }
 
+const std::expected<std::shared_ptr<AST_DELETE>, Error>
+TopDown::parseDelete() const noexcept {
+  if (!tkStream_.eat()) {
+    return std::unexpected{
+        Error{ERROR_TYPE::SINTAX, "Failed to consume 'delete' at " +
+                                      tkStream_.current()->locInfo()}};
+  }
+  const std::expected<std::shared_ptr<AST>, Error> value{parseOr()};
+  if (!value || !*value) {
+    return std::unexpected{value ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                                 : value.error()};
+  }
+  if (tkStream_.current()->type() != TokenType::SEMICOLON) {
+    return std::unexpected{Error{
+        ERROR_TYPE::SINTAX, "Expected ';' at the end of delete expression at " +
+                                tkStream_.current()->locInfo()}};
+  }
+  return Builder::createDelete(*value);
+}
+
 } // namespace nicole

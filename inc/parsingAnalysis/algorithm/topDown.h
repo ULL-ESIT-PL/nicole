@@ -30,10 +30,13 @@ private:
   parseStructDecl() const noexcept;
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
-  parseConstructorDecl(const std::string& returnType) const noexcept;
+  parseConstructorDecl(const std::string &returnType) const noexcept;
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
   parseDestructorDecl() const noexcept;
+
+  [[nodiscard]] const std::expected<std::shared_ptr<AST_DELETE>, Error>
+  parseDelete() const noexcept;
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
   parseFuncDecl() const noexcept;

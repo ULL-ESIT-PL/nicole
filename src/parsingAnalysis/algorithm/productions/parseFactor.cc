@@ -167,6 +167,20 @@ TopDown::parseFactor() const noexcept {
     return Builder::createIncrement(token, *expression);
   }
 
+  case TokenType::NEW: {
+    const Token token{*tkStream_.current()};
+    if (!tkStream_.eat()) {
+      break;
+    }
+    const std::expected<std::shared_ptr<AST>, Error> expression{parseOr()};
+    if (!expression || !*expression) {
+      return std::unexpected{expression
+                                 ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                                 : expression.error()};
+    }
+    return Builder::createNew(*expression);
+  }
+
   case TokenType::OPERATOR_MULT: {
     if (!tkStream_.eat()) {
       break;

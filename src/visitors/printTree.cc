@@ -611,7 +611,11 @@ PrintTree::visit(const AST_ASSIGNMENT *node) const noexcept {
   std::ostringstream result;
   result << indent_ << "Variable Reassignment:\n";
   increaseIndent();
-  result << indent_ << "Var: " << node->id() << "\n";
+  const auto left{node->left()->accept(*this)};
+  if (!left) {
+    return std::unexpected{left.error()};
+  }
+  result << indent_ << "left: " << *left << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
     return std::unexpected{val.error()};
@@ -630,7 +634,11 @@ PrintTree::visit(const AST_SELF_ADD *node) const noexcept {
   std::ostringstream result;
   result << indent_ << "Self add:\n";
   increaseIndent();
-  result << indent_ << "Var: " << node->id() << "\n";
+  const auto left{node->left()->accept(*this)};
+  if (!left) {
+    return std::unexpected{left.error()};
+  }
+  result << indent_ << "left: " << *left << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
     return std::unexpected{val.error()};
@@ -649,7 +657,11 @@ PrintTree::visit(const AST_SELF_SUB *node) const noexcept {
   std::ostringstream result;
   result << indent_ << "Self sub:\n";
   increaseIndent();
-  result << indent_ << "Var: " << node->id() << "\n";
+  const auto left{node->left()->accept(*this)};
+  if (!left) {
+    return std::unexpected{left.error()};
+  }
+  result << indent_ << "left: " << *left << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
     return std::unexpected{val.error()};
@@ -668,7 +680,11 @@ PrintTree::visit(const AST_SELF_MULT *node) const noexcept {
   std::ostringstream result;
   result << indent_ << "Self mult:\n";
   increaseIndent();
-  result << indent_ << "Var: " << node->id() << "\n";
+  const auto left{node->left()->accept(*this)};
+  if (!left) {
+    return std::unexpected{left.error()};
+  }
+  result << indent_ << "left: " << *left << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
     return std::unexpected{val.error()};
@@ -687,7 +703,11 @@ PrintTree::visit(const AST_SELF_DIV *node) const noexcept {
   std::ostringstream result;
   result << indent_ << "Self Div:\n";
   increaseIndent();
-  result << indent_ << "Var: " << node->id() << "\n";
+  const auto left{node->left()->accept(*this)};
+  if (!left) {
+    return std::unexpected{left.error()};
+  }
+  result << indent_ << "left: " << *left << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
     return std::unexpected{val.error()};

@@ -289,6 +289,20 @@ TopDown::parseStatement() const noexcept {
     return *statement;
   }
 
+  case TokenType::DELETE: {
+    const std::expected<std::shared_ptr<AST_DELETE>, Error> classSTM{parseDelete()};
+    if (!classSTM || !*classSTM) {
+      return std::unexpected{
+          classSTM ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
+                   : classSTM.error()};
+    }
+    const auto statement{Builder::createStatement(*classSTM)};
+    if (!statement) {
+      return std::unexpected{statement.error()};
+    }
+    return *statement;
+  }
+
   case TokenType::IMPORT: {
     const std::expected<std::shared_ptr<AST>, Error> import{parseImport()};
     if (!import || !*import) {
