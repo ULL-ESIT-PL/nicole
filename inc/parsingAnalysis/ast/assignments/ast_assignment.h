@@ -8,15 +8,17 @@ namespace nicole {
 
 class AST_ASSIGNMENT final : public AST {
 private:
-  std::string id_;
+  std::shared_ptr<AST> left_;
   std::shared_ptr<AST> value_;
 
 public:
-  explicit AST_ASSIGNMENT(const std::string &id,
+  explicit AST_ASSIGNMENT(const std::shared_ptr<AST> &left,
                           const std::shared_ptr<AST> &value) noexcept
-      : AST(AST_TYPE::ASIGNMENT), id_{id}, value_{value} {}
+      : AST(AST_TYPE::ASIGNMENT), left_{left}, value_{value} {}
 
-  [[nodiscard]] const std::string &id() const noexcept { return id_; }
+  [[nodiscard]] const std::shared_ptr<AST> &left() const noexcept {
+    return left_;
+  }
 
   [[nodiscard]] const std::shared_ptr<AST> &value() const noexcept {
     return value_;

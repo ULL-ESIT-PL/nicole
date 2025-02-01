@@ -8,15 +8,15 @@ namespace nicole {
 
 class AST_SELF_ADD final : public AST {
 private:
-  std::string id_;
+  std::shared_ptr<AST> left_;
   std::shared_ptr<AST> value_;
 
 public:
-  explicit AST_SELF_ADD(const std::string &id,
+  explicit AST_SELF_ADD(const std::shared_ptr<AST> &left,
                         const std::shared_ptr<AST> &value) noexcept
-      : AST(AST_TYPE::SELF_ADD), id_{id}, value_{value} {}
+      : AST(AST_TYPE::SELF_ADD), left_{left}, value_{value} {}
 
-  [[nodiscard]] const std::string &id() const noexcept { return id_; }
+  [[nodiscard]] const std::shared_ptr<AST> &left() const noexcept { return left_; }
 
   [[nodiscard]] const std::shared_ptr<AST> &value() const noexcept {
     return value_;

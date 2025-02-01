@@ -1,4 +1,5 @@
 #include "../../inc/lexicalAnalysis/tokenStream.h"
+#include <cstddef>
 
 namespace nicole {
 
@@ -64,6 +65,16 @@ TokenStream::insertAfter(const TokenStream &tkStream,
   tokens_.insert(tokens_.begin() + static_cast<long>(pos), tkStream.begin(),
                  tkStream.end());
   return std::expected<std::monostate, Error>{std::monostate{}};
+}
+
+void
+TokenStream::shiftToSemicolon() noexcept {
+  while (currentPos_ < size()) {
+    if (tokens_[currentPos_].type() == TokenType::SEMICOLON) {
+      break;
+    }
+    ++currentPos_;
+  }
 }
 
 } // namespace nicole

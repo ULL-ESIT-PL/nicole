@@ -46,6 +46,8 @@ public:
   insertAfter(const TokenStream &tkStream,
               const size_t pos = std::numeric_limits<int>::infinity()) noexcept;
 
+  void shiftToSemicolon() noexcept;
+
   [[nodiscard]] auto begin() const noexcept { return tokens_.begin(); }
 
   [[nodiscard]] auto end() const noexcept { return tokens_.end(); }

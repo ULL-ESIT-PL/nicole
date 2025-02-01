@@ -204,23 +204,23 @@ public:
 
   // Asignment
   [[nodiscard]] static std::expected<std::shared_ptr<AST_ASSIGNMENT>, Error>
-  createAssignment(const std::string &id,
+  createAssignment(const std::shared_ptr<AST> &left,
                    const std::shared_ptr<AST> &value) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_SELF_ADD>, Error>
-  createSelfAdd(const std::string &id,
+  createSelfAdd(const std::shared_ptr<AST> &left,
                 const std::shared_ptr<AST> &value) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_SELF_SUB>, Error>
-  createSelfSub(const std::string &id,
+  createSelfSub(const std::shared_ptr<AST> &left,
                 const std::shared_ptr<AST> &value) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_SELF_MULT>, Error>
-  createSelfMult(const std::string &id,
+  createSelfMult(const std::shared_ptr<AST> &left,
                  const std::shared_ptr<AST> &value) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_SELF_DIV>, Error>
-  createSelfDiv(const std::string &id,
+  createSelfDiv(const std::shared_ptr<AST> &left,
                 const std::shared_ptr<AST> &value) noexcept;
 
   // Utils
