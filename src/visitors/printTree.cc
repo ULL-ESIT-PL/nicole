@@ -615,12 +615,12 @@ PrintTree::visit(const AST_ASSIGNMENT *node) const noexcept {
   if (!left) {
     return std::unexpected{left.error()};
   }
-  result << indent_ << "left: " << *left << "\n";
+  result << indent_ << "left:\n" << *left << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
     return std::unexpected{val.error()};
   }
-  result << indent_ << "Value:\n" << *val;
+  result << indent_ << "Value:\n" << *val << "\n";
   decreaseIndent();
   return result.str();
 }
@@ -638,12 +638,12 @@ PrintTree::visit(const AST_SELF_ADD *node) const noexcept {
   if (!left) {
     return std::unexpected{left.error()};
   }
-  result << indent_ << "left: " << *left << "\n";
+  result << indent_ << "left:\n" << *left << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
     return std::unexpected{val.error()};
   }
-  result << indent_ << "Value:\n" << *val;
+  result << indent_ << "Value:\n" << *val << "\n";
   decreaseIndent();
   return result.str();
 }
@@ -661,12 +661,12 @@ PrintTree::visit(const AST_SELF_SUB *node) const noexcept {
   if (!left) {
     return std::unexpected{left.error()};
   }
-  result << indent_ << "left: " << *left << "\n";
+  result << indent_ << "left:\n" << *left << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
     return std::unexpected{val.error()};
   }
-  result << indent_ << "Value:\n" << *val;
+  result << indent_ << "Value:\n" << *val << "\n";
   decreaseIndent();
   return result.str();
 }
@@ -684,12 +684,12 @@ PrintTree::visit(const AST_SELF_MULT *node) const noexcept {
   if (!left) {
     return std::unexpected{left.error()};
   }
-  result << indent_ << "left: " << *left << "\n";
+  result << indent_ << "left:\n" << *left << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
     return std::unexpected{val.error()};
   }
-  result << indent_ << "Value:\n" << *val;
+  result << indent_ << "Value:\n" << *val << "\n";
   decreaseIndent();
   return result.str();
 }
@@ -707,12 +707,12 @@ PrintTree::visit(const AST_SELF_DIV *node) const noexcept {
   if (!left) {
     return std::unexpected{left.error()};
   }
-  result << indent_ << "left: " << *left << "\n";
+  result << indent_ << "left:\n" << *left << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
     return std::unexpected{val.error()};
   }
-  result << indent_ << "Value:\n" << *val;
+  result << indent_ << "Value:\n" << *val << "\n";
   decreaseIndent();
   return result.str();
 }

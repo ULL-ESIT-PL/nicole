@@ -11,6 +11,10 @@ TopDown::parseSelfAssignment(const bool insideFor) const noexcept {
                                 : left.error()};
   }
   const Token token{*tkStream_.current()};
+  if (insideFor and
+      (token.type() == TokenType::COMMA or token.type() == TokenType::RP)) {
+    return left;
+  }
   if (!tkStream_.eat()) {
     return std::unexpected{Error{ERROR_TYPE::SINTAX,
                                  "failed to eat " + tkStream_.current()->raw() +

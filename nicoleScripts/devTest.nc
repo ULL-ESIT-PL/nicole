@@ -126,6 +126,6 @@ delete a;
 
 a := b;
 
-for (;;a := b, a*=b) {
+for (;;a := b, a*=b,) {
     1;
 }
