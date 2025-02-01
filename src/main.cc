@@ -2,6 +2,7 @@
 #include "../inc/options/optionsParser.h"
 #include "../inc/parsingAnalysis/algorithm/topDown.h"
 #include "../inc/visitors/printTree.h"
+#include "../inc/visitors/validateTree.h"
 #include <expected>
 
 // Just creates a main function for our program like a wrapper
@@ -31,17 +32,26 @@ int main(int argc, char *argv[]) {
     return 2;
   }
 
+  const nicole::ValidateTree validateTree{};
+  const std::expected<bool, nicole::Error> validated{
+      validateTree.validate((*tree).get())};
+
+  if (!validated) {
+    std::cerr << validated.error() << "\n" << std::flush;
+    return 3;
+  }
+
   if (options->printTree()) {
     const nicole::PrintTree printTree{};
     const std::expected<std::string, nicole::Error> toStr{
         printTree.print((*tree).get())};
     if (!toStr) {
       std::cout << toStr.error();
-      return 3;
+      return 4;
     }
     std::cout << *toStr << "\n";
   }
-  
+
   return EXIT_SUCCESS;
 }
 

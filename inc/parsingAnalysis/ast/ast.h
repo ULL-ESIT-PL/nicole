@@ -2,6 +2,7 @@
 #define AST_H
 
 #include "../../visitors/printTree.h"
+#include "../../visitors/validateTree.h"
 #include "astType.h"
 #include <memory>
 
@@ -29,6 +30,9 @@ public:
 
   [[nodiscard]] virtual std::expected<std::string, Error>
   accept(const PrintTree &visitor) const noexcept = 0;
+
+  [[nodiscard]] virtual std::expected<bool, Error>
+  accept(const ValidateTree &visitor) const noexcept = 0;
 };
 
 } // namespace nicole
