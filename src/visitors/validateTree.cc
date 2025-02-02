@@ -77,7 +77,6 @@
 
 #include "../../inc/parsingAnalysis/ast/tree.h"
 #include <iostream>
-#include <ostream>
 
 namespace nicole {
 
@@ -145,6 +144,7 @@ ValidateTree::visit(const AST_VECTOR *node) const noexcept {
   return true;
 }
 
+// chained
 std::expected<bool, Error>
 ValidateTree::visit(const AST_INDEX *node) const noexcept {
   if (!node) {
@@ -153,6 +153,7 @@ ValidateTree::visit(const AST_INDEX *node) const noexcept {
   return true;
 }
 
+// statemetn / body / not null
 std::expected<bool, Error>
 ValidateTree::visit(const AST_DELETE *node) const noexcept {
   if (!node) {
@@ -326,6 +327,7 @@ ValidateTree::visit(const AST_INCREMENT *node) const noexcept {
   return true;
 }
 
+// statemetn / body / not null or for
 std::expected<bool, Error>
 ValidateTree::visit(const AST_ASSIGNMENT *node) const noexcept {
   if (!node) {
@@ -335,6 +337,7 @@ ValidateTree::visit(const AST_ASSIGNMENT *node) const noexcept {
   return true;
 }
 
+// statemetn / body / not null or for
 std::expected<bool, Error>
 ValidateTree::visit(const AST_SELF_ADD *node) const noexcept {
   if (!node) {
@@ -344,6 +347,7 @@ ValidateTree::visit(const AST_SELF_ADD *node) const noexcept {
   return true;
 }
 
+// statemetn / body / not null or for
 std::expected<bool, Error>
 ValidateTree::visit(const AST_SELF_SUB *node) const noexcept {
   if (!node) {
@@ -353,6 +357,7 @@ ValidateTree::visit(const AST_SELF_SUB *node) const noexcept {
   return true;
 }
 
+// statemetn / body / not null or for
 std::expected<bool, Error>
 ValidateTree::visit(const AST_SELF_MULT *node) const noexcept {
   if (!node) {
@@ -362,6 +367,7 @@ ValidateTree::visit(const AST_SELF_MULT *node) const noexcept {
   return true;
 }
 
+// statemetn / body / not null or for
 std::expected<bool, Error>
 ValidateTree::visit(const AST_SELF_DIV *node) const noexcept {
   if (!node) {
@@ -371,6 +377,7 @@ ValidateTree::visit(const AST_SELF_DIV *node) const noexcept {
   return true;
 }
 
+// statement / body / not null
 std::expected<bool, Error>
 ValidateTree::visit(const AST_PRINT *node) const noexcept {
   if (!node) {
@@ -379,6 +386,7 @@ ValidateTree::visit(const AST_PRINT *node) const noexcept {
   return true;
 }
 
+// statement / body / null
 std::expected<bool, Error>
 ValidateTree::visit(const AST_IMPORT *node) const noexcept {
   if (!node) {
@@ -387,6 +395,7 @@ ValidateTree::visit(const AST_IMPORT *node) const noexcept {
   return true;
 }
 
+// not relevant
 std::expected<bool, Error>
 ValidateTree::visit(const AST_STATEMENT *node) const noexcept {
   if (!node) {
@@ -396,6 +405,7 @@ ValidateTree::visit(const AST_STATEMENT *node) const noexcept {
   return true;
 }
 
+// not relevant
 std::expected<bool, Error>
 ValidateTree::visit(const AST_BODY *node) const noexcept {
   if (!node) {
@@ -404,6 +414,7 @@ ValidateTree::visit(const AST_BODY *node) const noexcept {
   return true;
 }
 
+// not relevant
 std::expected<bool, Error>
 ValidateTree::visit(const AST_COMMA *node) const noexcept {
   if (!node) {
@@ -412,6 +423,7 @@ ValidateTree::visit(const AST_COMMA *node) const noexcept {
   return true;
 }
 
+// statement / body / not null
 std::expected<bool, Error>
 ValidateTree::visit(const AST_WHILE *node) const noexcept {
   if (!node) {
@@ -420,6 +432,7 @@ ValidateTree::visit(const AST_WHILE *node) const noexcept {
   return true;
 }
 
+// statement / body / not null
 std::expected<bool, Error>
 ValidateTree::visit(const AST_FOR *node) const noexcept {
   if (!node) {
@@ -428,6 +441,7 @@ ValidateTree::visit(const AST_FOR *node) const noexcept {
   return true;
 }
 
+// statement / body / not null
 std::expected<bool, Error>
 ValidateTree::visit(const AST_DO_WHILE *node) const noexcept {
   if (!node) {
@@ -437,6 +451,7 @@ ValidateTree::visit(const AST_DO_WHILE *node) const noexcept {
   return true;
 }
 
+// do while / while / for
 std::expected<bool, Error>
 ValidateTree::visit(const AST_PASS *node) const noexcept {
   if (!node) {
@@ -445,6 +460,7 @@ ValidateTree::visit(const AST_PASS *node) const noexcept {
   return true;
 }
 
+// do while / while / for
 std::expected<bool, Error>
 ValidateTree::visit(const AST_STOP *node) const noexcept {
   if (!node) {
@@ -453,6 +469,7 @@ ValidateTree::visit(const AST_STOP *node) const noexcept {
   return true;
 }
 
+// statement / body / not null
 std::expected<bool, Error>
 ValidateTree::visit(const AST_IF *node) const noexcept {
   if (!node) {
@@ -461,6 +478,7 @@ ValidateTree::visit(const AST_IF *node) const noexcept {
   return true;
 }
 
+// if
 std::expected<bool, Error>
 ValidateTree::visit(const AST_ELSE_IF *node) const noexcept {
   if (!node) {
@@ -469,6 +487,7 @@ ValidateTree::visit(const AST_ELSE_IF *node) const noexcept {
   return true;
 }
 
+// statement / body / not null
 std::expected<bool, Error>
 ValidateTree::visit(const AST_SWITCH *node) const noexcept {
   if (!node) {
@@ -477,6 +496,7 @@ ValidateTree::visit(const AST_SWITCH *node) const noexcept {
   return true;
 }
 
+// switch
 std::expected<bool, Error>
 ValidateTree::visit(const AST_CASE *node) const noexcept {
   if (!node) {
@@ -485,6 +505,7 @@ ValidateTree::visit(const AST_CASE *node) const noexcept {
   return true;
 }
 
+// switch
 std::expected<bool, Error>
 ValidateTree::visit(const AST_DEFAULT *node) const noexcept {
   if (!node) {
@@ -501,6 +522,7 @@ ValidateTree::visit(const AST_TERNARY *node) const noexcept {
   return true;
 }
 
+// chained
 std::expected<bool, Error>
 ValidateTree::visit(const AST_FUNC_CALL *node) const noexcept {
   if (!node) {
@@ -510,6 +532,7 @@ ValidateTree::visit(const AST_FUNC_CALL *node) const noexcept {
   return true;
 }
 
+// statement / body / null or struct / class
 std::expected<bool, Error>
 ValidateTree::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node) {
@@ -519,6 +542,7 @@ ValidateTree::visit(const AST_FUNC_DECL *node) const noexcept {
   return true;
 }
 
+// func decl
 std::expected<bool, Error>
 ValidateTree::visit(const AST_RETURN *node) const noexcept {
   if (!node) {
@@ -527,6 +551,7 @@ ValidateTree::visit(const AST_RETURN *node) const noexcept {
   return true;
 }
 
+// statement / body / null
 std::expected<bool, Error>
 ValidateTree::visit(const AST_ENUM *node) const noexcept {
   if (!node) {
@@ -535,6 +560,7 @@ ValidateTree::visit(const AST_ENUM *node) const noexcept {
   return true;
 }
 
+// statement / body / null
 std::expected<bool, Error>
 ValidateTree::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
@@ -543,6 +569,7 @@ ValidateTree::visit(const AST_STRUCT *node) const noexcept {
   return true;
 }
 
+// statement / body / null
 std::expected<bool, Error>
 ValidateTree::visit(const AST_CLASS *node) const noexcept {
   if (!node) {
@@ -551,6 +578,7 @@ ValidateTree::visit(const AST_CLASS *node) const noexcept {
   return true;
 }
 
+// chained
 std::expected<bool, Error>
 ValidateTree::visit(const AST_ATTR_ACCESS *node) const noexcept {
   if (!node) {
@@ -560,6 +588,7 @@ ValidateTree::visit(const AST_ATTR_ACCESS *node) const noexcept {
   return true;
 }
 
+// chained
 std::expected<bool, Error>
 ValidateTree::visit(const AST_METHOD_CALL *node) const noexcept {
   if (!node) {
@@ -569,6 +598,7 @@ ValidateTree::visit(const AST_METHOD_CALL *node) const noexcept {
   return true;
 }
 
+// func decl / struct
 std::expected<bool, Error>
 ValidateTree::visit(const AST_THIS *node) const noexcept {
   if (!node) {
@@ -577,15 +607,17 @@ ValidateTree::visit(const AST_THIS *node) const noexcept {
   return true;
 }
 
+// chained
 std::expected<bool, Error>
 ValidateTree::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!node) {
     return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL"}};
+        Error{ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL"}};
   }
   return true;
 }
 
+// statement / body / not null
 std::expected<bool, Error>
 ValidateTree::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node) {
@@ -595,6 +627,7 @@ ValidateTree::visit(const AST_AUTO_DECL *node) const noexcept {
   return true;
 }
 
+// statement / body / not null
 std::expected<bool, Error>
 ValidateTree::visit(const AST_LET_DECL *node) const noexcept {
   if (!node) {
@@ -604,6 +637,7 @@ ValidateTree::visit(const AST_LET_DECL *node) const noexcept {
   return true;
 }
 
+// statement / body / not null
 std::expected<bool, Error>
 ValidateTree::visit(const AST_CONST_DECL *node) const noexcept {
   if (!node) {
@@ -613,6 +647,7 @@ ValidateTree::visit(const AST_CONST_DECL *node) const noexcept {
   return true;
 }
 
+// chained
 std::expected<bool, Error>
 ValidateTree::visit(const AST_VAR_CALL *node) const noexcept {
   if (!node) {
@@ -635,7 +670,7 @@ ValidateTree::visit(const Tree *tree) const noexcept {
   if (!tree) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid Tree"}};
   }
-  return true;
+  return tree->root()->accept(*this);
 }
 
 } // namespace nicole

@@ -1427,7 +1427,7 @@ std::expected<std::string, Error>
 PrintTree::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!node) {
     return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL"}};
+        Error{ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL"}};
   }
 
   std::ostringstream result;
