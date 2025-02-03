@@ -12,7 +12,23 @@ private:
 
 public:
   [[nodiscard]] static bool
-  isValid(const std::shared_ptr<AST> &node,
+  hasAnyAncestorOf(const std::shared_ptr<AST> &node,
+          const std::unordered_set<AST_TYPE> &possibles) noexcept;
+
+  [[nodiscard]] static bool
+  hasEveryAncestorInOrder(const std::shared_ptr<AST> &node,
+          const std::unordered_set<AST_TYPE> &possibles) noexcept;
+
+  [[nodiscard]] static bool
+  itsBodyAncestorHasParent(const std::shared_ptr<AST> &node,
+          const std::unordered_set<AST_TYPE> &possibles) noexcept;
+
+  [[nodiscard]] static bool
+  isInsideForHeader(const std::shared_ptr<AST> &node,
+          const std::unordered_set<AST_TYPE> &possibles) noexcept;
+
+  [[nodiscard]] static bool
+  hasLoopAncestor(const std::shared_ptr<AST> &node,
           const std::unordered_set<AST_TYPE> &possibles) noexcept;
 };
 

@@ -32,7 +32,8 @@ enum class ERROR_TYPE {
 
   NULL_NODE,
 
-  PRINT_TREE
+  PRINT_TREE,
+  VALIDATE_TREE
 };
 
 [[nodiscard]] inline std::string errorToStr(const ERROR_TYPE type) noexcept {
@@ -80,7 +81,10 @@ enum class ERROR_TYPE {
 
   case ERROR_TYPE::PRINT_TREE:
     return "PRINT_TREE";
-  }
+
+  case ERROR_TYPE::VALIDATE_TREE:
+    return "VALIDATE_TREE";
+}
 }
 
 class Error final {

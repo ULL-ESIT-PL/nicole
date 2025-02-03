@@ -2,17 +2,24 @@
 
 namespace nicole {
 
-bool CheckPosition::isValid(
+bool CheckPosition::hasAnyAncestorOf(
     const std::shared_ptr<AST> &node,
-    const std::unordered_set<AST_TYPE> &possibles) noexcept {
-  auto aux{node};
-  while (aux->father()) {
-    if (possibles.count(aux->father()->type())) {
-        return true;
-    }
-    aux = aux->father();
-  }
-  return false;
-}
+    const std::unordered_set<AST_TYPE> &possibles) noexcept {}
+
+bool CheckPosition::hasEveryAncestorInOrder(
+    const std::shared_ptr<AST> &node,
+    const std::unordered_set<AST_TYPE> &possibles) noexcept {}
+
+bool CheckPosition::itsBodyAncestorHasParent(
+    const std::shared_ptr<AST> &node,
+    const std::unordered_set<AST_TYPE> &possibles) noexcept {}
+
+bool CheckPosition::isInsideForHeader(
+    const std::shared_ptr<AST> &node,
+    const std::unordered_set<AST_TYPE> &possibles) noexcept {}
+
+bool CheckPosition::hasLoopAncestor(
+    const std::shared_ptr<AST> &node,
+    const std::unordered_set<AST_TYPE> &possibles) noexcept {}
 
 } // namespace nicole

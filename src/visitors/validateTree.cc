@@ -578,7 +578,7 @@ ValidateTree::visit(const AST_CLASS *node) const noexcept {
   return true;
 }
 
-// chained
+// chained childs
 std::expected<bool, Error>
 ValidateTree::visit(const AST_ATTR_ACCESS *node) const noexcept {
   if (!node) {
@@ -588,7 +588,7 @@ ValidateTree::visit(const AST_ATTR_ACCESS *node) const noexcept {
   return true;
 }
 
-// chained
+// chained childs
 std::expected<bool, Error>
 ValidateTree::visit(const AST_METHOD_CALL *node) const noexcept {
   if (!node) {
@@ -614,10 +614,14 @@ ValidateTree::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
     return std::unexpected{
         Error{ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL"}};
   }
+  if (node->father()->type() != AST_TYPE::CHAIN) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE, "invalid hierachy AST_VAR_CALL"}};
+  }
   return true;
 }
 
-// statement / body / not null
+// statement / body / not null or for
 std::expected<bool, Error>
 ValidateTree::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node) {
@@ -627,7 +631,7 @@ ValidateTree::visit(const AST_AUTO_DECL *node) const noexcept {
   return true;
 }
 
-// statement / body / not null
+// statement / body / not null or for
 std::expected<bool, Error>
 ValidateTree::visit(const AST_LET_DECL *node) const noexcept {
   if (!node) {
@@ -637,7 +641,7 @@ ValidateTree::visit(const AST_LET_DECL *node) const noexcept {
   return true;
 }
 
-// statement / body / not null
+// statement / body / not null or for
 std::expected<bool, Error>
 ValidateTree::visit(const AST_CONST_DECL *node) const noexcept {
   if (!node) {
@@ -653,6 +657,10 @@ ValidateTree::visit(const AST_VAR_CALL *node) const noexcept {
   if (!node) {
     return std::unexpected{
         Error{ERROR_TYPE::NULL_NODE, "invalid AST_VAR_CALL"}};
+  }
+  if (node->father()->type() != AST_TYPE::CHAIN) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE, "invalid hierachy AST_VAR_CALL"}};
   }
   return true;
 }
