@@ -83,10 +83,12 @@ def hola (): adios {
 
 a.a.a + b.b.b;
 
+
+def foo(): int {
 do {
 
 } while (true);
-
+}
 
 struct hola extends adios {
     a: int

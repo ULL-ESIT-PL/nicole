@@ -1,25 +1,67 @@
 #include "../../inc/parsingAnalysis/checkPosition.h"
+#include <cstddef>
+#include <iostream>
 
 namespace nicole {
 
 bool CheckPosition::hasAnyAncestorOf(
-    const std::shared_ptr<AST> &node,
-    const std::unordered_set<AST_TYPE> &possibles) noexcept {}
+    const AST* node,
+    const std::unordered_set<AST_TYPE> &possibles) noexcept {
+  auto auxiliar{node};
+  while (auxiliar->father()) {
+    auxiliar = auxiliar->father().get();
+    if (possibles.count(auxiliar->type())) {
+      return true;
+    }
+  }
+  return false;
+}
 
 bool CheckPosition::hasEveryAncestorInOrder(
-    const std::shared_ptr<AST> &node,
-    const std::unordered_set<AST_TYPE> &possibles) noexcept {}
+    const AST* node,
+    const std::vector<AST_TYPE> &possibles) noexcept {
+  auto auxiliar{node};
+  size_t index{0};
+  while (auxiliar->father() and index < possibles.size()) {
+    auxiliar = auxiliar->father().get();
+    if (auxiliar->type() == possibles[index]) {
+      return false;
+    }
+    ++index;
+  }
+  return true;
+}
 
-bool CheckPosition::itsBodyAncestorHasParent(
-    const std::shared_ptr<AST> &node,
-    const std::unordered_set<AST_TYPE> &possibles) noexcept {}
+bool CheckPosition::itsBodyAncestorHasParent(const AST* node) noexcept {
+  std::shared_ptr<AST> father{nullptr};
+  if (!node->father()) {
+    return false;
+  }
+  father = node->father();
+  if (father->type() != AST_TYPE::STATEMENT) {
+    return false;
+  }
+  if (!father->father()) {
+    return false;
+  }
+  father = node->father();
+  if (father->type() != AST_TYPE::BODY) {
+    return false;
+  }
+  if (!father->father()) {
+    return false;
+  }
+  return true;
+}
 
-bool CheckPosition::isInsideForHeader(
-    const std::shared_ptr<AST> &node,
-    const std::unordered_set<AST_TYPE> &possibles) noexcept {}
+bool CheckPosition::isInsideForHeader(const AST* node) noexcept {
+  return (node->father() and node->father()->type() == AST_TYPE::FOR) ? true
+                                                                      : false;
+}
 
-bool CheckPosition::hasLoopAncestor(
-    const std::shared_ptr<AST> &node,
-    const std::unordered_set<AST_TYPE> &possibles) noexcept {}
+bool CheckPosition::hasLoopAncestor(const AST* node) noexcept {
+  return hasAnyAncestorOf(node,
+                          {AST_TYPE::WHILE, AST_TYPE::FOR, AST_TYPE::DO_WHILE});
+}
 
 } // namespace nicole

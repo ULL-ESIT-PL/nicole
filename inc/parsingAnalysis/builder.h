@@ -83,7 +83,7 @@
 #include "ast/tree.h"
 
 #include "../errors.h"
-#include "checkPosition.h"
+
 #include <expected>
 
 namespace nicole {

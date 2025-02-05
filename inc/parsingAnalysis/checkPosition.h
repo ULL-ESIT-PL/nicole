@@ -12,24 +12,21 @@ private:
 
 public:
   [[nodiscard]] static bool
-  hasAnyAncestorOf(const std::shared_ptr<AST> &node,
-          const std::unordered_set<AST_TYPE> &possibles) noexcept;
+  hasAnyAncestorOf(const AST* node,
+                   const std::unordered_set<AST_TYPE> &possibles) noexcept;
 
   [[nodiscard]] static bool
-  hasEveryAncestorInOrder(const std::shared_ptr<AST> &node,
-          const std::unordered_set<AST_TYPE> &possibles) noexcept;
+  hasEveryAncestorInOrder(const AST* node,
+                          const std::vector<AST_TYPE> &possibles) noexcept;
 
   [[nodiscard]] static bool
-  itsBodyAncestorHasParent(const std::shared_ptr<AST> &node,
-          const std::unordered_set<AST_TYPE> &possibles) noexcept;
+  itsBodyAncestorHasParent(const AST* node) noexcept;
 
   [[nodiscard]] static bool
-  isInsideForHeader(const std::shared_ptr<AST> &node,
-          const std::unordered_set<AST_TYPE> &possibles) noexcept;
+  isInsideForHeader(const AST* node) noexcept;
 
   [[nodiscard]] static bool
-  hasLoopAncestor(const std::shared_ptr<AST> &node,
-          const std::unordered_set<AST_TYPE> &possibles) noexcept;
+  hasLoopAncestor(const AST* node) noexcept;
 };
 
 } // namespace nicole

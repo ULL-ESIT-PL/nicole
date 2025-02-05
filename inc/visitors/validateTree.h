@@ -3,6 +3,8 @@
 
 #include "visitor.h"
 
+class CheckPosition;
+
 namespace nicole {
 
 class ValidateTree final : public Visitor<bool> {
