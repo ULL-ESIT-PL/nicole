@@ -3,7 +3,6 @@
 
 #include "../statements/ast_body.h"
 #include <memory>
-#include <vector>
 
 namespace nicole {
 

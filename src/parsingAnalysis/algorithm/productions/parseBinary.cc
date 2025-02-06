@@ -29,7 +29,7 @@ TopDown::parseOr() const noexcept {
                                  : right.error()};
     }
 
-    left = Builder::createOr(token, *left, *right);
+    left = Builder::createBinary(token, *left, *right);
     if (!left) {
       return std::unexpected{left.error()};
     }
@@ -66,7 +66,7 @@ TopDown::parseAnd() const noexcept {
                                  : right.error()};
     }
 
-    left = Builder::createAnd(token, *left, *right);
+    left = Builder::createBinary(token, *left, *right);
     if (!left) {
       return std::unexpected{left.error()};
     }
@@ -103,22 +103,9 @@ TopDown::parseEqual_NotEqual() const noexcept {
                                  : right.error()};
     }
 
-    switch (token.type()) {
-    case TokenType::EQUAL: {
-      left = Builder::createEqual(token, *left, *right);
-      if (!left) {
-        return std::unexpected{left.error()};
-      }
-      break;
-    }
-
-    default: {
-      left = Builder::createNotEqual(token, *left, *right);
-      if (!left) {
-        return std::unexpected{left.error()};
-      }
-      break;
-    }
+    left = Builder::createBinary(token, *left, *right);
+    if (!left) {
+      return std::unexpected{left.error()};
     }
   }
 
@@ -155,38 +142,9 @@ TopDown::parseCompare() const noexcept {
                                  : right.error()};
     }
 
-    switch (token.type()) {
-    case TokenType::OPERATOR_SMALLER: {
-      left = Builder::createSmaller(token, *left, *right);
-      if (!left) {
-        return std::unexpected{left.error()};
-      }
-      break;
-    }
-
-    case TokenType::SMALLEREQUAL: {
-      left = Builder::createSmallerEqual(token, *left, *right);
-      if (!left) {
-        return std::unexpected{left.error()};
-      }
-      break;
-    }
-
-    case TokenType::OPERATOR_GREATER: {
-      left = Builder::createBigger(token, *left, *right);
-      if (!left) {
-        return std::unexpected{left.error()};
-      }
-      break;
-    }
-
-    default: {
-      left = Builder::createBiggerEqual(token, *left, *right);
-      if (!left) {
-        return std::unexpected{left.error()};
-      }
-      break;
-    }
+    left = Builder::createBinary(token, *left, *right);
+    if (!left) {
+      return std::unexpected{left.error()};
     }
   }
 
@@ -222,22 +180,9 @@ TopDown::parseAdd_Sub() const noexcept {
                                  : right.error()};
     }
 
-    switch (token.type()) {
-    case TokenType::OPERATOR_ADD: {
-      left = Builder::createAdd(token, *left, *right);
-      if (!left) {
-        return std::unexpected{left.error()};
-      }
-      break;
-    }
-
-    default: {
-      left = Builder::createSub(token, *left, *right);
-      if (!left) {
-        return std::unexpected{left.error()};
-      }
-      break;
-    }
+    left = Builder::createBinary(token, *left, *right);
+    if (!left) {
+      return std::unexpected{left.error()};
     }
   }
 
@@ -273,36 +218,9 @@ TopDown::parseMult_Div_Module() const noexcept {
                                  : right.error()};
     }
 
-    switch (token.type()) {
-    case TokenType::OPERATOR_MULT: {
-      left = Builder::createMult(token, *left, *right);
-      if (!left) {
-        return std::unexpected{left.error()};
-      }
-      break;
-    }
-
-    case TokenType::OPERATOR_DIV: {
-      left = Builder::createDiv(token, *left, *right);
-      if (!left) {
-        return std::unexpected{left.error()};
-      }
-      break;
-    }
-
-    case TokenType::OPERATOR_MODULE: {
-      left = Builder::createModule(token, *left, *right);
-      if (!left) {
-        return std::unexpected{left.error()};
-      }
-      break;
-    }
-    
-    default: {
-      return std::unexpected{
-          Error{ERROR_TYPE::SINTAX, "cannot operate with " + token.raw() +
-                                        " at " + token.locInfo()}};
-    }
+    left = Builder::createBinary(token, *left, *right);
+    if (!left) {
+      return std::unexpected{left.error()};
     }
   }
 

@@ -80,11 +80,11 @@ def hola (): adios {
 }
 */
 
-
 a.a.a + b.b.b;
 
 
 def foo(): int {
+
 do {
 
 } while (true);

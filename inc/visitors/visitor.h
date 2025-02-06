@@ -27,24 +27,9 @@ class AST_NEW;
 class AST_DEREF;
 class AST_PTR;
 
-class AST_ADD;
-class AST_SUB;
-class AST_MULT;
-class AST_DIV;
-class AST_MODULE;
-class AST_SMALLER;
-class AST_SMALLER_EQUAL;
-class AST_BIGGER;
-class AST_BIGGER_EQUAL;
-class AST_EQUAL;
-class AST_NOT_EQUAL;
-class AST_OR;
-class AST_AND;
+class AST_BINARY;
 
-class AST_NEG;
-class AST_NOT;
-class AST_INCREMENT;
-class AST_DECREMENT;
+class AST_UNARY;
 
 class AST_ASSIGNMENT;
 class AST_SELF_ADD;
@@ -57,7 +42,6 @@ class AST_IMPORT;
 
 class AST_STATEMENT;
 class AST_BODY;
-class AST_COMMA;
 
 class AST_WHILE;
 class AST_FOR;
@@ -138,55 +122,10 @@ public:
   visit(const AST_PTR *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_ADD *node) const noexcept = 0;
+  visit(const AST_BINARY *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_SUB *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_MULT *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_DIV *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_MODULE *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_SMALLER *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_SMALLER_EQUAL *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_BIGGER *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_BIGGER_EQUAL *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_EQUAL *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_NOT_EQUAL *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_OR *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_AND *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_NEG *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_NOT *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_DECREMENT *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_INCREMENT *node) const noexcept = 0;
+  visit(const AST_UNARY *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_ASSIGNMENT *node) const noexcept = 0;
@@ -214,9 +153,6 @@ public:
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_BODY *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_COMMA *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_WHILE *node) const noexcept = 0;

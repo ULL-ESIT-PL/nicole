@@ -4,6 +4,9 @@ namespace nicole {
 
 std::string astTypeToStr(const AST_TYPE type) noexcept {
   switch (type) {
+  case AST_TYPE::EXPRESSION:
+    return "EXPRESSION";
+
     // Literals
   case AST_TYPE::BOOL:
     return "BOOL";
@@ -37,42 +40,12 @@ std::string astTypeToStr(const AST_TYPE type) noexcept {
     return "DELETE";
 
     // Binary operators
-  case AST_TYPE::ADD:
-    return "ADD";
-  case AST_TYPE::SUB:
-    return "SUB";
-  case AST_TYPE::MULT:
-    return "MULT";
-  case AST_TYPE::DIV:
-    return "DIV";
-  case AST_TYPE::MODULE:
-    return "MODULE";
-  case AST_TYPE::SMALLER:
-    return "SMALLER";
-  case AST_TYPE::SMALLER_EQUAL:
-    return "SMALLER_EQUAL";
-  case AST_TYPE::BIGGER:
-    return "BIGGER";
-  case AST_TYPE::BIGGER_EQUAL:
-    return "BIGGER_EQUAL";
-  case AST_TYPE::EQUAL:
-    return "EQUAL";
-  case AST_TYPE::NOT_EQUAL:
-    return "NOT_EQUAL";
-  case AST_TYPE::OR:
-    return "OR";
-  case AST_TYPE::AND:
-    return "AND";
+  case AST_TYPE::BINARY:
+    return "BINARY";
 
   // Unary operators
-  case AST_TYPE::NEG:
-    return "NEG";
-  case AST_TYPE::NOT:
-    return "NOT";
-  case AST_TYPE::INCREMENT:
-    return "INCREMENT";
-  case AST_TYPE::DECREMENT:
-    return "DECREMENT";
+  case AST_TYPE::UNARY:
+    return "UNARY";
 
     // Variable declaration
   case AST_TYPE::LET_DECL:
@@ -107,8 +80,6 @@ std::string astTypeToStr(const AST_TYPE type) noexcept {
     return "STATEMENT";
   case AST_TYPE::BODY:
     return "BODY";
-  case AST_TYPE::COMMA:
-    return "COMMA";
 
     // Loops
   case AST_TYPE::WHILE:

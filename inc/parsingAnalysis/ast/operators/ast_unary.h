@@ -1,21 +1,20 @@
-#ifndef AST_INCREMENT_H
-#define AST_INCREMENT_H
+#ifndef AST_UNARY_H
+#define AST_UNARY_H
 
-#include "../../../../lexicalAnalysis/token.h"
-#include "../../ast.h"
+#include "../../../lexicalAnalysis/token.h"
+#include "../ast.h"
 #include <memory>
 
 namespace nicole {
 
-class AST_INCREMENT : public AST {
+class AST_UNARY : public AST {
 private:
   Token op_;
   std::shared_ptr<AST> value_;
 
 public:
-  explicit AST_INCREMENT(const Token &op,
-                         const std::shared_ptr<AST> &value) noexcept
-      : AST(AST_TYPE::INCREMENT), op_{op}, value_{value} {}
+  explicit AST_UNARY(const Token &op, const std::shared_ptr<AST> &value) noexcept
+      : AST(AST_TYPE::UNARY), op_{op}, value_{value} {}
 
   [[nodiscard]] const Token &op() const noexcept { return op_; }
 

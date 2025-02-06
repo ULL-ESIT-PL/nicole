@@ -6,6 +6,8 @@
 namespace nicole {
 
 enum class AST_TYPE : int {
+  EXPRESSION,
+
   // Literals
   BOOL,
   INT,
@@ -26,25 +28,10 @@ enum class AST_TYPE : int {
   DELETE,
 
   // Binary operators
-  ADD,
-  SUB,
-  MULT,
-  DIV,
-  MODULE,
-  SMALLER,
-  SMALLER_EQUAL,
-  BIGGER,
-  BIGGER_EQUAL,
-  EQUAL,
-  NOT_EQUAL,
-  OR,
-  AND,
+  BINARY,
 
   // Unary operators
-  NEG,
-  NOT,
-  INCREMENT,
-  DECREMENT,
+  UNARY,
 
   // Variable declaration
   LET_DECL,
@@ -66,7 +53,6 @@ enum class AST_TYPE : int {
   // Statements
   STATEMENT,
   BODY,
-  COMMA,
 
   // Loops
   WHILE,

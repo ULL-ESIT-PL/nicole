@@ -49,55 +49,10 @@ public:
   visit(const AST_PTR *node) const noexcept override;
 
   [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_ADD *node) const noexcept override;
+  visit(const AST_BINARY *node) const noexcept override;
 
   [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_SUB *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_MULT *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_DIV *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_MODULE *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_SMALLER *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_SMALLER_EQUAL *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_BIGGER *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_BIGGER_EQUAL *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_EQUAL *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_NOT_EQUAL *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_OR *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_AND *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_NEG *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_NOT *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_DECREMENT *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_INCREMENT *node) const noexcept override;
+  visit(const AST_UNARY *node) const noexcept override;
 
   [[nodiscard]] std::expected<bool, Error>
   visit(const AST_ASSIGNMENT *node) const noexcept override;
@@ -125,9 +80,6 @@ public:
 
   [[nodiscard]] std::expected<bool, Error>
   visit(const AST_BODY *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_COMMA *node) const noexcept override;
 
   [[nodiscard]] std::expected<bool, Error>
   visit(const AST_WHILE *node) const noexcept override;

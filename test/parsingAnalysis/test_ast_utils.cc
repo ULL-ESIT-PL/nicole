@@ -1,5 +1,5 @@
 #include "../../inc/parsingAnalysis/ast/literals/ast_bool.h"
-#include "../../inc/parsingAnalysis/ast/statements/ast_comma.h"
+#include "../../inc/parsingAnalysis/ast/statements/ast_statement.h"
 #include "../../inc/parsingAnalysis/ast/utils/ast_import.h"
 #include "../../inc/parsingAnalysis/ast/utils/ast_print.h"
 #include <catch2/catch_test_macros.hpp>

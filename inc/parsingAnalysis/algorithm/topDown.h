@@ -14,9 +14,6 @@ private:
   [[nodiscard]] const std::expected<std::shared_ptr<AST_BODY>, Error>
   parseBody() const noexcept;
 
-  [[nodiscard]] const std::expected<std::shared_ptr<AST_COMMA>, Error>
-  parseComma() const noexcept;
-
   [[nodiscard]] const std::expected<std::shared_ptr<AST_STATEMENT>, Error>
   parseStatement() const noexcept;
 

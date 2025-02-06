@@ -113,11 +113,6 @@ TopDown::parseBody() const noexcept {
   return body;
 }
 
-const std::expected<std::shared_ptr<AST_COMMA>, Error>
-TopDown::parseComma() const noexcept {
-  return nullptr;
-}
-
 const std::expected<std::shared_ptr<AST_STATEMENT>, Error>
 TopDown::parseStatement() const noexcept {
 

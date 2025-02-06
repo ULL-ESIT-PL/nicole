@@ -1,8 +1,7 @@
 #ifndef AST_PRINT_H
 #define AST_PRINT_H
 
-#include "../statements/ast_comma.h"
-#include <memory>
+#include "../ast.h"
 
 namespace nicole {
 

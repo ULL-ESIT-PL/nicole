@@ -122,7 +122,7 @@ TopDown::parseFactor() const noexcept {
                                  ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                  : expression.error()};
     }
-    return Builder::createNeg(token, *expression);
+    return Builder::createUnary(token, *expression);
   }
 
   case TokenType::OPERATOR_NOT: {
@@ -136,7 +136,7 @@ TopDown::parseFactor() const noexcept {
                                  ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                  : expression.error()};
     }
-    return Builder::createNot(token, *expression);
+    return Builder::createUnary(token, *expression);
   }
 
   case TokenType::DECREMENT: {
@@ -150,7 +150,7 @@ TopDown::parseFactor() const noexcept {
                                  ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                  : expression.error()};
     }
-    return Builder::createDecrement(token, *expression);
+    return Builder::createUnary(token, *expression);
   }
 
   case TokenType::INCREMENT: {
@@ -164,7 +164,7 @@ TopDown::parseFactor() const noexcept {
                                  ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                  : expression.error()};
     }
-    return Builder::createIncrement(token, *expression);
+    return Builder::createUnary(token, *expression);
   }
 
   case TokenType::NEW: {

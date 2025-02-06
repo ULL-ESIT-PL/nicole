@@ -20,24 +20,9 @@
 #include "ast/literals/ast_null.h"
 #include "ast/literals/ast_string.h"
 
-#include "ast/operators/binary/ast_add.h"
-#include "ast/operators/binary/ast_and.h"
-#include "ast/operators/binary/ast_bigger.h"
-#include "ast/operators/binary/ast_biggerEqual.h"
-#include "ast/operators/binary/ast_div.h"
-#include "ast/operators/binary/ast_equal.h"
-#include "ast/operators/binary/ast_module.h"
-#include "ast/operators/binary/ast_mult.h"
-#include "ast/operators/binary/ast_notEqual.h"
-#include "ast/operators/binary/ast_or.h"
-#include "ast/operators/binary/ast_smaller.h"
-#include "ast/operators/binary/ast_smallerEqual.h"
-#include "ast/operators/binary/ast_sub.h"
+#include "ast/operators/ast_binary.h"
 
-#include "ast/operators/unary/ast_decrement.h"
-#include "ast/operators/unary/ast_increment.h"
-#include "ast/operators/unary/ast_neg.h"
-#include "ast/operators/unary/ast_not.h"
+#include "ast/operators/ast_unary.h"
 
 #include "ast/userTypes/ast_constructorCall.h"
 #include "ast/userTypes/ast_this.h"
@@ -54,7 +39,6 @@
 #include "ast/utils/ast_print.h"
 
 #include "ast/statements/ast_body.h"
-#include "ast/statements/ast_comma.h"
 #include "ast/statements/ast_statement.h"
 
 #include "ast/loops/ast_doWhile.h"
@@ -137,70 +121,13 @@ public:
             const std::shared_ptr<AST> &value) noexcept;
 
   // Binary
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_ADD>, Error>
-  createAdd(const Token &op, const std::shared_ptr<AST> &left,
-            const std::shared_ptr<AST> &right) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_SUB>, Error>
-  createSub(const Token &op, const std::shared_ptr<AST> &left,
-            const std::shared_ptr<AST> &right) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_MULT>, Error>
-  createMult(const Token &op, const std::shared_ptr<AST> &left,
-             const std::shared_ptr<AST> &right) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_DIV>, Error>
-  createDiv(const Token &op, const std::shared_ptr<AST> &left,
-            const std::shared_ptr<AST> &right) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_MODULE>, Error>
-  createModule(const Token &op, const std::shared_ptr<AST> &left,
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_BINARY>, Error>
+  createBinary(const Token &op, const std::shared_ptr<AST> &left,
                const std::shared_ptr<AST> &right) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_SMALLER>, Error>
-  createSmaller(const Token &op, const std::shared_ptr<AST> &left,
-                const std::shared_ptr<AST> &right) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_SMALLER_EQUAL>, Error>
-  createSmallerEqual(const Token &op, const std::shared_ptr<AST> &left,
-                     const std::shared_ptr<AST> &right) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_BIGGER>, Error>
-  createBigger(const Token &op, const std::shared_ptr<AST> &left,
-               const std::shared_ptr<AST> &right) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_BIGGER_EQUAL>, Error>
-  createBiggerEqual(const Token &op, const std::shared_ptr<AST> &left,
-                    const std::shared_ptr<AST> &right) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_EQUAL>, Error>
-  createEqual(const Token &op, const std::shared_ptr<AST> &left,
-              const std::shared_ptr<AST> &right) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_NOT_EQUAL>, Error>
-  createNotEqual(const Token &op, const std::shared_ptr<AST> &left,
-                 const std::shared_ptr<AST> &right) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_OR>, Error>
-  createOr(const Token &op, const std::shared_ptr<AST> &left,
-           const std::shared_ptr<AST> &right) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_AND>, Error>
-  createAnd(const Token &op, const std::shared_ptr<AST> &left,
-            const std::shared_ptr<AST> &right) noexcept;
 
   // Unary
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_NEG>, Error>
-  createNeg(const Token &op, const std::shared_ptr<AST> &value) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_NOT>, Error>
-  createNot(const Token &op, const std::shared_ptr<AST> &value) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_INCREMENT>, Error>
-  createIncrement(const Token &op, const std::shared_ptr<AST> &value) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_DECREMENT>, Error>
-  createDecrement(const Token &op, const std::shared_ptr<AST> &value) noexcept;
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_UNARY>, Error>
+  createUnary(const Token &op, const std::shared_ptr<AST> &value) noexcept;
 
   // Asignment
   [[nodiscard]] static std::expected<std::shared_ptr<AST_ASSIGNMENT>, Error>
@@ -236,9 +163,6 @@ public:
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_BODY>, Error>
   createBody(const std::vector<std::shared_ptr<AST_STATEMENT>> &body) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_COMMA>, Error>
-  createComma(const std::vector<std::shared_ptr<AST_STATEMENT>> &body) noexcept;
 
   // Loops
   [[nodiscard]] static std::expected<std::shared_ptr<AST_WHILE>, Error>

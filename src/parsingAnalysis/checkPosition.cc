@@ -73,7 +73,7 @@ bool CheckPosition::isOutOfScope(const AST *node) noexcept {
   auto auxiliar{node};
   while (auxiliar->father()) {
     auxiliar = auxiliar->father().get();
-    if (auxiliar->type() == AST_TYPE::BODY and !auxiliar->father()) {
+    if (auxiliar->type() == AST_TYPE::BODY and auxiliar->father()) {
       return false;
     }
   }
