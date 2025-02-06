@@ -1,6 +1,5 @@
 #include "../../inc/parsingAnalysis/checkPosition.h"
 #include <cstddef>
-#include <iostream>
 
 namespace nicole {
 

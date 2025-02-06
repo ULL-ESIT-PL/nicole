@@ -63,8 +63,6 @@
 
 #include "../../inc/parsingAnalysis/checkPosition.h"
 
-#include <iostream>
-
 namespace nicole {
 
 std::expected<bool, Error>
@@ -595,9 +593,11 @@ ValidateTree::visit(const AST_IF *node) const noexcept {
       return std::unexpected{result.error()};
     }
   }
-  const auto elseBody{node->elseBody()->accept(*this)};
-  if (!elseBody) {
-    return std::unexpected{elseBody.error()};
+  if (node->elseBody()) {
+    const auto elseBody{node->elseBody()->accept(*this)};
+    if (!elseBody) {
+      return std::unexpected{elseBody.error()};
+    }
   }
   return true;
 }
@@ -644,9 +644,11 @@ ValidateTree::visit(const AST_SWITCH *node) const noexcept {
       return std::unexpected{result.error()};
     }
   }
-  const auto defaultCase{node->defaultCase()->accept(*this)};
-  if (!defaultCase) {
-    return std::unexpected{defaultCase.error()};
+  if (node->defaultCase()) {
+    const auto defaultCase{node->defaultCase()->accept(*this)};
+    if (!defaultCase) {
+      return std::unexpected{defaultCase.error()};
+    }
   }
   return true;
 }
