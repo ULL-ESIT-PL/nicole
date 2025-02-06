@@ -69,4 +69,15 @@ bool CheckPosition::hasAssigmentOrDeclAncestor(const AST *node) noexcept {
                                  AST_TYPE::SELF_MULT, AST_TYPE::SELF_DIV});
 }
 
+bool CheckPosition::isOutOfScope(const AST *node) noexcept {
+  auto auxiliar{node};
+  while (auxiliar->father()) {
+    auxiliar = auxiliar->father().get();
+    if (auxiliar->type() == AST_TYPE::BODY and !auxiliar->father()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 } // namespace nicole

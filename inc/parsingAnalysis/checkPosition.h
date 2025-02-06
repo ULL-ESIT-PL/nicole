@@ -30,6 +30,9 @@ public:
 
   [[nodiscard]] static bool
   hasAssigmentOrDeclAncestor(const AST* node) noexcept;
+
+  [[nodiscard]] static bool
+  isOutOfScope(const AST* node) noexcept;
 };
 
 } // namespace nicole

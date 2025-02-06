@@ -227,7 +227,8 @@ ValidateTree::visit(const AST_NEW *node) const noexcept {
   }
   if (CheckPosition::hasEveryAncestorInOrder(
           node, {AST_TYPE::STATEMENT, AST_TYPE::BODY})) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE, "dangling new operator"}};
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE, "dangling new operator"}};
   }
   const auto result{node->value()->accept(*this)};
   if (!result) {
@@ -240,6 +241,11 @@ std::expected<bool, Error>
 ValidateTree::visit(const AST_DEREF *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_DEREF"}};
+  }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a deref operation cannot appear outside of a scope"}};
   }
   const auto result{node->value()->accept(*this)};
   if (!result) {
@@ -265,6 +271,11 @@ ValidateTree::visit(const AST_ADD *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_ADD"}};
   }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a add operation cannot appear outside of a scope"}};
+  }
   const auto left{node->left()->accept(*this)};
   if (!left) {
     return std::unexpected{left.error()};
@@ -280,6 +291,11 @@ std::expected<bool, Error>
 ValidateTree::visit(const AST_SUB *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_SUB"}};
+  }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a sub operation cannot appear outside of a scope"}};
   }
   const auto left{node->left()->accept(*this)};
   if (!left) {
@@ -297,6 +313,11 @@ ValidateTree::visit(const AST_MULT *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_MULT"}};
   }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a mult operation cannot appear outside of a scope"}};
+  }
   const auto left{node->left()->accept(*this)};
   if (!left) {
     return std::unexpected{left.error()};
@@ -312,6 +333,11 @@ std::expected<bool, Error>
 ValidateTree::visit(const AST_DIV *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_DIV"}};
+  }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a div operation cannot appear outside of a scope"}};
   }
   const auto left{node->left()->accept(*this)};
   if (!left) {
@@ -329,6 +355,11 @@ ValidateTree::visit(const AST_MODULE *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_MODULE"}};
   }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a module operation cannot appear outside of a scope"}};
+  }
   const auto left{node->left()->accept(*this)};
   if (!left) {
     return std::unexpected{left.error()};
@@ -344,6 +375,11 @@ std::expected<bool, Error>
 ValidateTree::visit(const AST_SMALLER *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_SMALLER"}};
+  }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a smaller operation cannot appear outside of a scope"}};
   }
   const auto left{node->left()->accept(*this)};
   if (!left) {
@@ -362,6 +398,11 @@ ValidateTree::visit(const AST_SMALLER_EQUAL *node) const noexcept {
     return std::unexpected{
         Error{ERROR_TYPE::NULL_NODE, "invalid AST_SMALLER_EQUAL"}};
   }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a smaller equal operation cannot appear outside of a scope"}};
+  }
   const auto left{node->left()->accept(*this)};
   if (!left) {
     return std::unexpected{left.error()};
@@ -377,6 +418,11 @@ std::expected<bool, Error>
 ValidateTree::visit(const AST_BIGGER *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_BIGGER"}};
+  }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a bigger operation cannot appear outside of a scope"}};
   }
   const auto left{node->left()->accept(*this)};
   if (!left) {
@@ -395,6 +441,11 @@ ValidateTree::visit(const AST_BIGGER_EQUAL *node) const noexcept {
     return std::unexpected{
         Error{ERROR_TYPE::NULL_NODE, "invalid AST_BIGGER_EQUAL"}};
   }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a bigger equal operation cannot appear outside of a scope"}};
+  }
   const auto left{node->left()->accept(*this)};
   if (!left) {
     return std::unexpected{left.error()};
@@ -410,6 +461,11 @@ std::expected<bool, Error>
 ValidateTree::visit(const AST_EQUAL *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_EQUAL"}};
+  }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a equal operation cannot appear outside of a scope"}};
   }
   const auto left{node->left()->accept(*this)};
   if (!left) {
@@ -428,6 +484,11 @@ ValidateTree::visit(const AST_NOT_EQUAL *node) const noexcept {
     return std::unexpected{
         Error{ERROR_TYPE::NULL_NODE, "invalid AST_NOT_EQUAL"}};
   }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a not equal operation cannot appear outside of a scope"}};
+  }
   const auto left{node->left()->accept(*this)};
   if (!left) {
     return std::unexpected{left.error()};
@@ -443,6 +504,11 @@ std::expected<bool, Error>
 ValidateTree::visit(const AST_OR *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_OR"}};
+  }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a or operation cannot appear outside of a scope"}};
   }
   const auto left{node->left()->accept(*this)};
   if (!left) {
@@ -460,6 +526,11 @@ ValidateTree::visit(const AST_AND *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_AND"}};
   }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a and operation cannot appear outside of a scope"}};
+  }
   const auto left{node->left()->accept(*this)};
   if (!left) {
     return std::unexpected{left.error()};
@@ -476,6 +547,11 @@ ValidateTree::visit(const AST_NEG *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_NEG"}};
   }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a neg operation cannot appear outside of a scope"}};
+  }
   const auto left{node->value()->accept(*this)};
   if (!left) {
     return std::unexpected{left.error()};
@@ -487,6 +563,11 @@ std::expected<bool, Error>
 ValidateTree::visit(const AST_NOT *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_NOT"}};
+  }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a not operation cannot appear outside of a scope"}};
   }
   const auto left{node->value()->accept(*this)};
   if (!left) {
@@ -501,6 +582,11 @@ ValidateTree::visit(const AST_DECREMENT *node) const noexcept {
     return std::unexpected{
         Error{ERROR_TYPE::NULL_NODE, "invalid AST_DECREMENT"}};
   }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a decrement operation cannot appear outside of a scope"}};
+  }
   const auto left{node->value()->accept(*this)};
   if (!left) {
     return std::unexpected{left.error()};
@@ -513,6 +599,11 @@ ValidateTree::visit(const AST_INCREMENT *node) const noexcept {
   if (!node) {
     return std::unexpected{
         Error{ERROR_TYPE::NULL_NODE, "invalid AST_INCREMENT"}};
+  }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a increment operation cannot appear outside of a scope"}};
   }
   const auto left{node->value()->accept(*this)};
   if (!left) {
@@ -782,8 +873,9 @@ ValidateTree::visit(const AST_STOP *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_STOP"}};
   }
-  if (!CheckPosition::hasAnyAncestorOf(
-          node, {AST_TYPE::DO_WHILE, AST_TYPE::FOR, AST_TYPE::WHILE})) {
+  if (!CheckPosition::hasAnyAncestorOf(node,
+                                       {AST_TYPE::DO_WHILE, AST_TYPE::FOR,
+                                        AST_TYPE::WHILE, AST_TYPE::SWITCH})) {
     return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
                                  "a stop statement must appear inside a loop"}};
   }
@@ -875,6 +967,11 @@ std::expected<bool, Error>
 ValidateTree::visit(const AST_TERNARY *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_TERNARY"}};
+  }
+  if (CheckPosition::isOutOfScope(node)) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "a ternary operation cannot appear outside of a scope"}};
   }
   return true;
 }
