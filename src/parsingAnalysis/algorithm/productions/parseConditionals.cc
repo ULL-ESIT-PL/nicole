@@ -26,7 +26,7 @@ TopDown::parseIf() const noexcept {
         Error{ERROR_TYPE::SINTAX,
               "empty expression of if condition at " + tkStream_.current()->locInfo()}};
   }
-  const std::expected<std::shared_ptr<AST>, Error> conditionIf{parseOr()};
+  const std::expected<std::shared_ptr<AST>, Error> conditionIf{parseTernary()};
   if (!conditionIf || !*conditionIf) {
     return std::unexpected{conditionIf
                                ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
@@ -104,7 +104,7 @@ TopDown::parseElseIf() const noexcept {
         Error{ERROR_TYPE::SINTAX,
               "empty expression else if condition at " + tkStream_.current()->locInfo()}};
   }
-  const std::expected<std::shared_ptr<AST>, Error> condition{parseOr()};
+  const std::expected<std::shared_ptr<AST>, Error> condition{parseTernary()};
   if (!condition || !*condition) {
     return std::unexpected{condition
                                ? Error{ERROR_TYPE::NULL_NODE, "node is null"}

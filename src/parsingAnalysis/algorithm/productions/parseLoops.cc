@@ -26,7 +26,7 @@ TopDown::parseWhile() const noexcept {
         Error{ERROR_TYPE::SINTAX, "empty expression of while condition at " +
                                       tkStream_.current()->locInfo()}};
   }
-  const std::expected<std::shared_ptr<AST>, Error> condition{parseOr()};
+  const std::expected<std::shared_ptr<AST>, Error> condition{parseTernary()};
   if (!condition || !*condition) {
     return std::unexpected{condition
                                ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
@@ -109,13 +109,12 @@ TopDown::parseFor() const noexcept {
   const std::expected<std::shared_ptr<AST>, Error> condition{
       (tkStream_.current()->type() == TokenType::SEMICOLON)
           ? Builder::createBool(true)
-          : parseOr()};
+          : parseTernary()};
   if (!condition || !*condition) {
     return std::unexpected{condition
                                ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                : condition.error()};
   }
-
   if (tkStream_.current()->type() != TokenType::SEMICOLON) {
     return std::unexpected{
         Error{ERROR_TYPE::SINTAX, "missing ; after condition of for at " +
@@ -200,7 +199,7 @@ TopDown::parseDoWhile() const noexcept {
         Error{ERROR_TYPE::SINTAX, "empty expression of do while condition at " +
                                       tkStream_.current()->locInfo()}};
   }
-  const std::expected<std::shared_ptr<AST>, Error> condition{parseOr()};
+  const std::expected<std::shared_ptr<AST>, Error> condition{parseTernary()};
   if (!condition || !*condition) {
     return std::unexpected{condition
                                ? Error{ERROR_TYPE::NULL_NODE, "node is null"}

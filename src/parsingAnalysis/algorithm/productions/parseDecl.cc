@@ -53,7 +53,7 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
                                           tkStream_.current()->locInfo()}};
       }
       // Parsear la expresión de valor
-      auto expr = parseOr();
+      auto expr = parseTernary();
       if (!expr || !*expr) {
         return std::unexpected{
             expr ? Error{ERROR_TYPE::NULL_NODE, "Expression is null"}

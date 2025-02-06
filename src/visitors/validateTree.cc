@@ -427,7 +427,12 @@ ValidateTree::visit(const AST_PRINT *node) const noexcept {
         Error{ERROR_TYPE::VALIDATE_TREE,
               "a print statement only can appear in a scope"}};
   }
-  
+  for (const auto &chain : node->values()) {
+    const auto result{chain->accept(*this)};
+    if (!result) {
+      return std::unexpected{result.error()};
+    }
+  }
   return true;
 }
 
@@ -490,6 +495,10 @@ ValidateTree::visit(const AST_WHILE *node) const noexcept {
     return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
                                  "a while loop must appear in a scope"}};
   }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return std::unexpected{result.error()};
+  }
   return true;
 }
 
@@ -502,6 +511,10 @@ ValidateTree::visit(const AST_FOR *node) const noexcept {
   if (!CheckPosition::itsBodyAncestorHasParent(node)) {
     return std::unexpected{
         Error{ERROR_TYPE::VALIDATE_TREE, "a for loop must appear in a scope"}};
+  }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return std::unexpected{result.error()};
   }
   return true;
 }
@@ -516,6 +529,10 @@ ValidateTree::visit(const AST_DO_WHILE *node) const noexcept {
   if (!CheckPosition::itsBodyAncestorHasParent(node)) {
     return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
                                  "a do while loop must appear in a scope"}};
+  }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return std::unexpected{result.error()};
   }
   return true;
 }
@@ -572,6 +589,10 @@ ValidateTree::visit(const AST_ELSE_IF *node) const noexcept {
     return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
                                  "a else if must follow a if statement"}};
   }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return std::unexpected{result.error()};
+  }
   return true;
 }
 
@@ -600,6 +621,10 @@ ValidateTree::visit(const AST_CASE *node) const noexcept {
         Error{ERROR_TYPE::VALIDATE_TREE,
               "a case statement can only appear in a switch scope"}};
   }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return std::unexpected{result.error()};
+  }
   return true;
 }
 
@@ -613,6 +638,10 @@ ValidateTree::visit(const AST_DEFAULT *node) const noexcept {
     return std::unexpected{
         Error{ERROR_TYPE::VALIDATE_TREE,
               "a default statement can only appear in a switch scope"}};
+  }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return std::unexpected{result.error()};
   }
   return true;
 }
@@ -632,6 +661,10 @@ ValidateTree::visit(const AST_FUNC_CALL *node) const noexcept {
     return std::unexpected{
         Error{ERROR_TYPE::NULL_NODE, "Invalid AST_FUNC_CALL"}};
   }
+  if (node->father() and node->father()->type() != AST_TYPE::CHAIN) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE, "invalid hierachy AST_FUNC_CALL"}};
+  }
   return true;
 }
 
@@ -642,13 +675,17 @@ ValidateTree::visit(const AST_FUNC_DECL *node) const noexcept {
     return std::unexpected{
         Error{ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL"}};
   }
-  if (!(CheckPosition::itsBodyAncestorHasParent(node) or
-        CheckPosition::hasEveryAncestorInOrder(node, {AST_TYPE::STRUCT_DECL}) or
-        CheckPosition::hasEveryAncestorInOrder(node,
+  if (CheckPosition::itsBodyAncestorHasParent(node) or
+      !(CheckPosition::hasEveryAncestorInOrder(node,
                                                {AST_TYPE::STRUCT_DECL}))) {
     return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
-                                 "a return declaration must has a function "
-                                 "declaration in its hierarchy"}};
+                                 "a function can only appear as method of a "
+                                 "class or outside of any scope: " +
+                                     node->id()}};
+  }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return std::unexpected{result.error()};
   }
   return true;
 }
@@ -663,6 +700,10 @@ ValidateTree::visit(const AST_RETURN *node) const noexcept {
     return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
                                  "a return declaration must has a function "
                                  "declaration in its hierarchy"}};
+  }
+  const auto result{node->expression()->accept(*this)};
+  if (!result) {
+    return std::unexpected{result.error()};
   }
   return true;
 }
@@ -692,6 +733,20 @@ ValidateTree::visit(const AST_STRUCT *node) const noexcept {
         Error{ERROR_TYPE::VALIDATE_TREE,
               "a struct declaration must be outside of any scope"}};
   }
+  const auto constructor{node->constructor()->accept(*this)};
+  if (!constructor) {
+    return std::unexpected{constructor.error()};
+  }
+  const auto destructor{node->destructor()->accept(*this)};
+  if (!destructor) {
+    return std::unexpected{destructor.error()};
+  }
+  for (const auto &chain : node->methods()) {
+    const auto result{chain->accept(*this)};
+    if (!result) {
+      return std::unexpected{result.error()};
+    }
+  }
   return true;
 }
 
@@ -706,6 +761,20 @@ ValidateTree::visit(const AST_CLASS *node) const noexcept {
         Error{ERROR_TYPE::VALIDATE_TREE,
               "a class declaration must be outside of any scope"}};
   }
+  const auto constructor{node->constructor()->accept(*this)};
+  if (!constructor) {
+    return std::unexpected{constructor.error()};
+  }
+  const auto destructor{node->destructor()->accept(*this)};
+  if (!destructor) {
+    return std::unexpected{destructor.error()};
+  }
+  for (const auto &chain : node->methods()) {
+    const auto result{chain->accept(*this)};
+    if (!result) {
+      return std::unexpected{result.error()};
+    }
+  }
   return true;
 }
 
@@ -715,6 +784,12 @@ ValidateTree::visit(const AST_ATTR_ACCESS *node) const noexcept {
   if (!node) {
     return std::unexpected{
         Error{ERROR_TYPE::NULL_NODE, "invalid AST_ATTR_ACCESS"}};
+  }
+  if (!CheckPosition::hasAnyAncestorOf(
+          node, {AST_TYPE::ATTR_ACCESS, AST_TYPE::METHOD_CALL, AST_TYPE::INDEX,
+                 AST_TYPE::CONSTRUCTOR_CALL, AST_TYPE::VAR_CALL})) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE, "invalid hierarchy for attr access"}};
   }
   return true;
 }
@@ -726,6 +801,13 @@ ValidateTree::visit(const AST_METHOD_CALL *node) const noexcept {
     return std::unexpected{
         Error{ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL"}};
   }
+  if (!CheckPosition::hasAnyAncestorOf(
+          node, {AST_TYPE::ATTR_ACCESS, AST_TYPE::METHOD_CALL, AST_TYPE::INDEX,
+                 AST_TYPE::CONSTRUCTOR_CALL, AST_TYPE::VAR_CALL})) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE, "invalid hierarchy for Method call"}};
+  }
+  return true;
   for (const auto &chain : node->parameters()) {
     const auto result{chain->accept(*this)};
     if (!result) {
@@ -741,8 +823,7 @@ ValidateTree::visit(const AST_THIS *node) const noexcept {
   if (!node) {
     return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_THIS"}};
   }
-  if (!CheckPosition::hasEveryAncestorInOrder(
-          node, {AST_TYPE::FUNC_DECL, AST_TYPE::STRUCT_DECL})) {
+  if (!CheckPosition::hasAnyAncestorOf(node, {AST_TYPE::STRUCT_DECL})) {
     return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
                                  "a this call can only appear in methods"}};
   }

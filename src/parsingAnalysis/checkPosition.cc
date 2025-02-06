@@ -5,8 +5,7 @@
 namespace nicole {
 
 bool CheckPosition::hasAnyAncestorOf(
-    const AST* node,
-    const std::unordered_set<AST_TYPE> &possibles) noexcept {
+    const AST *node, const std::unordered_set<AST_TYPE> &possibles) noexcept {
   auto auxiliar{node};
   while (auxiliar->father()) {
     auxiliar = auxiliar->father().get();
@@ -18,8 +17,7 @@ bool CheckPosition::hasAnyAncestorOf(
 }
 
 bool CheckPosition::hasEveryAncestorInOrder(
-    const AST* node,
-    const std::vector<AST_TYPE> &possibles) noexcept {
+    const AST *node, const std::vector<AST_TYPE> &possibles) noexcept {
   auto auxiliar{node};
   size_t index{0};
   while (auxiliar->father() and index < possibles.size()) {
@@ -32,7 +30,7 @@ bool CheckPosition::hasEveryAncestorInOrder(
   return true;
 }
 
-bool CheckPosition::itsBodyAncestorHasParent(const AST* node) noexcept {
+bool CheckPosition::itsBodyAncestorHasParent(const AST *node) noexcept {
   std::shared_ptr<AST> father{nullptr};
   if (!node->father()) {
     return false;
@@ -44,7 +42,7 @@ bool CheckPosition::itsBodyAncestorHasParent(const AST* node) noexcept {
   if (!father->father()) {
     return false;
   }
-  father = node->father();
+  father = father->father();
   if (father->type() != AST_TYPE::BODY) {
     return false;
   }
@@ -54,14 +52,21 @@ bool CheckPosition::itsBodyAncestorHasParent(const AST* node) noexcept {
   return true;
 }
 
-bool CheckPosition::isInsideForHeader(const AST* node) noexcept {
+bool CheckPosition::isInsideForHeader(const AST *node) noexcept {
   return (node->father() and node->father()->type() == AST_TYPE::FOR) ? true
                                                                       : false;
 }
 
-bool CheckPosition::hasLoopAncestor(const AST* node) noexcept {
+bool CheckPosition::hasLoopAncestor(const AST *node) noexcept {
   return hasAnyAncestorOf(node,
                           {AST_TYPE::WHILE, AST_TYPE::FOR, AST_TYPE::DO_WHILE});
+}
+
+bool CheckPosition::hasAssigmentOrDeclAncestor(const AST *node) noexcept {
+  return hasAnyAncestorOf(node, {AST_TYPE::CONST_DECL, AST_TYPE::AUTO_DECL,
+                                 AST_TYPE::LET_DECL, AST_TYPE::ASIGNMENT,
+                                 AST_TYPE::SELF_ADD, AST_TYPE::SELF_SUB,
+                                 AST_TYPE::SELF_MULT, AST_TYPE::SELF_DIV});
 }
 
 } // namespace nicole

@@ -27,6 +27,9 @@ public:
 
   [[nodiscard]] static bool
   hasLoopAncestor(const AST* node) noexcept;
+
+  [[nodiscard]] static bool
+  hasAssigmentOrDeclAncestor(const AST* node) noexcept;
 };
 
 } // namespace nicole
