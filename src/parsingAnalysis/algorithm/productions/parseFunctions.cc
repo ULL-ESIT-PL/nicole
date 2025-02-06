@@ -3,7 +3,7 @@
 namespace nicole {
 
 const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
-TopDown::parseFuncDecl() const noexcept {
+TopDown::parseFuncDecl(const bool isMethod) const noexcept {
   if (!tkStream_.eat()) {
     return std::unexpected{Error{ERROR_TYPE::SINTAX,
                                  "failed to eat " + tkStream_.current()->raw() +
@@ -72,7 +72,7 @@ TopDown::parseFuncDecl() const noexcept {
     return std::unexpected{body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                 : body.error()};
   }
-  return Builder::createFuncDecl(id.raw(), *params, returnType.raw(), *body);
+  return Builder::createFuncDecl(id.raw(), *params, returnType.raw(), *body, isMethod);
 }
 
 const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {

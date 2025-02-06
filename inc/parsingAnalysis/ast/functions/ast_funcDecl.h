@@ -14,13 +14,15 @@ private:
   Parameters params_;
   std::string returnType_;
   std::shared_ptr<AST_BODY> body_;
+  bool isMethod_;
 
 public:
   explicit AST_FUNC_DECL(const std::string &id, const Parameters &params,
                          const std::string &returnType,
-                         const std::shared_ptr<AST_BODY> &body) noexcept
+                         const std::shared_ptr<AST_BODY> &body,
+                         const bool isMethod) noexcept
       : AST(AST_TYPE::FUNC_DECL), id_{id}, params_{params},
-        returnType_{returnType}, body_{body} {}
+        returnType_{returnType}, body_{body}, isMethod_{isMethod} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 
@@ -35,6 +37,8 @@ public:
   [[nodiscard]] const std::shared_ptr<AST_BODY> &body() const noexcept {
     return body_;
   }
+
+  [[nodiscard]] bool isMehtod() const noexcept { return isMethod_; }
 
   [[nodiscard]] std::expected<std::string, Error>
   accept(const PrintTree &visitor) const noexcept override {

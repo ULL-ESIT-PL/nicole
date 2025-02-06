@@ -88,6 +88,18 @@ def foo(): int {
 do {
 
 } while (true);
+
+let hola: int = 10;
+const hola: int = 10;
+for (let a: int = 10, const a: int =19;;) {
+    1+1;
+}
+let a: int = 10;
+delete a;
+a := b;
+for (;;a := b, a*=b,) {
+    1+1;
+}
 }
 
 struct hola extends adios {
@@ -101,20 +113,18 @@ struct hola extends adios {
     ccc: int    
 }
 
-let hola: int = 10;
+
 
 HOLA*(*HOLA);
 
 1 * *(*(1));
 
 
-const hola: int = 10;
 
-for (let a: int = 10, const a: int =19;;) {
-    1;
-}
 
-let a: int = 10;
+
+
+
 
 
 a{1, 2, 3}.a();
@@ -122,12 +132,4 @@ a{1, 2, 3}.a();
 
 1**1;
 
-new 1+1;
-
-delete a;
-
-a := b;
-
-for (;;a := b, a*=b,) {
-    1;
-}
+1 + new 1+1;

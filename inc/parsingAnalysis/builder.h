@@ -297,7 +297,8 @@ public:
   [[nodiscard]] static std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
   createFuncDecl(const std::string &id, const Parameters &params,
                  const std::string &returnType,
-                 const std::shared_ptr<AST_BODY> &body) noexcept;
+                 const std::shared_ptr<AST_BODY> &body,
+                 const bool isMethod) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_RETURN>, Error>
   createReturn(const std::shared_ptr<AST> &value) noexcept;

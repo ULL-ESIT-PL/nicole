@@ -41,12 +41,13 @@ TEST_CASE("AST_FUNC_DECL class methods", "[AST_FUNC_DECL]") {
       std::make_shared<AST_STATEMENT>(std::make_shared<AST_BOOL>(true));
   auto body = std::make_shared<AST_BODY>(
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
-  AST_FUNC_DECL funcDecl("myFunction", params, "void", body);
+  AST_FUNC_DECL funcDecl("myFunction", params, "void", body, true);
 
   REQUIRE(funcDecl.id() == "myFunction");
   REQUIRE(funcDecl.parameters() == params);
   REQUIRE(funcDecl.returnType() == "void");
   REQUIRE(funcDecl.body() == body);
+  REQUIRE(funcDecl.isMehtod() == true);
 }
 
 TEST_CASE("AST_RETURN class methods", "[AST_RETURN]") {

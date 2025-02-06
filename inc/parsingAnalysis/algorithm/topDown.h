@@ -39,7 +39,7 @@ private:
   parseDelete() const noexcept;
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
-  parseFuncDecl() const noexcept;
+  parseFuncDecl(const bool isMehtod) const noexcept;
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST_RETURN>, Error>
   parseReturn() const noexcept;

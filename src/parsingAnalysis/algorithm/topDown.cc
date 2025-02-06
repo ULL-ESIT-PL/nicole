@@ -237,7 +237,7 @@ TopDown::parseStatement() const noexcept {
   }
 
   case TokenType::FUNCTION: {
-    const std::expected<std::shared_ptr<AST>, Error> function{parseFuncDecl()};
+    const std::expected<std::shared_ptr<AST>, Error> function{parseFuncDecl(false)};
     if (!function || !*function) {
       return std::unexpected{
           function ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}

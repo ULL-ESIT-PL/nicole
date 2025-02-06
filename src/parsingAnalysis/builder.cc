@@ -654,9 +654,10 @@ std::expected<std::shared_ptr<AST_FUNC_CALL>, Error> Builder::createFunCall(
 std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
 Builder::createFuncDecl(const std::string &id, const Parameters &params,
                         const std::string &returnType,
-                        const std::shared_ptr<AST_BODY> &body) noexcept {
+                        const std::shared_ptr<AST_BODY> &body,
+                        const bool isMethod) noexcept {
   const auto astFuncDecl{
-      std::make_shared<AST_FUNC_DECL>(id, params, returnType, body)};
+      std::make_shared<AST_FUNC_DECL>(id, params, returnType, body, isMethod)};
   if (body) {
     body->setFather(astFuncDecl);
   }

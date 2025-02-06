@@ -168,7 +168,7 @@ TopDown::parseStructDecl() const noexcept {
 
     case TokenType::FUNCTION: {
       const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error> method{
-          parseFuncDecl()};
+          parseFuncDecl(true)};
       if (!method || !*method) {
         return std::unexpected{
             method ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
@@ -266,7 +266,8 @@ TopDown::parseConstructorDecl(const std::string &returnType) const noexcept {
     return std::unexpected{body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                 : body.error()};
   }
-  return Builder::createFuncDecl("constructor", *params, returnType, *body);
+  return Builder::createFuncDecl("constructor", *params, returnType, *body,
+                                 true);
 }
 
 const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
@@ -281,7 +282,8 @@ TopDown::parseDestructorDecl() const noexcept {
     return std::unexpected{body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                 : body.error()};
   }
-  return Builder::createFuncDecl("destructor", Parameters{{}}, "void", *body);
+  return Builder::createFuncDecl("destructor", Parameters{{}}, "void", *body,
+                                 true);
 }
 
 } // namespace nicole

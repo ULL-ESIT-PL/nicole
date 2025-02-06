@@ -22,7 +22,7 @@ bool CheckPosition::hasEveryAncestorInOrder(
   size_t index{0};
   while (auxiliar->father() and index < possibles.size()) {
     auxiliar = auxiliar->father().get();
-    if (auxiliar->type() == possibles[index]) {
+    if (auxiliar->type() != possibles[index]) {
       return false;
     }
     ++index;
