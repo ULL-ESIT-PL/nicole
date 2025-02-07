@@ -11,36 +11,12 @@ TopDown::parseWhile() const noexcept {
                                  "failed to eat " + tkStream_.current()->raw() +
                                      " at " + tkStream_.current()->locInfo()}};
   }
-  if (tkStream_.current()->type() != TokenType::LP) {
-    return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "missing left parenthesis of while at " +
-                                      tkStream_.current()->locInfo()}};
-  }
-  if (!tkStream_.eat()) {
-    return std::unexpected{Error{ERROR_TYPE::SINTAX,
-                                 "failed to eat " + tkStream_.current()->raw() +
-                                     " at " + tkStream_.current()->locInfo()}};
-  }
-  if (tkStream_.current()->type() == TokenType::RP) {
-    return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "empty expression of while condition at " +
-                                      tkStream_.current()->locInfo()}};
-  }
-  const std::expected<std::shared_ptr<AST>, Error> condition{parseTernary()};
+  const std::expected<std::shared_ptr<AST_CONDITION>, Error> condition{
+      parseCondition(false)};
   if (!condition || !*condition) {
     return std::unexpected{condition
                                ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                : condition.error()};
-  }
-  if (tkStream_.current()->type() != TokenType::RP) {
-    return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "missing right parenthesis of while at " +
-                                      tkStream_.current()->locInfo()}};
-  }
-  if (!tkStream_.eat()) {
-    return std::unexpected{Error{ERROR_TYPE::SINTAX,
-                                 "failed to eat " + tkStream_.current()->raw() +
-                                     " at " + tkStream_.current()->locInfo()}};
   }
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
   if (!body || !*body) {
@@ -74,7 +50,8 @@ TopDown::parseFor() const noexcept {
   std::vector<std::shared_ptr<AST>> init{};
   while (tkStream_.currentPos() < tkStream_.size() and
          tkStream_.current()->type() != TokenType::SEMICOLON) {
-    const std::expected<std::shared_ptr<AST>, Error> expression{parseVarDecl(true)};
+    const std::expected<std::shared_ptr<AST>, Error> expression{
+        parseVarDecl(true)};
     if (!expression || !*expression) {
       return std::unexpected{expression
                                  ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
@@ -106,10 +83,10 @@ TopDown::parseFor() const noexcept {
                                      " at " + tkStream_.current()->locInfo()}};
   }
 
-  const std::expected<std::shared_ptr<AST>, Error> condition{
+  const std::expected<std::shared_ptr<AST_CONDITION>, Error> condition{
       (tkStream_.current()->type() == TokenType::SEMICOLON)
-          ? Builder::createBool(true)
-          : parseTernary()};
+          ? *Builder::createCondition(*Builder::createBool(true))
+          : parseCondition(true)};
   if (!condition || !*condition) {
     return std::unexpected{condition
                                ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
@@ -128,7 +105,8 @@ TopDown::parseFor() const noexcept {
   std::vector<std::shared_ptr<AST>> update{};
   while (tkStream_.currentPos() < tkStream_.size() and
          tkStream_.current()->type() != TokenType::RP) {
-    const std::expected<std::shared_ptr<AST>, Error> expression{parseSelfAssignment(true)};
+    const std::expected<std::shared_ptr<AST>, Error> expression{
+        parseSelfAssignment(true)};
     if (!expression || !*expression) {
       return std::unexpected{expression
                                  ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
@@ -184,44 +162,18 @@ TopDown::parseDoWhile() const noexcept {
                                  "failed to eat " + tkStream_.current()->raw() +
                                      " at " + tkStream_.current()->locInfo()}};
   }
-  if (tkStream_.current()->type() != TokenType::LP) {
-    return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "missing left parenthesis of do while at " +
-                                      tkStream_.current()->locInfo()}};
-  }
-  if (!tkStream_.eat()) {
-    return std::unexpected{Error{ERROR_TYPE::SINTAX,
-                                 "failed to eat " + tkStream_.current()->raw() +
-                                     " at " + tkStream_.current()->locInfo()}};
-  }
-  if (tkStream_.current()->type() == TokenType::RP) {
-    return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "empty expression of do while condition at " +
-                                      tkStream_.current()->locInfo()}};
-  }
-  const std::expected<std::shared_ptr<AST>, Error> condition{parseTernary()};
+  const std::expected<std::shared_ptr<AST_CONDITION>, Error> condition{
+      parseCondition(false)};
   if (!condition || !*condition) {
     return std::unexpected{condition
                                ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                : condition.error()};
   }
-  if (tkStream_.current()->type() != TokenType::RP) {
-    return std::unexpected{
-        Error{ERROR_TYPE::SINTAX,
-              "missing right parenthesis of do while condition at " +
-                  tkStream_.current()->locInfo()}};
-  }
-  const Token possibleLast{*tkStream_.current()};
-  if (!tkStream_.eat()) {
-    return std::unexpected{Error{ERROR_TYPE::SINTAX,
-                                 "failed to eat " + tkStream_.current()->raw() +
-                                     " at " + tkStream_.current()->locInfo()}};
-  }
   if (!tkStream_.current() or
       tkStream_.current()->type() != TokenType::SEMICOLON) {
     return std::unexpected{
-        Error{ERROR_TYPE::SINTAX,
-              "missing ; of do while statement at " + possibleLast.locInfo()}};
+        Error{ERROR_TYPE::SINTAX, "missing ; of do while statement at " +
+                                      (*tkStream_.lastRead()).locInfo()}};
   }
   return Builder::createDoWhile(*body, *condition);
 }

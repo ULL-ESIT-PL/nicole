@@ -68,6 +68,7 @@ enum class AST_TYPE : int {
   CASE,
   DEFAULT,
   TERNARY,
+  CONDITION,
 
   // Functions
   FUNC_DECL,

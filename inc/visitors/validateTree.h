@@ -115,6 +115,9 @@ public:
   visit(const AST_TERNARY *node) const noexcept override;
 
   [[nodiscard]] std::expected<bool, Error>
+  visit(const AST_CONDITION *node) const noexcept override;
+
+  [[nodiscard]] std::expected<bool, Error>
   visit(const AST_FUNC_CALL *node) const noexcept override;
 
   [[nodiscard]] std::expected<bool, Error>

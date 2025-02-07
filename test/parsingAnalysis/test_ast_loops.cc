@@ -1,16 +1,11 @@
-#include "../../inc/parsingAnalysis/ast/literals/ast_bool.h"
-#include "../../inc/parsingAnalysis/ast/loops/ast_doWhile.h"
-#include "../../inc/parsingAnalysis/ast/loops/ast_for.h"
-#include "../../inc/parsingAnalysis/ast/loops/ast_pass.h"
-#include "../../inc/parsingAnalysis/ast/loops/ast_stop.h"
-#include "../../inc/parsingAnalysis/ast/loops/ast_while.h"
+#include "../../inc/parsingAnalysis/builder.h"
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
 
 using namespace nicole;
 
 TEST_CASE("AST_DO_WHILE class methods", "[AST_DO_WHILE]") {
-  auto condition = std::make_shared<AST_BOOL>(true);
+  auto condition = *Builder::createCondition(*Builder::createBool(true));
   auto statement = std::make_shared<AST_STATEMENT>(condition);
   auto body = std::make_shared<AST_BODY>(
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
@@ -23,7 +18,7 @@ TEST_CASE("AST_DO_WHILE class methods", "[AST_DO_WHILE]") {
 TEST_CASE("AST_FOR class methods", "[AST_FOR]") {
   auto init = std::vector<std::shared_ptr<AST>>{
       std::make_shared<AST_STATEMENT>(std::make_shared<AST_BOOL>(true))};
-  auto condition = std::make_shared<AST_BOOL>(false);
+  auto condition = *Builder::createCondition(*Builder::createBool(true));
   auto update = std::vector<std::shared_ptr<AST>>{
       std::make_shared<AST_STATEMENT>(std::make_shared<AST_BOOL>(false))};
   auto statement = std::make_shared<AST_STATEMENT>(condition);
@@ -39,7 +34,7 @@ TEST_CASE("AST_FOR class methods", "[AST_FOR]") {
 }
 
 TEST_CASE("AST_WHILE class methods", "[AST_WHILE]") {
-  auto condition = std::make_shared<AST_BOOL>(true);
+  auto condition =*Builder::createCondition(*Builder::createBool(true));
   auto statement = std::make_shared<AST_STATEMENT>(condition);
   auto body = std::make_shared<AST_BODY>(
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
@@ -50,7 +45,7 @@ TEST_CASE("AST_WHILE class methods", "[AST_WHILE]") {
 }
 
 TEST_CASE("AST_STOP within loops", "[AST_STOP]") {
-  auto condition = std::make_shared<AST_BOOL>(true);
+  auto condition = *Builder::createCondition(*Builder::createBool(true));
   auto body =
       std::make_shared<AST_BODY>(std::vector<std::shared_ptr<AST_STATEMENT>>{});
 
@@ -76,7 +71,7 @@ TEST_CASE("AST_STOP within loops", "[AST_STOP]") {
 }
 
 TEST_CASE("AST_PASS within loops", "[AST_PASS]") {
-  auto condition = std::make_shared<AST_BOOL>(true);
+  auto condition = *Builder::createCondition(*Builder::createBool(true));
   auto body =
       std::make_shared<AST_BODY>(std::vector<std::shared_ptr<AST_STATEMENT>>{});
 

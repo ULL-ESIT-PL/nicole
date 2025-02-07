@@ -55,6 +55,7 @@ class AST_SWITCH;
 class AST_CASE;
 class AST_DEFAULT;
 class AST_TERNARY;
+class AST_CONDITION;
 
 class AST_FUNC_CALL;
 class AST_FUNC_DECL;
@@ -186,6 +187,9 @@ public:
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_TERNARY *node) const noexcept = 0;
+
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_CONDITION *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_FUNC_CALL *node) const noexcept = 0;

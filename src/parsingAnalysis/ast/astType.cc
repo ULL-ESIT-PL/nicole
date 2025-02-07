@@ -106,6 +106,8 @@ std::string astTypeToStr(const AST_TYPE type) noexcept {
     return "DEFAULT";
   case AST_TYPE::TERNARY:
     return "TERNARY";
+  case AST_TYPE::CONDITION:
+    return "CONDITION";
 
     // Functions
   case AST_TYPE::FUNC_DECL:

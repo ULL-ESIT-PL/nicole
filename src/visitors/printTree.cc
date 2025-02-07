@@ -785,6 +785,24 @@ PrintTree::visit(const AST_TERNARY *node) const noexcept {
 }
 
 std::expected<std::string, Error>
+PrintTree::visit(const AST_CONDITION *node) const noexcept {
+  if (!node) {
+    return std::unexpected{
+        Error{ERROR_TYPE::NULL_NODE, "invalid AST_CONDITION"}};
+  }
+  std::ostringstream result;
+  result << indent_ << "condition:\n";
+  increaseIndent();
+  const auto expr{node->expression()->accept(*this)};
+  if (!expr) {
+    return std::unexpected{expr.error()};
+  }
+  result << *expr;
+  decreaseIndent();
+  return result.str();
+}
+
+std::expected<std::string, Error>
 PrintTree::visit(const AST_FUNC_CALL *node) const noexcept {
   if (!node) {
     return std::unexpected{

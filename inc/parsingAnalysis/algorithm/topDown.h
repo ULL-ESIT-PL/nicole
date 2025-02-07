@@ -86,6 +86,9 @@ private:
   [[nodiscard]] const std::expected<std::shared_ptr<AST>, Error>
   parseTernary() const noexcept;
 
+  [[nodiscard]] const std::expected<std::shared_ptr<AST_CONDITION>, Error>
+  parseCondition(const bool isInsideFor) const noexcept;
+
   [[nodiscard]] const std::expected<std::shared_ptr<AST>, Error>
   parseOr() const noexcept;
 

@@ -718,6 +718,22 @@ ValidateTree::visit(const AST_TERNARY *node) const noexcept {
   return true;
 }
 
+std::expected<bool, Error>
+ValidateTree::visit(const AST_CONDITION *node) const noexcept {
+  if (!node) {
+    return std::unexpected{
+        Error{ERROR_TYPE::NULL_NODE, "invalid AST_CONDITION"}};
+  }
+  if (CheckPosition::hasAnyAncestorOf(
+          node, {AST_TYPE::IF, AST_TYPE::ELSE_IF, AST_TYPE::IF, AST_TYPE::SWITCH,
+                 AST_TYPE::DO_WHILE, AST_TYPE::WHILE, AST_TYPE::FOR})) {
+    return std::unexpected{
+        Error{ERROR_TYPE::VALIDATE_TREE,
+              "misplaced condition"}};
+  }
+  return node->expression()->accept(*this);
+}
+
 // chained
 std::expected<bool, Error>
 ValidateTree::visit(const AST_FUNC_CALL *node) const noexcept {

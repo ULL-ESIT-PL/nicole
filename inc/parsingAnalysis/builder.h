@@ -7,6 +7,7 @@
 #include "ast/assignments/ast_selfMult.h"
 #include "ast/assignments/ast_selfSub.h"
 
+#include "ast/conditionals/ast_condtion.h"
 #include "ast/conditionals/ast_default.h"
 #include "ast/functions/ast_funcCall.h"
 #include "ast/functions/ast_funcDecl.h"
@@ -166,18 +167,18 @@ public:
 
   // Loops
   [[nodiscard]] static std::expected<std::shared_ptr<AST_WHILE>, Error>
-  createWhile(const std::shared_ptr<AST> &condition,
+  createWhile(const std::shared_ptr<AST_CONDITION> &condition,
               const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_FOR>, Error>
   createFor(const std::vector<std::shared_ptr<AST>> &init,
-            const std::shared_ptr<AST> &condition,
+            const std::shared_ptr<AST_CONDITION> &condition,
             const std::vector<std::shared_ptr<AST>> &update,
             const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DO_WHILE>, Error>
   createDoWhile(const std::shared_ptr<AST_BODY> &body,
-                const std::shared_ptr<AST> &condition) noexcept;
+                const std::shared_ptr<AST_CONDITION> &condition) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_PASS>, Error>
   createPass(const std::shared_ptr<AST> &fatherLoop) noexcept;
@@ -187,17 +188,17 @@ public:
 
   // Conditionals
   [[nodiscard]] static std::expected<std::shared_ptr<AST_IF>, Error>
-  createIf(const std::shared_ptr<AST> &condition,
+  createIf(const std::shared_ptr<AST_CONDITION> &condition,
            const std::shared_ptr<AST_BODY> &body,
            const std::vector<std::shared_ptr<AST_ELSE_IF>> &elseIf,
            const std::shared_ptr<AST_BODY> &elseBody) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_ELSE_IF>, Error>
-  createElseIf(const std::shared_ptr<AST> &condition,
+  createElseIf(const std::shared_ptr<AST_CONDITION> &condition,
                const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_SWITCH>, Error>
-  createSwitch(const std::shared_ptr<AST> &condition,
+  createSwitch(const std::shared_ptr<AST_CONDITION> &condition,
                const std::vector<std::shared_ptr<AST_CASE>> &cases,
                const std::shared_ptr<AST_DEFAULT> &default_) noexcept;
 
@@ -209,9 +210,12 @@ public:
   createDefault(const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_TERNARY>, Error>
-  createTernary(const std::shared_ptr<AST> &condition,
+  createTernary(const std::shared_ptr<AST_CONDITION> &condition,
                 const std::shared_ptr<AST> &first,
                 const std::shared_ptr<AST> &second) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_CONDITION>, Error>
+  createCondition(const std::shared_ptr<AST> &expression) noexcept;
 
   // Functions
   [[nodiscard]] static std::expected<std::shared_ptr<AST_FUNC_CALL>, Error>

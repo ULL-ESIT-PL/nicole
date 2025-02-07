@@ -1,8 +1,4 @@
-#include "../../inc/parsingAnalysis/ast/functions/ast_funcCall.h"
-#include "../../inc/parsingAnalysis/ast/functions/ast_funcDecl.h"
-#include "../../inc/parsingAnalysis/ast/functions/ast_return.h"
-#include "../../inc/parsingAnalysis/ast/functions/parameters.h"
-#include "../../inc/parsingAnalysis/ast/literals/ast_bool.h"
+#include "../../inc/parsingAnalysis/builder.h"
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
 

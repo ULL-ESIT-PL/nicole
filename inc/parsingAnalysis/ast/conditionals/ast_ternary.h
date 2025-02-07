@@ -2,24 +2,25 @@
 #define AST_TERNARY_H
 
 #include "../ast.h"
+#include "ast_condtion.h"
 #include <memory>
 
 namespace nicole {
 
 class AST_TERNARY : public AST {
 private:
-  std::shared_ptr<AST> condition_;
+  std::shared_ptr<AST_CONDITION> condition_;
   std::shared_ptr<AST> first_;
   std::shared_ptr<AST> second_;
 
 public:
-  explicit AST_TERNARY(const std::shared_ptr<AST> &condition,
+  explicit AST_TERNARY(const std::shared_ptr<AST_CONDITION> &condition,
                        const std::shared_ptr<AST> &first,
                        const std::shared_ptr<AST> &second) noexcept
       : AST(AST_TYPE::TERNARY), condition_{condition}, first_{first},
         second_{second} {}
 
-  [[nodiscard]] const std::shared_ptr<AST> &condition() const noexcept {
+  [[nodiscard]] const std::shared_ptr<AST_CONDITION> &condition() const noexcept {
     return condition_;
   }
 

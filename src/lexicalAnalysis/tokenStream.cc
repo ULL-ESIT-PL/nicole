@@ -31,6 +31,13 @@ TokenStream::lookAhead(const size_t pos) const noexcept {
       Error{ERROR_TYPE::LOOK_AHEAD, "invalid access to tokens"}};
 }
 
+const std::expected<Token, Error> TokenStream::lastRead() const noexcept {
+  if (currentPos_  - 1 < tokens_.size())
+    return tokens_[currentPos_ - 1];
+  return std::unexpected{
+      Error{ERROR_TYPE::LAST_READ, "invalid access to tokens"}};
+}
+
 const std::expected<bool, Error>
 TokenStream::isCurrentTokenType(const TokenType type) const noexcept {
   if (currentPos_ < tokens_.size())

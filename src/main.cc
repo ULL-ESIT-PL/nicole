@@ -32,13 +32,15 @@ int main(int argc, char *argv[]) {
     return 2;
   }
 
-  const nicole::ValidateTree validateTree{};
-  const std::expected<bool, nicole::Error> validated{
-      validateTree.validate((*tree).get())};
+  if (options->validateTree()) {
+    const nicole::ValidateTree validateTree{};
+    const std::expected<bool, nicole::Error> validated{
+        validateTree.validate((*tree).get())};
 
-  if (!validated) {
-    std::cerr << validated.error() << "\n" << std::flush;
-    return 3;
+    if (!validated) {
+      std::cerr << validated.error() << "\n" << std::flush;
+      return 3;
+    }
   }
 
   if (options->printTree()) {

@@ -2,21 +2,22 @@
 #define AST_WHILE_H
 
 #include "../statements/ast_body.h"
+#include "../conditionals/ast_condtion.h"
 #include <memory>
 
 namespace nicole {
 
 class AST_WHILE : public AST {
 private:
-  std::shared_ptr<AST> condition_;
+  std::shared_ptr<AST_CONDITION> condition_;
   std::shared_ptr<AST_BODY> body_;
 
 public:
-  explicit AST_WHILE(const std::shared_ptr<AST> &condition,
+  explicit AST_WHILE(const std::shared_ptr<AST_CONDITION> &condition,
                      const std::shared_ptr<AST_BODY> &body) noexcept
       : AST(AST_TYPE::WHILE), condition_{condition}, body_{body} {}
 
-  [[nodiscard]] const std::shared_ptr<AST> &condition() const noexcept {
+  [[nodiscard]] const std::shared_ptr<AST_CONDITION> &condition() const noexcept {
     return condition_;
   }
 

@@ -1,8 +1,4 @@
-#include "../../inc/parsingAnalysis/ast/literals/ast_bool.h"
-#include "../../inc/parsingAnalysis/ast/pointer/ast_delete.h"
-#include "../../inc/parsingAnalysis/ast/pointer/ast_deref.h"
-#include "../../inc/parsingAnalysis/ast/pointer/ast_new.h"
-#include "../../inc/parsingAnalysis/ast/pointer/ast_ptr.h"
+#include "../../inc/parsingAnalysis/builder.h"
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
 #include <string>

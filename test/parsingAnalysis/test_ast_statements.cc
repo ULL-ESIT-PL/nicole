@@ -1,6 +1,4 @@
-#include "../../inc/parsingAnalysis/ast/literals/ast_bool.h"
-#include "../../inc/parsingAnalysis/ast/statements/ast_body.h"
-#include "../../inc/parsingAnalysis/ast/statements/ast_statement.h"
+#include "../../inc/parsingAnalysis/builder.h"
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
 #include <vector>

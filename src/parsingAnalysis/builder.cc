@@ -147,7 +147,7 @@ Builder::createPtr(const std::string &id, const std::string &type,
 
 std::expected<std::shared_ptr<AST_BINARY>, Error>
 Builder::createBinary(const Token &op, const std::shared_ptr<AST> &left,
-                   const std::shared_ptr<AST> &right) noexcept {
+                      const std::shared_ptr<AST> &right) noexcept {
   const auto astBinary{std::make_shared<AST_BINARY>(op, left, right)};
   if (left) {
     left->setFather(astBinary);
@@ -160,7 +160,7 @@ Builder::createBinary(const Token &op, const std::shared_ptr<AST> &left,
 
 std::expected<std::shared_ptr<AST_UNARY>, Error>
 Builder::createUnary(const Token &op,
-                   const std::shared_ptr<AST> &value) noexcept {
+                     const std::shared_ptr<AST> &value) noexcept {
   const auto astUnary{std::make_shared<AST_UNARY>(op, value)};
   if (value) {
     value->setFather(astUnary);
@@ -274,7 +274,7 @@ std::expected<std::shared_ptr<AST_BODY>, Error> Builder::createBody(
 }
 
 std::expected<std::shared_ptr<AST_WHILE>, Error>
-Builder::createWhile(const std::shared_ptr<AST> &condition,
+Builder::createWhile(const std::shared_ptr<AST_CONDITION> &condition,
                      const std::shared_ptr<AST_BODY> &body) noexcept {
   const auto astWhile{std::make_shared<AST_WHILE>(condition, body)};
   if (condition) {
@@ -288,7 +288,7 @@ Builder::createWhile(const std::shared_ptr<AST> &condition,
 
 std::expected<std::shared_ptr<AST_FOR>, Error>
 Builder::createFor(const std::vector<std::shared_ptr<AST>> &init,
-                   const std::shared_ptr<AST> &condition,
+                   const std::shared_ptr<AST_CONDITION> &condition,
                    const std::vector<std::shared_ptr<AST>> &update,
                    const std::shared_ptr<AST_BODY> &body) noexcept {
   const auto astFor{std::make_shared<AST_FOR>(init, condition, update, body)};
@@ -313,9 +313,9 @@ Builder::createFor(const std::vector<std::shared_ptr<AST>> &init,
   return astFor;
 }
 
-std::expected<std::shared_ptr<AST_DO_WHILE>, Error>
-Builder::createDoWhile(const std::shared_ptr<AST_BODY> &body,
-                       const std::shared_ptr<AST> &condition) noexcept {
+std::expected<std::shared_ptr<AST_DO_WHILE>, Error> Builder::createDoWhile(
+    const std::shared_ptr<AST_BODY> &body,
+    const std::shared_ptr<AST_CONDITION> &condition) noexcept {
   const auto astDoWhile{std::make_shared<AST_DO_WHILE>(body, condition)};
   if (condition) {
     condition->setFather(astDoWhile);
@@ -339,7 +339,7 @@ Builder::createStop(const std::shared_ptr<AST> &fatherLoop) noexcept {
 }
 
 std::expected<std::shared_ptr<AST_IF>, Error>
-Builder::createIf(const std::shared_ptr<AST> &condition,
+Builder::createIf(const std::shared_ptr<AST_CONDITION> &condition,
                   const std::shared_ptr<AST_BODY> &body,
                   const std::vector<std::shared_ptr<AST_ELSE_IF>> &elseIf,
                   const std::shared_ptr<AST_BODY> &elseBody) noexcept {
@@ -363,7 +363,7 @@ Builder::createIf(const std::shared_ptr<AST> &condition,
 }
 
 std::expected<std::shared_ptr<AST_ELSE_IF>, Error>
-Builder::createElseIf(const std::shared_ptr<AST> &condition,
+Builder::createElseIf(const std::shared_ptr<AST_CONDITION> &condition,
                       const std::shared_ptr<AST_BODY> &body) noexcept {
   const auto astIf{std::make_shared<AST_ELSE_IF>(condition, body)};
   if (condition) {
@@ -376,7 +376,7 @@ Builder::createElseIf(const std::shared_ptr<AST> &condition,
 }
 
 std::expected<std::shared_ptr<AST_SWITCH>, Error>
-Builder::createSwitch(const std::shared_ptr<AST> &condition,
+Builder::createSwitch(const std::shared_ptr<AST_CONDITION> &condition,
                       const std::vector<std::shared_ptr<AST_CASE>> &cases,
                       const std::shared_ptr<AST_DEFAULT> &default_) noexcept {
   const auto astSwitch{
@@ -419,7 +419,7 @@ Builder::createDefault(const std::shared_ptr<AST_BODY> &body) noexcept {
 }
 
 std::expected<std::shared_ptr<AST_TERNARY>, Error>
-Builder::createTernary(const std::shared_ptr<AST> &condition,
+Builder::createTernary(const std::shared_ptr<AST_CONDITION> &condition,
                        const std::shared_ptr<AST> &first,
                        const std::shared_ptr<AST> &second) noexcept {
   const auto astTernanry{
@@ -434,6 +434,15 @@ Builder::createTernary(const std::shared_ptr<AST> &condition,
     second->setFather(astTernanry);
   }
   return astTernanry;
+}
+
+std::expected<std::shared_ptr<AST_CONDITION>, Error>
+Builder::createCondition(const std::shared_ptr<AST> &expression) noexcept {
+  const auto astCondition{std::make_shared<AST_CONDITION>(expression)};
+  if (expression) {
+    expression->setFather(astCondition);
+  }
+  return astCondition;
 }
 
 std::expected<std::shared_ptr<AST_FUNC_CALL>, Error> Builder::createFunCall(

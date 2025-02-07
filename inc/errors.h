@@ -23,6 +23,7 @@ enum class ERROR_TYPE {
   EAT,
   CURRENT,
   LOOK_AHEAD,
+  LAST_READ,
   IS_CURRENT_TOKEN_TYPE,
   INSERT_AFTER,
 
@@ -65,6 +66,8 @@ enum class ERROR_TYPE {
     return "CURRENT";
   case ERROR_TYPE::LOOK_AHEAD:
     return "LOOK_AHEAD";
+  case ERROR_TYPE::LAST_READ:
+    return "LAST_READ";
   case ERROR_TYPE::IS_CURRENT_TOKEN_TYPE:
     return "IS_CURRENT_TOKEN_TYPE";
   case ERROR_TYPE::INSERT_AFTER:
@@ -84,7 +87,7 @@ enum class ERROR_TYPE {
 
   case ERROR_TYPE::VALIDATE_TREE:
     return "VALIDATE_TREE";
-}
+  }
 }
 
 class Error final {

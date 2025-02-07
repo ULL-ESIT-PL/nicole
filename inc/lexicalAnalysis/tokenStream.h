@@ -35,6 +35,9 @@ public:
   [[nodiscard]] const std::expected<Token, Error>
   lookAhead(const size_t pos) const noexcept;
 
+  [[nodiscard]] const std::expected<Token, Error>
+  lastRead() const noexcept;
+
   [[nodiscard]] const std::expected<bool, Error>
   isCurrentTokenType(const TokenType type) const noexcept;
 

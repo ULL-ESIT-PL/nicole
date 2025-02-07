@@ -1,9 +1,4 @@
-#include "../../inc/parsingAnalysis/ast/assignments/ast_assignment.h"
-#include "../../inc/parsingAnalysis/ast/assignments/ast_selfAdd.h"
-#include "../../inc/parsingAnalysis/ast/assignments/ast_selfDiv.h"
-#include "../../inc/parsingAnalysis/ast/assignments/ast_selfMult.h"
-#include "../../inc/parsingAnalysis/ast/assignments/ast_selfSub.h"
-#include "../../inc/parsingAnalysis/ast/literals/ast_bool.h"
+#include "../../inc/parsingAnalysis/builder.h"
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
 

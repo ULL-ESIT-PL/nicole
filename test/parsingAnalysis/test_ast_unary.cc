@@ -1,5 +1,4 @@
-#include "../../inc/parsingAnalysis/ast/literals/ast_int.h"
-#include "../../inc/parsingAnalysis/ast/operators/ast_unary.h"
+#include "../../inc/parsingAnalysis/builder.h"
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
 
