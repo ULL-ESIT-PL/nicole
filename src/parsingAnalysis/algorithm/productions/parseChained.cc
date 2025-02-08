@@ -21,47 +21,14 @@ TopDown::parseChainedExpression() const noexcept {
   // 2. Determinar si es un simple varCall o una funcCall
   std::shared_ptr<AST> basePtr = nullptr;
   if (tkStream_.current()->type() == TokenType::LP) {
-    // Llamada a función
-    if (!tkStream_.eat()) {
-      return std::unexpected{
-          Error{ERROR_TYPE::SINTAX,
-                "Failed to consume '(' at " + tkStream_.current()->locInfo()}};
-    }
-
-    // Parsear argumentos hasta ')'
-    std::vector<std::shared_ptr<AST>> args;
-    while (tkStream_.currentPos() < tkStream_.size() &&
-           tkStream_.current()->type() != TokenType::RP) {
-      auto expr = parseOr();
-      if (!expr || !*expr) {
-        return std::unexpected{
-            expr ? Error{ERROR_TYPE::NULL_NODE, "node is null"} : expr.error()};
-      }
-      args.push_back(*expr);
-      if (tkStream_.current()->type() == TokenType::COMMA) {
-        if (!tkStream_.eat()) {
-          return std::unexpected{
-              Error{ERROR_TYPE::SINTAX, "Failed to consume ',' at " +
-                                            tkStream_.current()->locInfo()}};
-        }
-        continue;
-      } else if (tkStream_.current()->type() != TokenType::RP) {
-        return std::unexpected{
-            Error{ERROR_TYPE::SINTAX,
-                  "Missing comma or ')' at " + tkStream_.current()->locInfo()}};
-      }
-      break;
-    }
-
-    // Consumir ')'
-    if (tkStream_.current()->type() != TokenType::RP || !tkStream_.eat()) {
-      return std::unexpected{
-          Error{ERROR_TYPE::SINTAX,
-                "Missing ')' at " + tkStream_.current()->locInfo()}};
+    const std::expected<std::vector<std::shared_ptr<AST>>, Error> arguemnts{
+        parseArguments({TokenType::LB, TokenType::RB}, true)};
+    if (!arguemnts) {
+      return std::unexpected{arguemnts.error()};
     }
 
     // Crear nodo de función
-    auto funcCall = Builder::createFunCall(baseToken.raw(), args);
+    auto funcCall = Builder::createFunCall(baseToken.raw(), *arguemnts);
     if (!funcCall || !*funcCall) {
       return std::unexpected{
           funcCall ? Error{ERROR_TYPE::NULL_NODE, "Failed to create func call"}
@@ -69,51 +36,20 @@ TopDown::parseChainedExpression() const noexcept {
     }
     basePtr = *funcCall;
   } else if (tkStream_.current()->type() == TokenType::LB) {
-    // Llamada a función
-    if (!tkStream_.eat()) {
-      return std::unexpected{
-          Error{ERROR_TYPE::SINTAX,
-                "Failed to consume '{' at " + tkStream_.current()->locInfo()}};
-    }
 
-    // Parsear argumentos hasta ')'
-    std::vector<std::shared_ptr<AST>> args;
-    while (tkStream_.currentPos() < tkStream_.size() &&
-           tkStream_.current()->type() != TokenType::RB) {
-      auto expr = parseOr();
-      if (!expr || !*expr) {
-        return std::unexpected{
-            expr ? Error{ERROR_TYPE::NULL_NODE, "node is null"} : expr.error()};
-      }
-      args.push_back(*expr);
-      if (tkStream_.current()->type() == TokenType::COMMA) {
-        if (!tkStream_.eat()) {
-          return std::unexpected{
-              Error{ERROR_TYPE::SINTAX, "Failed to consume ',' at " +
-                                            tkStream_.current()->locInfo()}};
-        }
-        continue;
-      } else if (tkStream_.current()->type() != TokenType::RB) {
-        return std::unexpected{
-            Error{ERROR_TYPE::SINTAX,
-                  "Missing comma or '}' at " + tkStream_.current()->locInfo()}};
-      }
-      break;
+    const std::expected<std::vector<std::shared_ptr<AST>>, Error> arguemnts{
+        parseArguments({TokenType::LB, TokenType::RB}, true)};
+    if (!arguemnts) {
+      return std::unexpected{arguemnts.error()};
     }
-
-    // Consumir '}'
-    if (tkStream_.current()->type() != TokenType::RB || !tkStream_.eat()) {
-      return std::unexpected{
-          Error{ERROR_TYPE::SINTAX,
-                "Missing ')' at " + tkStream_.current()->locInfo()}};
-    }
-
-    // Crear nodo de función
-    auto constructorCall = Builder::createConstructorCall(baseToken.raw(), args);
+    
+    auto constructorCall =
+        Builder::createConstructorCall(baseToken.raw(), *arguemnts);
     if (!constructorCall || !*constructorCall) {
-      return std::unexpected{
-          constructorCall ? Error{ERROR_TYPE::NULL_NODE, "Failed to create constructor call"}
-                   : constructorCall.error()};
+      return std::unexpected{constructorCall
+                                 ? Error{ERROR_TYPE::NULL_NODE,
+                                         "Failed to create constructor call"}
+                                 : constructorCall.error()};
     }
     basePtr = *constructorCall;
   } else {
@@ -190,47 +126,15 @@ TopDown::parseChainedExpression() const noexcept {
 
       // Comprobar si es método -> un '(' a continuación
       if (tkStream_.current()->type() == TokenType::LP) {
-        // Consumir '('
-        if (!tkStream_.eat()) {
-          return std::unexpected{
-              Error{ERROR_TYPE::SINTAX, "Failed to consume '(' at " +
-                                            tkStream_.current()->locInfo()}};
+
+        const std::expected<std::vector<std::shared_ptr<AST>>, Error> arguemnts{
+            parseArguments({TokenType::LP, TokenType::RP}, true)};
+        if (!arguemnts) {
+          return std::unexpected{arguemnts.error()};
         }
 
-        // Parsear parámetros
-        std::vector<std::shared_ptr<AST>> args;
-        while (tkStream_.currentPos() < tkStream_.size() &&
-               tkStream_.current()->type() != TokenType::RP) {
-          auto param = parseOr();
-          if (!param || !*param) {
-            return std::unexpected{
-                param ? Error{ERROR_TYPE::NULL_NODE, "param is null"}
-                      : param.error()};
-          }
-          args.push_back(*param);
-          if (tkStream_.current()->type() == TokenType::COMMA) {
-            if (!tkStream_.eat()) {
-              return std::unexpected{Error{ERROR_TYPE::SINTAX,
-                                           "Failed to consume ',' at " +
-                                               tkStream_.current()->locInfo()}};
-            }
-            continue;
-          } else if (tkStream_.current()->type() != TokenType::RP) {
-            return std::unexpected{
-                Error{ERROR_TYPE::SINTAX, "Missing comma or ')' at " +
-                                              tkStream_.current()->locInfo()}};
-          }
-          break;
-        }
-
-        // Consumir ')'
-        if (tkStream_.current()->type() != TokenType::RP || !tkStream_.eat()) {
-          return std::unexpected{
-              Error{ERROR_TYPE::SINTAX,
-                    "Missing ')' at " + tkStream_.current()->locInfo()}};
-        }
-
-        auto methodNode = Builder::createMethodCall(attrToken.raw(), args);
+        auto methodNode =
+            Builder::createMethodCall(attrToken.raw(), *arguemnts);
         if (!methodNode || !*methodNode) {
           return std::unexpected{
               methodNode

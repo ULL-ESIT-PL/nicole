@@ -206,29 +206,40 @@ TopDown::parseFactor() const noexcept {
 
 const std::expected<std::shared_ptr<AST_VECTOR>, Error>
 TopDown::parseVector() const noexcept {
+  const std::expected<std::vector<std::shared_ptr<AST>>, Error> arguemnts{
+      parseArguments({TokenType::LC, TokenType::RC}, true)};
+  if (!arguemnts) {
+    return std::unexpected{arguemnts.error()};
+  }
+  return Builder::createVector(*arguemnts);
+}
+
+const std::expected<std::vector<std::shared_ptr<AST>>, Error>
+TopDown::parseArguments(std::pair<TokenType, TokenType> delimiters, const bool canBeEmpty) const noexcept {
+  if (tkStream_.current()->type() != delimiters.first) {
+    return std::unexpected{
+        Error{ERROR_TYPE::SINTAX,
+              "missing " + tokenTypeToString(delimiters.first) + " at " + tkStream_.current()->locInfo()}};
+  }
   if (!tkStream_.eat()) {
     return std::unexpected{Error{ERROR_TYPE::SINTAX,
                                  "failed to eat " + tkStream_.current()->raw() +
                                      " at " + tkStream_.current()->locInfo()}};
   }
-  std::vector<std::shared_ptr<AST>> expressions{};
-  if (tkStream_.current()->type() == TokenType::RC) {
-    if (!tkStream_.eat()) {
-      return std::unexpected{Error{
-          ERROR_TYPE::SINTAX, "failed to eat " + tkStream_.current()->raw() +
-                                  " at " + tkStream_.current()->locInfo()}};
-    }
-    return Builder::createVector(expressions);
+  if (tkStream_.current()->type() == delimiters.second and !canBeEmpty) {
+    return std::unexpected{
+        Error{ERROR_TYPE::SINTAX,
+              "empty expression at " + tkStream_.current()->locInfo()}};
   }
+  std::vector<std::shared_ptr<AST>> params{};
   while (tkStream_.currentPos() < tkStream_.size() and
-         tkStream_.current()->type() != TokenType::RC) {
-    const std::expected<std::shared_ptr<AST>, Error> expression{parseOr()};
-    if (!expression || !*expression) {
-      return std::unexpected{expression
-                                 ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
-                                 : expression.error()};
+         tkStream_.current()->type() != delimiters.second) {
+    const std::expected<std::shared_ptr<AST>, Error> param{parseTernary()};
+    if (!param || !*param) {
+      return std::unexpected{
+          param ? Error{ERROR_TYPE::NULL_NODE, "node is null"} : param.error()};
     }
-    expressions.push_back(*expression);
+    params.push_back(*param);
     if (tkStream_.current()->type() == TokenType::COMMA) {
       if (!tkStream_.eat()) {
         return std::unexpected{Error{
@@ -236,29 +247,24 @@ TopDown::parseVector() const noexcept {
                                     " at " + tkStream_.current()->locInfo()}};
       }
       continue;
-    } else if (tkStream_.current()->type() != TokenType::RC) {
+    } else if (tkStream_.current()->type() != delimiters.second) {
       return std::unexpected{
-          Error{ERROR_TYPE::SINTAX, "missing comma or ] of vector at " +
+          Error{ERROR_TYPE::SINTAX, "missing " + tokenTypeToString(delimiters.first) + " at " +
                                         tkStream_.current()->locInfo()}};
     }
     break;
   }
-  if (tkStream_.current()->type() != TokenType::RC) {
+  if (tkStream_.current()->type() != delimiters.second) {
     return std::unexpected{
-        Error{ERROR_TYPE::SINTAX,
-              "missing ] of vector at " + tkStream_.current()->locInfo()}};
+        Error{ERROR_TYPE::SINTAX, "missing " + tokenTypeToString(delimiters.first) + " at " +
+                                      tkStream_.current()->locInfo()}};
   }
   if (!tkStream_.eat()) {
     return std::unexpected{Error{ERROR_TYPE::SINTAX,
                                  "failed to eat " + tkStream_.current()->raw() +
                                      " at " + tkStream_.current()->locInfo()}};
   }
-  return Builder::createVector(expressions);
-}
-
-const std::expected<std::vector<std::shared_ptr<AST>>, Error>
-TopDown::parseArguments() const noexcept {
-  return {};
+  return params;
 }
 
 } // namespace nicole

@@ -120,7 +120,7 @@ private:
   parseParams() const noexcept;
 
   [[nodiscard]] const std::expected<std::vector<std::shared_ptr<AST>>, Error>
-  parseArguments() const noexcept;
+  parseArguments(std::pair<TokenType, TokenType> delimiters, const bool canBeEmpty) const noexcept;
 
 public:
   explicit TopDown(const std::shared_ptr<Sintax> &sintax) noexcept

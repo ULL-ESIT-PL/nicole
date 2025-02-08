@@ -54,59 +54,18 @@ TopDown::parsePrint() const noexcept {
                                  "failed to eat " + tkStream_.current()->raw() +
                                      " at " + tkStream_.current()->locInfo()}};
   }
-  if (tkStream_.current()->type() != TokenType::LP) {
-    return std::unexpected{
-        Error{ERROR_TYPE::SINTAX,
-              "missing left parenthesis of print at " + tkStream_.current()->locInfo()}};
+
+  const std::expected<std::vector<std::shared_ptr<AST>>, Error> arguemnts{
+      parseArguments({TokenType::LP, TokenType::RP}, false)};
+  if (!arguemnts) {
+    return std::unexpected{arguemnts.error()};
   }
-  if (!tkStream_.eat()) {
-    return std::unexpected{Error{ERROR_TYPE::SINTAX,
-                                 "failed to eat " + tkStream_.current()->raw() +
-                                     " at " + tkStream_.current()->locInfo()}};
-  }
-  if (tkStream_.current()->type() == TokenType::RP) {
-    return std::unexpected{
-        Error{ERROR_TYPE::SINTAX,
-              "empty expression of print at " + tkStream_.current()->locInfo()}};
-  }
-  std::vector<std::shared_ptr<AST>> params{};
-  while (tkStream_.currentPos() < tkStream_.size() and
-         tkStream_.current()->type() != TokenType::RP) {
-    const std::expected<std::shared_ptr<AST>, Error> param{parseOr()};
-    if (!param || !*param) {
-      return std::unexpected{
-          param ? Error{ERROR_TYPE::NULL_NODE, "node is null"} : param.error()};
-    }
-    params.push_back(*param);
-    if (tkStream_.current()->type() == TokenType::COMMA) {
-      if (!tkStream_.eat()) {
-        return std::unexpected{Error{
-            ERROR_TYPE::SINTAX, "failed to eat " + tkStream_.current()->raw() +
-                                    " at " + tkStream_.current()->locInfo()}};
-      }
-      continue;
-    } else if (tkStream_.current()->type() != TokenType::RP) {
-      return std::unexpected{
-          Error{ERROR_TYPE::SINTAX, "missing comma or parenthesis of print at " +
-                                        tkStream_.current()->locInfo()}};
-    }
-    break;
-  }
-  if (tkStream_.current()->type() != TokenType::RP) {
-    return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "missing right parenthesis of print at " +
-                                      tkStream_.current()->locInfo()}};
-  }
-  if (!tkStream_.eat()) {
-    return std::unexpected{Error{ERROR_TYPE::SINTAX,
-                                 "failed to eat " + tkStream_.current()->raw() +
-                                     " at " + tkStream_.current()->locInfo()}};
-  }
+ 
   if (tkStream_.current()->type() != TokenType::SEMICOLON) {
     return std::unexpected{Error{
-        ERROR_TYPE::SINTAX, "missing ; of print statement at " + tkStream_.current()->locInfo()}};
+        ERROR_TYPE::SINTAX, "missing ; of print statement at " + tkStream_.lastRead()->locInfo()}};
   }
-  return Builder::createPrint(params);
+  return Builder::createPrint(*arguemnts);
 }
 
 } // namespace nicole

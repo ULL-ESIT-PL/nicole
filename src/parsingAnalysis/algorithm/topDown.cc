@@ -1,8 +1,6 @@
 #include "../../../inc/parsingAnalysis/algorithm/topDown.h"
-#include <cstddef>
 #include <expected>
 #include <memory>
-#include <ostream>
 #include <vector>
 
 namespace nicole {
@@ -116,250 +114,111 @@ TopDown::parseBody() const noexcept {
 const std::expected<std::shared_ptr<AST_STATEMENT>, Error>
 TopDown::parseStatement() const noexcept {
 
+  std::expected<std::shared_ptr<AST>, Error> statement{nullptr};
+
   if ((tkStream_.isTokenAheadBeforeSemicolon(TokenType::DOTDOT_ASSIGNMENT)) or
       tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_ADD) or
       tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_SUB) or
       tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_MULT) or
       tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_DIV)) {
-    const auto assigment{parseSelfAssignment(false)};
-    if (!assigment || !*assigment) {
-      return std::unexpected{
-          assigment ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                    : assigment.error()};
+    statement = parseSelfAssignment(false);
+    if (!statement || !*statement) {
+      return std::unexpected{statement
+                                 ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                                 : statement.error()};
     }
-    const auto statement{Builder::createStatement(*assigment)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+
+    return Builder::createStatement(*statement);
   }
 
   switch (tkStream_.current()->type()) {
   case TokenType::IF: {
-    const std::expected<std::shared_ptr<AST>, Error> ifStm{parseIf()};
-    if (!ifStm || !*ifStm) {
-      return std::unexpected{
-          ifStm ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                : ifStm.error()};
-    }
-    const auto statement{Builder::createStatement(*ifStm)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+    statement = parseIf();
+    break;
   }
 
   case TokenType::SWITCH: {
-    const std::expected<std::shared_ptr<AST>, Error> switchSTM{parseSwitch()};
-    if (!switchSTM || !*switchSTM) {
-      return std::unexpected{
-          switchSTM ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                    : switchSTM.error()};
-    }
-    const auto statement{Builder::createStatement(*switchSTM)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+    statement = parseSwitch();
+    break;
   }
 
   case TokenType::WHILE: {
-    const std::expected<std::shared_ptr<AST>, Error> whileSTM{parseWhile()};
-    if (!whileSTM || !*whileSTM) {
-      return std::unexpected{
-          whileSTM ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                   : whileSTM.error()};
-    }
-    const auto statement{Builder::createStatement(*whileSTM)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+    statement = parseWhile();
+    break;
   }
 
   case TokenType::DO: {
-    const std::expected<std::shared_ptr<AST>, Error> doWhile{parseDoWhile()};
-    if (!doWhile || !*doWhile) {
-      return std::unexpected{
-          doWhile ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                  : doWhile.error()};
-    }
-    const auto statement{Builder::createStatement(*doWhile)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+    statement = parseDoWhile();
+    break;
   }
 
   case TokenType::FOR: {
-    const std::expected<std::shared_ptr<AST>, Error> forSTM{parseFor()};
-    if (!forSTM || !*forSTM) {
-      return std::unexpected{
-          forSTM ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                 : forSTM.error()};
-    }
-    const auto statement{Builder::createStatement(*forSTM)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+    statement = parseFor();
+    break;
   }
 
   case TokenType::PASS: {
-    const std::expected<std::shared_ptr<AST_PASS>, Error> pass{parsePass()};
-    if (!pass || !*pass) {
-      return std::unexpected{pass ? Error{ERROR_TYPE::NULL_NODE, "pass is null"}
-                                  : pass.error()};
-    }
-    const auto statement{Builder::createStatement(*pass)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+    statement = parsePass();
+    break;
   }
 
   case TokenType::STOP: {
-    const std::expected<std::shared_ptr<AST_STOP>, Error> stop{parseStop()};
-    if (!stop || !*stop) {
-      return std::unexpected{
-          stop ? Error{ERROR_TYPE::NULL_NODE, "factor is null"} : stop.error()};
-    }
-    const auto statement{Builder::createStatement(*stop)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+    statement = parseStop();
+    break;
   }
 
   case TokenType::FUNCTION: {
-    const std::expected<std::shared_ptr<AST>, Error> function{parseFuncDecl(false)};
-    if (!function || !*function) {
-      return std::unexpected{
-          function ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                   : function.error()};
-    }
-    const auto statement{Builder::createStatement(*function)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+    statement = parseFuncDecl(false);
+    break;
   }
 
   case TokenType::RETURN: {
-    const std::expected<std::shared_ptr<AST>, Error> returnSTM{parseReturn()};
-    if (!returnSTM || !*returnSTM) {
-      return std::unexpected{
-          returnSTM ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                    : returnSTM.error()};
-    }
-    const auto statement{Builder::createStatement(*returnSTM)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+    statement = parseReturn();
+    break;
   }
 
   case TokenType::ENUM: {
-    const std::expected<std::shared_ptr<AST>, Error> enumSTM{parseEnum()};
-    if (!enumSTM || !*enumSTM) {
-      return std::unexpected{
-          enumSTM ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                  : enumSTM.error()};
-    }
-    const auto statement{Builder::createStatement(*enumSTM)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+    statement = parseEnum();
+    break;
   }
 
   case TokenType::STRUCT: {
-    const std::expected<std::shared_ptr<AST>, Error> structSTM{
-        parseStructDecl()};
-    if (!structSTM || !*structSTM) {
-      return std::unexpected{
-          structSTM ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                    : structSTM.error()};
-    }
-    const auto statement{Builder::createStatement(*structSTM)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+    statement = parseStructDecl();
+    break;
   }
 
   case TokenType::CLASS: {
-    const std::expected<std::shared_ptr<AST>, Error> classSTM{parseClassDecl()};
-    if (!classSTM || !*classSTM) {
-      return std::unexpected{
-          classSTM ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                   : classSTM.error()};
-    }
-    const auto statement{Builder::createStatement(*classSTM)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+    statement = parseClassDecl();
+    break;
   }
 
   case TokenType::DELETE: {
-    const std::expected<std::shared_ptr<AST_DELETE>, Error> classSTM{
-        parseDelete()};
-    if (!classSTM || !*classSTM) {
-      return std::unexpected{
-          classSTM ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                   : classSTM.error()};
-    }
-    const auto statement{Builder::createStatement(*classSTM)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+    statement = parseDelete();
+    break;
   }
 
   case TokenType::IMPORT: {
-    const std::expected<std::shared_ptr<AST>, Error> import{parseImport()};
-    if (!import || !*import) {
-      return std::unexpected{
-          import ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                 : import.error()};
-    }
-    const auto statement{Builder::createStatement(*import)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+    statement = parseImport();
+    break;
   }
 
   case TokenType::PRINT: {
-    const std::expected<std::shared_ptr<AST>, Error> print{parsePrint()};
-    if (!print || !*print) {
-      return std::unexpected{
-          print ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                : print.error()};
-    }
-    const auto statement{Builder::createStatement(*print)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+    statement = parsePrint();
+    break;
   }
 
   default: {
-    const std::expected<std::shared_ptr<AST>, Error> factor{
-        parseVarDecl(false)};
-    if (!factor || !*factor) {
-      return std::unexpected{
-          factor ? Error{ERROR_TYPE::NULL_NODE, "factor is null"}
-                 : factor.error()};
-    }
-    const auto statement{Builder::createStatement(*factor)};
-    if (!statement) {
-      return std::unexpected{statement.error()};
-    }
-    return *statement;
+    statement = parseVarDecl(false);
+    break;
   }
   }
+
+  if (!statement || !*statement) {
+    return std::unexpected{statement
+                               ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                               : statement.error()};
+  }
+  return Builder::createStatement(*statement);
 }
 
 } // namespace nicole
