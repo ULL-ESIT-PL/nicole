@@ -1,121 +1,61 @@
-# nicole
+# Nicole Compiler
 
-Toy Compiler written in c++ using LLVM by Evian Concepción Peña
+![mascot](images/image.png)
 
-## Goals
+Toy Compiler written in c++ using LLVM 19 by Evian Concepción Peña
 
-Combine an user friendly sintax and the speed of a compiled language, example: Mojo (uses MLIR) or Julia
-WARNING: Currently translation to machine code is commented, to develope faster I use the JIT engine of LLVM
+Tutor: Casiano Rodríguez León
 
-## How to build
+Cotutor: Jose Rodriguez
 
-- At parent directory --> ```mkdir build```
-- At parent directory --> ```cd build```
-- At build directory --> ```cmake ..```
-- At nicole directory --> ```nicole.sh file.nc```
-- ```nicole.sh``` will compile and excute but only will compile those modified files
-- Still no options from command line so test/test1.nc is the program to be compiled
+## Description
+`nicole.sh` is a script that compiles files with the `.nc` extension. If changes have been made to the source code, only the modified files will be recompiled.
+
+## Usage
+From the parent directory, run:
+```sh
+./nicole.sh [[options] input_file] | -t
+```
+Where `input_file` is the main program file with the `.nc` extension (e.g., `helloWorld.nc`).
+
+## Options
+Options can appear in any position except `-n`, which must be followed by the output file name.
+
+- `-h | --help` → Displays a brief description of how to use the compiler.
+- `-v | --validate` → Forces the program to follow certain validation rules (recommended).
+- `-o | --optimize` → Performs optimizations on the generated code.
+- `-n | --name output_file` → Allows specifying the name of the output file (default is `a.out`).
+- `-p | --printTree` → Prints the Abstract Syntax Tree (AST) in a directory-like structure.
+- `-i | --printIR` → Prints the generated Intermediate Representation (IR) code.
+
+- `-t` → Executes the tests of the compiler, also to run the tests no other argyment but `-t`can be passed to the script.
+
+## Usage Examples
+Compile a file with optimization and validation, specifying the output executable name:
+```sh
+./nicole.sh -v -o -n program_out helloWorld.nc
+```
+
+Generate the AST and intermediate code without optimization:
+```sh
+./nicole.sh -p -i helloWorld.nc
+```
+
+## Notes
+- Only the file containing the `main` function needs to be specified.
+- If changes are made to the code (project), only the modified files will be recompiled.
+- `-n` must be followed by the output file name.
+- A few examples of the languaje can be found at `nicoleScripts/`
+
+## Requirements
+- `clang 19 or g++ 14`
+- `Catch2 3.7`
+- `LLVM 19`
+- `cmake 3.3`
+- `The project only has been tested in Linux`
 
 ## Features Implemented
 
-- Lexer (sintax is up to the users since the parser only knows about token types and not raw information)
-
-- Parsing algorithm is up to users meaning it can easily be changed, for this project I just implement a Top-Down
-
-- Tree visualization
-
-- Literals Bool, Int, Float, Double, Char, String
-
-- Variable Declaration
-
-- Const Variable Declaration
-
-- Auto declaration (still not supported const auto but it is trivial to implement)
-
-- Unary operations -- (decrement), ++ (increment), -, ! (not)
-
-- Binary operations or, and, +, -, *, /, %, !=, ==, <, <=, >, >=
-
-- Operators +=, -=, *=, /=
-
-- Operator precedency and parenthesis expressions
-
-- Variable call
-
-- Function Declaration with return (type / void) and allowing recursion
-
-- Function calls
-
-- If conditional with else as optional
-
-- Ternary operator
-
-- Switch conditional with optional default (still gotta check that every case has the right type)
-
-- Loops while, do while, for
-
-- Every time a function, loop or conditional is being created it inherits the outer scope
-
-- Print in the terminal (by te moment just literal and not user types)
-
-- Import (still gotta check if every path works and more tests about dependency cycles)
-
-- Structures of data (can access either as a getter or to set the attributes after constructor, just missing methods and nested types)
-
 ## Features yet to implement
 
-- Better error messages
-
-- Vectors / Array
-
-- Classes
-
-- Stop (equivalent to break in c++)
-
-- Pass (equivalent to continue in c++)
-
-- Pointers and null
-
-- Concatenation of expression, example: variable[index][index].method... Right now would require create an intermediate variable
-
-- Standar library
-
-- Type conversion
-
-- Type checking analysis
-
-- Optimization analysis (let the user decide between differnt levels, Default, None, Agressive...)
-
-- System calls
-
-- Threads (not sure)
-
-- Templates (not sure)
-
-- Polymorphism (not sure)
-
-- NameSpace (not sure)
-
-- Use MLIR -> Multi Level Intermediate Representation (not sure)
-
-
 ## Folder structure
-
-- The .txt files next to the CMakeLists.txt are just meant for me to install correctly LLVM and the intellisense being able to find the library
-
-- Building system (cmake, in the futute might add Bazel)
-
-- inc for every header file (.h)
-
-    - The folders are divide by stages (since this is an early stage of the project it might not be accurate the file path)
-    - 1. Lexical Analysis (has everything related to building a lexer)
-    - 2. Parsing Analaysis (has everything related to de parsing, AST nodes, tables)
-    - 3. Type checking (not implemnted)
-    - 4. Optimization analysis (not implemented)
-    - 5. Visitors (Code generation)
-
-- src for every source file (.cc)
-
-- test constains tests for the features of the compiler (expected to use google test library)
-
-- build where the binary is

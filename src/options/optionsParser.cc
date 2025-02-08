@@ -7,7 +7,7 @@ bool OptionsParser::isOption(const std::string_view argument) noexcept {
       argument == "--name" or argument == "-h" or argument == "--help" or
       argument == "-p" or argument == "--printTree" or argument == "-i" or
       argument == "--printIR" or argument == "-v" or
-      argument == "--validateTree") {
+      argument == "--validate") {
     return true;
   }
   return false;
@@ -45,7 +45,7 @@ OptionsParser::parse(const std::vector<std::string_view> &arguments) noexcept {
       printTree = true;
     } else if (argument == "-i" or argument == "--printIR") {
       printIR = true;
-    } else if (argument == "-v" or argument == "--validateTree") {
+    } else if (argument == "-v" or argument == "--validate") {
       validateTree = true;
     } else if (argument == "-n" or argument == "--name") {
       if (++i == size or isOption(arguments[i])) {
