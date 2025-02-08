@@ -66,16 +66,7 @@ public:
   visit(const AST_ASSIGNMENT *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>
-  visit(const AST_SELF_ADD *node) const noexcept override;
-
-  [[nodiscard]] std::expected<std::string, Error>
-  visit(const AST_SELF_SUB *node) const noexcept override;
-
-  [[nodiscard]] std::expected<std::string, Error>
-  visit(const AST_SELF_MULT *node) const noexcept override;
-
-  [[nodiscard]] std::expected<std::string, Error>
-  visit(const AST_SELF_DIV *node) const noexcept override;
+  visit(const AST_SELF_ASSIGNMENT *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>
   visit(const AST_PRINT *node) const noexcept override;

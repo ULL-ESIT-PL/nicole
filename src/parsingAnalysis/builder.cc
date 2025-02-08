@@ -181,56 +181,18 @@ Builder::createAssignment(const std::shared_ptr<AST> &left,
   return astAssignment;
 }
 
-std::expected<std::shared_ptr<AST_SELF_ADD>, Error>
-Builder::createSelfAdd(const std::shared_ptr<AST> &left,
-                       const std::shared_ptr<AST> &value) noexcept {
-  const auto astSelfAdd{std::make_shared<AST_SELF_ADD>(left, value)};
+std::expected<std::shared_ptr<AST_SELF_ASSIGNMENT>, Error>
+Builder::createSelfAssignment(const Token &op, const std::shared_ptr<AST> &left,
+                              const std::shared_ptr<AST> &value) noexcept {
+  const auto astSelfAssignment{
+      std::make_shared<AST_SELF_ASSIGNMENT>(op, left, value)};
   if (left) {
-    left->setFather(astSelfAdd);
+    left->setFather(astSelfAssignment);
   }
   if (value) {
-    value->setFather(astSelfAdd);
+    value->setFather(astSelfAssignment);
   }
-  return astSelfAdd;
-}
-
-std::expected<std::shared_ptr<AST_SELF_SUB>, Error>
-Builder::createSelfSub(const std::shared_ptr<AST> &left,
-                       const std::shared_ptr<AST> &value) noexcept {
-  const auto astSelfSub{std::make_shared<AST_SELF_SUB>(left, value)};
-  if (left) {
-    left->setFather(astSelfSub);
-  }
-  if (value) {
-    value->setFather(astSelfSub);
-  }
-  return astSelfSub;
-}
-
-std::expected<std::shared_ptr<AST_SELF_MULT>, Error>
-Builder::createSelfMult(const std::shared_ptr<AST> &left,
-                        const std::shared_ptr<AST> &value) noexcept {
-  const auto astSelfMult{std::make_shared<AST_SELF_MULT>(left, value)};
-  if (left) {
-    left->setFather(astSelfMult);
-  }
-  if (value) {
-    value->setFather(astSelfMult);
-  }
-  return astSelfMult;
-}
-
-std::expected<std::shared_ptr<AST_SELF_DIV>, Error>
-Builder::createSelfDiv(const std::shared_ptr<AST> &left,
-                       const std::shared_ptr<AST> &value) noexcept {
-  const auto astSelfDiv{std::make_shared<AST_SELF_DIV>(left, value)};
-  if (left) {
-    left->setFather(astSelfDiv);
-  }
-  if (value) {
-    value->setFather(astSelfDiv);
-  }
-  return astSelfDiv;
+  return astSelfAssignment;
 }
 
 std::expected<std::shared_ptr<AST_PRINT>, Error>

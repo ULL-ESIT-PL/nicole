@@ -1,11 +1,8 @@
 #ifndef BUILDER_H
 #define BUILDER_H
 
+#include "ast/assignments/asr_selfAssignment.h"
 #include "ast/assignments/ast_assignment.h"
-#include "ast/assignments/ast_selfAdd.h"
-#include "ast/assignments/ast_selfDiv.h"
-#include "ast/assignments/ast_selfMult.h"
-#include "ast/assignments/ast_selfSub.h"
 
 #include "ast/conditionals/ast_condtion.h"
 #include "ast/conditionals/ast_default.h"
@@ -135,21 +132,10 @@ public:
   createAssignment(const std::shared_ptr<AST> &left,
                    const std::shared_ptr<AST> &value) noexcept;
 
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_SELF_ADD>, Error>
-  createSelfAdd(const std::shared_ptr<AST> &left,
-                const std::shared_ptr<AST> &value) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_SELF_SUB>, Error>
-  createSelfSub(const std::shared_ptr<AST> &left,
-                const std::shared_ptr<AST> &value) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_SELF_MULT>, Error>
-  createSelfMult(const std::shared_ptr<AST> &left,
-                 const std::shared_ptr<AST> &value) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_SELF_DIV>, Error>
-  createSelfDiv(const std::shared_ptr<AST> &left,
-                const std::shared_ptr<AST> &value) noexcept;
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_SELF_ASSIGNMENT>,
+                                     Error>
+  createSelfAssignment(const Token &op, const std::shared_ptr<AST> &left,
+                       const std::shared_ptr<AST> &value) noexcept;
 
   // Utils
   [[nodiscard]] static std::expected<std::shared_ptr<AST_PRINT>, Error>

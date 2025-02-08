@@ -18,11 +18,8 @@
 #include "../../inc/parsingAnalysis/ast/operators/ast_binary.h"
 #include "../../inc/parsingAnalysis/ast/operators/ast_unary.h"
 
+#include "../../inc/parsingAnalysis/ast/assignments/asr_selfAssignment.h"
 #include "../../inc/parsingAnalysis/ast/assignments/ast_assignment.h"
-#include "../../inc/parsingAnalysis/ast/assignments/ast_selfAdd.h"
-#include "../../inc/parsingAnalysis/ast/assignments/ast_selfDiv.h"
-#include "../../inc/parsingAnalysis/ast/assignments/ast_selfMult.h"
-#include "../../inc/parsingAnalysis/ast/assignments/ast_selfSub.h"
 
 #include "../../inc/parsingAnalysis/ast/utils/ast_import.h"
 #include "../../inc/parsingAnalysis/ast/utils/ast_print.h"
@@ -313,82 +310,10 @@ ValidateTree::visit(const AST_ASSIGNMENT *node) const noexcept {
 
 // statemetn / body / not null or for
 std::expected<bool, Error>
-ValidateTree::visit(const AST_SELF_ADD *node) const noexcept {
+ValidateTree::visit(const AST_SELF_ASSIGNMENT *node) const noexcept {
   if (!node) {
     return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_SELF_ADD"}};
-  }
-  if (!(CheckPosition::itsBodyAncestorHasParent(node) or
-        CheckPosition::isInsideForHeader(node))) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
-                                 "a sefl assignment can only exist "
-                                 "in a body or a for header init"}};
-  }
-  const auto left{node->left()->accept(*this)};
-  if (!left) {
-    return std::unexpected{left.error()};
-  }
-  const auto right{node->value()->accept(*this)};
-  if (!right) {
-    return std::unexpected{right.error()};
-  }
-  return true;
-}
-
-// statemetn / body / not null or for
-std::expected<bool, Error>
-ValidateTree::visit(const AST_SELF_SUB *node) const noexcept {
-  if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_SELF_SUB"}};
-  }
-  if (!(CheckPosition::itsBodyAncestorHasParent(node) or
-        CheckPosition::isInsideForHeader(node))) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
-                                 "a sefl assignment can only exist "
-                                 "in a body or a for header init"}};
-  }
-  const auto left{node->left()->accept(*this)};
-  if (!left) {
-    return std::unexpected{left.error()};
-  }
-  const auto right{node->value()->accept(*this)};
-  if (!right) {
-    return std::unexpected{right.error()};
-  }
-  return true;
-}
-
-// statemetn / body / not null or for
-std::expected<bool, Error>
-ValidateTree::visit(const AST_SELF_MULT *node) const noexcept {
-  if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_SELF_MULT"}};
-  }
-  if (!(CheckPosition::itsBodyAncestorHasParent(node) or
-        CheckPosition::isInsideForHeader(node))) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
-                                 "a sefl assignment can only exist "
-                                 "in a body or a for header init"}};
-  }
-  const auto left{node->left()->accept(*this)};
-  if (!left) {
-    return std::unexpected{left.error()};
-  }
-  const auto right{node->value()->accept(*this)};
-  if (!right) {
-    return std::unexpected{right.error()};
-  }
-  return true;
-}
-
-// statemetn / body / not null or for
-std::expected<bool, Error>
-ValidateTree::visit(const AST_SELF_DIV *node) const noexcept {
-  if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_SELF_DIV"}};
+        Error{ERROR_TYPE::NULL_NODE, "invalid AST_SELF_ASSIGNMENT"}};
   }
   if (!(CheckPosition::itsBodyAncestorHasParent(node) or
         CheckPosition::isInsideForHeader(node))) {
@@ -724,12 +649,12 @@ ValidateTree::visit(const AST_CONDITION *node) const noexcept {
     return std::unexpected{
         Error{ERROR_TYPE::NULL_NODE, "invalid AST_CONDITION"}};
   }
-  if (CheckPosition::hasAnyAncestorOf(
-          node, {AST_TYPE::IF, AST_TYPE::ELSE_IF, AST_TYPE::IF, AST_TYPE::SWITCH,
-                 AST_TYPE::DO_WHILE, AST_TYPE::WHILE, AST_TYPE::FOR})) {
+  if (CheckPosition::hasAnyAncestorOf(node, {AST_TYPE::IF, AST_TYPE::ELSE_IF,
+                                             AST_TYPE::IF, AST_TYPE::SWITCH,
+                                             AST_TYPE::DO_WHILE,
+                                             AST_TYPE::WHILE, AST_TYPE::FOR})) {
     return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE,
-              "misplaced condition"}};
+        Error{ERROR_TYPE::VALIDATE_TREE, "misplaced condition"}};
   }
   return node->expression()->accept(*this);
 }

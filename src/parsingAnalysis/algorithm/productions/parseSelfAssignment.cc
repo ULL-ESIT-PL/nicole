@@ -1,5 +1,4 @@
 #include "../../../../inc/parsingAnalysis/algorithm/topDown.h"
-#include <ios>
 
 namespace nicole {
 
@@ -30,28 +29,13 @@ TopDown::parseSelfAssignment(const bool insideFor) const noexcept {
 
   switch (token.type()) {
 
-  case TokenType::SELF_ADD: {
-    operation = Builder::createSelfAdd(*left, *value);
-    break;
-  }
-
-  case TokenType::SELF_SUB: {
-    operation = Builder::createSelfSub(*left, *value);
-    break;
-  }
-
-  case TokenType::SELF_MULT: {
-    operation = Builder::createSelfMult(*left, *value);
-    break;
-  }
-
-  case TokenType::SELF_DIV: {
-    operation = Builder::createSelfDiv(*left, *value);
+  case TokenType::ASSIGNMENT: {
+    operation = Builder::createAssignment(*left, *value);
     break;
   }
 
   default: {
-    operation = Builder::createAssignment(*left, *value);
+    operation = Builder::createSelfAssignment(token, *left, *value);
     break;
   }
   }

@@ -32,10 +32,7 @@ class AST_BINARY;
 class AST_UNARY;
 
 class AST_ASSIGNMENT;
-class AST_SELF_ADD;
-class AST_SELF_SUB;
-class AST_SELF_MULT;
-class AST_SELF_DIV;
+class AST_SELF_ASSIGNMENT;
 
 class AST_PRINT;
 class AST_IMPORT;
@@ -132,16 +129,7 @@ public:
   visit(const AST_ASSIGNMENT *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_SELF_ADD *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_SELF_SUB *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_SELF_MULT *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_SELF_DIV *node) const noexcept = 0;
+  visit(const AST_SELF_ASSIGNMENT *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_PRINT *node) const noexcept = 0;

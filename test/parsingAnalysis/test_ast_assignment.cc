@@ -15,46 +15,15 @@ TEST_CASE("AST_ASSIGNMENT class methods", "[AST_ASSIGNMENT]") {
           true);
 }
 
-TEST_CASE("AST_SELF_ADD class methods", "[AST_SELF_ADD]") {
+TEST_CASE("AST_SELF_ASSIGNMENT class methods", "[AST_SELF_ASSIGNMENT]") {
+  const Token op{TokenType::SELF_ADD, "+=", Location{"archivo.cpp", 10, 5}};
   auto astBool = std::make_shared<AST_BOOL>(true);
   auto left = std::make_shared<AST_BOOL>(true);
-  AST_SELF_ADD astSelfAdd{left, astBool};
+  AST_SELF_ASSIGNMENT astSelfAdd{op, left, astBool};
 
+  REQUIRE(astSelfAdd.op().raw() == "+=");
   REQUIRE(astSelfAdd.left() == left);
   REQUIRE(astSelfAdd.value() == astBool);
   REQUIRE(std::dynamic_pointer_cast<AST_BOOL>(astSelfAdd.value())->value() ==
           true);
-}
-
-TEST_CASE("AST_SELF_SUB class methods", "[AST_SELF_SUB]") {
-  auto astBool = std::make_shared<AST_BOOL>(false);
-  auto left = std::make_shared<AST_BOOL>(true);
-  AST_SELF_SUB astSelfSub{left, astBool};
-
-  REQUIRE(astSelfSub.left() == left);
-  REQUIRE(astSelfSub.value() == astBool);
-  REQUIRE(std::dynamic_pointer_cast<AST_BOOL>(astSelfSub.value())->value() ==
-          false);
-}
-
-TEST_CASE("AST_SELF_MULT class methods", "[AST_SELF_MULT]") {
-  auto astBool = std::make_shared<AST_BOOL>(true);
-  auto left = std::make_shared<AST_BOOL>(true);
-  AST_SELF_MULT astSelfMult{left, astBool};
-
-  REQUIRE(astSelfMult.left() == left);
-  REQUIRE(astSelfMult.value() == astBool);
-  REQUIRE(std::dynamic_pointer_cast<AST_BOOL>(astSelfMult.value())->value() ==
-          true);
-}
-
-TEST_CASE("AST_SELF_DIV class methods", "[AST_SELF_DIV]") {
-  auto astBool = std::make_shared<AST_BOOL>(false);
-  auto left = std::make_shared<AST_BOOL>(true);
-  AST_SELF_DIV astSelfDiv{left, astBool};
-
-  REQUIRE(astSelfDiv.left() == left);
-  REQUIRE(astSelfDiv.value() == astBool);
-  REQUIRE(std::dynamic_pointer_cast<AST_BOOL>(astSelfDiv.value())->value() ==
-          false);
 }
