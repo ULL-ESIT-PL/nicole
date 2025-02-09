@@ -32,7 +32,6 @@ class AST_BINARY;
 class AST_UNARY;
 
 class AST_ASSIGNMENT;
-class AST_SELF_ASSIGNMENT;
 
 class AST_PRINT;
 class AST_IMPORT;
@@ -127,9 +126,6 @@ public:
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_ASSIGNMENT *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_SELF_ASSIGNMENT *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_PRINT *node) const noexcept = 0;

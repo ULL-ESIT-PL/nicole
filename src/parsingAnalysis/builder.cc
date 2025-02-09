@@ -169,23 +169,10 @@ Builder::createUnary(const Token &op,
 }
 
 std::expected<std::shared_ptr<AST_ASSIGNMENT>, Error>
-Builder::createAssignment(const std::shared_ptr<AST> &left,
-                          const std::shared_ptr<AST> &value) noexcept {
-  const auto astAssignment{std::make_shared<AST_ASSIGNMENT>(left, value)};
-  if (left) {
-    left->setFather(astAssignment);
-  }
-  if (value) {
-    value->setFather(astAssignment);
-  }
-  return astAssignment;
-}
-
-std::expected<std::shared_ptr<AST_SELF_ASSIGNMENT>, Error>
-Builder::createSelfAssignment(const Token &op, const std::shared_ptr<AST> &left,
+Builder::createAssignment(const Token &op, const std::shared_ptr<AST> &left,
                               const std::shared_ptr<AST> &value) noexcept {
   const auto astSelfAssignment{
-      std::make_shared<AST_SELF_ASSIGNMENT>(op, left, value)};
+      std::make_shared<AST_ASSIGNMENT>(op, left, value)};
   if (left) {
     left->setFather(astSelfAssignment);
   }

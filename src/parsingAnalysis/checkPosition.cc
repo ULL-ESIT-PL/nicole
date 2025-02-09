@@ -63,9 +63,7 @@ bool CheckPosition::hasLoopAncestor(const AST *node) noexcept {
 
 bool CheckPosition::hasAssigmentOrDeclAncestor(const AST *node) noexcept {
   return hasAnyAncestorOf(node, {AST_TYPE::CONST_DECL, AST_TYPE::AUTO_DECL,
-                                 AST_TYPE::LET_DECL, AST_TYPE::ASIGNMENT,
-                                 AST_TYPE::SELF_ADD, AST_TYPE::SELF_SUB,
-                                 AST_TYPE::SELF_MULT, AST_TYPE::SELF_DIV});
+                                 AST_TYPE::LET_DECL, AST_TYPE::ASSIGNMENT});
 }
 
 bool CheckPosition::isOutOfScope(const AST *node) noexcept {

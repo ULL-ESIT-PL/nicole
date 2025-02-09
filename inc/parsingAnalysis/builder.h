@@ -1,8 +1,7 @@
 #ifndef BUILDER_H
 #define BUILDER_H
 
-#include "ast/assignments/asr_selfAssignment.h"
-#include "ast/assignments/ast_assignment.h"
+#include "ast/assignments/asr_assignment.h"
 
 #include "ast/conditionals/ast_condition.h"
 #include "ast/conditionals/ast_default.h"
@@ -128,14 +127,10 @@ public:
   createUnary(const Token &op, const std::shared_ptr<AST> &value) noexcept;
 
   // Asignment
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_ASSIGNMENT>, Error>
-  createAssignment(const std::shared_ptr<AST> &left,
-                   const std::shared_ptr<AST> &value) noexcept;
 
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_SELF_ASSIGNMENT>,
-                                     Error>
-  createSelfAssignment(const Token &op, const std::shared_ptr<AST> &left,
-                       const std::shared_ptr<AST> &value) noexcept;
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_ASSIGNMENT>, Error>
+  createAssignment(const Token &op, const std::shared_ptr<AST> &left,
+                   const std::shared_ptr<AST> &value) noexcept;
 
   // Utils
   [[nodiscard]] static std::expected<std::shared_ptr<AST_PRINT>, Error>

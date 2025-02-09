@@ -58,16 +58,8 @@ std::string astTypeToStr(const AST_TYPE type) noexcept {
     return "VAR_CALL";
 
     // Asignment
-  case AST_TYPE::ASIGNMENT:
+  case AST_TYPE::ASSIGNMENT:
     return "ASIGNMENT";
-  case AST_TYPE::SELF_ADD:
-    return "SELF_ADD";
-  case AST_TYPE::SELF_SUB:
-    return "SELF_SUB";
-  case AST_TYPE::SELF_MULT:
-    return "SELF_MULT";
-  case AST_TYPE::SELF_DIV:
-    return "SELF_DIV";
 
     // Utils
   case AST_TYPE::PRINT:

@@ -40,11 +40,7 @@ enum class AST_TYPE : int {
   VAR_CALL,
 
   // Asignment
-  ASIGNMENT,
-  SELF_ADD,
-  SELF_SUB,
-  SELF_MULT,
-  SELF_DIV,
+  ASSIGNMENT,
 
   // Utils
   PRINT,

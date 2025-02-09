@@ -18,8 +18,7 @@
 #include "../../inc/parsingAnalysis/ast/operators/ast_binary.h"
 #include "../../inc/parsingAnalysis/ast/operators/ast_unary.h"
 
-#include "../../inc/parsingAnalysis/ast/assignments/asr_selfAssignment.h"
-#include "../../inc/parsingAnalysis/ast/assignments/ast_assignment.h"
+#include "../../inc/parsingAnalysis/ast/assignments/asr_assignment.h"
 
 #include "../../inc/parsingAnalysis/ast/utils/ast_import.h"
 #include "../../inc/parsingAnalysis/ast/utils/ast_print.h"
@@ -289,30 +288,7 @@ ValidateTree::visit(const AST_ASSIGNMENT *node) const noexcept {
   if (!(CheckPosition::itsBodyAncestorHasParent(node) or
         CheckPosition::isInsideForHeader(node))) {
     return createError(ERROR_TYPE::VALIDATE_TREE,
-                       "an assignment can only exist "
-                       "in a body or a for header init");
-  }
-  const auto left{node->left()->accept(*this)};
-  if (!left) {
-    return createError(left.error());
-  }
-  const auto right{node->value()->accept(*this)};
-  if (!right) {
-    return createError(right.error());
-  }
-  return true;
-}
-
-// statemetn / body / not null or for
-std::expected<bool, Error>
-ValidateTree::visit(const AST_SELF_ASSIGNMENT *node) const noexcept {
-  if (!node) {
-    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SELF_ASSIGNMENT");
-  }
-  if (!(CheckPosition::itsBodyAncestorHasParent(node) or
-        CheckPosition::isInsideForHeader(node))) {
-    return createError(ERROR_TYPE::VALIDATE_TREE,
-                       "a sefl assignment can only exist "
+                       "a assignment can only exist "
                        "in a body or a for header init");
   }
   const auto left{node->left()->accept(*this)};

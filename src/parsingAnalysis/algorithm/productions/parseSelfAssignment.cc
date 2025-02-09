@@ -25,20 +25,8 @@ TopDown::parseSelfAssignment(const bool insideFor) const noexcept {
                              : value.error());
   }
 
-  std::expected<std::shared_ptr<AST>, Error> operation{nullptr};
-
-  switch (token.type()) {
-
-  case TokenType::ASSIGNMENT: {
-    operation = Builder::createAssignment(*left, *value);
-    break;
-  }
-
-  default: {
-    operation = Builder::createSelfAssignment(token, *left, *value);
-    break;
-  }
-  }
+  std::expected<std::shared_ptr<AST>, Error> operation{
+      Builder::createAssignment(token, *left, *value)};
 
   if (!operation || !*operation) {
     return createError(operation ? Error{ERROR_TYPE::NULL_NODE, "right is null"}

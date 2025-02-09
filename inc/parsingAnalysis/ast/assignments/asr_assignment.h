@@ -1,5 +1,5 @@
-#ifndef AST_SELF_ASSIGNMENT_H
-#define AST_SELF_ASSIGNMENT_H
+#ifndef AST_ASSIGNMENT_H
+#define AST_ASSIGNMENT_H
 
 #include "../../../lexicalAnalysis/token.h"
 #include "../ast.h"
@@ -7,17 +7,17 @@
 
 namespace nicole {
 
-class AST_SELF_ASSIGNMENT final : public AST {
+class AST_ASSIGNMENT final : public AST {
 private:
   Token op_;
   std::shared_ptr<AST> left_;
   std::shared_ptr<AST> value_;
 
 public:
-  explicit AST_SELF_ASSIGNMENT(const Token &op,
+  explicit AST_ASSIGNMENT(const Token &op,
                                const std::shared_ptr<AST> &left,
                                const std::shared_ptr<AST> &value) noexcept
-      : AST(AST_TYPE::ASIGNMENT), op_{op}, left_{left}, value_{value} {}
+      : AST(AST_TYPE::ASSIGNMENT), op_{op}, left_{left}, value_{value} {}
 
   [[nodiscard]] const Token &op() const noexcept { return op_; }
 

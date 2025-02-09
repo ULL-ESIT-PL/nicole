@@ -58,9 +58,6 @@ public:
   visit(const AST_ASSIGNMENT *node) const noexcept override;
 
   [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_SELF_ASSIGNMENT*node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
   visit(const AST_PRINT *node) const noexcept override;
 
   [[nodiscard]] std::expected<bool, Error>
