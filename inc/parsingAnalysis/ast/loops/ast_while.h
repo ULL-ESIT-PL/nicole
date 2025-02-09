@@ -1,29 +1,18 @@
 #ifndef AST_WHILE_H
 #define AST_WHILE_H
 
-#include "../statements/ast_body.h"
-#include "../conditionals/ast_condtion.h"
+#include "ast_loop.h"
 #include <memory>
 
 namespace nicole {
 
-class AST_WHILE : public AST {
+class AST_WHILE : public AST_LOOP {
 private:
-  std::shared_ptr<AST_CONDITION> condition_;
-  std::shared_ptr<AST_BODY> body_;
 
 public:
   explicit AST_WHILE(const std::shared_ptr<AST_CONDITION> &condition,
                      const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST(AST_TYPE::WHILE), condition_{condition}, body_{body} {}
-
-  [[nodiscard]] const std::shared_ptr<AST_CONDITION> &condition() const noexcept {
-    return condition_;
-  }
-
-  [[nodiscard]] const std::shared_ptr<AST_BODY> &body() const noexcept {
-    return body_;
-  }
+      : AST_LOOP{AST_TYPE::WHILE, condition, body} {}
 
   [[nodiscard]] std::expected<std::string, Error>
   accept(const PrintTree &visitor) const noexcept override {
