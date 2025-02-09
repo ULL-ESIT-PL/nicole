@@ -22,7 +22,7 @@ Lexer::checkUnmatched(const std::vector<Token> &tokens) const noexcept {
     }
   }
   if (unmatchedFlag) {
-    return std::unexpected{Error{ERROR_TYPE::CHECK_UNMATCHED, everyUnmatched}};
+    return createError(ERROR_TYPE::CHECK_UNMATCHED, everyUnmatched);
   }
   return std::expected<void, Error>{};
 }
@@ -33,16 +33,15 @@ Lexer::readFile(const std::filesystem::path &fileName) const noexcept {
                                   std::regex_constants::optimize};
   // method fileName returns just the file
   if (!std::regex_match(fileName.filename().string(), fileNameFormat)) {
-    return std::unexpected{
-        Error{ERROR_TYPE::FILE_EXTENSION, "The file " + fileName.string() +
-                                              " does not have extension: nc"}};
+    return createError(ERROR_TYPE::FILE_EXTENSION,
+                       "The file " + fileName.string() +
+                           " does not have extension: nc");
   }
   std::fstream file{fileName};
   if (!file.is_open()) {
     const std::string strErr{"The file " + fileName.string() + " is not open"};
-    return std::unexpected{
-        Error{ERROR_TYPE::FILE_NOT_OPEN,
-              "The file " + fileName.string() + " is not open"}};
+    return createError(ERROR_TYPE::FILE_NOT_OPEN,
+                       "The file " + fileName.string() + " is not open");
   }
   std::string text{""};
   std::string line{""};
@@ -58,7 +57,7 @@ Lexer::analyze(const std::filesystem::path &fileName,
                bool verbose) const noexcept {
   const std::expected<std::string, Error> TEXT{readFile(fileName)};
   if (!TEXT) {
-    return std::unexpected{TEXT.error()};
+    return createError(TEXT.error());
   }
   const Category expression{concatCategories()};
   std::vector<Token> result{};
@@ -136,7 +135,7 @@ Lexer::analyze(const std::filesystem::path &fileName,
   }
   const std::expected<void, Error> check{checkUnmatched(result)};
   if (!check) {
-    return std::unexpected{check.error()};
+    return createError(check.error());
   }
   return TokenStream{result};
 }

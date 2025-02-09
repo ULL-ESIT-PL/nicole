@@ -6,8 +6,7 @@ bool OptionsParser::isOption(const std::string_view argument) noexcept {
   if (argument == "-o" or argument == "--optimize" or argument == "-n" or
       argument == "--name" or argument == "-h" or argument == "--help" or
       argument == "-p" or argument == "--printTree" or argument == "-i" or
-      argument == "--printIR" or argument == "-v" or
-      argument == "--validate") {
+      argument == "--printIR" or argument == "-v" or argument == "--validate") {
     return true;
   }
   return false;
@@ -18,9 +17,8 @@ OptionsParser::parse(const std::vector<std::string_view> &arguments) noexcept {
   const std::size_t size{arguments.size()};
 
   if (!size) {
-    return std::unexpected{
-        Error{ERROR_TYPE::MISSING_ARGUMENTS,
-              "at least must give the name of the entry file"}};
+    return createError(ERROR_TYPE::MISSING_ARGUMENTS,
+                       "at least must give the name of the entry file");
   }
 
   bool help{false};
@@ -49,15 +47,15 @@ OptionsParser::parse(const std::vector<std::string_view> &arguments) noexcept {
       validateTree = true;
     } else if (argument == "-n" or argument == "--name") {
       if (++i == size or isOption(arguments[i])) {
-        return std::unexpected{
-            Error{ERROR_TYPE::MISSING_BINARY_NAME, "missing binary name"}};
+        return createError(ERROR_TYPE::MISSING_BINARY_NAME,
+                           "missing binary name");
       }
       binaryName = arguments[i];
     } else {
       if (entryFileParsed) {
-        return std::unexpected{
-            Error{ERROR_TYPE::UNKOWN_ARGUMENT,
-                  "argument: " + std::string{argument} + " not supported"}};
+        return createError(ERROR_TYPE::UNKOWN_ARGUMENT,
+                           "argument: " + std::string{argument} +
+                               " not supported");
       }
       entryFilePath = argument;
       entryFileParsed = true;
@@ -65,8 +63,8 @@ OptionsParser::parse(const std::vector<std::string_view> &arguments) noexcept {
   }
   // in case that help exists we skip the error
   if (entryFilePath.empty() and !help) {
-    return std::unexpected{
-        Error{ERROR_TYPE::MISSING_ENTRY_FILE, "must specify the entry file"}};
+    return createError(ERROR_TYPE::MISSING_ENTRY_FILE,
+                       "must specify the entry file");
   }
 
   return Options{help,         optimize,   printTree,    printIR,

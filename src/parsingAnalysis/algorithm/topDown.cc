@@ -12,7 +12,7 @@ TopDown::parse(const std::filesystem::path &entryFile) const noexcept {
   const auto tkStream{lexer_.analyze(entryFile)};
 
   if (!tkStream) {
-    return std::unexpected{tkStream.error()};
+    return createError(tkStream.error());
   }
 
   tkStream_ = *tkStream;
@@ -20,14 +20,14 @@ TopDown::parse(const std::filesystem::path &entryFile) const noexcept {
   const std::expected<std::shared_ptr<AST_BODY>, Error> root{parseStart()};
 
   if (!root || !*root) {
-    return std::unexpected{root ? Error{ERROR_TYPE::NULL_NODE, "Tree is null"}
-                                : root.error()};
+    return createError(root ? Error{ERROR_TYPE::NULL_NODE, "Tree is null"}
+                            : root.error());
   }
 
   const auto tree{Builder::createTree(*root)};
 
   if (!tree) {
-    return std::unexpected{tree.error()};
+    return createError(tree.error());
   }
 
   return *tree;
@@ -41,22 +41,21 @@ TopDown::parseStart() const noexcept {
     const std::expected<std::shared_ptr<AST_STATEMENT>, Error> statement{
         parseStatement()};
     if (!statement || !*statement) {
-      return std::unexpected{
-          statement ? Error{ERROR_TYPE::NULL_NODE, "Statement is null"}
-                    : statement.error()};
+      return createError(statement
+                             ? Error{ERROR_TYPE::NULL_NODE, "Statement is null"}
+                             : statement.error());
     }
     statements.push_back(*statement);
     if (tkStream_.current()->type() == TokenType::SEMICOLON &&
         !tkStream_.eat()) {
-      return std::unexpected{
-          Error{ERROR_TYPE::SINTAX, "Failed to consume semicolon"}};
+      return createError(ERROR_TYPE::SINTAX, "Failed to consume semicolon");
     }
   }
 
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{
       Builder::createBody(statements)};
   if (!body) {
-    return std::unexpected{body.error()};
+    return createError(body.error());
   }
 
   return body;
@@ -65,13 +64,13 @@ TopDown::parseStart() const noexcept {
 const std::expected<std::shared_ptr<AST_BODY>, Error>
 TopDown::parseBody() const noexcept {
   if (tkStream_.current()->type() != TokenType::LB) {
-    return std::unexpected{Error{
-        ERROR_TYPE::SINTAX, "missing { at " + tkStream_.current()->locInfo()}};
+    return createError(ERROR_TYPE::SINTAX,
+                       "missing { at " + tkStream_.current()->locInfo());
   }
   if (!tkStream_.eat()) {
-    return std::unexpected{Error{ERROR_TYPE::SINTAX,
-                                 "failed to eat " + tkStream_.current()->raw() +
-                                     " at " + tkStream_.current()->locInfo()}};
+    return createError(ERROR_TYPE::SINTAX,
+                       "failed to eat " + tkStream_.current()->raw() + " at " +
+                           tkStream_.current()->locInfo());
   }
 
   std::vector<std::shared_ptr<AST_STATEMENT>> statements{};
@@ -81,31 +80,30 @@ TopDown::parseBody() const noexcept {
     const std::expected<std::shared_ptr<AST_STATEMENT>, Error> statement{
         parseStatement()};
     if (!statement || !*statement) {
-      return std::unexpected{
-          statement ? Error{ERROR_TYPE::NULL_NODE, "Statement is null"}
-                    : statement.error()};
+      return createError(statement
+                             ? Error{ERROR_TYPE::NULL_NODE, "Statement is null"}
+                             : statement.error());
     }
     statements.push_back(*statement);
     if (tkStream_.current()->type() == TokenType::SEMICOLON &&
         !tkStream_.eat()) {
-      return std::unexpected{
-          Error{ERROR_TYPE::SINTAX, "Failed to consume semicolon"}};
+      return createError(ERROR_TYPE::SINTAX, "Failed to consume semicolon");
     }
   }
   if (tkStream_.current()->type() != TokenType::RB) {
-    return std::unexpected{Error{
-        ERROR_TYPE::SINTAX, "missing } at " + tkStream_.current()->locInfo()}};
+    return createError(ERROR_TYPE::SINTAX,
+                       "missing } at " + tkStream_.current()->locInfo());
   }
   if (!tkStream_.eat()) {
-    return std::unexpected{Error{ERROR_TYPE::SINTAX,
-                                 "failed to eat " + tkStream_.current()->raw() +
-                                     " at " + tkStream_.current()->locInfo()}};
+    return createError(ERROR_TYPE::SINTAX,
+                       "failed to eat " + tkStream_.current()->raw() + " at " +
+                           tkStream_.current()->locInfo());
   }
 
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{
       Builder::createBody(statements)};
   if (!body) {
-    return std::unexpected{body.error()};
+    return createError(body.error());
   }
 
   return body;
@@ -123,9 +121,9 @@ TopDown::parseStatement() const noexcept {
       tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_DIV)) {
     statement = parseSelfAssignment(false);
     if (!statement || !*statement) {
-      return std::unexpected{statement
-                                 ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
-                                 : statement.error()};
+      return createError(statement
+                             ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                             : statement.error());
     }
 
     return Builder::createStatement(*statement);
@@ -214,9 +212,8 @@ TopDown::parseStatement() const noexcept {
   }
 
   if (!statement || !*statement) {
-    return std::unexpected{statement
-                               ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
-                               : statement.error()};
+    return createError(statement ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                                 : statement.error());
   }
   return Builder::createStatement(*statement);
 }

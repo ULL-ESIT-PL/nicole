@@ -52,9 +52,8 @@ TopDown::parseAnd() const noexcept {
     const Token token{*tkStream_.current()};
     std::expected<std::monostate, Error> eaten{tkStream_.eat()};
     if (!eaten) {
-      return std::unexpected{
-          Error{ERROR_TYPE::SINTAX,
-                "failed to eat " + token.raw() + " at " + token.locInfo()}};
+      return createError(ERROR_TYPE::SINTAX, "failed to eat " + token.raw() +
+                                                 " at " + token.locInfo());
     }
 
     const std::expected<std::shared_ptr<AST>, Error> right{
@@ -68,7 +67,7 @@ TopDown::parseAnd() const noexcept {
 
     left = Builder::createBinary(token, *left, *right);
     if (!left) {
-      return std::unexpected{left.error()};
+      return createError(left.error());
     }
   }
 
@@ -90,9 +89,8 @@ TopDown::parseEqual_NotEqual() const noexcept {
     const Token token{*tkStream_.current()};
     std::expected<std::monostate, Error> eaten{tkStream_.eat()};
     if (!eaten) {
-      return std::unexpected{
-          Error{ERROR_TYPE::SINTAX,
-                "failed to eat " + token.raw() + " at " + token.locInfo()}};
+      return createError(ERROR_TYPE::SINTAX, "failed to eat " + token.raw() +
+                                                 " at " + token.locInfo());
     }
 
     const std::expected<std::shared_ptr<AST>, Error> right{parseCompare()};
@@ -105,7 +103,7 @@ TopDown::parseEqual_NotEqual() const noexcept {
 
     left = Builder::createBinary(token, *left, *right);
     if (!left) {
-      return std::unexpected{left.error()};
+      return createError(left.error());
     }
   }
 
@@ -129,9 +127,8 @@ TopDown::parseCompare() const noexcept {
     const Token token{*tkStream_.current()};
     std::expected<std::monostate, Error> eaten{tkStream_.eat()};
     if (!eaten) {
-      return std::unexpected{
-          Error{ERROR_TYPE::SINTAX,
-                "failed to eat " + token.raw() + " at " + token.locInfo()}};
+      return createError(ERROR_TYPE::SINTAX, "failed to eat " + token.raw() +
+                                                 " at " + token.locInfo());
     }
 
     const std::expected<std::shared_ptr<AST>, Error> right{parseAdd_Sub()};
@@ -144,7 +141,7 @@ TopDown::parseCompare() const noexcept {
 
     left = Builder::createBinary(token, *left, *right);
     if (!left) {
-      return std::unexpected{left.error()};
+      return createError(left.error());
     }
   }
 
@@ -166,9 +163,8 @@ TopDown::parseAdd_Sub() const noexcept {
     const Token token{*tkStream_.current()};
     std::expected<std::monostate, Error> eaten{tkStream_.eat()};
     if (!eaten) {
-      return std::unexpected{
-          Error{ERROR_TYPE::SINTAX,
-                "failed to eat " + token.raw() + " at " + token.locInfo()}};
+      return createError(ERROR_TYPE::SINTAX, "failed to eat " + token.raw() +
+                                                 " at " + token.locInfo());
     }
 
     const std::expected<std::shared_ptr<AST>, Error> right{
@@ -182,7 +178,7 @@ TopDown::parseAdd_Sub() const noexcept {
 
     left = Builder::createBinary(token, *left, *right);
     if (!left) {
-      return std::unexpected{left.error()};
+      return createError(left.error());
     }
   }
 
@@ -205,9 +201,8 @@ TopDown::parseMult_Div_Module() const noexcept {
     const Token token{*tkStream_.current()};
     std::expected<std::monostate, Error> eaten{tkStream_.eat()};
     if (!eaten) {
-      return std::unexpected{
-          Error{ERROR_TYPE::SINTAX,
-                "failed to eat " + token.raw() + " at " + token.locInfo()}};
+      return createError(ERROR_TYPE::SINTAX, "failed to eat " + token.raw() +
+                                                 " at " + token.locInfo());
     }
 
     const std::expected<std::shared_ptr<AST>, Error> right{parseFactor()};
@@ -220,7 +215,7 @@ TopDown::parseMult_Div_Module() const noexcept {
 
     left = Builder::createBinary(token, *left, *right);
     if (!left) {
-      return std::unexpected{left.error()};
+      return createError(left.error());
     }
   }
 

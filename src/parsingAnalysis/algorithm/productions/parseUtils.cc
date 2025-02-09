@@ -6,20 +6,18 @@ namespace nicole {
 const std::expected<std::shared_ptr<AST_IMPORT>, Error>
 TopDown::parseImport() const noexcept {
   if (!tkStream_.eat()) {
-    return std::unexpected{Error{ERROR_TYPE::SINTAX,
-                                 "failed to eat " + tkStream_.current()->raw() +
-                                     " at " + tkStream_.current()->locInfo()}};
+    return createError(ERROR_TYPE::SINTAX,
+                       "failed to eat " + tkStream_.current()->raw() + " at " +
+                           tkStream_.current()->locInfo());
   }
   if (tkStream_.current()->type() != TokenType::STRING) {
-    return std::unexpected{
-        Error{ERROR_TYPE::SINTAX,
-              "missing file of import at " + tkStream_.current()->locInfo()}};
+    return createError(ERROR_TYPE::SINTAX, "missing file of import at " +
+                                               tkStream_.current()->locInfo());
   }
   const Token token{*tkStream_.current()};
   if (!tkStream_.eat()) {
-    return std::unexpected{
-        Error{ERROR_TYPE::SINTAX,
-              "failed to eat " + token.raw() + " at " + token.locInfo()}};
+    return createError(ERROR_TYPE::SINTAX, "failed to eat " + token.raw() +
+                                               " at " + token.locInfo());
   }
   std::filesystem::path currentFilePath{token.location().file()};
   // Gets the base path of the current file
@@ -32,17 +30,17 @@ TopDown::parseImport() const noexcept {
     const std::expected<TokenStream, Error> tokens{
         lexer_.analyze(currentFilePath)};
     if (!tokens) {
-      return std::unexpected{tokens.error()};
+      return createError(tokens.error());
     }
     const std::expected<std::monostate, Error> isInserted{
         tkStream_.insertAfter(*tokens, tkStream_.currentPos() + 1)};
     if (!isInserted) {
-      return std::unexpected{isInserted.error()};
+      return createError(isInserted.error());
     }
   }
   if (tkStream_.current()->type() != TokenType::SEMICOLON) {
-    return std::unexpected{Error{
-        ERROR_TYPE::SINTAX, "missing ; of import statement at " + tkStream_.current()->locInfo()}};
+    return createError(ERROR_TYPE::SINTAX, "missing ; of import statement at " +
+                                               tkStream_.current()->locInfo());
   }
   return Builder::createImport(currentFilePath);
 }
@@ -50,20 +48,20 @@ TopDown::parseImport() const noexcept {
 const std::expected<std::shared_ptr<AST_PRINT>, Error>
 TopDown::parsePrint() const noexcept {
   if (!tkStream_.eat()) {
-    return std::unexpected{Error{ERROR_TYPE::SINTAX,
-                                 "failed to eat " + tkStream_.current()->raw() +
-                                     " at " + tkStream_.current()->locInfo()}};
+    return createError(ERROR_TYPE::SINTAX,
+                       "failed to eat " + tkStream_.current()->raw() + " at " +
+                           tkStream_.current()->locInfo());
   }
 
   const std::expected<std::vector<std::shared_ptr<AST>>, Error> arguemnts{
       parseArguments({TokenType::LP, TokenType::RP}, false)};
   if (!arguemnts) {
-    return std::unexpected{arguemnts.error()};
+    return createError(arguemnts.error());
   }
- 
+
   if (tkStream_.current()->type() != TokenType::SEMICOLON) {
-    return std::unexpected{Error{
-        ERROR_TYPE::SINTAX, "missing ; of print statement at " + tkStream_.lastRead()->locInfo()}};
+    return createError(ERROR_TYPE::SINTAX, "missing ; of print statement at " +
+                                               tkStream_.lastRead()->locInfo());
   }
   return Builder::createPrint(*arguemnts);
 }

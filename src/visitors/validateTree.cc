@@ -65,11 +65,11 @@ namespace nicole {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_BOOL *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_BOOL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BOOL");
   }
   if (CheckPosition::hasEveryAncestorInOrder(
           node, {AST_TYPE::STATEMENT, AST_TYPE::BODY})) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE, "dangling bool"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE, "dangling bool");
   }
   return true;
 }
@@ -77,11 +77,11 @@ ValidateTree::visit(const AST_BOOL *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_CHAR *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_CHAR"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CHAR");
   }
   if (CheckPosition::hasEveryAncestorInOrder(
           node, {AST_TYPE::STATEMENT, AST_TYPE::BODY})) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE, "dangling char"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE, "dangling char");
   }
   return true;
 }
@@ -89,11 +89,11 @@ ValidateTree::visit(const AST_CHAR *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_DOUBLE *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_DOUBLE"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DOUBLE");
   }
   if (CheckPosition::hasEveryAncestorInOrder(
           node, {AST_TYPE::STATEMENT, AST_TYPE::BODY})) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE, "dangling double"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE, "dangling double");
   }
   return true;
 }
@@ -101,11 +101,11 @@ ValidateTree::visit(const AST_DOUBLE *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_FLOAT *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_FLOAT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FLOAT");
   }
   if (CheckPosition::hasEveryAncestorInOrder(
           node, {AST_TYPE::STATEMENT, AST_TYPE::BODY})) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE, "dangling float"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE, "dangling float");
   }
   return true;
 }
@@ -113,11 +113,11 @@ ValidateTree::visit(const AST_FLOAT *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_INT *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_INT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_INT");
   }
   if (CheckPosition::hasEveryAncestorInOrder(
           node, {AST_TYPE::STATEMENT, AST_TYPE::BODY})) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE, "dangling int"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE, "dangling int");
   }
   return true;
 }
@@ -125,11 +125,11 @@ ValidateTree::visit(const AST_INT *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_NULL *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_NULL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_NULL");
   }
   if (CheckPosition::hasEveryAncestorInOrder(
           node, {AST_TYPE::STATEMENT, AST_TYPE::BODY})) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE, "dangling null"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE, "dangling null");
   }
   return true;
 }
@@ -137,11 +137,11 @@ ValidateTree::visit(const AST_NULL *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_STRING *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_STRING"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRING");
   }
   if (CheckPosition::hasEveryAncestorInOrder(
           node, {AST_TYPE::STATEMENT, AST_TYPE::BODY})) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE, "dangling string"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE, "dangling string");
   }
   return true;
 }
@@ -149,16 +149,16 @@ ValidateTree::visit(const AST_STRING *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_VECTOR *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_VECTOR"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VECTOR");
   }
   if (CheckPosition::hasEveryAncestorInOrder(
           node, {AST_TYPE::STATEMENT, AST_TYPE::BODY})) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE, "dangling vector"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE, "dangling vector");
   }
   for (const auto &value : node->values()) {
     const auto result{value->accept(*this)};
     if (!result) {
-      return std::unexpected{result.error()};
+      return createError(result.error());
     }
   }
   return true;
@@ -168,16 +168,15 @@ ValidateTree::visit(const AST_VECTOR *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_INDEX *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_INDEX"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_INDEX");
   }
   if (!CheckPosition::hasAnyAncestorOf(node, {AST_TYPE::CHAIN})) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE,
-              "index operator can only appear in a chain expression"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "index operator can only appear in a chain expression");
   }
   const auto result{node->index()->accept(*this)};
   if (!result) {
-    return std::unexpected{result.error()};
+    return createError(result.error());
   }
   return true;
 }
@@ -186,15 +185,15 @@ ValidateTree::visit(const AST_INDEX *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_DELETE *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_DELETE"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DELETE");
   }
   if (!CheckPosition::itsBodyAncestorHasParent(node)) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
-                                 "a delete statement must appear in scope"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a delete statement must appear in scope");
   }
   const auto result{node->value()->accept(*this)};
   if (!result) {
-    return std::unexpected{result.error()};
+    return createError(result.error());
   }
   return true;
 }
@@ -202,16 +201,15 @@ ValidateTree::visit(const AST_DELETE *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_NEW *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_NEW"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_NEW");
   }
   if (CheckPosition::hasEveryAncestorInOrder(
           node, {AST_TYPE::STATEMENT, AST_TYPE::BODY})) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE, "dangling new operator"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE, "dangling new operator");
   }
   const auto result{node->value()->accept(*this)};
   if (!result) {
-    return std::unexpected{result.error()};
+    return createError(result.error());
   }
   return true;
 }
@@ -219,16 +217,15 @@ ValidateTree::visit(const AST_NEW *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_DEREF *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_DEREF"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DEREF");
   }
   if (CheckPosition::isOutOfScope(node)) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE,
-              "a deref operation cannot appear outside of a scope"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a deref operation cannot appear outside of a scope");
   }
   const auto result{node->value()->accept(*this)};
   if (!result) {
-    return std::unexpected{result.error()};
+    return createError(result.error());
   }
   return true;
 }
@@ -236,11 +233,10 @@ ValidateTree::visit(const AST_DEREF *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_PTR *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_PTR"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PTR");
   }
 
-  return std::unexpected{
-      Error{ERROR_TYPE::VALIDATE_TREE, "ptr not implemented"}};
+  return createError(ERROR_TYPE::VALIDATE_TREE, "ptr not implemented");
 
   return true;
 }
@@ -248,21 +244,21 @@ ValidateTree::visit(const AST_PTR *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_BINARY *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_ADD"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ADD");
   }
   if (CheckPosition::isOutOfScope(node)) {
-    return std::unexpected{Error{
-        ERROR_TYPE::VALIDATE_TREE,
-        node->op().raw() + " operation cannot appear outside of a scope, at " +
-            node->op().locInfo()}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       node->op().raw() +
+                           " operation cannot appear outside of a scope, at " +
+                           node->op().locInfo());
   }
   const auto left{node->left()->accept(*this)};
   if (!left) {
-    return std::unexpected{left.error()};
+    return createError(left.error());
   }
   const auto right{node->right()->accept(*this)};
   if (!right) {
-    return std::unexpected{right.error()};
+    return createError(right.error());
   }
   return true;
 }
@@ -270,16 +266,16 @@ ValidateTree::visit(const AST_BINARY *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_UNARY *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_NEG"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_NEG");
   }
   if (CheckPosition::isOutOfScope(node)) {
-    return std::unexpected{Error{
-        ERROR_TYPE::VALIDATE_TREE,
-        node->op().raw() + " operation cannot appear outside of a scope"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       node->op().raw() +
+                           " operation cannot appear outside of a scope");
   }
   const auto left{node->value()->accept(*this)};
   if (!left) {
-    return std::unexpected{left.error()};
+    return createError(left.error());
   }
   return true;
 }
@@ -288,22 +284,21 @@ ValidateTree::visit(const AST_UNARY *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_ASSIGNMENT *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_ASSIGNMENT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ASSIGNMENT");
   }
   if (!(CheckPosition::itsBodyAncestorHasParent(node) or
         CheckPosition::isInsideForHeader(node))) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
-                                 "an assignment can only exist "
-                                 "in a body or a for header init"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "an assignment can only exist "
+                       "in a body or a for header init");
   }
   const auto left{node->left()->accept(*this)};
   if (!left) {
-    return std::unexpected{left.error()};
+    return createError(left.error());
   }
   const auto right{node->value()->accept(*this)};
   if (!right) {
-    return std::unexpected{right.error()};
+    return createError(right.error());
   }
   return true;
 }
@@ -312,22 +307,21 @@ ValidateTree::visit(const AST_ASSIGNMENT *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_SELF_ASSIGNMENT *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_SELF_ASSIGNMENT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SELF_ASSIGNMENT");
   }
   if (!(CheckPosition::itsBodyAncestorHasParent(node) or
         CheckPosition::isInsideForHeader(node))) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
-                                 "a sefl assignment can only exist "
-                                 "in a body or a for header init"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a sefl assignment can only exist "
+                       "in a body or a for header init");
   }
   const auto left{node->left()->accept(*this)};
   if (!left) {
-    return std::unexpected{left.error()};
+    return createError(left.error());
   }
   const auto right{node->value()->accept(*this)};
   if (!right) {
-    return std::unexpected{right.error()};
+    return createError(right.error());
   }
   return true;
 }
@@ -336,17 +330,16 @@ ValidateTree::visit(const AST_SELF_ASSIGNMENT *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_PRINT *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_PRINT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PRINT");
   }
   if (!CheckPosition::itsBodyAncestorHasParent(node)) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE,
-              "a print statement only can appear in a scope"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a print statement only can appear in a scope");
   }
   for (const auto &chain : node->values()) {
     const auto result{chain->accept(*this)};
     if (!result) {
-      return std::unexpected{result.error()};
+      return createError(result.error());
     }
   }
   return true;
@@ -356,11 +349,11 @@ ValidateTree::visit(const AST_PRINT *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_IMPORT *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_IMPORT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_IMPORT");
   }
   if (CheckPosition::itsBodyAncestorHasParent(node)) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
-                                 "a import must appear outside of any scope"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a import must appear outside of any scope");
   }
   return true;
 }
@@ -368,8 +361,7 @@ ValidateTree::visit(const AST_IMPORT *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_STATEMENT *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_STATEMENT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STATEMENT");
   }
   return node->expression()->accept(*this);
 }
@@ -377,12 +369,12 @@ ValidateTree::visit(const AST_STATEMENT *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_BODY *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_BODY"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BODY");
   }
   for (const auto &statement : node->body()) {
     const auto val{statement->accept(*this)};
     if (!val) {
-      return std::unexpected{val.error()};
+      return createError(val.error());
     }
   }
   return true;
@@ -392,19 +384,19 @@ ValidateTree::visit(const AST_BODY *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_WHILE *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_WHILE"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_WHILE");
   }
   if (!CheckPosition::itsBodyAncestorHasParent(node)) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
-                                 "a while loop must appear in a scope"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a while loop must appear in a scope");
   }
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
-    return std::unexpected{condition.error()};
+    return createError(condition.error());
   }
   const auto result{node->body()->accept(*this)};
   if (!result) {
-    return std::unexpected{result.error()};
+    return createError(result.error());
   }
   return true;
 }
@@ -413,31 +405,31 @@ ValidateTree::visit(const AST_WHILE *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_FOR *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_FOR"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FOR");
   }
   if (!CheckPosition::itsBodyAncestorHasParent(node)) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE, "a for loop must appear in a scope"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a for loop must appear in a scope");
   }
   for (const auto &expr : node->init()) {
     const auto result{expr->accept(*this)};
     if (!result) {
-      return std::unexpected{result.error()};
+      return createError(result.error());
     }
   }
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
-    return std::unexpected{condition.error()};
+    return createError(condition.error());
   }
   for (const auto &expr : node->update()) {
     const auto result{expr->accept(*this)};
     if (!result) {
-      return std::unexpected{result.error()};
+      return createError(result.error());
     }
   }
   const auto result{node->body()->accept(*this)};
   if (!result) {
-    return std::unexpected{result.error()};
+    return createError(result.error());
   }
   return true;
 }
@@ -446,20 +438,19 @@ ValidateTree::visit(const AST_FOR *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_DO_WHILE *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_DO_WHILE"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DO_WHILE");
   }
   if (!CheckPosition::itsBodyAncestorHasParent(node)) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
-                                 "a do while loop must appear in a scope"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a do while loop must appear in a scope");
   }
   const auto result{node->body()->accept(*this)};
   if (!result) {
-    return std::unexpected{result.error()};
+    return createError(result.error());
   }
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
-    return std::unexpected{condition.error()};
+    return createError(condition.error());
   }
   return true;
 }
@@ -468,12 +459,12 @@ ValidateTree::visit(const AST_DO_WHILE *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_PASS *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_PASS"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PASS");
   }
   if (!CheckPosition::hasAnyAncestorOf(
           node, {AST_TYPE::DO_WHILE, AST_TYPE::FOR, AST_TYPE::WHILE})) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
-                                 "a pass statement must appear inside a loop"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a pass statement must appear inside a loop");
   }
   return true;
 }
@@ -482,13 +473,13 @@ ValidateTree::visit(const AST_PASS *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_STOP *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_STOP"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STOP");
   }
   if (!CheckPosition::hasAnyAncestorOf(node,
                                        {AST_TYPE::DO_WHILE, AST_TYPE::FOR,
                                         AST_TYPE::WHILE, AST_TYPE::SWITCH})) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
-                                 "a stop statement must appear inside a loop"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a stop statement must appear inside a loop");
   }
   return true;
 }
@@ -497,31 +488,30 @@ ValidateTree::visit(const AST_STOP *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_IF *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_IF"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_IF");
   }
   if (!CheckPosition::itsBodyAncestorHasParent(node)) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE,
-              "a if statement must appear inside of a scope"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a if statement must appear inside of a scope");
   }
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
-    return std::unexpected{condition.error()};
+    return createError(condition.error());
   }
   const auto body{node->body()->accept(*this)};
   if (!body) {
-    return std::unexpected{body.error()};
+    return createError(body.error());
   }
   for (const auto &elseif_ : node->elseIf()) {
     const auto result{elseif_->accept(*this)};
     if (!result) {
-      return std::unexpected{result.error()};
+      return createError(result.error());
     }
   }
   if (node->elseBody()) {
     const auto elseBody{node->elseBody()->accept(*this)};
     if (!elseBody) {
-      return std::unexpected{elseBody.error()};
+      return createError(elseBody.error());
     }
   }
   return true;
@@ -531,19 +521,19 @@ ValidateTree::visit(const AST_IF *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_ELSE_IF *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_ELSE_IF"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ELSE_IF");
   }
   if (!CheckPosition::hasEveryAncestorInOrder(node, {AST_TYPE::IF})) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
-                                 "a else if must follow a if statement"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a else if must follow a if statement");
   }
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
-    return std::unexpected{condition.error()};
+    return createError(condition.error());
   }
   const auto result{node->body()->accept(*this)};
   if (!result) {
-    return std::unexpected{result.error()};
+    return createError(result.error());
   }
   return true;
 }
@@ -552,27 +542,26 @@ ValidateTree::visit(const AST_ELSE_IF *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_SWITCH *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_SWITCH"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SWITCH");
   }
   if (!CheckPosition::itsBodyAncestorHasParent(node)) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE,
-              "a switch statement must appear inside of a scope"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a switch statement must appear inside of a scope");
   }
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
-    return std::unexpected{condition.error()};
+    return createError(condition.error());
   }
   for (const auto &case_ : node->cases()) {
     const auto result{case_->accept(*this)};
     if (!result) {
-      return std::unexpected{result.error()};
+      return createError(result.error());
     }
   }
   if (node->defaultCase()) {
     const auto defaultCase{node->defaultCase()->accept(*this)};
     if (!defaultCase) {
-      return std::unexpected{defaultCase.error()};
+      return createError(defaultCase.error());
     }
   }
   return true;
@@ -582,20 +571,19 @@ ValidateTree::visit(const AST_SWITCH *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_CASE *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_CASE"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CASE");
   }
   if (!CheckPosition::hasEveryAncestorInOrder(node, {AST_TYPE::SWITCH})) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE,
-              "a case statement can only appear in a switch scope"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a case statement can only appear in a switch scope");
   }
   const auto match{node->match()->accept(*this)};
   if (!match) {
-    return std::unexpected{match.error()};
+    return createError(match.error());
   }
   const auto result{node->body()->accept(*this)};
   if (!result) {
-    return std::unexpected{result.error()};
+    return createError(result.error());
   }
   return true;
 }
@@ -604,16 +592,15 @@ ValidateTree::visit(const AST_CASE *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_DEFAULT *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_DEFAULT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DEFAULT");
   }
   if (!CheckPosition::hasEveryAncestorInOrder(node, {AST_TYPE::SWITCH})) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE,
-              "a default statement can only appear in a switch scope"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a default statement can only appear in a switch scope");
   }
   const auto result{node->body()->accept(*this)};
   if (!result) {
-    return std::unexpected{result.error()};
+    return createError(result.error());
   }
   return true;
 }
@@ -621,24 +608,23 @@ ValidateTree::visit(const AST_DEFAULT *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_TERNARY *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_TERNARY"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_TERNARY");
   }
   if (CheckPosition::isOutOfScope(node)) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE,
-              "a ternary operation cannot appear outside of a scope"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a ternary operation cannot appear outside of a scope");
   }
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
-    return std::unexpected{condition.error()};
+    return createError(condition.error());
   }
   const auto first{node->first()->accept(*this)};
   if (!first) {
-    return std::unexpected{first.error()};
+    return createError(first.error());
   }
   const auto second{node->second()->accept(*this)};
   if (!second) {
-    return std::unexpected{second.error()};
+    return createError(second.error());
   }
   return true;
 }
@@ -646,15 +632,13 @@ ValidateTree::visit(const AST_TERNARY *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_CONDITION *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_CONDITION"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CONDITION");
   }
   if (CheckPosition::hasAnyAncestorOf(node, {AST_TYPE::IF, AST_TYPE::ELSE_IF,
                                              AST_TYPE::IF, AST_TYPE::SWITCH,
                                              AST_TYPE::DO_WHILE,
                                              AST_TYPE::WHILE, AST_TYPE::FOR})) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE, "misplaced condition"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE, "misplaced condition");
   }
   return node->expression()->accept(*this);
 }
@@ -663,17 +647,16 @@ ValidateTree::visit(const AST_CONDITION *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_FUNC_CALL *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "Invalid AST_FUNC_CALL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_FUNC_CALL");
   }
   if (node->father() and node->father()->type() != AST_TYPE::CHAIN) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE, "invalid hierachy AST_FUNC_CALL"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "invalid hierachy AST_FUNC_CALL");
   }
   for (const auto &chain : node->parameters()) {
     const auto result{chain->accept(*this)};
     if (!result) {
-      return std::unexpected{result.error()};
+      return createError(result.error());
     }
   }
   return true;
@@ -683,23 +666,22 @@ ValidateTree::visit(const AST_FUNC_CALL *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
   }
   if (node->isMehtod() and
       !CheckPosition::hasEveryAncestorInOrder(node, {AST_TYPE::STRUCT_DECL})) {
-    return std::unexpected{Error{
-        ERROR_TYPE::VALIDATE_TREE,
-        "a method declaration can only appear inside a class: " + node->id()}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a method declaration can only appear inside a class: " +
+                           node->id());
   } else if (!node->isMehtod() and
              CheckPosition::itsBodyAncestorHasParent(node)) {
-    return std::unexpected{Error{
-        ERROR_TYPE::VALIDATE_TREE,
-        "a funciton declaration cant appear inside a scope: " + node->id()}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a funciton declaration cant appear inside a scope: " +
+                           node->id());
   }
   const auto result{node->body()->accept(*this)};
   if (!result) {
-    return std::unexpected{result.error()};
+    return createError(result.error());
   }
   return true;
 }
@@ -708,16 +690,16 @@ ValidateTree::visit(const AST_FUNC_DECL *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_RETURN *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_RETURN"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_RETURN");
   }
   if (!CheckPosition::hasAnyAncestorOf(node, {AST_TYPE::FUNC_DECL})) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
-                                 "a return declaration must has a function "
-                                 "declaration in its hierarchy"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a return declaration must has a function "
+                       "declaration in its hierarchy");
   }
   const auto result{node->expression()->accept(*this)};
   if (!result) {
-    return std::unexpected{result.error()};
+    return createError(result.error());
   }
   return true;
 }
@@ -726,12 +708,11 @@ ValidateTree::visit(const AST_RETURN *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_ENUM *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_ENUM"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM");
   }
   if (CheckPosition::itsBodyAncestorHasParent(node)) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE,
-              "a enum declaration must be outside of any scope"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a enum declaration must be outside of any scope");
   }
   return true;
 }
@@ -740,25 +721,24 @@ ValidateTree::visit(const AST_ENUM *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
   }
   if (CheckPosition::itsBodyAncestorHasParent(node)) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE,
-              "a struct declaration must be outside of any scope"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a struct declaration must be outside of any scope");
   }
   const auto constructor{node->constructor()->accept(*this)};
   if (!constructor) {
-    return std::unexpected{constructor.error()};
+    return createError(constructor.error());
   }
   const auto destructor{node->destructor()->accept(*this)};
   if (!destructor) {
-    return std::unexpected{destructor.error()};
+    return createError(destructor.error());
   }
   for (const auto &chain : node->methods()) {
     const auto result{chain->accept(*this)};
     if (!result) {
-      return std::unexpected{result.error()};
+      return createError(result.error());
     }
   }
   return true;
@@ -768,25 +748,24 @@ ValidateTree::visit(const AST_STRUCT *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_CLASS *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_CLASS"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CLASS");
   }
   if (CheckPosition::itsBodyAncestorHasParent(node)) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE,
-              "a class declaration must be outside of any scope"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a class declaration must be outside of any scope");
   }
   const auto constructor{node->constructor()->accept(*this)};
   if (!constructor) {
-    return std::unexpected{constructor.error()};
+    return createError(constructor.error());
   }
   const auto destructor{node->destructor()->accept(*this)};
   if (!destructor) {
-    return std::unexpected{destructor.error()};
+    return createError(destructor.error());
   }
   for (const auto &chain : node->methods()) {
     const auto result{chain->accept(*this)};
     if (!result) {
-      return std::unexpected{result.error()};
+      return createError(result.error());
     }
   }
   return true;
@@ -796,14 +775,13 @@ ValidateTree::visit(const AST_CLASS *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_ATTR_ACCESS *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_ATTR_ACCESS"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ATTR_ACCESS");
   }
   if (!CheckPosition::hasAnyAncestorOf(
           node, {AST_TYPE::ATTR_ACCESS, AST_TYPE::METHOD_CALL, AST_TYPE::INDEX,
                  AST_TYPE::CONSTRUCTOR_CALL, AST_TYPE::VAR_CALL})) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE, "invalid hierarchy for attr access"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "invalid hierarchy for attr access");
   }
   return true;
 }
@@ -812,19 +790,18 @@ ValidateTree::visit(const AST_ATTR_ACCESS *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_METHOD_CALL *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL");
   }
   if (!CheckPosition::hasAnyAncestorOf(
           node, {AST_TYPE::ATTR_ACCESS, AST_TYPE::METHOD_CALL, AST_TYPE::INDEX,
                  AST_TYPE::CONSTRUCTOR_CALL, AST_TYPE::VAR_CALL})) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE, "invalid hierarchy for Method call"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "invalid hierarchy for Method call");
   }
   for (const auto &chain : node->parameters()) {
     const auto result{chain->accept(*this)};
     if (!result) {
-      return std::unexpected{result.error()};
+      return createError(result.error());
     }
   }
   return true;
@@ -834,11 +811,11 @@ ValidateTree::visit(const AST_METHOD_CALL *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_THIS *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_THIS"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_THIS");
   }
   if (!CheckPosition::hasAnyAncestorOf(node, {AST_TYPE::STRUCT_DECL})) {
-    return std::unexpected{Error{ERROR_TYPE::VALIDATE_TREE,
-                                 "a this call can only appear in methods"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a this call can only appear in methods");
   }
   return true;
 }
@@ -847,17 +824,16 @@ ValidateTree::visit(const AST_THIS *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL");
   }
   if (node->father()->type() != AST_TYPE::CHAIN) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE, "invalid hierachy AST_VAR_CALL"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "invalid hierachy AST_VAR_CALL");
   }
   for (const auto &chain : node->parameters()) {
     const auto result{chain->accept(*this)};
     if (!result) {
-      return std::unexpected{result.error()};
+      return createError(result.error());
     }
   }
   return true;
@@ -867,18 +843,17 @@ ValidateTree::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
   }
   if (!(CheckPosition::itsBodyAncestorHasParent(node) or
         CheckPosition::isInsideForHeader(node))) {
-    return std::unexpected{Error{
+    return createError(
         ERROR_TYPE::VALIDATE_TREE,
-        "a auto declaration can only exist in a body or a for header init"}};
+        "a auto declaration can only exist in a body or a for header init");
   }
   const auto result{node->value()->accept(*this)};
   if (!result) {
-    return std::unexpected{result.error()};
+    return createError(result.error());
   }
   return true;
 }
@@ -887,18 +862,17 @@ ValidateTree::visit(const AST_AUTO_DECL *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_LET_DECL *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_LET_DECL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_LET_DECL");
   }
   if (!(CheckPosition::itsBodyAncestorHasParent(node) or
         CheckPosition::isInsideForHeader(node))) {
-    return std::unexpected{Error{
+    return createError(
         ERROR_TYPE::VALIDATE_TREE,
-        "a let declaration can only exist in a body or a for header init"}};
+        "a let declaration can only exist in a body or a for header init");
   }
   const auto result{node->value()->accept(*this)};
   if (!result) {
-    return std::unexpected{result.error()};
+    return createError(result.error());
   }
   return true;
 }
@@ -907,18 +881,17 @@ ValidateTree::visit(const AST_LET_DECL *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_CONST_DECL *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_CONST_DECL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CONST_DECL");
   }
   if (!(CheckPosition::itsBodyAncestorHasParent(node) or
         CheckPosition::isInsideForHeader(node))) {
-    return std::unexpected{Error{
+    return createError(
         ERROR_TYPE::VALIDATE_TREE,
-        "a const declaration can only exist in a body or a for header init"}};
+        "a const declaration can only exist in a body or a for header init");
   }
   const auto result{node->value()->accept(*this)};
   if (!result) {
-    return std::unexpected{result.error()};
+    return createError(result.error());
   }
   return true;
 }
@@ -927,12 +900,11 @@ ValidateTree::visit(const AST_CONST_DECL *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_VAR_CALL *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_VAR_CALL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_CALL");
   }
   if (node->father() and node->father()->type() != AST_TYPE::CHAIN) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE, "invalid hierachy AST_VAR_CALL"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "invalid hierachy AST_VAR_CALL");
   }
   return true;
 }
@@ -940,21 +912,20 @@ ValidateTree::visit(const AST_VAR_CALL *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const AST_CHAINED *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_CHAINED"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CHAINED");
   }
   if (CheckPosition::isOutOfScope(node)) {
-    return std::unexpected{
-        Error{ERROR_TYPE::VALIDATE_TREE,
-              "chained expressions cannot appear outside of scopes"}};
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "chained expressions cannot appear outside of scopes");
   }
   const auto base{node->base()->accept(*this)};
   if (!base) {
-    return std::unexpected{base.error()};
+    return createError(base.error());
   }
   for (const auto &chain : node->operations()) {
     const auto result{chain->accept(*this)};
     if (!result) {
-      return std::unexpected{result.error()};
+      return createError(result.error());
     }
   }
   return true;
@@ -963,7 +934,7 @@ ValidateTree::visit(const AST_CHAINED *node) const noexcept {
 std::expected<bool, Error>
 ValidateTree::visit(const Tree *tree) const noexcept {
   if (!tree) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid Tree"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid Tree");
   }
   return tree->root()->accept(*this);
 }

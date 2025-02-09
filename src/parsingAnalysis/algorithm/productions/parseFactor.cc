@@ -91,19 +91,18 @@ TopDown::parseFactor() const noexcept {
       break;
     }
     if (tkStream_.current()->type() == TokenType::RP) {
-      return std::unexpected{
-          Error{ERROR_TYPE::SINTAX, "empty expression at " + loc}};
+      return createError(ERROR_TYPE::SINTAX, "empty expression at " + loc);
     }
     const std::expected<std::shared_ptr<AST>, Error> expression{parseOr()};
     if (!expression || !*expression) {
-      return std::unexpected{expression
-                                 ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
-                                 : expression.error()};
+      return createError(expression
+                             ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                             : expression.error());
     }
     if (tkStream_.current()->type() != TokenType::RP) {
-      return std::unexpected{
-          Error{ERROR_TYPE::SINTAX, "missing right parenthesis at " +
-                                        tkStream_.current()->locInfo()}};
+      return createError(ERROR_TYPE::SINTAX,
+                         "missing right parenthesis at " +
+                             tkStream_.current()->locInfo());
     }
     if (!tkStream_.eat()) {
       break;
@@ -118,9 +117,9 @@ TopDown::parseFactor() const noexcept {
     }
     const std::expected<std::shared_ptr<AST>, Error> expression{parseOr()};
     if (!expression || !*expression) {
-      return std::unexpected{expression
-                                 ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
-                                 : expression.error()};
+      return createError(expression
+                             ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                             : expression.error());
     }
     return Builder::createUnary(token, *expression);
   }
@@ -132,9 +131,9 @@ TopDown::parseFactor() const noexcept {
     }
     const std::expected<std::shared_ptr<AST>, Error> expression{parseOr()};
     if (!expression || !*expression) {
-      return std::unexpected{expression
-                                 ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
-                                 : expression.error()};
+      return createError(expression
+                             ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                             : expression.error());
     }
     return Builder::createUnary(token, *expression);
   }
@@ -146,9 +145,9 @@ TopDown::parseFactor() const noexcept {
     }
     const std::expected<std::shared_ptr<AST>, Error> expression{parseOr()};
     if (!expression || !*expression) {
-      return std::unexpected{expression
-                                 ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
-                                 : expression.error()};
+      return createError(expression
+                             ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                             : expression.error());
     }
     return Builder::createUnary(token, *expression);
   }
@@ -160,9 +159,9 @@ TopDown::parseFactor() const noexcept {
     }
     const std::expected<std::shared_ptr<AST>, Error> expression{parseOr()};
     if (!expression || !*expression) {
-      return std::unexpected{expression
-                                 ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
-                                 : expression.error()};
+      return createError(expression
+                             ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                             : expression.error());
     }
     return Builder::createUnary(token, *expression);
   }
@@ -174,9 +173,9 @@ TopDown::parseFactor() const noexcept {
     }
     const std::expected<std::shared_ptr<AST>, Error> expression{parseOr()};
     if (!expression || !*expression) {
-      return std::unexpected{expression
-                                 ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
-                                 : expression.error()};
+      return createError(expression
+                             ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                             : expression.error());
     }
     return Builder::createNew(*expression);
   }
@@ -187,21 +186,19 @@ TopDown::parseFactor() const noexcept {
     }
     const std::expected<std::shared_ptr<AST>, Error> expression{parseOr()};
     if (!expression || !*expression) {
-      return std::unexpected{expression
-                                 ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
-                                 : expression.error()};
+      return createError(expression
+                             ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                             : expression.error());
     }
     return Builder::createDeref(*expression);
   }
 
   default:
     // error
-    return std::unexpected<Error>{
-        Error{ERROR_TYPE::SINTAX,
-              "token " + raw + " is in a wrong position at " + loc}};
+    return createError(ERROR_TYPE::SINTAX,
+                       "token " + raw + " is in a wrong position at " + loc);
   }
-  return std::unexpected{
-      Error{ERROR_TYPE::SINTAX, "failed to eat " + raw + " at " + loc}};
+  return createError(ERROR_TYPE::SINTAX, "failed to eat " + raw + " at " + loc);
 }
 
 const std::expected<std::shared_ptr<AST_VECTOR>, Error>
@@ -209,60 +206,60 @@ TopDown::parseVector() const noexcept {
   const std::expected<std::vector<std::shared_ptr<AST>>, Error> arguemnts{
       parseArguments({TokenType::LC, TokenType::RC}, true)};
   if (!arguemnts) {
-    return std::unexpected{arguemnts.error()};
+    return createError(arguemnts.error());
   }
   return Builder::createVector(*arguemnts);
 }
 
 const std::expected<std::vector<std::shared_ptr<AST>>, Error>
-TopDown::parseArguments(std::pair<TokenType, TokenType> delimiters, const bool canBeEmpty) const noexcept {
+TopDown::parseArguments(std::pair<TokenType, TokenType> delimiters,
+                        const bool canBeEmpty) const noexcept {
   if (tkStream_.current()->type() != delimiters.first) {
-    return std::unexpected{
-        Error{ERROR_TYPE::SINTAX,
-              "missing " + tokenTypeToString(delimiters.first) + " at " + tkStream_.current()->locInfo()}};
+    return createError(ERROR_TYPE::SINTAX,
+                       "missing " + tokenTypeToString(delimiters.first) +
+                           " at " + tkStream_.current()->locInfo());
   }
   if (!tkStream_.eat()) {
-    return std::unexpected{Error{ERROR_TYPE::SINTAX,
-                                 "failed to eat " + tkStream_.current()->raw() +
-                                     " at " + tkStream_.current()->locInfo()}};
+    return createError(ERROR_TYPE::SINTAX,
+                       "failed to eat " + tkStream_.current()->raw() + " at " +
+                           tkStream_.current()->locInfo());
   }
   if (tkStream_.current()->type() == delimiters.second and !canBeEmpty) {
-    return std::unexpected{
-        Error{ERROR_TYPE::SINTAX,
-              "empty expression at " + tkStream_.current()->locInfo()}};
+    return createError(ERROR_TYPE::SINTAX,
+                       "empty expression at " + tkStream_.current()->locInfo());
   }
   std::vector<std::shared_ptr<AST>> params{};
   while (tkStream_.currentPos() < tkStream_.size() and
          tkStream_.current()->type() != delimiters.second) {
     const std::expected<std::shared_ptr<AST>, Error> param{parseTernary()};
     if (!param || !*param) {
-      return std::unexpected{
-          param ? Error{ERROR_TYPE::NULL_NODE, "node is null"} : param.error()};
+      return createError(param ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                               : param.error());
     }
     params.push_back(*param);
     if (tkStream_.current()->type() == TokenType::COMMA) {
       if (!tkStream_.eat()) {
-        return std::unexpected{Error{
-            ERROR_TYPE::SINTAX, "failed to eat " + tkStream_.current()->raw() +
-                                    " at " + tkStream_.current()->locInfo()}};
+        return createError(ERROR_TYPE::SINTAX,
+                           "failed to eat " + tkStream_.current()->raw() +
+                               " at " + tkStream_.current()->locInfo());
       }
       continue;
     } else if (tkStream_.current()->type() != delimiters.second) {
-      return std::unexpected{
-          Error{ERROR_TYPE::SINTAX, "missing " + tokenTypeToString(delimiters.first) + " at " +
-                                        tkStream_.current()->locInfo()}};
+      return createError(ERROR_TYPE::SINTAX,
+                         "missing " + tokenTypeToString(delimiters.first) +
+                             " at " + tkStream_.current()->locInfo());
     }
     break;
   }
   if (tkStream_.current()->type() != delimiters.second) {
-    return std::unexpected{
-        Error{ERROR_TYPE::SINTAX, "missing " + tokenTypeToString(delimiters.first) + " at " +
-                                      tkStream_.current()->locInfo()}};
+    return createError(ERROR_TYPE::SINTAX,
+                       "missing " + tokenTypeToString(delimiters.first) +
+                           " at " + tkStream_.current()->locInfo());
   }
   if (!tkStream_.eat()) {
-    return std::unexpected{Error{ERROR_TYPE::SINTAX,
-                                 "failed to eat " + tkStream_.current()->raw() +
-                                     " at " + tkStream_.current()->locInfo()}};
+    return createError(ERROR_TYPE::SINTAX,
+                       "failed to eat " + tkStream_.current()->raw() + " at " +
+                           tkStream_.current()->locInfo());
   }
   return params;
 }

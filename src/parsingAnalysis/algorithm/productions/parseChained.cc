@@ -6,16 +6,14 @@ const std::expected<std::shared_ptr<AST_CHAINED>, Error>
 TopDown::parseChainedExpression() const noexcept {
   // 1. Verificar que el primer token sea ID
   if (tkStream_.current()->type() != TokenType::ID) {
-    return std::unexpected{
-        Error{ERROR_TYPE::SINTAX,
-              "Expected identifier at " + tkStream_.current()->locInfo()}};
+    return createError(ERROR_TYPE::SINTAX, "Expected identifier at " +
+                                               tkStream_.current()->locInfo());
   }
 
   const Token baseToken{*tkStream_.current()};
   if (!tkStream_.eat()) {
-    return std::unexpected{
-        Error{ERROR_TYPE::SINTAX,
-              "Failed to consume identifier at " + baseToken.locInfo()}};
+    return createError(ERROR_TYPE::SINTAX, "Failed to consume identifier at " +
+                                               baseToken.locInfo());
   }
 
   // 2. Determinar si es un simple varCall o una funcCall
@@ -24,15 +22,15 @@ TopDown::parseChainedExpression() const noexcept {
     const std::expected<std::vector<std::shared_ptr<AST>>, Error> arguemnts{
         parseArguments({TokenType::LB, TokenType::RB}, true)};
     if (!arguemnts) {
-      return std::unexpected{arguemnts.error()};
+      return createError(arguemnts.error());
     }
 
     // Crear nodo de función
     auto funcCall = Builder::createFunCall(baseToken.raw(), *arguemnts);
     if (!funcCall || !*funcCall) {
-      return std::unexpected{
+      return createError(
           funcCall ? Error{ERROR_TYPE::NULL_NODE, "Failed to create func call"}
-                   : funcCall.error()};
+                   : funcCall.error());
     }
     basePtr = *funcCall;
   } else if (tkStream_.current()->type() == TokenType::LB) {
@@ -40,25 +38,25 @@ TopDown::parseChainedExpression() const noexcept {
     const std::expected<std::vector<std::shared_ptr<AST>>, Error> arguemnts{
         parseArguments({TokenType::LB, TokenType::RB}, true)};
     if (!arguemnts) {
-      return std::unexpected{arguemnts.error()};
+      return createError(arguemnts.error());
     }
-    
+
     auto constructorCall =
         Builder::createConstructorCall(baseToken.raw(), *arguemnts);
     if (!constructorCall || !*constructorCall) {
-      return std::unexpected{constructorCall
-                                 ? Error{ERROR_TYPE::NULL_NODE,
-                                         "Failed to create constructor call"}
-                                 : constructorCall.error()};
+      return createError(constructorCall
+                             ? Error{ERROR_TYPE::NULL_NODE,
+                                     "Failed to create constructor call"}
+                             : constructorCall.error());
     }
     basePtr = *constructorCall;
   } else {
     // Variable normal
     auto varCall = Builder::createVarCall(baseToken.raw());
     if (!varCall || !*varCall) {
-      return std::unexpected{
+      return createError(
           varCall ? Error{ERROR_TYPE::NULL_NODE, "Failed to create var call"}
-                  : varCall.error()};
+                  : varCall.error());
     }
     basePtr = *varCall;
   }
@@ -74,29 +72,28 @@ TopDown::parseChainedExpression() const noexcept {
     case TokenType::LC: {
       // Consumir '['
       if (!tkStream_.eat()) {
-        return std::unexpected{
-            Error{ERROR_TYPE::SINTAX, "Failed to consume '[' at " +
-                                          tkStream_.current()->locInfo()}};
+        return createError(ERROR_TYPE::SINTAX,
+                           "Failed to consume '[' at " +
+                               tkStream_.current()->locInfo());
       }
       // parseOr() para la expresión de índice
       auto indexExpr = parseOr();
       if (!indexExpr || !*indexExpr) {
-        return std::unexpected{
-            indexExpr ? Error{ERROR_TYPE::NULL_NODE, "index is null"}
-                      : indexExpr.error()};
+        return createError(indexExpr
+                               ? Error{ERROR_TYPE::NULL_NODE, "index is null"}
+                               : indexExpr.error());
       }
       // Consumir ']'
       if (tkStream_.current()->type() != TokenType::RC || !tkStream_.eat()) {
-        return std::unexpected{
-            Error{ERROR_TYPE::SINTAX,
-                  "Missing ']' at " + tkStream_.current()->locInfo()}};
+        return createError(ERROR_TYPE::SINTAX,
+                           "Missing ']' at " + tkStream_.current()->locInfo());
       }
       // Crear nodo de índice
       auto indexNode = Builder::createIndex(*indexExpr);
       if (!indexNode || !*indexNode) {
-        return std::unexpected{indexNode ? Error{ERROR_TYPE::NULL_NODE,
-                                                 "Failed to create index node"}
-                                         : indexNode.error()};
+        return createError(indexNode ? Error{ERROR_TYPE::NULL_NODE,
+                                             "Failed to create index node"}
+                                     : indexNode.error());
       }
       operations.push_back(*indexNode);
       break;
@@ -106,22 +103,22 @@ TopDown::parseChainedExpression() const noexcept {
     case TokenType::DOT: {
       // Consumir '.'
       if (!tkStream_.eat()) {
-        return std::unexpected{
-            Error{ERROR_TYPE::SINTAX, "Failed to consume '.' at " +
-                                          tkStream_.current()->locInfo()}};
+        return createError(ERROR_TYPE::SINTAX,
+                           "Failed to consume '.' at " +
+                               tkStream_.current()->locInfo());
       }
       if (tkStream_.current()->type() != TokenType::ID) {
-        return std::unexpected{
-            Error{ERROR_TYPE::SINTAX, "Expected identifier after '.' at " +
-                                          tkStream_.current()->locInfo()}};
+        return createError(ERROR_TYPE::SINTAX,
+                           "Expected identifier after '.' at " +
+                               tkStream_.current()->locInfo());
       }
 
       // Leer el nombre del atributo/método
       Token attrToken{*tkStream_.current()};
       if (!tkStream_.eat()) {
-        return std::unexpected{
-            Error{ERROR_TYPE::SINTAX, "Failed to consume attribute id at " +
-                                          tkStream_.current()->locInfo()}};
+        return createError(ERROR_TYPE::SINTAX,
+                           "Failed to consume attribute id at " +
+                               tkStream_.current()->locInfo());
       }
 
       // Comprobar si es método -> un '(' a continuación
@@ -130,26 +127,25 @@ TopDown::parseChainedExpression() const noexcept {
         const std::expected<std::vector<std::shared_ptr<AST>>, Error> arguemnts{
             parseArguments({TokenType::LP, TokenType::RP}, true)};
         if (!arguemnts) {
-          return std::unexpected{arguemnts.error()};
+          return createError(arguemnts.error());
         }
 
         auto methodNode =
             Builder::createMethodCall(attrToken.raw(), *arguemnts);
         if (!methodNode || !*methodNode) {
-          return std::unexpected{
-              methodNode
-                  ? Error{ERROR_TYPE::NULL_NODE, "Failed to create method call"}
-                  : methodNode.error()};
+          return createError(methodNode ? Error{ERROR_TYPE::NULL_NODE,
+                                                "Failed to create method call"}
+                                        : methodNode.error());
         }
         operations.push_back(*methodNode);
       } else {
         // Es un atributo
         auto attrNode = Builder::createAttrAccess(attrToken.raw());
         if (!attrNode || !*attrNode) {
-          return std::unexpected{
-              attrNode ? Error{ERROR_TYPE::NULL_NODE,
-                               "Failed to create attribute access"}
-                       : attrNode.error()};
+          return createError(attrNode
+                                 ? Error{ERROR_TYPE::NULL_NODE,
+                                         "Failed to create attribute access"}
+                                 : attrNode.error());
         }
         operations.push_back(*attrNode);
       }

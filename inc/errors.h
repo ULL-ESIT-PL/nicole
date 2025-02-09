@@ -1,6 +1,7 @@
 #ifndef NICOLE_ERRORS_H
 #define NICOLE_ERRORS_H
 
+#include <expected>
 #include <llvm/IR/Attributes.h>
 #include <ostream>
 
@@ -108,6 +109,15 @@ public:
     return os << "Error " << errorToStr(error.type_) << ": " << error.info_;
   }
 };
+
+[[nodiscard]] inline std::unexpected<Error> createError(const ERROR_TYPE type,
+                                const std::string &info) noexcept {
+  return std::unexpected{Error{type, info}};
+}
+
+[[nodiscard]] inline std::unexpected<Error> createError(const Error &error) noexcept {
+  return std::unexpected{error};
+}
 
 } // namespace nicole
 

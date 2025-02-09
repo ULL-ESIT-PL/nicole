@@ -18,8 +18,8 @@
 #include "../../inc/parsingAnalysis/ast/operators/ast_binary.h"
 #include "../../inc/parsingAnalysis/ast/operators/ast_unary.h"
 
-#include "../../inc/parsingAnalysis/ast/assignments/ast_assignment.h"
 #include "../../inc/parsingAnalysis/ast/assignments/asr_selfAssignment.h"
+#include "../../inc/parsingAnalysis/ast/assignments/ast_assignment.h"
 
 #include "../../inc/parsingAnalysis/ast/utils/ast_import.h"
 #include "../../inc/parsingAnalysis/ast/utils/ast_print.h"
@@ -65,7 +65,7 @@ namespace nicole {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_BOOL *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_BOOL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BOOL");
   }
   return indent_ + "Bool: " + (node->value() ? "true" : "false") + "\n";
 }
@@ -73,7 +73,7 @@ PrintTree::visit(const AST_BOOL *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_CHAR *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_CHAR"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CHAR");
   }
   return indent_ + "Char: '" + node->value() + "'\n";
 }
@@ -81,7 +81,7 @@ PrintTree::visit(const AST_CHAR *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_DOUBLE *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_DOUBLE"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DOUBLE");
   }
   return indent_ + "Double: " + std::to_string(node->value()) + "\n";
 }
@@ -89,7 +89,7 @@ PrintTree::visit(const AST_DOUBLE *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_FLOAT *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_FLOAT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FLOAT");
   }
   return indent_ + "Float: " + std::to_string(node->value()) + "\n";
 }
@@ -97,7 +97,7 @@ PrintTree::visit(const AST_FLOAT *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_INT *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_INT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_INT");
   }
   return indent_ + "Integer: " + std::to_string(node->value()) + "\n";
 }
@@ -105,7 +105,7 @@ PrintTree::visit(const AST_INT *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_NULL *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_NULL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_NULL");
   }
   return indent_ + "null\n";
 }
@@ -113,7 +113,7 @@ PrintTree::visit(const AST_NULL *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_STRING *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_STRING"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRING");
   }
   return indent_ + "String: \"" + node->value() + "\"\n";
 }
@@ -121,7 +121,7 @@ PrintTree::visit(const AST_STRING *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_VECTOR *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_VECTOR"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VECTOR");
   }
   std::ostringstream result;
   result << indent_ << "vector:\n";
@@ -129,7 +129,7 @@ PrintTree::visit(const AST_VECTOR *node) const noexcept {
   for (const auto &statement : node->values()) {
     const auto val{statement->accept(*this)};
     if (!val) {
-      return std::unexpected{val.error()};
+      return createError(val.error());
     }
     result << *val;
   }
@@ -140,14 +140,14 @@ PrintTree::visit(const AST_VECTOR *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_INDEX *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_INDEX"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_INDEX");
   }
   std::ostringstream result;
   result << indent_ << "index:\n";
   increaseIndent();
   const auto val{node->index()->accept(*this)};
   if (!val) {
-    return std::unexpected{val.error()};
+    return createError(val.error());
   }
   result << *val;
   decreaseIndent();
@@ -157,14 +157,14 @@ PrintTree::visit(const AST_INDEX *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_DELETE *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_DELETE"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DELETE");
   }
   std::ostringstream result;
   result << indent_ << "delete:\n";
   increaseIndent();
   const auto val{node->value()->accept(*this)};
   if (!val) {
-    return std::unexpected{val.error()};
+    return createError(val.error());
   }
   result << *val;
   decreaseIndent();
@@ -174,14 +174,14 @@ PrintTree::visit(const AST_DELETE *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_NEW *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_NEW"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_NEW");
   }
   std::ostringstream result;
   result << indent_ << "new:\n";
   increaseIndent();
   const auto val{node->value()->accept(*this)};
   if (!val) {
-    return std::unexpected{val.error()};
+    return createError(val.error());
   }
   result << *val;
   decreaseIndent();
@@ -191,14 +191,14 @@ PrintTree::visit(const AST_NEW *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_DEREF *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_DEREF"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DEREF");
   }
   std::ostringstream result;
   result << indent_ << "deref:\n";
   increaseIndent();
   const auto val{node->value()->accept(*this)};
   if (!val) {
-    return std::unexpected{val.error()};
+    return createError(val.error());
   }
   result << *val;
   decreaseIndent();
@@ -208,7 +208,7 @@ PrintTree::visit(const AST_DEREF *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_PTR *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_PTR"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PTR");
   }
   std::ostringstream result;
   result << indent_ << "ptr:\n";
@@ -217,7 +217,7 @@ PrintTree::visit(const AST_PTR *node) const noexcept {
   result << indent_ << "type: " << node->valueType();
   const auto val{node->value()->accept(*this)};
   if (!val) {
-    return std::unexpected{val.error()};
+    return createError(val.error());
   }
   result << indent_ << "value:\n" << *val;
   decreaseIndent();
@@ -227,19 +227,19 @@ PrintTree::visit(const AST_PTR *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_BINARY *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_BINARY"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BINARY");
   }
   std::ostringstream result;
-  result << indent_ << node->op().raw() +  ":\n";
+  result << indent_ << node->op().raw() + ":\n";
   increaseIndent();
   const auto left{node->left()->accept(*this)};
   if (!left) {
-    return std::unexpected{left.error()};
+    return createError(left.error());
   }
   result << indent_ << "Left:\n" << *left;
   const auto right{node->right()->accept(*this)};
   if (!right) {
-    return std::unexpected{right.error()};
+    return createError(right.error());
   }
   result << indent_ << "Right:\n" << *right;
   decreaseIndent();
@@ -249,14 +249,14 @@ PrintTree::visit(const AST_BINARY *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_UNARY *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_UNARY"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_UNARY");
   }
   std::ostringstream result;
-  result << indent_ << node->op().raw() +  ":\n";
+  result << indent_ << node->op().raw() + ":\n";
   increaseIndent();
   const auto val{node->value()->accept(*this)};
   if (!val) {
-    return std::unexpected{val.error()};
+    return createError(val.error());
   }
   result << indent_ << "value:\n" << *val;
   decreaseIndent();
@@ -266,20 +266,19 @@ PrintTree::visit(const AST_UNARY *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_ASSIGNMENT *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_ASSIGNMENT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ASSIGNMENT");
   }
   std::ostringstream result;
   result << indent_ << "Variable Reassignment:\n";
   increaseIndent();
   const auto left{node->left()->accept(*this)};
   if (!left) {
-    return std::unexpected{left.error()};
+    return createError(left.error());
   }
   result << indent_ << "left:\n" << *left << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
-    return std::unexpected{val.error()};
+    return createError(val.error());
   }
   result << indent_ << "Value:\n" << *val << "\n";
   decreaseIndent();
@@ -289,8 +288,7 @@ PrintTree::visit(const AST_ASSIGNMENT *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_SELF_ASSIGNMENT *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_SELF_ASSIGNMENT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SELF_ASSIGNMENT");
   }
   std::ostringstream result;
   result << indent_ << "Self Assignment:\n";
@@ -298,12 +296,12 @@ PrintTree::visit(const AST_SELF_ASSIGNMENT *node) const noexcept {
   result << indent_ << "Operator: " << node->op().raw() << "\n";
   const auto left{node->left()->accept(*this)};
   if (!left) {
-    return std::unexpected{left.error()};
+    return createError(left.error());
   }
   result << indent_ << "left:\n" << *left << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
-    return std::unexpected{val.error()};
+    return createError(val.error());
   }
   result << indent_ << "Value:\n" << *val << "\n";
   decreaseIndent();
@@ -313,7 +311,7 @@ PrintTree::visit(const AST_SELF_ASSIGNMENT *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_PRINT *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_PRINT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PRINT");
   }
   std::ostringstream result;
   result << indent_ << "Print Statement:\n";
@@ -322,7 +320,7 @@ PrintTree::visit(const AST_PRINT *node) const noexcept {
   for (const auto &expr : node->values()) {
     const auto toStr{expr->accept(*this)};
     if (!toStr) {
-      return std::unexpected{toStr.error()};
+      return createError(toStr.error());
     }
     result << indent_ << "Expression:\n" << *toStr;
   }
@@ -334,7 +332,7 @@ PrintTree::visit(const AST_PRINT *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_IMPORT *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_IMPORT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_IMPORT");
   }
   std::ostringstream result;
   result << indent_ << "Import:\n";
@@ -347,15 +345,14 @@ PrintTree::visit(const AST_IMPORT *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_STATEMENT *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_STATEMENT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STATEMENT");
   }
   std::ostringstream result;
   result << indent_ << "statement:\n";
   increaseIndent();
   const auto expr{node->expression()->accept(*this)};
   if (!expr) {
-    return std::unexpected{expr.error()};
+    return createError(expr.error());
   }
   result << *expr;
   decreaseIndent();
@@ -365,7 +362,7 @@ PrintTree::visit(const AST_STATEMENT *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_BODY *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_BODY"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BODY");
   }
   std::ostringstream result;
   result << indent_ << "Statement List:\n";
@@ -373,7 +370,7 @@ PrintTree::visit(const AST_BODY *node) const noexcept {
   for (const auto &statement : node->body()) {
     const auto val{statement->accept(*this)};
     if (!val) {
-      return std::unexpected{val.error()};
+      return createError(val.error());
     }
     result << *val;
   }
@@ -384,7 +381,7 @@ PrintTree::visit(const AST_BODY *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_WHILE *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_WHILE"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_WHILE");
   }
   std::ostringstream result;
   result << indent_ << "While Loop:\n";
@@ -393,7 +390,7 @@ PrintTree::visit(const AST_WHILE *node) const noexcept {
   increaseIndent();
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
-    return std::unexpected{condition.error()};
+    return createError(condition.error());
   }
   result << *condition;
   decreaseIndent();
@@ -403,7 +400,7 @@ PrintTree::visit(const AST_WHILE *node) const noexcept {
   for (const auto &statement : node->body()->body()) {
     const auto val{statement->accept(*this)};
     if (!val) {
-      return std::unexpected{val.error()};
+      return createError(val.error());
     }
     result << *val;
   }
@@ -416,7 +413,7 @@ PrintTree::visit(const AST_WHILE *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_FOR *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_FOR"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FOR");
   }
   std::ostringstream result;
   result << indent_ << "For Loop:\n";
@@ -427,7 +424,7 @@ PrintTree::visit(const AST_FOR *node) const noexcept {
   for (const auto &initExpr : node->init()) {
     const auto initStr{initExpr->accept(*this)};
     if (!initStr) {
-      return std::unexpected{initStr.error()};
+      return createError(initStr.error());
     }
     result << *initStr;
   }
@@ -435,7 +432,7 @@ PrintTree::visit(const AST_FOR *node) const noexcept {
 
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
-    return std::unexpected{condition.error()};
+    return createError(condition.error());
   }
   result << *condition;
 
@@ -444,7 +441,7 @@ PrintTree::visit(const AST_FOR *node) const noexcept {
   for (const auto &updateExpr : node->update()) {
     const auto updateStr{updateExpr->accept(*this)};
     if (!updateStr) {
-      return std::unexpected{updateStr.error()};
+      return createError(updateStr.error());
     }
     result << *updateStr;
   }
@@ -454,7 +451,7 @@ PrintTree::visit(const AST_FOR *node) const noexcept {
   for (const auto &statement : node->body()->body()) {
     const auto val{statement->accept(*this)};
     if (!val) {
-      return std::unexpected{val.error()};
+      return createError(val.error());
     }
     result << *val;
   }
@@ -466,8 +463,7 @@ PrintTree::visit(const AST_FOR *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_DO_WHILE *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_DO_WHILE"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DO_WHILE");
   }
   std::ostringstream result;
   result << indent_ << "Do While Loop:\n";
@@ -477,13 +473,13 @@ PrintTree::visit(const AST_DO_WHILE *node) const noexcept {
   for (const auto &statement : node->body()->body()) {
     const auto val{statement->accept(*this)};
     if (!val) {
-      return std::unexpected{val.error()};
+      return createError(val.error());
     }
     result << *val;
   }
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
-    return std::unexpected{condition.error()};
+    return createError(condition.error());
   }
   result << *condition;
   decreaseIndent();
@@ -493,7 +489,7 @@ PrintTree::visit(const AST_DO_WHILE *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_PASS *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_PASS"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PASS");
   }
   std::ostringstream result;
   increaseIndent();
@@ -505,7 +501,7 @@ PrintTree::visit(const AST_PASS *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_STOP *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_STOP"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STOP");
   }
   std::ostringstream result;
   increaseIndent();
@@ -517,14 +513,14 @@ PrintTree::visit(const AST_STOP *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_IF *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_IF"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_IF");
   }
   std::ostringstream result;
   result << indent_ << "If Statement:\n";
   increaseIndent();
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
-    return std::unexpected{condition.error()};
+    return createError(condition.error());
   }
   result << *condition;
 
@@ -532,7 +528,7 @@ PrintTree::visit(const AST_IF *node) const noexcept {
   for (const auto &statement : node->body()->body()) {
     const auto stmt{statement->accept(*this)};
     if (!stmt) {
-      return std::unexpected{stmt.error()};
+      return createError(stmt.error());
     }
     result << *stmt;
   }
@@ -542,7 +538,7 @@ PrintTree::visit(const AST_IF *node) const noexcept {
     for (const auto &elseIf : node->elseIf()) {
       const auto elseIfStr{elseIf->accept(*this)};
       if (!elseIfStr) {
-        return std::unexpected{elseIfStr.error()};
+        return createError(elseIfStr.error());
       }
       result << *elseIfStr;
     }
@@ -553,7 +549,7 @@ PrintTree::visit(const AST_IF *node) const noexcept {
     for (const auto &statement : node->elseBody()->body()) {
       const auto stmt{statement->accept(*this)};
       if (!stmt) {
-        return std::unexpected{stmt.error()};
+        return createError(stmt.error());
       }
       result << *stmt;
     }
@@ -566,14 +562,14 @@ PrintTree::visit(const AST_IF *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_ELSE_IF *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_ELSE_IF"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ELSE_IF");
   }
   std::ostringstream result;
   result << indent_ << "Else If:\n";
   increaseIndent();
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
-    return std::unexpected{condition.error()};
+    return createError(condition.error());
   }
   result << *condition;
 
@@ -581,7 +577,7 @@ PrintTree::visit(const AST_ELSE_IF *node) const noexcept {
   for (const auto &statement : node->body()->body()) {
     const auto stmt{statement->accept(*this)};
     if (!stmt) {
-      return std::unexpected{stmt.error()};
+      return createError(stmt.error());
     }
     result << *stmt;
   }
@@ -593,14 +589,14 @@ PrintTree::visit(const AST_ELSE_IF *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_SWITCH *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_SWITCH"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SWITCH");
   }
   std::ostringstream result;
   result << indent_ << "Switch Statement:\n";
   increaseIndent();
   const auto expr{node->condition()->accept(*this)};
   if (!expr) {
-    return std::unexpected{expr.error()};
+    return createError(expr.error());
   }
   result << *expr;
 
@@ -608,14 +604,14 @@ PrintTree::visit(const AST_SWITCH *node) const noexcept {
   for (const auto &caseStmt : node->cases()) {
     const auto caseStr{caseStmt->accept(*this)};
     if (!caseStr) {
-      return std::unexpected{caseStr.error()};
+      return createError(caseStr.error());
     }
     result << *caseStr;
   }
   if (node->defaultCase()) {
     const auto defaultCase{node->defaultCase()->accept(*this)};
     if (!defaultCase) {
-      return std::unexpected{defaultCase.error()};
+      return createError(defaultCase.error());
     }
     result << *defaultCase;
   }
@@ -626,14 +622,14 @@ PrintTree::visit(const AST_SWITCH *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_CASE *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_CASE"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CASE");
   }
   std::ostringstream result;
   result << indent_ << "Case:\n";
   increaseIndent();
   const auto cond{node->match()->accept(*this)};
   if (!cond) {
-    return std::unexpected{cond.error()};
+    return createError(cond.error());
   }
   result << *cond;
 
@@ -641,7 +637,7 @@ PrintTree::visit(const AST_CASE *node) const noexcept {
   for (const auto &statement : node->body()->body()) {
     const auto stmt{statement->accept(*this)};
     if (!stmt) {
-      return std::unexpected{stmt.error()};
+      return createError(stmt.error());
     }
     result << *stmt;
   }
@@ -652,7 +648,7 @@ PrintTree::visit(const AST_CASE *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_DEFAULT *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_DEFAULT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DEFAULT");
   }
   std::ostringstream result;
   result << indent_ << "Default Case:\n";
@@ -660,7 +656,7 @@ PrintTree::visit(const AST_DEFAULT *node) const noexcept {
   for (const auto &statement : node->body()->body()) {
     const auto stmt{statement->accept(*this)};
     if (!stmt) {
-      return std::unexpected{stmt.error()};
+      return createError(stmt.error());
     }
     result << *stmt;
   }
@@ -671,28 +667,28 @@ PrintTree::visit(const AST_DEFAULT *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_TERNARY *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_TERNARY"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_TERNARY");
   }
   std::ostringstream result;
   result << indent_ << "Ternary Expression:\n";
   increaseIndent();
   const auto cond{node->condition()->accept(*this)};
   if (!cond) {
-    return std::unexpected{cond.error()};
+    return createError(cond.error());
   }
   result << *cond;
 
   result << indent_ << "True Branch:\n";
   const auto trueBranch{node->first()->accept(*this)};
   if (!trueBranch) {
-    return std::unexpected{trueBranch.error()};
+    return createError(trueBranch.error());
   }
   result << *trueBranch;
 
   result << indent_ << "False Branch:\n";
   const auto falseBranch{node->second()->accept(*this)};
   if (!falseBranch) {
-    return std::unexpected{falseBranch.error()};
+    return createError(falseBranch.error());
   }
   result << *falseBranch;
   decreaseIndent();
@@ -702,15 +698,14 @@ PrintTree::visit(const AST_TERNARY *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_CONDITION *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_CONDITION"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CONDITION");
   }
   std::ostringstream result;
   result << indent_ << "Condition:\n";
   increaseIndent();
   const auto expr{node->expression()->accept(*this)};
   if (!expr) {
-    return std::unexpected{expr.error()};
+    return createError(expr.error());
   }
   result << *expr;
   decreaseIndent();
@@ -720,8 +715,7 @@ PrintTree::visit(const AST_CONDITION *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_FUNC_CALL *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "Invalid AST_FUNC_CALL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_FUNC_CALL");
   }
 
   std::ostringstream result;
@@ -733,7 +727,7 @@ PrintTree::visit(const AST_FUNC_CALL *node) const noexcept {
   for (const auto &arg : node->parameters()) {
     const auto argStr = arg->accept(*this);
     if (!argStr) {
-      return std::unexpected{argStr.error()};
+      return createError(argStr.error());
     }
     result << *argStr;
   }
@@ -746,8 +740,7 @@ PrintTree::visit(const AST_FUNC_CALL *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
   }
   std::ostringstream result;
   result << indent_ << "Function Declaration:\n";
@@ -767,7 +760,7 @@ PrintTree::visit(const AST_FUNC_DECL *node) const noexcept {
   if (node->body()) {
     const auto bodyStr{node->body()->accept(*this)};
     if (!bodyStr) {
-      return std::unexpected{bodyStr.error()};
+      return createError(bodyStr.error());
     }
     result << *bodyStr;
   } else {
@@ -781,7 +774,7 @@ PrintTree::visit(const AST_FUNC_DECL *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_RETURN *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_RETURN"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_RETURN");
   }
   std::ostringstream result;
   result << indent_ << "Return:\n";
@@ -789,7 +782,7 @@ PrintTree::visit(const AST_RETURN *node) const noexcept {
   if (node->expression()) {
     const auto val{node->expression()->accept(*this)};
     if (!val) {
-      return std::unexpected{val.error()};
+      return createError(val.error());
     }
     result << indent_ << "value:\n" << *val;
   } else {
@@ -802,7 +795,7 @@ PrintTree::visit(const AST_RETURN *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_ENUM *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_ENUM"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM");
   }
   std::ostringstream result;
   result << indent_ << "Enum:\n";
@@ -819,7 +812,7 @@ PrintTree::visit(const AST_ENUM *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
   }
 
   std::ostringstream result;
@@ -850,7 +843,7 @@ PrintTree::visit(const AST_STRUCT *node) const noexcept {
   for (const auto &method : node->methods()) {
     const auto methodStr = method->accept(*this);
     if (!methodStr) {
-      return std::unexpected{methodStr.error()};
+      return createError(methodStr.error());
     }
     result << *methodStr;
   }
@@ -862,7 +855,7 @@ PrintTree::visit(const AST_STRUCT *node) const noexcept {
     increaseIndent();
     const auto ctorStr = node->constructor()->accept(*this);
     if (!ctorStr) {
-      return std::unexpected{ctorStr.error()};
+      return createError(ctorStr.error());
     }
     result << *ctorStr;
     decreaseIndent();
@@ -874,7 +867,7 @@ PrintTree::visit(const AST_STRUCT *node) const noexcept {
     increaseIndent();
     const auto dtorStr = node->destructor()->accept(*this);
     if (!dtorStr) {
-      return std::unexpected{dtorStr.error()};
+      return createError(dtorStr.error());
     }
     result << *dtorStr;
     decreaseIndent();
@@ -887,7 +880,7 @@ PrintTree::visit(const AST_STRUCT *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_CLASS *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_CLASS"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CLASS");
   }
   std::ostringstream result;
   result << indent_ << "Class Declaration:\n";
@@ -917,7 +910,7 @@ PrintTree::visit(const AST_CLASS *node) const noexcept {
   for (const auto &method : node->methods()) {
     const auto methodStr = method->accept(*this);
     if (!methodStr) {
-      return std::unexpected{methodStr.error()};
+      return createError(methodStr.error());
     }
     result << *methodStr;
   }
@@ -929,7 +922,7 @@ PrintTree::visit(const AST_CLASS *node) const noexcept {
     increaseIndent();
     const auto ctorStr = node->constructor()->accept(*this);
     if (!ctorStr) {
-      return std::unexpected{ctorStr.error()};
+      return createError(ctorStr.error());
     }
     result << *ctorStr;
     decreaseIndent();
@@ -941,7 +934,7 @@ PrintTree::visit(const AST_CLASS *node) const noexcept {
     increaseIndent();
     const auto dtorStr = node->destructor()->accept(*this);
     if (!dtorStr) {
-      return std::unexpected{dtorStr.error()};
+      return createError(dtorStr.error());
     }
     result << *dtorStr;
     decreaseIndent();
@@ -954,8 +947,7 @@ PrintTree::visit(const AST_CLASS *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_ATTR_ACCESS *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_ATTR_ACCESS"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ATTR_ACCESS");
   }
   std::ostringstream result;
   result << indent_ << "attr access:\n";
@@ -968,8 +960,7 @@ PrintTree::visit(const AST_ATTR_ACCESS *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_METHOD_CALL *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL");
   }
 
   std::ostringstream result;
@@ -981,7 +972,7 @@ PrintTree::visit(const AST_METHOD_CALL *node) const noexcept {
   for (const auto &arg : node->parameters()) {
     const auto argStr = arg->accept(*this);
     if (!argStr) {
-      return std::unexpected{argStr.error()};
+      return createError(argStr.error());
     }
     result << *argStr;
   }
@@ -994,7 +985,7 @@ PrintTree::visit(const AST_METHOD_CALL *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_THIS *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_THIS"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_THIS");
   }
   std::ostringstream result;
   result << indent_ << "this call\n";
@@ -1004,8 +995,7 @@ PrintTree::visit(const AST_THIS *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL");
   }
 
   std::ostringstream result;
@@ -1017,7 +1007,7 @@ PrintTree::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   for (const auto &arg : node->parameters()) {
     const auto argStr = arg->accept(*this);
     if (!argStr) {
-      return std::unexpected{argStr.error()};
+      return createError(argStr.error());
     }
     result << *argStr;
   }
@@ -1030,8 +1020,7 @@ PrintTree::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
   }
   std::ostringstream result;
   result << indent_ << "auto decl\n";
@@ -1039,7 +1028,7 @@ PrintTree::visit(const AST_AUTO_DECL *node) const noexcept {
   result << indent_ << "id: " << node->id() << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
-    return std::unexpected{val.error()};
+    return createError(val.error());
   }
   result << *val << "\n";
   decreaseIndent();
@@ -1049,8 +1038,7 @@ PrintTree::visit(const AST_AUTO_DECL *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_LET_DECL *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_LET_DECL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_LET_DECL");
   }
   std::ostringstream result;
   result << indent_ << "let decl\n";
@@ -1059,7 +1047,7 @@ PrintTree::visit(const AST_LET_DECL *node) const noexcept {
   result << indent_ << "type: " << node->valueType() << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
-    return std::unexpected{val.error()};
+    return createError(val.error());
   }
   result << *val << "\n";
   decreaseIndent();
@@ -1069,8 +1057,7 @@ PrintTree::visit(const AST_LET_DECL *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_CONST_DECL *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_CONST_DECL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CONST_DECL");
   }
   std::ostringstream result;
   result << indent_ << "const decl\n";
@@ -1079,7 +1066,7 @@ PrintTree::visit(const AST_CONST_DECL *node) const noexcept {
   result << indent_ << "type: " << node->valueType() << "\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
-    return std::unexpected{val.error()};
+    return createError(val.error());
   }
   result << *val << "\n";
   decreaseIndent();
@@ -1089,8 +1076,7 @@ PrintTree::visit(const AST_CONST_DECL *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_VAR_CALL *node) const noexcept {
   if (!node) {
-    return std::unexpected{
-        Error{ERROR_TYPE::NULL_NODE, "invalid AST_VAR_CALL"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_CALL");
   }
   std::ostringstream result;
   result << indent_ << "Var call\n";
@@ -1103,24 +1089,24 @@ PrintTree::visit(const AST_VAR_CALL *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const AST_CHAINED *node) const noexcept {
   if (!node) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid AST_CHAINED"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CHAINED");
   }
   std::ostringstream result;
   result << indent_ << "Chained:\n";
   increaseIndent();
   if (!node->base()) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print base"}};
+    return createError(ERROR_TYPE::NULL_NODE, "print base");
   }
   const auto base{node->base()->accept(*this)};
   if (!base) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "print base boo"}};
+    return createError(ERROR_TYPE::NULL_NODE, "print base boo");
   }
   result << indent_ << "Base:\n" << *base;
   result << indent_ << "Operations:\n";
   for (const auto &statement : node->operations()) {
     const auto val{statement->accept(*this)};
     if (!val) {
-      return std::unexpected{val.error()};
+      return createError(val.error());
     }
     result << *val;
   }
@@ -1131,14 +1117,14 @@ PrintTree::visit(const AST_CHAINED *node) const noexcept {
 std::expected<std::string, Error>
 PrintTree::visit(const Tree *tree) const noexcept {
   if (!tree) {
-    return std::unexpected{Error{ERROR_TYPE::NULL_NODE, "invalid Tree"}};
+    return createError(ERROR_TYPE::NULL_NODE, "invalid Tree");
   }
   std::ostringstream result;
   result << "Tree:\n";
   increaseIndent();
   const auto str{tree->root()->accept(*this)};
   if (!str) {
-    return std::unexpected{str.error()};
+    return createError(str.error());
   }
   result << *str;
   decreaseIndent();

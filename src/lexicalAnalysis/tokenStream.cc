@@ -8,8 +8,7 @@ const std::expected<std::monostate, Error> TokenStream::eat() noexcept {
     ++currentPos_;
     return std::expected<std::monostate, Error>{std::monostate{}};
   }
-  return std::unexpected{
-      Error{ERROR_TYPE::EAT, "invalid access to tokens while eating"}};
+  return createError(ERROR_TYPE::EAT, "invalid access to tokens while eating");
 }
 
 bool TokenStream::isEnd() const noexcept {
@@ -19,31 +18,28 @@ bool TokenStream::isEnd() const noexcept {
 const std::expected<Token, Error> TokenStream::current() const noexcept {
   if (currentPos_ < tokens_.size())
     return tokens_[currentPos_];
-  return std::unexpected{
-      Error{ERROR_TYPE::CURRENT, "invalid access to tokens"}};
+  return createError(ERROR_TYPE::CURRENT, "invalid access to tokens");
 }
 
 const std::expected<Token, Error>
 TokenStream::lookAhead(const size_t pos) const noexcept {
   if (currentPos_ + pos < tokens_.size())
     return tokens_[currentPos_ + pos];
-  return std::unexpected{
-      Error{ERROR_TYPE::LOOK_AHEAD, "invalid access to tokens"}};
+  return createError(ERROR_TYPE::LOOK_AHEAD, "invalid access to tokens");
 }
 
 const std::expected<Token, Error> TokenStream::lastRead() const noexcept {
-  if (currentPos_  - 1 < tokens_.size())
+  if (currentPos_ - 1 < tokens_.size())
     return tokens_[currentPos_ - 1];
-  return std::unexpected{
-      Error{ERROR_TYPE::LAST_READ, "invalid access to tokens"}};
+  return createError(ERROR_TYPE::LAST_READ, "invalid access to tokens");
 }
 
 const std::expected<bool, Error>
 TokenStream::isCurrentTokenType(const TokenType type) const noexcept {
   if (currentPos_ < tokens_.size())
     return tokens_[currentPos_].type() == type;
-  return std::unexpected{
-      Error{ERROR_TYPE::IS_CURRENT_TOKEN_TYPE, "invalid access to tokens"}};
+  return createError(ERROR_TYPE::IS_CURRENT_TOKEN_TYPE,
+                     "invalid access to tokens");
 }
 
 bool TokenStream::isTokenAheadBeforeSemicolon(
@@ -66,8 +62,8 @@ const std::expected<std::monostate, Error>
 TokenStream::insertAfter(const TokenStream &tkStream,
                          const size_t pos) noexcept {
   if (pos == std::numeric_limits<int>::infinity()) {
-    return std::unexpected{Error{ERROR_TYPE::INSERT_AFTER,
-                                 "cannot insert after the given position"}};
+    return createError(ERROR_TYPE::INSERT_AFTER,
+                       "cannot insert after the given position");
   }
   tokens_.insert(tokens_.begin() + static_cast<long>(pos), tkStream.begin(),
                  tkStream.end());
