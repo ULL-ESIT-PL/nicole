@@ -8,14 +8,14 @@ namespace nicole {
 
 class AST_CONDITION : public AST {
 private:
-  std::shared_ptr<AST> expression_;
+  std::shared_ptr<AST> condition_;
 
 public:
-  explicit AST_CONDITION(const std::shared_ptr<AST> &expression) noexcept
-      : AST(AST_TYPE::CONDITION), expression_{expression} {}
+  explicit AST_CONDITION(const std::shared_ptr<AST> &condition) noexcept
+      : AST(AST_TYPE::CONDITION), condition_{condition} {}
 
-  [[nodiscard]] const std::shared_ptr<AST> &expression() const noexcept {
-    return expression_;
+  [[nodiscard]] const std::shared_ptr<AST> &condition() const noexcept {
+    return condition_;
   }
 
   [[nodiscard]] std::expected<std::string, Error>

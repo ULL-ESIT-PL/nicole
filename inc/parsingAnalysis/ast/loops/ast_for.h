@@ -9,6 +9,7 @@ namespace nicole {
 class AST_FOR : public AST_LOOP {
 private:
   std::vector<std::shared_ptr<AST>> init_;
+  std::shared_ptr<AST_CONDITION> condition_;
   std::vector<std::shared_ptr<AST>> update_;
 
 public:

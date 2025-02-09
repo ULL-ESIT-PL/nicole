@@ -1,12 +1,16 @@
 #ifndef AST_DO_WHILE_H
 #define AST_DO_WHILE_H
 
+#include "../conditionals/ast_condition.h"
 #include "ast_loop.h"
 #include <memory>
 
 namespace nicole {
 
 class AST_DO_WHILE : public AST_LOOP {
+private:
+  std::shared_ptr<AST_CONDITION> condition_;
+
 public:
   explicit AST_DO_WHILE(
       const std::shared_ptr<AST_BODY> &body,

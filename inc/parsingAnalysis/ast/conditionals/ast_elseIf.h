@@ -2,7 +2,7 @@
 #define AST_ELSE_IF_H
 
 #include "../statements/ast_body.h"
-#include "ast_condtion.h"
+#include "ast_condition.h"
 #include <memory>
 
 namespace nicole {

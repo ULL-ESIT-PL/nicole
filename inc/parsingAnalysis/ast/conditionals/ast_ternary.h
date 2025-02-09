@@ -1,8 +1,7 @@
 #ifndef AST_TERNARY_H
 #define AST_TERNARY_H
 
-#include "../ast.h"
-#include "ast_condtion.h"
+#include "ast_condition.h"
 #include <memory>
 
 namespace nicole {

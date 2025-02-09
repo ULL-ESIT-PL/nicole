@@ -703,7 +703,7 @@ PrintTree::visit(const AST_CONDITION *node) const noexcept {
   std::ostringstream result;
   result << indent_ << "Condition:\n";
   increaseIndent();
-  const auto expr{node->expression()->accept(*this)};
+  const auto expr{node->condition()->accept(*this)};
   if (!expr) {
     return createError(expr.error());
   }

@@ -1,7 +1,7 @@
 #ifndef AST_LOOP_H
 #define AST_LOOP_H
 
-#include "../ast.h"
+#include "../conditionals/ast_condition.h"
 #include "../statements/ast_body.h"
 #include <memory>
 
@@ -18,7 +18,8 @@ public:
                     const std::shared_ptr<AST_BODY> &body) noexcept
       : AST(type), condition_{condition}, body_{body} {}
 
-  [[nodiscard]] const std::shared_ptr<AST_CONDITION> &condition() const noexcept {
+  [[nodiscard]] const std::shared_ptr<AST_CONDITION> &
+  condition() const noexcept {
     return condition_;
   }
 

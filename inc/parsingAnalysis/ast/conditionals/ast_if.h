@@ -1,7 +1,7 @@
 #ifndef AST_IF_H
 #define AST_IF_H
 
-#include "ast_condtion.h"
+#include "ast_condition.h"
 #include "ast_elseIf.h"
 #include <memory>
 #include <vector>

@@ -7,8 +7,6 @@
 namespace nicole {
 
 class AST_WHILE : public AST_LOOP {
-private:
-
 public:
   explicit AST_WHILE(const std::shared_ptr<AST_CONDITION> &condition,
                      const std::shared_ptr<AST_BODY> &body) noexcept

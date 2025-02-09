@@ -640,7 +640,7 @@ ValidateTree::visit(const AST_CONDITION *node) const noexcept {
                                              AST_TYPE::WHILE, AST_TYPE::FOR})) {
     return createError(ERROR_TYPE::VALIDATE_TREE, "misplaced condition");
   }
-  return node->expression()->accept(*this);
+  return node->condition()->accept(*this);
 }
 
 // chained

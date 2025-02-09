@@ -2,7 +2,7 @@
 #define AST_SWITCH_H
 
 #include "ast_case.h"
-#include "ast_condtion.h"
+#include "ast_condition.h"
 #include "ast_default.h"
 #include <memory>
 

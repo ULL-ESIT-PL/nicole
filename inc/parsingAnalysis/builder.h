@@ -4,7 +4,7 @@
 #include "ast/assignments/asr_selfAssignment.h"
 #include "ast/assignments/ast_assignment.h"
 
-#include "ast/conditionals/ast_condtion.h"
+#include "ast/conditionals/ast_condition.h"
 #include "ast/conditionals/ast_default.h"
 #include "ast/functions/ast_funcCall.h"
 #include "ast/functions/ast_funcDecl.h"
