@@ -5,19 +5,16 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_IMPORT>, Error>
 TopDown::parseImport() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::STRING) {
     return createError(ERROR_TYPE::SINTAX, "missing file of import at " +
                                                tkStream_.current()->locInfo());
   }
   const Token token{*tkStream_.current()};
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX, "failed to eat " + token.raw() +
-                                               " at " + token.locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   std::filesystem::path currentFilePath{token.location().file()};
   // Gets the base path of the current file
@@ -47,10 +44,8 @@ TopDown::parseImport() const noexcept {
 
 const std::expected<std::shared_ptr<AST_PRINT>, Error>
 TopDown::parsePrint() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
 
   const std::expected<std::vector<std::shared_ptr<AST>>, Error> arguemnts{

@@ -19,18 +19,14 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
                              tkStream_.current()->locInfo());
     }
     varName = tkStream_.current()->raw();
-    if (!tkStream_.eat()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "Failed to consume variable name at " +
-                             tkStream_.current()->locInfo());
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
     }
 
     // Verificar si hay una especificación de tipo
     if (tkStream_.current()->type() == TokenType::DOTDOT) {
-      if (!tkStream_.eat()) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "Failed to consume ':' at " +
-                               tkStream_.current()->locInfo());
+      if (auto res = tryEat(); !res) {
+        return createError(res.error());
       }
       if (tkStream_.current()->type() != TokenType::ID) {
         return createError(ERROR_TYPE::SINTAX,
@@ -38,19 +34,15 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
                                tkStream_.current()->locInfo());
       }
       varType = tkStream_.current()->raw();
-      if (!tkStream_.eat()) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "Failed to consume type name at " +
-                               tkStream_.current()->locInfo());
+      if (auto res = tryEat(); !res) {
+        return createError(res.error());
       }
     }
 
     // Verificar si hay un operador de asignación '='
     if (tkStream_.current()->type() == TokenType::ASSIGNMENT) {
-      if (!tkStream_.eat()) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "Failed to consume '=' at " +
-                               tkStream_.current()->locInfo());
+      if (auto res = tryEat(); !res) {
+        return createError(res.error());
       }
       // Parsear la expresión de valor
       auto expr = parseTernary();
@@ -74,10 +66,8 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
             "Expected ';' at the end of variable declaration at " +
                 tkStream_.current()->locInfo());
       }
-      if (!tkStream_.eat()) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "Failed to consume ';' at " +
-                               tkStream_.current()->locInfo());
+      if (auto res = tryEat(); !res) {
+        return createError(res.error());
       }
     }
     return {};
@@ -85,10 +75,8 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
 
   switch (token.type()) {
   case TokenType::CONST: { // const variable: type = expression;
-    if (!tkStream_.eat()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "Failed to consume 'const' at " +
-                             tkStream_.current()->locInfo());
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
     }
     auto result = parseCommon();
     if (!result) {
@@ -102,10 +90,8 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
     return Builder::createConstDecl(varName, varType, valueExpr);
   }
   case TokenType::LET: { // let variable: type = expression;
-    if (!tkStream_.eat()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "Failed to consume 'let' at " +
-                             tkStream_.current()->locInfo());
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
     }
     auto result = parseCommon();
     if (!result) {
@@ -119,10 +105,8 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
     return Builder::createLetDecl(varName, varType, valueExpr);
   }
   case TokenType::AUTO: { // auto variable = expression;
-    if (!tkStream_.eat()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "Failed to consume 'auto' at " +
-                             tkStream_.current()->locInfo());
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
     }
     auto result = parseCommon();
     if (!result) {
@@ -143,9 +127,8 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
 
 const std::expected<std::shared_ptr<AST_DELETE>, Error>
 TopDown::parseDelete() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX, "Failed to consume 'delete' at " +
-                                               tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST>, Error> value{parseOr()};
   if (!value || !*value) {

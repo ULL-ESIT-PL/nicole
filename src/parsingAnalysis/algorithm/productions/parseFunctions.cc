@@ -4,10 +4,8 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
 TopDown::parseFuncDecl(const bool isMethod) const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::ID) {
     return createError(ERROR_TYPE::SINTAX,
@@ -15,19 +13,15 @@ TopDown::parseFuncDecl(const bool isMethod) const noexcept {
                            tkStream_.current()->locInfo());
   }
   const Token id{*tkStream_.current()};
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::LP) {
     return createError(ERROR_TYPE::SINTAX, "missing ( of function at " +
                                                tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const std::expected<Parameters, Error> params{parseParams()};
   if (!params) {
@@ -37,10 +31,8 @@ TopDown::parseFuncDecl(const bool isMethod) const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing ) of function at " +
                                                tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::DOTDOT) {
     return createError(ERROR_TYPE::SINTAX,
@@ -48,10 +40,8 @@ TopDown::parseFuncDecl(const bool isMethod) const noexcept {
                            tkStream_.current()->raw() + " at " +
                            tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::ID) {
     return createError(ERROR_TYPE::SINTAX,
@@ -60,10 +50,8 @@ TopDown::parseFuncDecl(const bool isMethod) const noexcept {
                            tkStream_.current()->locInfo());
   }
   const Token returnType{*tkStream_.current()};
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
   if (!body || !*body) {
@@ -85,10 +73,8 @@ const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {
                              tkStream_.current()->locInfo());
     }
     const Token id{*tkStream_.current()};
-    if (!tkStream_.eat()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "failed to eat " + tkStream_.current()->raw() +
-                             " at " + tkStream_.current()->locInfo());
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
     }
     if (tkStream_.current()->type() != TokenType::DOTDOT) {
       return createError(ERROR_TYPE::SINTAX,
@@ -96,10 +82,8 @@ const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {
                              tkStream_.current()->raw() + " at " +
                              tkStream_.current()->locInfo());
     }
-    if (!tkStream_.eat()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "failed to eat " + tkStream_.current()->raw() +
-                             " at " + tkStream_.current()->locInfo());
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
     }
     if (tkStream_.current()->type() != TokenType::ID) {
       return createError(ERROR_TYPE::SINTAX,
@@ -109,16 +93,12 @@ const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {
     }
     const Token type{*tkStream_.current()};
     params.push_back({id.raw(), type.raw()});
-    if (!tkStream_.eat()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "failed to eat " + tkStream_.current()->raw() +
-                             " at " + tkStream_.current()->locInfo());
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
     }
     if (tkStream_.current()->type() == TokenType::COMMA) {
-      if (!tkStream_.eat()) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "failed to eat " + tkStream_.current()->raw() +
-                               " at " + tkStream_.current()->locInfo());
+      if (auto res = tryEat(); !res) {
+        return createError(res.error());
       }
       continue;
     } else if (tkStream_.current()->type() != TokenType::RP) {
@@ -133,10 +113,8 @@ const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {
 
 const std::expected<std::shared_ptr<AST_RETURN>, Error>
 TopDown::parseReturn() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   if (tkStream_.current()->type() == TokenType::SEMICOLON) {
     return Builder::createReturn(nullptr);

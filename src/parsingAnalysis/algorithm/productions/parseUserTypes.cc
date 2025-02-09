@@ -5,49 +5,40 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_ENUM>, Error>
 TopDown::parseEnum() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::ID) {
     return createError(ERROR_TYPE::SINTAX, "missing enum identifier at " +
                                                tkStream_.current()->locInfo());
   }
   const Token id{*tkStream_.current()};
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::LB) {
     return createError(ERROR_TYPE::SINTAX, "missing { of enum at " +
                                                tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   std::vector<std::string> identifiers{};
   while (tkStream_.currentPos() < tkStream_.size() and
          tkStream_.current()->type() != TokenType::RB) {
+
     if (tkStream_.current()->type() != TokenType::ID) {
       return createError(ERROR_TYPE::SINTAX,
                          "failed to eat " + tkStream_.current()->raw() +
                              " at " + tkStream_.current()->locInfo());
     }
     identifiers.push_back(tkStream_.current()->raw());
-    if (!tkStream_.eat()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "failed to eat " + tkStream_.current()->raw() +
-                             " at " + tkStream_.current()->locInfo());
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
     }
     if (tkStream_.current()->type() == TokenType::COMMA) {
-      if (!tkStream_.eat()) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "failed to eat " + tkStream_.current()->raw() +
-                               " at " + tkStream_.current()->locInfo());
+      if (auto res = tryEat(); !res) {
+        return createError(res.error());
       }
       continue;
     } else if (tkStream_.current()->type() != TokenType::RB) {
@@ -61,10 +52,8 @@ TopDown::parseEnum() const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing } of enum at " +
                                                tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   return Builder::createEnum(id.raw(), identifiers);
 }
@@ -76,34 +65,26 @@ TopDown::parseClassDecl() const noexcept {
 
 const std::expected<std::shared_ptr<AST_STRUCT>, Error>
 TopDown::parseStructDecl() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::ID) {
     return createError(ERROR_TYPE::SINTAX, "missing struct identifier at " +
                                                tkStream_.current()->locInfo());
   }
   const Token id{*tkStream_.current()};
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   std::unique_ptr<std::string> fatherType{nullptr};
   if (tkStream_.current()->type() == TokenType::EXTENDS and
       tkStream_.lookAhead(1)->type() == TokenType::ID) {
-    if (!tkStream_.eat()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "failed to eat " + tkStream_.current()->raw() +
-                             " at " + tkStream_.current()->locInfo());
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
     }
     const Token fatherTypeToken{*tkStream_.current()};
-    if (!tkStream_.eat()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "failed to eat " + tkStream_.current()->raw() +
-                             " at " + tkStream_.current()->locInfo());
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
     }
     fatherType = std::make_unique<std::string>(fatherTypeToken.raw());
   }
@@ -112,10 +93,8 @@ TopDown::parseStructDecl() const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing { of struct at " +
                                                tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
 
   bool isConstructorParsed{false};
@@ -131,20 +110,16 @@ TopDown::parseStructDecl() const noexcept {
 
     case TokenType::ID: {
       const Token attrID{*tkStream_.current()};
-      if (!tkStream_.eat()) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "failed to eat " + tkStream_.current()->raw() +
-                               " at " + tkStream_.current()->locInfo());
+      if (auto res = tryEat(); !res) {
+        return createError(res.error());
       }
       if (tkStream_.current()->type() != TokenType::DOTDOT) {
         return createError(ERROR_TYPE::SINTAX,
                            "missing : of attr at " +
                                tkStream_.current()->locInfo());
       }
-      if (!tkStream_.eat()) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "failed to eat " + tkStream_.current()->raw() +
-                               " at " + tkStream_.current()->locInfo());
+      if (auto res = tryEat(); !res) {
+        return createError(res.error());
       }
       if (tkStream_.current()->type() != TokenType::ID) {
         return createError(ERROR_TYPE::SINTAX,
@@ -152,10 +127,8 @@ TopDown::parseStructDecl() const noexcept {
                                tkStream_.current()->locInfo());
       }
       const Token attrType{*tkStream_.current()};
-      if (!tkStream_.eat()) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "failed to eat " + tkStream_.current()->raw() +
-                               " at " + tkStream_.current()->locInfo());
+      if (auto res = tryEat(); !res) {
+        return createError(res.error());
       }
       params.push_back({attrID.raw(), attrType.raw()});
       break;
@@ -214,10 +187,8 @@ TopDown::parseStructDecl() const noexcept {
     }
   }
 
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   return Builder::createStruct(id.raw(), std::move(fatherType),
                                Attributes{params}, methods, *constructor,
@@ -226,19 +197,15 @@ TopDown::parseStructDecl() const noexcept {
 
 const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
 TopDown::parseConstructorDecl(const std::string &returnType) const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::LP) {
     return createError(ERROR_TYPE::SINTAX, "missing ( of function at " +
                                                tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const std::expected<Parameters, Error> params{parseParams()};
   if (!params) {
@@ -248,10 +215,8 @@ TopDown::parseConstructorDecl(const std::string &returnType) const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing ) of function at " +
                                                tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
   if (!body || !*body) {
@@ -264,10 +229,8 @@ TopDown::parseConstructorDecl(const std::string &returnType) const noexcept {
 
 const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
 TopDown::parseDestructorDecl() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const auto body{parseBody()};
   if (!body || !*body) {

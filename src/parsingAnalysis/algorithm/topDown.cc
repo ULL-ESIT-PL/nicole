@@ -1,6 +1,7 @@
 #include "../../../inc/parsingAnalysis/algorithm/topDown.h"
 #include <expected>
 #include <memory>
+#include <variant>
 #include <vector>
 
 namespace nicole {
@@ -67,10 +68,8 @@ TopDown::parseBody() const noexcept {
     return createError(ERROR_TYPE::SINTAX,
                        "missing { at " + tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
 
   std::vector<std::shared_ptr<AST_STATEMENT>> statements{};
@@ -94,10 +93,8 @@ TopDown::parseBody() const noexcept {
     return createError(ERROR_TYPE::SINTAX,
                        "missing } at " + tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
 
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{
@@ -216,6 +213,15 @@ TopDown::parseStatement() const noexcept {
                                  : statement.error());
   }
   return Builder::createStatement(*statement);
+}
+
+// topDown.cpp
+std::expected<std::monostate, Error> TopDown::tryEat() const noexcept {
+  if (!tkStream_.eat())
+    return createError(ERROR_TYPE::SINTAX,
+                       "failed to eat " + tkStream_.current()->raw() + " at " +
+                           tkStream_.current()->locInfo());
+  return {};
 }
 
 } // namespace nicole

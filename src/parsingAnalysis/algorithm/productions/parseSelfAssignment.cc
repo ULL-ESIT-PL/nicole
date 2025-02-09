@@ -14,10 +14,8 @@ TopDown::parseSelfAssignment(const bool insideFor) const noexcept {
       (token.type() == TokenType::COMMA or token.type() == TokenType::RP)) {
     return left;
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const auto value{parseOr()};
   if (!value || !*value) {

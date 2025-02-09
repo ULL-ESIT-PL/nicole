@@ -219,10 +219,8 @@ TopDown::parseArguments(std::pair<TokenType, TokenType> delimiters,
                        "missing " + tokenTypeToString(delimiters.first) +
                            " at " + tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   if (tkStream_.current()->type() == delimiters.second and !canBeEmpty) {
     return createError(ERROR_TYPE::SINTAX,
@@ -238,10 +236,8 @@ TopDown::parseArguments(std::pair<TokenType, TokenType> delimiters,
     }
     params.push_back(*param);
     if (tkStream_.current()->type() == TokenType::COMMA) {
-      if (!tkStream_.eat()) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "failed to eat " + tkStream_.current()->raw() +
-                               " at " + tkStream_.current()->locInfo());
+      if (auto res = tryEat(); !res) {
+        return createError(res.error());
       }
       continue;
     } else if (tkStream_.current()->type() != delimiters.second) {
@@ -256,10 +252,8 @@ TopDown::parseArguments(std::pair<TokenType, TokenType> delimiters,
                        "missing " + tokenTypeToString(delimiters.first) +
                            " at " + tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   return params;
 }

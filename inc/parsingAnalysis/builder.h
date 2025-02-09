@@ -1,7 +1,7 @@
 #ifndef BUILDER_H
 #define BUILDER_H
 
-#include "ast/assignments/asr_assignment.h"
+#include "ast/assignments/ast_assignment.h"
 
 #include "ast/conditionals/ast_condition.h"
 #include "ast/conditionals/ast_default.h"

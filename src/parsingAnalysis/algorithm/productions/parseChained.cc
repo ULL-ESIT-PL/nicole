@@ -11,9 +11,8 @@ TopDown::parseChainedExpression() const noexcept {
   }
 
   const Token baseToken{*tkStream_.current()};
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX, "Failed to consume identifier at " +
-                                               baseToken.locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
 
   // 2. Determinar si es un simple varCall o una funcCall
@@ -71,10 +70,8 @@ TopDown::parseChainedExpression() const noexcept {
     // Acceso a índice -> base[index]
     case TokenType::LC: {
       // Consumir '['
-      if (!tkStream_.eat()) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "Failed to consume '[' at " +
-                               tkStream_.current()->locInfo());
+      if (auto res = tryEat(); !res) {
+        return createError(res.error());
       }
       // parseOr() para la expresión de índice
       auto indexExpr = parseOr();
@@ -102,10 +99,8 @@ TopDown::parseChainedExpression() const noexcept {
     // Punto -> base.atributo o base.metodo(...)
     case TokenType::DOT: {
       // Consumir '.'
-      if (!tkStream_.eat()) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "Failed to consume '.' at " +
-                               tkStream_.current()->locInfo());
+      if (auto res = tryEat(); !res) {
+        return createError(res.error());
       }
       if (tkStream_.current()->type() != TokenType::ID) {
         return createError(ERROR_TYPE::SINTAX,
@@ -115,10 +110,8 @@ TopDown::parseChainedExpression() const noexcept {
 
       // Leer el nombre del atributo/método
       Token attrToken{*tkStream_.current()};
-      if (!tkStream_.eat()) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "Failed to consume attribute id at " +
-                               tkStream_.current()->locInfo());
+      if (auto res = tryEat(); !res) {
+        return createError(res.error());
       }
 
       // Comprobar si es método -> un '(' a continuación

@@ -6,10 +6,8 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_IF>, Error>
 TopDown::parseIf() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_CONDITION>, Error> condition{
       parseCondition(false)};
@@ -37,10 +35,8 @@ TopDown::parseIf() const noexcept {
   if (tkStream_.current()->type() != TokenType::ELSE) {
     return Builder::createIf(*condition, *bodyIf, elseIfs, nullptr);
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_BODY>, Error> bodyElse{parseBody()};
   if (!bodyElse || !*bodyElse) {
@@ -52,15 +48,11 @@ TopDown::parseIf() const noexcept {
 
 const std::expected<std::shared_ptr<AST_ELSE_IF>, Error>
 TopDown::parseElseIf() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_CONDITION>, Error> condition{
       parseCondition(false)};
@@ -78,10 +70,8 @@ TopDown::parseElseIf() const noexcept {
 
 const std::expected<std::shared_ptr<AST_SWITCH>, Error>
 TopDown::parseSwitch() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_CONDITION>, Error> condition{
       parseCondition(false)};
@@ -94,10 +84,8 @@ TopDown::parseSwitch() const noexcept {
                        "missing left bracket of switch at " +
                            tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   std::vector<std::shared_ptr<AST_CASE>> cases{};
   while (tkStream_.currentPos() < tkStream_.size() and
@@ -117,10 +105,8 @@ TopDown::parseSwitch() const noexcept {
                            tkStream_.current()->locInfo());
   }
   if (tkStream_.current()->type() == TokenType::RB) {
-    if (!tkStream_.eat()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "failed to eat " + tkStream_.current()->raw() +
-                             " at " + tkStream_.current()->locInfo());
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
     }
     return Builder::createSwitch(*condition, cases, nullptr);
   }
@@ -141,20 +127,16 @@ TopDown::parseSwitch() const noexcept {
                        "missing right bracket of switch at " +
                            tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   return Builder::createSwitch(*condition, cases, *defaultCase);
 }
 
 const std::expected<std::shared_ptr<AST_CASE>, Error>
 TopDown::parseCase() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST>, Error> condition{parseOr()};
   if (!condition || !*condition) {
@@ -165,10 +147,8 @@ TopDown::parseCase() const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing : of case at " +
                                                tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
   if (!body || !*body) {
@@ -180,10 +160,8 @@ TopDown::parseCase() const noexcept {
 
 const std::expected<std::shared_ptr<AST_DEFAULT>, Error>
 TopDown::parseDefault() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
   if (!body || !*body) {
@@ -210,10 +188,8 @@ TopDown::parseTernary() const noexcept {
                          "missing ? of ternary operator at " +
                              tkStream_.current()->locInfo());
     }
-    if (!tkStream_.eat()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "failed to eat " + tkStream_.current()->raw() +
-                             " at " + tkStream_.current()->locInfo());
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
     }
     const std::expected<std::shared_ptr<AST>, Error> first{parseOr()};
     if (!first || !*first) {
@@ -225,10 +201,8 @@ TopDown::parseTernary() const noexcept {
                          "missing : of terna operator at " +
                              tkStream_.current()->locInfo());
     }
-    if (!tkStream_.eat()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "failed to eat " + tkStream_.current()->raw() +
-                             " at " + tkStream_.current()->locInfo());
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
     }
     const std::expected<std::shared_ptr<AST>, Error> second{parseOr()};
     if (!second || !*second) {
@@ -248,10 +222,8 @@ TopDown::parseCondition(const bool isInsideFor) const noexcept {
                          "missing left parenthesis at " +
                              tkStream_.current()->locInfo());
     }
-    if (!tkStream_.eat()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "failed to eat " + tkStream_.current()->raw() +
-                             " at " + tkStream_.current()->locInfo());
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
     }
     if (tkStream_.current()->type() == TokenType::RP) {
       return createError(ERROR_TYPE::SINTAX,
@@ -270,10 +242,8 @@ TopDown::parseCondition(const bool isInsideFor) const noexcept {
                          "missing right parenthesis of condition at " +
                              tkStream_.current()->locInfo());
     }
-    if (!tkStream_.eat()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "failed to eat " + tkStream_.current()->raw() +
-                             " at " + tkStream_.current()->locInfo());
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
     }
   }
   return Builder::createCondition(*condition);

@@ -6,10 +6,8 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_WHILE>, Error>
 TopDown::parseWhile() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_CONDITION>, Error> condition{
       parseCondition(false)};
@@ -27,20 +25,16 @@ TopDown::parseWhile() const noexcept {
 
 const std::expected<std::shared_ptr<AST_FOR>, Error>
 TopDown::parseFor() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::LP) {
     return createError(ERROR_TYPE::SINTAX,
                        "missing left parenthesis of for at " +
                            tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   if (tkStream_.current()->type() == TokenType::RP) {
     return createError(ERROR_TYPE::SINTAX,
@@ -58,10 +52,8 @@ TopDown::parseFor() const noexcept {
     }
     init.push_back(*expression);
     if (tkStream_.current()->type() == TokenType::COMMA) {
-      if (!tkStream_.eat()) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "failed to eat " + tkStream_.current()->raw() +
-                               " at " + tkStream_.current()->locInfo());
+      if (auto res = tryEat(); !res) {
+        return createError(res.error());
       }
       continue;
     } else if (tkStream_.current()->type() != TokenType::SEMICOLON) {
@@ -75,10 +67,8 @@ TopDown::parseFor() const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing ; after init of for at " +
                                                tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
 
   const std::expected<std::shared_ptr<AST_CONDITION>, Error> condition{
@@ -94,10 +84,8 @@ TopDown::parseFor() const noexcept {
                        "missing ; after condition of for at " +
                            tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   std::vector<std::shared_ptr<AST>> update{};
   while (tkStream_.currentPos() < tkStream_.size() and
@@ -111,10 +99,8 @@ TopDown::parseFor() const noexcept {
     }
     update.push_back(*expression);
     if (tkStream_.current()->type() == TokenType::COMMA) {
-      if (!tkStream_.eat()) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "failed to eat " + tkStream_.current()->raw() +
-                               " at " + tkStream_.current()->locInfo());
+      if (auto res = tryEat(); !res) {
+        return createError(res.error());
       }
       continue;
     } else if (tkStream_.current()->type() != TokenType::RP) {
@@ -124,10 +110,8 @@ TopDown::parseFor() const noexcept {
     }
     break;
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
   if (!body || !*body) {
@@ -139,10 +123,8 @@ TopDown::parseFor() const noexcept {
 
 const std::expected<std::shared_ptr<AST_DO_WHILE>, Error>
 TopDown::parseDoWhile() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
   if (!body || !*body) {
@@ -154,10 +136,8 @@ TopDown::parseDoWhile() const noexcept {
                        "missing while keyword of do while at " +
                            tkStream_.current()->locInfo());
   }
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_CONDITION>, Error> condition{
       parseCondition(false)};
@@ -176,10 +156,8 @@ TopDown::parseDoWhile() const noexcept {
 
 const std::expected<std::shared_ptr<AST_PASS>, Error>
 TopDown::parsePass() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::SEMICOLON) {
     return createError(ERROR_TYPE::SINTAX, "missing ; of pass statement at " +
@@ -190,10 +168,8 @@ TopDown::parsePass() const noexcept {
 
 const std::expected<std::shared_ptr<AST_STOP>, Error>
 TopDown::parseStop() const noexcept {
-  if (!tkStream_.eat()) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "failed to eat " + tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::SEMICOLON) {
     return createError(ERROR_TYPE::SINTAX, "missing ; of stop statement at " +

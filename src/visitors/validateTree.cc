@@ -18,7 +18,7 @@
 #include "../../inc/parsingAnalysis/ast/operators/ast_binary.h"
 #include "../../inc/parsingAnalysis/ast/operators/ast_unary.h"
 
-#include "../../inc/parsingAnalysis/ast/assignments/asr_assignment.h"
+#include "../../inc/parsingAnalysis/ast/assignments/ast_assignment.h"
 
 #include "../../inc/parsingAnalysis/ast/utils/ast_import.h"
 #include "../../inc/parsingAnalysis/ast/utils/ast_print.h"
