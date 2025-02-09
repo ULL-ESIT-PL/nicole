@@ -108,110 +108,59 @@ TopDown::parseBody() const noexcept {
 
 const std::expected<std::shared_ptr<AST_STATEMENT>, Error>
 TopDown::parseStatement() const noexcept {
+  // Función auxiliar para elegir la sentencia a parsear.
+  auto parseStmt = [&]() -> std::expected<std::shared_ptr<AST>, Error> {
+    // in case that it is an assignment
+    if (tkStream_.isTokenAheadBeforeSemicolon(TokenType::DOTDOT_ASSIGNMENT) ||
+        tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_ADD) ||
+        tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_SUB) ||
+        tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_MULT) ||
+        tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_DIV))
+      return parseAssignment(false);
 
-  std::expected<std::shared_ptr<AST>, Error> statement{nullptr};
-
-  if ((tkStream_.isTokenAheadBeforeSemicolon(TokenType::DOTDOT_ASSIGNMENT)) or
-      tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_ADD) or
-      tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_SUB) or
-      tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_MULT) or
-      tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_DIV)) {
-    statement = parseSelfAssignment(false);
-    if (!statement || !*statement) {
-      return createError(statement
-                             ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
-                             : statement.error());
+    // Se obtiene el tipo del token actual para decidir la rama de parseo.
+    switch (tkStream_.current()->type()) {
+    case TokenType::IF:
+      return parseIf();
+    case TokenType::SWITCH:
+      return parseSwitch();
+    case TokenType::WHILE:
+      return parseWhile();
+    case TokenType::DO:
+      return parseDoWhile();
+    case TokenType::FOR:
+      return parseFor();
+    case TokenType::PASS:
+      return parsePass();
+    case TokenType::STOP:
+      return parseStop();
+    case TokenType::FUNCTION:
+      return parseFuncDecl(false);
+    case TokenType::RETURN:
+      return parseReturn();
+    case TokenType::ENUM:
+      return parseEnum();
+    case TokenType::STRUCT:
+      return parseStructDecl();
+    case TokenType::CLASS:
+      return parseClassDecl();
+    case TokenType::DELETE:
+      return parseDelete();
+    case TokenType::IMPORT:
+      return parseImport();
+    case TokenType::PRINT:
+      return parsePrint();
+    default:
+      return parseVarDecl(false);
     }
+  };
 
-    return Builder::createStatement(*statement);
-  }
+  auto statement = parseStmt();
 
-  switch (tkStream_.current()->type()) {
-  case TokenType::IF: {
-    statement = parseIf();
-    break;
-  }
-
-  case TokenType::SWITCH: {
-    statement = parseSwitch();
-    break;
-  }
-
-  case TokenType::WHILE: {
-    statement = parseWhile();
-    break;
-  }
-
-  case TokenType::DO: {
-    statement = parseDoWhile();
-    break;
-  }
-
-  case TokenType::FOR: {
-    statement = parseFor();
-    break;
-  }
-
-  case TokenType::PASS: {
-    statement = parsePass();
-    break;
-  }
-
-  case TokenType::STOP: {
-    statement = parseStop();
-    break;
-  }
-
-  case TokenType::FUNCTION: {
-    statement = parseFuncDecl(false);
-    break;
-  }
-
-  case TokenType::RETURN: {
-    statement = parseReturn();
-    break;
-  }
-
-  case TokenType::ENUM: {
-    statement = parseEnum();
-    break;
-  }
-
-  case TokenType::STRUCT: {
-    statement = parseStructDecl();
-    break;
-  }
-
-  case TokenType::CLASS: {
-    statement = parseClassDecl();
-    break;
-  }
-
-  case TokenType::DELETE: {
-    statement = parseDelete();
-    break;
-  }
-
-  case TokenType::IMPORT: {
-    statement = parseImport();
-    break;
-  }
-
-  case TokenType::PRINT: {
-    statement = parsePrint();
-    break;
-  }
-
-  default: {
-    statement = parseVarDecl(false);
-    break;
-  }
-  }
-
-  if (!statement || !*statement) {
+  if (!statement || !*statement)
     return createError(statement ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                  : statement.error());
-  }
+
   return Builder::createStatement(*statement);
 }
 

@@ -3,7 +3,7 @@
 namespace nicole {
 
 const std::expected<std::shared_ptr<AST>, Error>
-TopDown::parseSelfAssignment(const bool insideFor) const noexcept {
+TopDown::parseAssignment(const bool insideFor) const noexcept {
   const auto left{parseOr()};
   if (!left || !*left) {
     return createError(left ? Error{ERROR_TYPE::NULL_NODE, "left is null"}

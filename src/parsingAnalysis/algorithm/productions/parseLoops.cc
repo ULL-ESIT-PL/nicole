@@ -91,7 +91,7 @@ TopDown::parseFor() const noexcept {
   while (tkStream_.currentPos() < tkStream_.size() and
          tkStream_.current()->type() != TokenType::RP) {
     const std::expected<std::shared_ptr<AST>, Error> expression{
-        parseSelfAssignment(true)};
+        parseAssignment(true)};
     if (!expression || !*expression) {
       return createError(expression
                              ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
