@@ -5,6 +5,41 @@
 #include "../inc/visitors/validateTree.h"
 #include <expected>
 
+void helper() noexcept {
+  std::cout
+      << "Usage \n"
+         "From the parent directory, run:\n"
+         "\t./nicole.sh [[options] input_file] | "
+         "-t Where input_file is the main program file with the "
+         ".nc extension(e.g., helloWorld.nc).\n\n"
+         "Options can appear in any position except -n, "
+         "which must be followed by the output file name.\n\n"
+         "\t-h | --help --> Displays a brief description of how to use the "
+         "compiler.\n\n"
+         "\t-v | --validate --> Forces the program to follow certain "
+         "validation "
+         "rules (recommended).\n\n"
+         "\t-o | --optimize --> Performs optimizations on the generated "
+         "code.\n\n"
+         "\t-n | --name output_file --> Allows specifying the name of the "
+         "output "
+         "file (default is a.out).\n\n"
+         "\t-p | --printTree --> Prints the Abstract Syntax Tree (AST) in a "
+         "directory-like structure.\n\n"
+         "\t-i | --printIR --> Prints the generated Intermediate "
+         "Representation "
+         "(IR) code.\n\n"
+         "\t-t --> Executes the tests of the compiler, also to run the tests "
+         "no "
+         "other argument but -t can be passed to the script.\n\n"
+         "Usage Examples:\n"
+         "\t- Compile a file with optimization and validation, specifying the "
+         "output executable name:\n"
+         "      ./nicole.sh -v -o -n program_out helloWorld.nc\n\n"
+         "\t- Generate the AST and intermediate code without optimization :\n"
+         "      ./nicole.sh -p -i helloWorld.nc\n";
+}
+
 // Just creates a main function for our program like a wrapper
 int main(int argc, char *argv[]) {
   const std::vector<std::string_view> arguments(argv + 1, argv + argc);
@@ -15,7 +50,7 @@ int main(int argc, char *argv[]) {
     std::cerr << options.error() << "\n";
     return 1;
   } else if (options->help()) {
-    // Mostrar help
+    helper();
     return EXIT_SUCCESS;
   }
 
