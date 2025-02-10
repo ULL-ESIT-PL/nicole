@@ -170,7 +170,7 @@ Builder::createUnary(const Token &op,
 
 std::expected<std::shared_ptr<AST_ASSIGNMENT>, Error>
 Builder::createAssignment(const Token &op, const std::shared_ptr<AST> &left,
-                              const std::shared_ptr<AST> &value) noexcept {
+                          const std::shared_ptr<AST> &value) noexcept {
   const auto astSelfAssignment{
       std::make_shared<AST_ASSIGNMENT>(op, left, value)};
   if (left) {
@@ -528,28 +528,21 @@ std::expected<std::shared_ptr<AST_THIS>, Error> Builder::createThis() noexcept {
 
 std::expected<std::shared_ptr<AST_AUTO_DECL>, Error>
 Builder::createAutoDecl(const std::string &id,
-                        const std::shared_ptr<AST> &value) noexcept {
-  const auto astAutoDecl{std::make_shared<AST_AUTO_DECL>(id, value)};
+                        const std::shared_ptr<AST> &value,
+                        const bool isConst) noexcept {
+  const auto astAutoDecl{std::make_shared<AST_AUTO_DECL>(id, value, isConst)};
   if (value) {
     value->setFather(astAutoDecl);
   }
   return astAutoDecl;
 }
 
-std::expected<std::shared_ptr<AST_CONST_DECL>, Error>
-Builder::createConstDecl(const std::string &id, const std::string &type,
-                         const std::shared_ptr<AST> &value) noexcept {
-  const auto astConstDecl{std::make_shared<AST_CONST_DECL>(id, type, value)};
-  if (value) {
-    value->setFather(astConstDecl);
-  }
-  return astConstDecl;
-}
-
-std::expected<std::shared_ptr<AST_LET_DECL>, Error>
-Builder::createLetDecl(const std::string &id, const std::string &type,
-                       const std::shared_ptr<AST> &value) noexcept {
-  const auto astLetDecl{std::make_shared<AST_LET_DECL>(id, type, value)};
+std::expected<std::shared_ptr<AST_VAR_TYPED_DECL>, Error>
+Builder::createVarTypedtDecl(const std::string &id, const std::string &type,
+                             const std::shared_ptr<AST> &value,
+                             const bool isConst) noexcept {
+  const auto astLetDecl{
+      std::make_shared<AST_VAR_TYPED_DECL>(id, type, value, isConst)};
   if (value) {
     value->setFather(astLetDecl);
   }

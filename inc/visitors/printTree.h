@@ -147,10 +147,7 @@ public:
   visit(const AST_AUTO_DECL *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>
-  visit(const AST_LET_DECL *node) const noexcept override;
-
-  [[nodiscard]] std::expected<std::string, Error>
-  visit(const AST_CONST_DECL *node) const noexcept override;
+  visit(const AST_VAR_TYPED_DECL *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>
   visit(const AST_VAR_CALL *node) const noexcept override;

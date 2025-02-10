@@ -48,10 +48,8 @@ std::string astTypeToStr(const AST_TYPE type) noexcept {
     return "UNARY";
 
     // Variable declaration
-  case AST_TYPE::LET_DECL:
-    return "LET_DECL";
-  case AST_TYPE::CONST_DECL:
-    return "CONST_DECL";
+  case AST_TYPE::VAR_TYPED_DECL:
+    return "VAR_TYPED_DECL";
   case AST_TYPE::AUTO_DECL:
     return "AUTO_DECL";
   case AST_TYPE::VAR_CALL:

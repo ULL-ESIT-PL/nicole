@@ -49,8 +49,7 @@
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_this.h"
 
 #include "../../inc/parsingAnalysis/ast/variables/ast_autoDecl.h"
-#include "../../inc/parsingAnalysis/ast/variables/ast_constDecl.h"
-#include "../../inc/parsingAnalysis/ast/variables/ast_letDecl.h"
+#include "../../inc/parsingAnalysis/ast/variables/ast_typedDecl.h"
 #include "../../inc/parsingAnalysis/ast/variables/ast_varCall.h"
 
 #include "../../inc/parsingAnalysis/ast/chained/ast_chained.h"
@@ -836,34 +835,15 @@ ValidateTree::visit(const AST_AUTO_DECL *node) const noexcept {
 
 // statement / body / not null or for
 std::expected<bool, Error>
-ValidateTree::visit(const AST_LET_DECL *node) const noexcept {
+ValidateTree::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   if (!node) {
-    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_LET_DECL");
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_TYPED_DECL");
   }
   if (!(CheckPosition::itsBodyAncestorHasParent(node) or
         CheckPosition::isInsideForHeader(node))) {
     return createError(
         ERROR_TYPE::VALIDATE_TREE,
-        "a let declaration can only exist in a body or a for header init");
-  }
-  const auto result{node->value()->accept(*this)};
-  if (!result) {
-    return createError(result.error());
-  }
-  return true;
-}
-
-// statement / body / not null or for
-std::expected<bool, Error>
-ValidateTree::visit(const AST_CONST_DECL *node) const noexcept {
-  if (!node) {
-    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CONST_DECL");
-  }
-  if (!(CheckPosition::itsBodyAncestorHasParent(node) or
-        CheckPosition::isInsideForHeader(node))) {
-    return createError(
-        ERROR_TYPE::VALIDATE_TREE,
-        "a const declaration can only exist in a body or a for header init");
+        "a var typed declaration can only exist in a body or a for header init");
   }
   const auto result{node->value()->accept(*this)};
   if (!result) {

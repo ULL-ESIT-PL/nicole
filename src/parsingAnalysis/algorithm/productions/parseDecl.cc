@@ -87,7 +87,7 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
                          "Const variable must have a type specified at " +
                              tkStream_.current()->locInfo());
     }
-    return Builder::createConstDecl(varName, varType, valueExpr);
+    return Builder::createVarTypedtDecl(varName, varType, valueExpr, true);
   }
   case TokenType::LET: { // let variable: type = expression;
     if (auto res = tryEat(); !res) {
@@ -102,7 +102,7 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
                          "Let variable must have a type specified at " +
                              tkStream_.current()->locInfo());
     }
-    return Builder::createLetDecl(varName, varType, valueExpr);
+    return Builder::createVarTypedtDecl(varName, varType, valueExpr, false);
   }
   case TokenType::AUTO: { // auto variable = expression;
     if (auto res = tryEat(); !res) {
@@ -117,7 +117,7 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
                          "Auto variable should not have a type specified at " +
                              tkStream_.current()->locInfo());
     }
-    return Builder::createAutoDecl(varName, valueExpr);
+    return Builder::createAutoDecl(varName, valueExpr, false);
   }
   default: {
     return parseTernary();

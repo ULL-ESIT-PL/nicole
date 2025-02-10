@@ -50,8 +50,7 @@
 #include "ast/conditionals/ast_ternary.h"
 
 #include "ast/variables/ast_autoDecl.h"
-#include "ast/variables/ast_constDecl.h"
-#include "ast/variables/ast_letDecl.h"
+#include "ast/variables/ast_typedDecl.h"
 #include "ast/variables/ast_varCall.h"
 
 #include "ast/pointer/ast_delete.h"
@@ -250,16 +249,13 @@ public:
 
   // Variables
   [[nodiscard]] static std::expected<std::shared_ptr<AST_AUTO_DECL>, Error>
-  createAutoDecl(const std::string &id,
-                 const std::shared_ptr<AST> &value) noexcept;
+  createAutoDecl(const std::string &id, const std::shared_ptr<AST> &value,
+                 const bool isConst) noexcept;
 
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_CONST_DECL>, Error>
-  createConstDecl(const std::string &id, const std::string &type,
-                  const std::shared_ptr<AST> &value) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_LET_DECL>, Error>
-  createLetDecl(const std::string &id, const std::string &type,
-                const std::shared_ptr<AST> &value) noexcept;
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_VAR_TYPED_DECL>, Error>
+  createVarTypedtDecl(const std::string &id, const std::string &type,
+                      const std::shared_ptr<AST> &value,
+                      const bool isConst) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_VAR_CALL>, Error>
   createVarCall(const std::string &id) noexcept;

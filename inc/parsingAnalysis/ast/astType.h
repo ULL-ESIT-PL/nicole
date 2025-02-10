@@ -34,8 +34,7 @@ enum class AST_TYPE : int {
   UNARY,
 
   // Variable declaration
-  LET_DECL,
-  CONST_DECL,
+  VAR_TYPED_DECL,
   AUTO_DECL,
   VAR_CALL,
 

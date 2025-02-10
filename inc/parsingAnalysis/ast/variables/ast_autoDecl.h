@@ -1,25 +1,15 @@
 #ifndef AST_AUTO_DECL_H
 #define AST_AUTO_DECL_H
 
-#include "../ast.h"
+#include "ast_varDecl.h"
 
 namespace nicole {
 
-class AST_AUTO_DECL : public AST {
-private:
-  std::string id_;
-  std::shared_ptr<AST> value_;
-
+class AST_AUTO_DECL : public AST_VAR_DECL {
 public:
   explicit AST_AUTO_DECL(const std::string &id,
-                         const std::shared_ptr<AST> &value) noexcept
-      : AST(AST_TYPE::AUTO_DECL), id_{id}, value_{value} {}
-
-  [[nodiscard]] const std::string &id() const noexcept { return id_; }
-
-  [[nodiscard]] const std::shared_ptr<AST> &value() const noexcept {
-    return value_;
-  }
+                         const std::shared_ptr<AST> &value, const bool isConst) noexcept
+      : AST_VAR_DECL(AST_TYPE::AUTO_DECL, id, value, isConst) {}
 
   [[nodiscard]] std::expected<std::string, Error>
   accept(const PrintTree &visitor) const noexcept override {

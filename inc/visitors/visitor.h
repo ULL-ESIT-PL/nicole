@@ -66,8 +66,7 @@ class AST_THIS;
 class AST_CONSTRUCTOR_CALL;
 
 class AST_AUTO_DECL;
-class AST_LET_DECL;
-class AST_CONST_DECL;
+class AST_VAR_TYPED_DECL;
 class AST_VAR_CALL;
 
 class AST_CHAINED;
@@ -209,10 +208,7 @@ public:
   visit(const AST_AUTO_DECL *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_LET_DECL *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_CONST_DECL *node) const noexcept = 0;
+  visit(const AST_VAR_TYPED_DECL *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_VAR_CALL *node) const noexcept = 0;
