@@ -18,4 +18,4 @@ jobs:
           git remote add fork https://x-access-token:${{ secrets.FORK_TOKEN }}@github.com/ULL-ESIT-PL/nicole.git
       - name: Sincronizar cambios en el fork
         run: |
-          git push fork --mirror
+          git push fork --all --force
