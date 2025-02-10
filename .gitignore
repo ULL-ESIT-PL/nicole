@@ -1,3 +1,4 @@
 # for anyone using cmake
 build/
 .cache/
+_deps/
