@@ -1,0 +1,21 @@
+name: Sincronizar Fork
+on:
+  push:
+    branches: 
+      - main   # Agrega aquí las ramas que quieras sincronizar
+      - lexer
+      - parser
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Obtiene todo el historial
+      - name: Agregar remoto del fork
+        run: |
+          git remote add fork https://x-access-token:${{ secrets.FORK_TOKEN }}@github.com/ULL-ESIT-PL/nicole.git
+      - name: Sincronizar cambios en el fork
+        run: |
+          git push fork --mirror
