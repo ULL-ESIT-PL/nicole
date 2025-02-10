@@ -2,7 +2,7 @@
 #include <memory>
 #include <string>
 #include <variant>
-
+ 
 // Forward declarations para la recursividad.
 struct AST_BINARY;
 struct AST_IF;
