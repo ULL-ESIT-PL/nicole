@@ -52,6 +52,7 @@ Generate the AST and intermediate code without optimization:
 - `Catch2 3.7`
 - `LLVM 19`
 - `cmake 3.3`
+- ``ninja 1.12` for faster compilation
 - `The project only has been tested in Linux`
 
 ## Features Implemented
