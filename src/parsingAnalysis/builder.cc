@@ -1,7 +1,4 @@
 #include "../../inc/parsingAnalysis/builder.h"
-#include <cstddef>
-#include <iostream>
-#include <ostream>
 
 namespace nicole {
 

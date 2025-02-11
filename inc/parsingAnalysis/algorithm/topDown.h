@@ -2,6 +2,7 @@
 #define TOP_DOWN_H
 
 #include "parser.h"
+#include "../builder.h"
 #include <memory>
 #include <variant>
 

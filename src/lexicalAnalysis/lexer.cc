@@ -1,5 +1,8 @@
 #include "../../inc/lexicalAnalysis/lexer.h"
 
+#include <fstream>
+#include <iostream>
+
 namespace nicole {
 
 const Category Lexer::concatCategories() const noexcept {

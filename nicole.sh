@@ -5,14 +5,14 @@ if [ ! -d "./build" ]; then
     mkdir build
     cd build
     cmake ..
-    make
+    cmake --build . --parallel $(nproc)
     cd ..
 fi
 
 # Comprobar si se pasa la opción -t
 if [[ "$1" == "-t" ]]; then
     cd build
-    make
+    cmake --build . --parallel $(nproc)
     # Ejecutar los tests
     ctest --verbose
     exit 0
@@ -20,7 +20,7 @@ fi
 
 # Compilar el proyecto
 cd build
-make
+cmake --build . --parallel $(nproc)
 
 # Volver al directorio principal
 cd ..

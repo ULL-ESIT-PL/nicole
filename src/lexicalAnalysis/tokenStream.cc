@@ -1,5 +1,4 @@
 #include "../../inc/lexicalAnalysis/tokenStream.h"
-#include <cstddef>
 
 namespace nicole {
 

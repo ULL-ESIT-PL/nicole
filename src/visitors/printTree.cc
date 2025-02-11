@@ -55,7 +55,6 @@
 #include "../../inc/parsingAnalysis/ast/chained/ast_chained.h"
 
 #include "../../inc/parsingAnalysis/ast/tree.h"
-#include <iostream>
 #include <ostream>
 
 namespace nicole {

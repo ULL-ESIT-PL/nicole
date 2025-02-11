@@ -1,5 +1,4 @@
 #include "../../../../inc/parsingAnalysis/ast/functions/parameters.h"
-#include <cstddef>
 
 namespace nicole {
 

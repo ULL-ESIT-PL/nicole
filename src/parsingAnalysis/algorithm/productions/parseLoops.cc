@@ -1,6 +1,4 @@
 #include "../../../../inc/parsingAnalysis/algorithm/topDown.h"
-#include <memory>
-#include <vector>
 
 namespace nicole {
 

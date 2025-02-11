@@ -2,8 +2,6 @@
 #define LEXER_H
 
 #include <filesystem>
-#include <fstream>
-#include <iostream>
 #include <vector>
 
 #include "category.h"
