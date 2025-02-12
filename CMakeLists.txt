@@ -22,6 +22,7 @@ endif()
 
 # Project name
 project(MyProject LANGUAGES CXX)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # C++ standard
 set(CMAKE_CXX_STANDARD 23)
@@ -124,6 +125,23 @@ add_executable(tests
     src/visitors/validateTree.cc
 )
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
+
+# Habilitar coverage para tests solo si se activa la opción ENABLE_COVERAGE
+option(ENABLE_COVERAGE "Habilitar flags de coverage para tests" OFF)
+if(ENABLE_COVERAGE)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        message(STATUS "Coverage habilitado con GCC")
+        target_compile_options(tests PRIVATE --coverage)
+        target_link_options(tests PRIVATE --coverage)
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        message(STATUS "Coverage habilitado con Clang")
+        target_compile_options(tests PRIVATE -fprofile-instr-generate -fcoverage-mapping)
+        target_link_options(tests PRIVATE -fprofile-instr-generate -fcoverage-mapping)
+    else()
+        message(WARNING "Coverage solo soportado para GCC o Clang")
+    endif()
+endif()
+
 
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(CTest)
