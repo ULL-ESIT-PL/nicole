@@ -25,20 +25,38 @@ if [[ "$1" == "-t" ]]; then
 
     cmake --build . --parallel $(nproc)
 
-    # Extraer el compilador usado desde CMakeCache.txt
-    
-    echo "Usando llvm-cov (Clang)"
-    # Exportar variable para que Clang genere archivos .profraw
-    export LLVM_PROFILE_FILE="coverage_%p.profraw"
-    # Ejecutar los tests para generar archivos .profraw
-    ctest --verbose
-    # Fusionar los archivos .profraw en un único archivo de datos
-    llvm-profdata merge -sparse coverage_*.profraw -o coverage.profdata
-    # Generar un reporte en formato lcov (para usar luego genhtml) usando el binario de tests
-    llvm-cov export ./bin/tests -instr-profile=coverage.profdata -format=lcov > coverage.info
+ # Extraer o detectar el compilador
+    if [ -f CMakeCache.txt ]; then
+        COMPILER=$(grep "CMAKE_CXX_COMPILER:" CMakeCache.txt | head -n1 | cut -d'=' -f2)
+    else
+        echo "CMakeCache.txt no encontrado. Detectando compilador manualmente..."
+        if command -v clang++ &> /dev/null; then
+            COMPILER="clang++"
+        elif command -v g++ &> /dev/null; then
+            COMPILER="g++"
+        else
+            echo "No se encontró un compilador compatible."
+            exit 1
+        fi
+    fi
+    echo "Compilador utilizado: $COMPILER"
+
+    if echo "$COMPILER" | grep -qi "clang"; then
+        echo "Usando llvm-cov (Clang)"
+        export LLVM_PROFILE_FILE="coverage_%p.profraw"
+        ctest --verbose
+        llvm-profdata merge -sparse coverage_*.profraw -o coverage.profdata
+        llvm-cov export ./bin/tests -instr-profile=coverage.profdata -format=lcov > coverage.info
+    elif echo "$COMPILER" | grep -qi "g++"; then
+        echo "Usando gcov (GCC)"
+        ctest --verbose
+        lcov --capture --directory . --output-file coverage.info
+    else
+        echo "Compilador desconocido. No se puede generar cobertura."
+        exit 1
+    fi
 
     genhtml coverage.info --output-directory ../coverage
-
     echo "Informe de cobertura generado en la carpeta 'coverage'."
 
     exit 0
