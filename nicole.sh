@@ -56,7 +56,7 @@ if [[ "$1" == "-t" ]]; then
         exit 1
     fi
 
-    genhtml coverage.info --output-directory ../coverage
+    genhtml coverage.info --output-directory ../docs/coverage
     echo "Informe de cobertura generado en la carpeta 'coverage'."
 
     exit 0
