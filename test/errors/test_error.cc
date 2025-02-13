@@ -12,7 +12,7 @@ TEST_CASE("Pruebas de la clase Error", "[error]") {
     std::ostringstream oss;
     oss << error;
 
-    REQUIRE(error.info() == "Se necesitan más argumentos");
+    REQUIRE(error.info() == "se necesitan más argumentos");
     REQUIRE(oss.str() ==
             "Error MISSING_ARGUMENTS: Se necesitan más argumentos");
   }
