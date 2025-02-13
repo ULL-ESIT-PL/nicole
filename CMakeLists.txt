@@ -29,23 +29,30 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Detectar el compilador
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(COMPILER_WARNINGS "-Wall -Wextra -Werror -Wpedantic \
-                           -Wshadow -Wnon-virtual-dtor -Wold-style-cast \
-                           -Wcast-align -Wunused -Woverloaded-virtual \
-                           -Wconversion -Wsign-conversion -Wnull-dereference \
-                           -Wdouble-promotion -Wformat=2 -Wmisleading-indentation")
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(COMPILER_WARNINGS "-Wall -Wextra -Werror -Wpedantic \
-                           -Wshadow -Wnon-virtual-dtor -Wold-style-cast \
-                           -Wcast-align -Wunused -Woverloaded-virtual \
-                           -Wconversion -Wsign-conversion -Wnull-dereference \
-                           -Wdouble-promotion -Wformat=2 -Wmisleading-indentation \
-                           -Wduplicated-cond -Wduplicated-branches -Wlogical-op \
-                           -Wuseless-cast")
+option(ENABLE_WARNINGS "Activar flags de warnings" ON)
+
+if(ENABLE_WARNINGS)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        set(COMPILER_WARNINGS "-Wall -Wextra -Werror -Wpedantic \
+                               -Wshadow -Wnon-virtual-dtor -Wold-style-cast \
+                               -Wcast-align -Wunused -Woverloaded-virtual \
+                               -Wconversion -Wsign-conversion -Wnull-dereference \
+                               -Wdouble-promotion -Wformat=2 -Wmisleading-indentation")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        set(COMPILER_WARNINGS "-Wall -Wextra -Werror -Wpedantic \
+                               -Wshadow -Wnon-virtual-dtor -Wold-style-cast \
+                               -Wcast-align -Wunused -Woverloaded-virtual \
+                               -Wconversion -Wsign-conversion -Wnull-dereference \
+                               -Wdouble-promotion -Wformat=2 -Wmisleading-indentation \
+                               -Wduplicated-cond -Wduplicated-branches -Wlogical-op \
+                               -Wuseless-cast")
+    else()
+        message(WARNING "No se aplicaron flags específicos para el compilador.")
+    endif()
 else()
-    message(WARNING "No se aplicaron flags específicos para el compilador.")
+    set(COMPILER_WARNINGS "")
 endif()
+
 
 
 ###########################################################
