@@ -13,13 +13,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install dependencies
+      - name: Install dependencies and clang 19
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake clang llvm
+          sudo apt-get install -y cmake wget gnupg lsb-release
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 19
+          rm llvm.sh
 
       - name: Configure project
-        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DENABLE_WARNINGS=OFF
+        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DENABLE_WARNINGS=OFF -DCMAKE_CXX_COMPILER=clang++-19
 
       - name: Build project
         run: cmake --build build -- -j$(nproc)
