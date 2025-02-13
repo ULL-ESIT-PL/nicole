@@ -125,6 +125,11 @@ add_executable(tests
     src/visitors/validateTree.cc
 )
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
+target_compile_options(tests PRIVATE
+    -Wno-error=implicit-int-conversion
+    -Wno-error=old-style-cast
+    -Wno-error=sign-conversion
+)
 
 # Habilitar coverage para tests solo si se activa la opción ENABLE_COVERAGE
 option(ENABLE_COVERAGE "Habilitar flags de coverage para tests" OFF)
