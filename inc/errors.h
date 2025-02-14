@@ -2,7 +2,6 @@
 #define NICOLE_ERRORS_H
 
 #include <expected>
-#include <llvm/IR/Attributes.h>
 #include <ostream>
 
 namespace nicole {
