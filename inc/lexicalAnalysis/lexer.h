@@ -12,7 +12,7 @@ namespace nicole {
 // Lexer that tokenize an input file
 class Lexer final {
 private:
-  std::vector<Category> categories_{};
+  std::vector<Category> categories_;
 
   // makes a category that matches with every token of our sintax
   [[nodiscard]] const Category concatCategories() const noexcept;

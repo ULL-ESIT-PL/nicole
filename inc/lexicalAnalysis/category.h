@@ -11,9 +11,9 @@ namespace nicole {
 // Represents de category of a token
 class Category final {
 private:
-  TokenType type_{};
+  TokenType type_;
   RegexWrapper pattern_;
-  bool skip_{false};
+  bool skip_;
 
 public:
   explicit Category(const TokenType &type, const std::string &matcher,
