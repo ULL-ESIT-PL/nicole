@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-02-12 20:20:44</td>
+            <td class="headerValue">2025-02-14 00:03:17</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
@@ -64,19 +64,19 @@
 <span id="L2"><span class="lineNum">       2</span>              : </span>
 <span id="L3"><span class="lineNum">       3</span>              : namespace nicole {</span>
 <span id="L4"><span class="lineNum">       4</span>              : </span>
-<span id="L5"><span class="lineNum">       5</span> <span class="tlaGNC tlaBgGNC">          21 : bool Parameters::operator==(const Parameters &amp;other) const noexcept {</span></span>
-<span id="L6"><span class="lineNum">       6</span> <span class="tlaGNC">          21 :   if (params_.size() != other.size()) {</span></span>
-<span id="L7"><span class="lineNum">       7</span> <span class="tlaGNC">           7 :     return false;</span></span>
-<span id="L8"><span class="lineNum">       8</span> <span class="tlaGNC">           7 :   }</span></span>
-<span id="L9"><span class="lineNum">       9</span> <span class="tlaGNC">          14 :   const std::vector&lt;std::pair&lt;std::string, std::string&gt;&gt; data{other.params_};</span></span>
-<span id="L10"><span class="lineNum">      10</span> <span class="tlaGNC">          14 :   const std::size_t size{params_.size()};</span></span>
-<span id="L11"><span class="lineNum">      11</span> <span class="tlaGNC">          42 :   for (std::size_t i{0}; i &lt; size; ++i) {</span></span>
-<span id="L12"><span class="lineNum">      12</span> <span class="tlaGNC">          28 :     if (params_[i].second != data[i].second) {</span></span>
+<span id="L5"><span class="lineNum">       5</span> <span class="tlaGNC tlaBgGNC">          24 : bool Parameters::operator==(const Parameters &amp;other) const noexcept {</span></span>
+<span id="L6"><span class="lineNum">       6</span> <span class="tlaGNC">          24 :   if (params_.size() != other.size()) {</span></span>
+<span id="L7"><span class="lineNum">       7</span> <span class="tlaGNC">           8 :     return false;</span></span>
+<span id="L8"><span class="lineNum">       8</span> <span class="tlaGNC">           8 :   }</span></span>
+<span id="L9"><span class="lineNum">       9</span> <span class="tlaGNC">          16 :   const std::vector&lt;std::pair&lt;std::string, std::string&gt;&gt; data{other.params_};</span></span>
+<span id="L10"><span class="lineNum">      10</span> <span class="tlaGNC">          16 :   const std::size_t size{params_.size()};</span></span>
+<span id="L11"><span class="lineNum">      11</span> <span class="tlaGNC">          48 :   for (std::size_t i{0}; i &lt; size; ++i) {</span></span>
+<span id="L12"><span class="lineNum">      12</span> <span class="tlaGNC">          32 :     if (params_[i].second != data[i].second) {</span></span>
 <span id="L13"><span class="lineNum">      13</span> <span class="tlaUNC tlaBgUNC">           0 :       return false;</span></span>
 <span id="L14"><span class="lineNum">      14</span> <span class="tlaUNC">           0 :     }</span></span>
-<span id="L15"><span class="lineNum">      15</span> <span class="tlaGNC tlaBgGNC">          28 :   }</span></span>
-<span id="L16"><span class="lineNum">      16</span> <span class="tlaGNC">          14 :   return true;</span></span>
-<span id="L17"><span class="lineNum">      17</span> <span class="tlaGNC">          14 : }</span></span>
+<span id="L15"><span class="lineNum">      15</span> <span class="tlaGNC tlaBgGNC">          32 :   }</span></span>
+<span id="L16"><span class="lineNum">      16</span> <span class="tlaGNC">          16 :   return true;</span></span>
+<span id="L17"><span class="lineNum">      17</span> <span class="tlaGNC">          16 : }</span></span>
 <span id="L18"><span class="lineNum">      18</span>              : </span>
 <span id="L19"><span class="lineNum">      19</span>              : } // namespace nicole</span>
         </pre>

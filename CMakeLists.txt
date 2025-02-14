@@ -269,6 +269,9 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 # Executable
 add_executable(binaries ${SRC_FILES})
 
+# Agregar la ruta de inclusión de LLVM solo para 'binaries'
+target_include_directories(binaries PRIVATE ${LLVM_INCLUDEDIR})
+
 # Link LLVM libraries
 target_link_libraries(binaries ${LLVM_LIBS} ${LLVM_SYSTEM_LIBS})
 
