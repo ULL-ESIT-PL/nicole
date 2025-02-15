@@ -48,11 +48,12 @@ Generate the AST and intermediate code without optimization:
 - A few examples of the languaje can be found at `nicoleScripts/`
 
 ## Requirements
-- `clang 19 or g++ 14`
-- `Catch2 3.7`
-- `LLVM 19`
-- `cmake 3.3`
-- `ninja 1.12` for faster compilation
+- `clang 19 or g++ 14` for compilation
+- `Catch2 3.7` for test
+- `LLVM 19` for code generation
+- `cmake 3.3` for building the project
+- `ccache 4.10.2` (optional)
+- `ninja 1.12` (optional) for faster compilation
 - `lcov 2.0.1` for coverage analysis
 - `The project only has been tested in Linux`
 
