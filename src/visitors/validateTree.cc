@@ -643,13 +643,7 @@ ValidateTree::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
   }
-  if (node->isMehtod() and
-      !CheckPosition::hasEveryAncestorInOrder(node, {AST_TYPE::STRUCT_DECL})) {
-    return createError(ERROR_TYPE::VALIDATE_TREE,
-                       "a method declaration can only appear inside a class: " +
-                           node->id());
-  } else if (!node->isMehtod() and
-             CheckPosition::itsBodyAncestorHasParent(node)) {
+  if (CheckPosition::itsBodyAncestorHasParent(node)) {
     return createError(ERROR_TYPE::VALIDATE_TREE,
                        "a funciton declaration cant appear inside a scope: " +
                            node->id());
@@ -782,6 +776,54 @@ ValidateTree::visit(const AST_METHOD_CALL *node) const noexcept {
   return true;
 }
 
+std::expected<bool, Error>
+ValidateTree::visit(const AST_METHOD_DECL *node) const noexcept {
+  if (!node) {
+    return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_DECL");
+  }
+  if (!CheckPosition::hasEveryAncestorInOrder(node, {AST_TYPE::STRUCT_DECL})) {
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "invalid hierarchy for Method decl");
+  }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
+  }
+  return true;
+}
+
+std::expected<bool, Error>
+ValidateTree::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
+  if (!node) {
+    return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_DECL");
+  }
+  if (!CheckPosition::hasEveryAncestorInOrder(node, {AST_TYPE::STRUCT_DECL})) {
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "invalid hierarchy for constructor decl");
+  }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
+  }
+  return true;
+}
+
+std::expected<bool, Error>
+ValidateTree::visit(const AST_DESTRUCTOR_DECL *node) const noexcept {
+  if (!node) {
+    return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_DESTRUCTOR_DECL");
+  }
+  if (!CheckPosition::hasEveryAncestorInOrder(node, {AST_TYPE::STRUCT_DECL})) {
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "invalid hierarchy for destructor decl");
+  }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
+  }
+  return true;
+}
+
 // func decl / struct
 std::expected<bool, Error>
 ValidateTree::visit(const AST_THIS *node) const noexcept {
@@ -841,9 +883,9 @@ ValidateTree::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   }
   if (!(CheckPosition::itsBodyAncestorHasParent(node) or
         CheckPosition::isInsideForHeader(node))) {
-    return createError(
-        ERROR_TYPE::VALIDATE_TREE,
-        "a var typed declaration can only exist in a body or a for header init");
+    return createError(ERROR_TYPE::VALIDATE_TREE,
+                       "a var typed declaration can only exist in a body or a "
+                       "for header init");
   }
   const auto result{node->value()->accept(*this)};
   if (!result) {

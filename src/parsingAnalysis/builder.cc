@@ -408,10 +408,9 @@ std::expected<std::shared_ptr<AST_FUNC_CALL>, Error> Builder::createFunCall(
 std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
 Builder::createFuncDecl(const std::string &id, const Parameters &params,
                         const std::string &returnType,
-                        const std::shared_ptr<AST_BODY> &body,
-                        const bool isMethod) noexcept {
+                        const std::shared_ptr<AST_BODY> &body) noexcept {
   const auto astFuncDecl{
-      std::make_shared<AST_FUNC_DECL>(id, params, returnType, body, isMethod)};
+      std::make_shared<AST_FUNC_DECL>(id, params, returnType, body)};
   if (body) {
     body->setFather(astFuncDecl);
   }
@@ -437,12 +436,12 @@ Builder::createEnum(const std::string &id,
 std::expected<std::shared_ptr<AST_STRUCT>, Error> Builder::createStruct(
     const std::string &id, std::unique_ptr<std::string> fatherType,
     const Attributes &attributes,
-    const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
-    const std::shared_ptr<AST_FUNC_DECL> &constructor,
-    const std::shared_ptr<AST_FUNC_DECL> &destructor) noexcept {
+    const std::vector<std::shared_ptr<AST_METHOD_DECL>> &methods,
+    const std::shared_ptr<AST_CONSTRUCTOR_DECL> &constructor,
+    const std::shared_ptr<AST_DESTRUCTOR_DECL> &destructor) noexcept {
   const auto astStruct{std::make_shared<AST_STRUCT>(
       id, std::move(fatherType), attributes, methods, constructor, destructor)};
-  const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods__{
+  const std::vector<std::shared_ptr<AST_METHOD_DECL>> &methods__{
       astStruct->methods()};
   for (const auto &methods_ : methods__) {
     if (methods_) {
@@ -502,6 +501,19 @@ Builder::createMethodCall(
   return astMethodCall;
 }
 
+std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>
+Builder::createMethodDecl(const std::string &id, const Parameters &params,
+                          const std::string &returnType,
+                          const std::shared_ptr<AST_BODY> &body,
+                          const bool isVirtual) noexcept {
+  const auto astMethodDecl{std::make_shared<AST_METHOD_DECL>(
+      id, params, returnType, body, isVirtual)};
+  if (body) {
+    body->setFather(astMethodDecl);
+  }
+  return astMethodDecl;
+}
+
 std::expected<std::shared_ptr<AST_CONSTRUCTOR_CALL>, Error>
 Builder::createConstructorCall(
     const std::string &id,
@@ -516,6 +528,28 @@ Builder::createConstructorCall(
     }
   }
   return astConstructorall;
+}
+
+std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>, Error>
+Builder::createConstructorDecl(const std::string &id_returnType,
+                               const Parameters &params,
+                               const std::shared_ptr<AST_BODY> &body) noexcept {
+  const auto astConstructor{
+      std::make_shared<AST_CONSTRUCTOR_DECL>(id_returnType, params, body)};
+  if (body) {
+    body->setFather(astConstructor);
+  }
+  return astConstructor;
+}
+
+std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>, Error>
+Builder::createDestructorDecl(const std::string &id,
+                              const std::shared_ptr<AST_BODY> &body) noexcept {
+  const auto astConstructor{std::make_shared<AST_DESTRUCTOR_DECL>(id, body)};
+  if (body) {
+    body->setFather(astConstructor);
+  }
+  return astConstructor;
 }
 
 std::expected<std::shared_ptr<AST_THIS>, Error> Builder::createThis() noexcept {

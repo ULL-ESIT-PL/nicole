@@ -105,9 +105,9 @@ for (;;a := b, a*=b,) {
 struct hola extends adios {
     a: int
     b: int
-    def c(): int {}
+    method c(): int {}
     k: int
-    def bb(): int {}
+    virtual bb(): int {}
     constructor(a: int, b: int) {}
     destructor {}
     ccc: int    
@@ -155,3 +155,15 @@ a{}[2].a().a + b.b.b;
 for (;;a := b, a*=b,) {
     1+1;
 }
+
+struct hola extends adios {
+    a: int
+    b: int
+    method c(): int {}
+    k: int
+    virtual bb(): int {}
+    constructor(a: int, b: int) {}
+    destructor {}
+    ccc: int    
+}
+

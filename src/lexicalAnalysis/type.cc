@@ -104,6 +104,8 @@ std::string tokenTypeToString(const TokenType &tk) noexcept {
     return "DESTRUCTOR";
   case TokenType::SUPER:
     return "SUPER";
+  case TokenType::VIRTUAL:
+    return "VIRTUAL";
 
   case TokenType::OR:
     return "OR";

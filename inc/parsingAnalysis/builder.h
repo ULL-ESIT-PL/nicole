@@ -22,6 +22,9 @@
 #include "ast/operators/ast_unary.h"
 
 #include "ast/userTypes/ast_constructorCall.h"
+#include "ast/userTypes/ast_constructorDecl.h"
+#include "ast/userTypes/ast_destructorDecl.h"
+#include "ast/userTypes/ast_methodDecl.h"
 #include "ast/userTypes/ast_this.h"
 #include "ast/vector/ast_index.h"
 #include "ast/vector/ast_vector.h"
@@ -205,8 +208,7 @@ public:
   [[nodiscard]] static std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
   createFuncDecl(const std::string &id, const Parameters &params,
                  const std::string &returnType,
-                 const std::shared_ptr<AST_BODY> &body,
-                 const bool isMethod) noexcept;
+                 const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_RETURN>, Error>
   createReturn(const std::shared_ptr<AST> &value) noexcept;
@@ -219,9 +221,9 @@ public:
   [[nodiscard]] static std::expected<std::shared_ptr<AST_STRUCT>, Error>
   createStruct(const std::string &id, std::unique_ptr<std::string> fatherType,
                const Attributes &attributes,
-               const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
-               const std::shared_ptr<AST_FUNC_DECL> &constructor,
-               const std::shared_ptr<AST_FUNC_DECL> &destructor) noexcept;
+               const std::vector<std::shared_ptr<AST_METHOD_DECL>> &methods,
+               const std::shared_ptr<AST_CONSTRUCTOR_DECL> &constructor,
+               const std::shared_ptr<AST_DESTRUCTOR_DECL> &destructor) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_CLASS>, Error>
   createClass(const std::string &id, std::unique_ptr<std::string> fatherType,
@@ -237,6 +239,23 @@ public:
   createMethodCall(
       const std::string &id,
       const std::vector<std::shared_ptr<AST>> &parameters) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>
+  createMethodDecl(const std::string &id, const Parameters &params,
+                   const std::string &returnType,
+                   const std::shared_ptr<AST_BODY> &body,
+                   const bool isVirtual) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>,
+                                     Error>
+  createConstructorDecl(const std::string &id_returnType,
+                        const Parameters &params,
+                        const std::shared_ptr<AST_BODY> &body) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>,
+                                     Error>
+  createDestructorDecl(const std::string &id,
+                       const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_THIS>, Error>
   createThis() noexcept;

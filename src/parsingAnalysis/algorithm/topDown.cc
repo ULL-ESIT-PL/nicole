@@ -131,7 +131,7 @@ TopDown::parseStatement() const noexcept {
     case TokenType::STOP:
       return parseStop();
     case TokenType::FUNCTION:
-      return parseFuncDecl(false);
+      return parseFuncDecl();
     case TokenType::RETURN:
       return parseReturn();
     case TokenType::ENUM:

@@ -1,8 +1,9 @@
 #ifndef AST_STRUCT_H
 #define AST_STRUCT_H
 
-#include "../ast.h"
-#include "../functions/ast_funcDecl.h"
+#include "ast_constructorDecl.h"
+#include "ast_destructorDecl.h"
+#include "ast_methodDecl.h"
 #include "attributes.h"
 #include <memory>
 #include <vector>
@@ -14,17 +15,17 @@ private:
   std::string id_;
   std::unique_ptr<std::string> fatherType_;
   Attributes attributes_;
-  std::vector<std::shared_ptr<AST_FUNC_DECL>> methods_;
-  std::shared_ptr<AST_FUNC_DECL> constructor_;
-  std::shared_ptr<AST_FUNC_DECL> destructor_;
+  std::vector<std::shared_ptr<AST_METHOD_DECL>> methods_;
+  std::shared_ptr<AST_CONSTRUCTOR_DECL> constructor_;
+  std::shared_ptr<AST_DESTRUCTOR_DECL> destructor_;
 
 public:
   explicit AST_STRUCT(
       const std::string &id, std::unique_ptr<std::string> fatherType,
       const Attributes &attributes,
-      const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
-      const std::shared_ptr<AST_FUNC_DECL> &constructor,
-      const std::shared_ptr<AST_FUNC_DECL> &destructor) noexcept
+      const std::vector<std::shared_ptr<AST_METHOD_DECL>> &methods,
+      const std::shared_ptr<AST_CONSTRUCTOR_DECL> &constructor,
+      const std::shared_ptr<AST_DESTRUCTOR_DECL> &destructor) noexcept
       : AST(AST_TYPE::STRUCT_DECL), id_{id}, fatherType_{std::move(fatherType)},
         attributes_{attributes}, methods_{methods}, constructor_{constructor},
         destructor_{destructor} {}
@@ -40,17 +41,17 @@ public:
     return attributes_;
   }
 
-  [[nodiscard]] const std::vector<std::shared_ptr<AST_FUNC_DECL>> &
+  [[nodiscard]] const std::vector<std::shared_ptr<AST_METHOD_DECL>> &
   methods() const noexcept {
     return methods_;
   }
 
-  [[nodiscard]] const std::shared_ptr<AST_FUNC_DECL> &
+  [[nodiscard]] const std::shared_ptr<AST_CONSTRUCTOR_DECL> &
   constructor() const noexcept {
     return constructor_;
   }
 
-  [[nodiscard]] const std::shared_ptr<AST_FUNC_DECL> &
+  [[nodiscard]] const std::shared_ptr<AST_DESTRUCTOR_DECL> &
   destructor() const noexcept {
     return destructor_;
   }

@@ -121,6 +121,15 @@ std::string astTypeToStr(const AST_TYPE type) noexcept {
   case AST_TYPE::METHOD_CALL:
     return "METHOD_CALL";
 
+  case AST_TYPE::METHOD_DECL:
+    return "METHOD_DECL";
+
+  case AST_TYPE::CONSTRUCTOR_DECL:
+    return "CONSTRUCTOR_DECL";
+
+  case AST_TYPE::DESTRUCTOR_DECL:
+    return "DESTRUCTOR_DECL";
+
   case AST_TYPE::THIS:
     return "THIS";
 

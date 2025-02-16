@@ -98,10 +98,12 @@ TopDown::parseStructDecl() const noexcept {
 
   bool isConstructorParsed{false};
   bool isDestructorParsed{false};
-  std::vector<std::shared_ptr<AST_FUNC_DECL>> methods{};
+  std::vector<std::shared_ptr<AST_METHOD_DECL>> methods{};
   std::vector<std::pair<std::string, std::string>> params{};
-  std::expected<std::shared_ptr<AST_FUNC_DECL>, Error> constructor{nullptr};
-  std::expected<std::shared_ptr<AST_FUNC_DECL>, Error> destructor{nullptr};
+  std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>, Error> constructor{
+      nullptr};
+  std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>, Error> destructor{
+      nullptr};
 
   while (tkStream_.currentPos() < tkStream_.size() and
          tkStream_.current()->type() != TokenType::RB) {
@@ -133,9 +135,20 @@ TopDown::parseStructDecl() const noexcept {
       break;
     }
 
-    case TokenType::FUNCTION: {
-      const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error> method{
-          parseFuncDecl(true)};
+    case TokenType::METHOD: {
+      const std::expected<std::shared_ptr<AST_METHOD_DECL>, Error> method{
+          parseMethodDecl(false)};
+      if (!method || !*method) {
+        return createError(method ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                                  : method.error());
+      }
+      methods.push_back(*method);
+      break;
+    }
+
+    case TokenType::VIRTUAL: {
+      const std::expected<std::shared_ptr<AST_METHOD_DECL>, Error> method{
+          parseMethodDecl(true)};
       if (!method || !*method) {
         return createError(method ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                   : method.error());
@@ -167,7 +180,7 @@ TopDown::parseStructDecl() const noexcept {
                                tkStream_.current()->locInfo());
       }
       isDestructorParsed = true;
-      destructor = parseDestructorDecl();
+      destructor = parseDestructorDecl(id.raw());
       if (!destructor || !*destructor) {
         return createError(destructor
                                ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
@@ -194,8 +207,8 @@ TopDown::parseStructDecl() const noexcept {
                                *destructor);
 }
 
-const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
-TopDown::parseConstructorDecl(const std::string &returnType) const noexcept {
+const std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>, Error>
+TopDown::parseConstructorDecl(const std::string &id_returnType) const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -222,12 +235,11 @@ TopDown::parseConstructorDecl(const std::string &returnType) const noexcept {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createFuncDecl("constructor", *params, returnType, *body,
-                                 true);
+  return Builder::createConstructorDecl(id_returnType, *params, *body);
 }
 
-const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
-TopDown::parseDestructorDecl() const noexcept {
+const std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>, Error>
+TopDown::parseDestructorDecl(const std::string &id) const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -236,8 +248,67 @@ TopDown::parseDestructorDecl() const noexcept {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createFuncDecl("destructor", Parameters{{}}, "void", *body,
-                                 true);
+  return Builder::createDestructorDecl(id, *body);
+}
+
+
+const std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>
+TopDown::parseMethodDecl(const bool isVirtual) const noexcept {
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
+  }
+  if (tkStream_.current()->type() != TokenType::ID) {
+    return createError(ERROR_TYPE::SINTAX,
+                       "missing identifier of function at " +
+                           tkStream_.current()->locInfo());
+  }
+  const Token id{*tkStream_.current()};
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
+  }
+  if (tkStream_.current()->type() != TokenType::LP) {
+    return createError(ERROR_TYPE::SINTAX, "missing ( of function at " +
+                                               tkStream_.current()->locInfo());
+  }
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
+  }
+  const std::expected<Parameters, Error> params{parseParams()};
+  if (!params) {
+    return createError(params.error());
+  }
+  if (tkStream_.current()->type() != TokenType::RP) {
+    return createError(ERROR_TYPE::SINTAX, "missing ) of function at " +
+                                               tkStream_.current()->locInfo());
+  }
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
+  }
+  if (tkStream_.current()->type() != TokenType::DOTDOT) {
+    return createError(ERROR_TYPE::SINTAX,
+                       "missing : after ) of function decl at " +
+                           tkStream_.current()->raw() + " at " +
+                           tkStream_.current()->locInfo());
+  }
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
+  }
+  if (tkStream_.current()->type() != TokenType::ID) {
+    return createError(ERROR_TYPE::SINTAX,
+                       "missing returnt type of function decl at " +
+                           tkStream_.current()->raw() + " at " +
+                           tkStream_.current()->locInfo());
+  }
+  const Token returnType{*tkStream_.current()};
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
+  }
+  const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
+  if (!body || !*body) {
+    return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                            : body.error());
+  }
+  return Builder::createMethodDecl(id.raw(), *params, returnType.raw(), *body, isVirtual);
 }
 
 } // namespace nicole

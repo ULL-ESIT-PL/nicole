@@ -62,6 +62,7 @@ enum class TokenType {
   CONSTRUCTOR,
   DESTRUCTOR,
   SUPER,
+  VIRTUAL,
 
   OR,
   AND,

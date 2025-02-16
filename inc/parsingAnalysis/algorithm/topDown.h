@@ -1,8 +1,8 @@
 #ifndef TOP_DOWN_H
 #define TOP_DOWN_H
 
-#include "parser.h"
 #include "../builder.h"
+#include "parser.h"
 #include <memory>
 #include <variant>
 
@@ -28,17 +28,21 @@ private:
   [[nodiscard]] const std::expected<std::shared_ptr<AST_STRUCT>, Error>
   parseStructDecl() const noexcept;
 
-  [[nodiscard]] const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
-  parseConstructorDecl(const std::string &returnType) const noexcept;
+  [[nodiscard]] const std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>,
+                                    Error>
+  parseConstructorDecl(const std::string &id_returnType) const noexcept;
 
-  [[nodiscard]] const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
-  parseDestructorDecl() const noexcept;
+  [[nodiscard]] const std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>, Error>
+  parseDestructorDecl(const std::string &id) const noexcept;
+
+  [[nodiscard]] const std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>
+  parseMethodDecl(const bool isVirtual) const noexcept;
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST_DELETE>, Error>
   parseDelete() const noexcept;
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
-  parseFuncDecl(const bool isMehtod) const noexcept;
+  parseFuncDecl() const noexcept;
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST_RETURN>, Error>
   parseReturn() const noexcept;

@@ -340,7 +340,7 @@ PrintTree::visit(const AST_BODY *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BODY");
   }
   std::ostringstream result;
-  result << indent_ << "Statement List:\n";
+  result << indent_ << "Body:\n";
   increaseIndent();
   for (const auto &statement : node->body()) {
     const auto val{statement->accept(*this)};
@@ -370,8 +370,6 @@ PrintTree::visit(const AST_WHILE *node) const noexcept {
   result << *condition;
   decreaseIndent();
 
-  result << indent_ << "Body:\n";
-  increaseIndent();
   for (const auto &statement : node->body()->body()) {
     const auto val{statement->accept(*this)};
     if (!val) {
@@ -379,7 +377,6 @@ PrintTree::visit(const AST_WHILE *node) const noexcept {
     }
     result << *val;
   }
-  decreaseIndent();
 
   decreaseIndent();
   return result.str();
@@ -422,7 +419,6 @@ PrintTree::visit(const AST_FOR *node) const noexcept {
   }
   decreaseIndent();
 
-  result << indent_ << "Body:\n";
   for (const auto &statement : node->body()->body()) {
     const auto val{statement->accept(*this)};
     if (!val) {
@@ -444,7 +440,6 @@ PrintTree::visit(const AST_DO_WHILE *node) const noexcept {
   result << indent_ << "Do While Loop:\n";
   increaseIndent();
 
-  result << indent_ << "Body:\n";
   for (const auto &statement : node->body()->body()) {
     const auto val{statement->accept(*this)};
     if (!val) {
@@ -499,7 +494,6 @@ PrintTree::visit(const AST_IF *node) const noexcept {
   }
   result << *condition;
 
-  result << indent_ << "Body:\n";
   for (const auto &statement : node->body()->body()) {
     const auto stmt{statement->accept(*this)};
     if (!stmt) {
@@ -548,7 +542,6 @@ PrintTree::visit(const AST_ELSE_IF *node) const noexcept {
   }
   result << *condition;
 
-  result << indent_ << "Body:\n";
   for (const auto &statement : node->body()->body()) {
     const auto stmt{statement->accept(*this)};
     if (!stmt) {
@@ -608,7 +601,6 @@ PrintTree::visit(const AST_CASE *node) const noexcept {
   }
   result << *cond;
 
-  result << indent_ << "Body:\n";
   for (const auto &statement : node->body()->body()) {
     const auto stmt{statement->accept(*this)};
     if (!stmt) {
@@ -731,7 +723,6 @@ PrintTree::visit(const AST_FUNC_DECL *node) const noexcept {
   }
   decreaseIndent();
 
-  result << indent_ << "Body:\n";
   if (node->body()) {
     const auto bodyStr{node->body()->accept(*this)};
     if (!bodyStr) {
@@ -958,6 +949,98 @@ PrintTree::visit(const AST_METHOD_CALL *node) const noexcept {
 }
 
 std::expected<std::string, Error>
+PrintTree::visit(const AST_METHOD_DECL *node) const noexcept {
+  if (!node) {
+    return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_DECL");
+  }
+
+  std::ostringstream result;
+  result << indent_ << "Method Declaration:\n";
+  increaseIndent();
+  result << indent_ << "Name: " << node->id() << "\n";
+  result << indent_ << "Return Type: " << node->returnType() << "\n";
+  result << indent_ << "Virtual: " << (node->isVirtual() ? "true" : "false")
+         << "\n";
+  result << indent_ << "Parameters:\n";
+  increaseIndent();
+  for (const auto &param : node->parameters()) {
+    result << indent_ << "var " << param.first << " type " << param.second
+           << "\n";
+  }
+  decreaseIndent();
+
+  if (node->body()) {
+    const auto bodyStr{node->body()->accept(*this)};
+    if (!bodyStr) {
+      return createError(bodyStr.error());
+    }
+    result << *bodyStr;
+  } else {
+    result << indent_ << "(empty body)\n";
+  }
+  decreaseIndent();
+
+  return result.str();
+}
+
+std::expected<std::string, Error>
+PrintTree::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
+  if (!node) {
+    return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_DECL");
+  }
+
+  std::ostringstream result;
+  result << indent_ << "Constructor Decl:\n";
+  increaseIndent();
+  result << indent_ << "Name: " << node->id() << "\n";
+  result << indent_ << "Parameters:\n";
+  increaseIndent();
+  for (const auto &param : node->parameters()) {
+    result << indent_ << "var " << param.first << " type " << param.second
+           << "\n";
+  }
+  decreaseIndent();
+
+  if (node->body()) {
+    const auto bodyStr{node->body()->accept(*this)};
+    if (!bodyStr) {
+      return createError(bodyStr.error());
+    }
+    result << *bodyStr;
+  } else {
+    result << indent_ << "(empty body)\n";
+  }
+  decreaseIndent();
+
+  return result.str();
+}
+
+std::expected<std::string, Error>
+PrintTree::visit(const AST_DESTRUCTOR_DECL *node) const noexcept {
+  if (!node) {
+    return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_DESTRUCTOR_DECL");
+  }
+
+  std::ostringstream result;
+  result << indent_ << "Destructor Decl:\n";
+  increaseIndent();
+  result << indent_ << "Name: " << node->id() << "\n";
+  result << indent_ << "Body:\n";
+  if (node->body()) {
+    const auto bodyStr{node->body()->accept(*this)};
+    if (!bodyStr) {
+      return createError(bodyStr.error());
+    }
+    result << *bodyStr;
+  } else {
+    result << indent_ << "(empty body)\n";
+  }
+  decreaseIndent();
+
+  return result.str();
+}
+
+std::expected<std::string, Error>
 PrintTree::visit(const AST_THIS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_THIS");
@@ -1001,7 +1084,8 @@ PrintTree::visit(const AST_AUTO_DECL *node) const noexcept {
   result << indent_ << "auto decl\n";
   increaseIndent();
   result << indent_ << "id: " << node->id() << "\n";
-  result << indent_ << "const: " << ((node->isConst()) ? "true" : "false") << "\n";
+  result << indent_ << "const: " << ((node->isConst()) ? "true" : "false")
+         << "\n";
   result << indent_ << "value:\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {
@@ -1022,7 +1106,8 @@ PrintTree::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   increaseIndent();
   result << indent_ << "id: " << node->id() << "\n";
   result << indent_ << "type: " << node->varType() << "\n";
-  result << indent_ << "const: " << ((node->isConst()) ? "true" : "false") << "\n";
+  result << indent_ << "const: " << ((node->isConst()) ? "true" : "false")
+         << "\n";
   result << indent_ << "value:\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {

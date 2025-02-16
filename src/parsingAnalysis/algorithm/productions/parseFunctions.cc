@@ -3,7 +3,7 @@
 namespace nicole {
 
 const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
-TopDown::parseFuncDecl(const bool isMethod) const noexcept {
+TopDown::parseFuncDecl() const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -58,8 +58,7 @@ TopDown::parseFuncDecl(const bool isMethod) const noexcept {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createFuncDecl(id.raw(), *params, returnType.raw(), *body,
-                                 isMethod);
+  return Builder::createFuncDecl(id.raw(), *params, returnType.raw(), *body);
 }
 
 const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {

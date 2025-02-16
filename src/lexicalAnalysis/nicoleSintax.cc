@@ -59,6 +59,7 @@ const Lexer NicoleSintax::createLexer() const noexcept {
       Category{TokenType::ATTR, "attr", false},
       Category{TokenType::THIS, "this", false},
       Category{TokenType::OVERRIDE, "override", false},
+      Category{TokenType::VIRTUAL, "virtual", false},
 
       Category{TokenType::SUPER, "super", false},
 

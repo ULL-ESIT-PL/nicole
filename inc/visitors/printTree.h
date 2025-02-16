@@ -138,6 +138,15 @@ public:
   visit(const AST_METHOD_CALL *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>
+  visit(const AST_METHOD_DECL *node) const noexcept override;
+
+  [[nodiscard]] std::expected<std::string, Error>
+  visit(const AST_CONSTRUCTOR_DECL *node) const noexcept override;
+
+  [[nodiscard]] std::expected<std::string, Error>
+  visit(const AST_DESTRUCTOR_DECL *node) const noexcept override;
+
+  [[nodiscard]] std::expected<std::string, Error>
   visit(const AST_THIS *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>
