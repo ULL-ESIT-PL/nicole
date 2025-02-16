@@ -1,13 +1,13 @@
 #ifndef VOID_TYPE_H
 #define VOID_TYPE_H
 
-#include "type.h"
+#include "genericType.h"
 
 namespace nicole {
 
-class VoidType final : public Type {
+class VoidType final : public GenericType {
 public:
-  explicit VoidType(const bool isConst) noexcept : Type{"void", isConst} {}
+  explicit VoidType(const bool isConst) noexcept : GenericType{"void", isConst} {}
 };
 
 } // namespace nicole

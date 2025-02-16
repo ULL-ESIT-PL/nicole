@@ -2,6 +2,7 @@
 #define TOP_DOWN_H
 
 #include "../builder.h"
+#include "../types/typeTable.h"
 #include "parser.h"
 #include <memory>
 #include <variant>
@@ -12,6 +13,9 @@ class TopDown final : public Parser {
 private:
   [[nodiscard]] const std::expected<std::shared_ptr<AST_BODY>, Error>
   parseStart() const noexcept;
+
+  [[nodiscard]] const std::expected<std::shared_ptr<GenericType>, Error>
+  parseType() const noexcept;
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST_BODY>, Error>
   parseBody() const noexcept;

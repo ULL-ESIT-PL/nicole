@@ -1,13 +1,13 @@
 #ifndef CHAR_TYPE_H
 #define CHAR_TYPE_H
 
-#include "type.h"
+#include "genericType.h"
 
 namespace nicole {
 
-class CharType final : public Type {
+class CharType final : public GenericType {
 public:
-  explicit CharType(const bool isConst) noexcept : Type{"char", isConst} {}
+  explicit CharType(const bool isConst) noexcept : GenericType{"char", isConst} {}
 };
 
 } // namespace nicole

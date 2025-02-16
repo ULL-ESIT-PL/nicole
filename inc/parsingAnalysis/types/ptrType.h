@@ -1,21 +1,21 @@
 #ifndef PTR_TYPE_H
 #define PTR_TYPE_H
 
-#include "type.h"
+#include "genericType.h"
 #include <memory>
 
 namespace nicole {
 
-class PtrType final : public Type {
+class PtrType final : public GenericType {
 private:
-  std::shared_ptr<Type> storedType_;
+  std::shared_ptr<GenericType> storedType_;
 
 public:
-  explicit PtrType(const std::shared_ptr<Type>& storedType,
+  explicit PtrType(const std::shared_ptr<GenericType>& storedType,
                       const bool isConst) noexcept
-      : Type{"ptr", isConst}, storedType_{storedType} {}
+      : GenericType{"ptr", isConst}, storedType_{storedType} {}
 
-  [[nodiscard]] const std::shared_ptr<Type> &storedType() const noexcept {
+  [[nodiscard]] const std::shared_ptr<GenericType> &storedType() const noexcept {
     return storedType_;
   }
 };

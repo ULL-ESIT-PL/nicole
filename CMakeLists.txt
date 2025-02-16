@@ -35,6 +35,7 @@ endif()
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+set(CMAKE_COLOR_DIAGNOSTICS ON)
 
 # Detectar el compilador
 option(ENABLE_WARNINGS "Activar flags de warnings" ON)
@@ -121,6 +122,7 @@ add_executable(tests
     src/parsingAnalysis/algorithm/productions/parseUserTypes.cc
     src/parsingAnalysis/algorithm/productions/parseUtils.cc
     src/parsingAnalysis/algorithm/productions/parseChained.cc
+    src/parsingAnalysis/algorithm/productions/parseTypes.cc
 
     test/parsingAnalysis/test_ast_literals.cc
     test/parsingAnalysis/test_ast_vector.cc 
@@ -236,6 +238,7 @@ set(SRC_FILES
     src/parsingAnalysis/algorithm/productions/parseUserTypes.cc
     src/parsingAnalysis/algorithm/productions/parseUtils.cc
     src/parsingAnalysis/algorithm/productions/parseChained.cc
+    src/parsingAnalysis/algorithm/productions/parseTypes.cc
 
     # visitors
     src/visitors/printTree.cc

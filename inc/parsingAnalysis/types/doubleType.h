@@ -1,13 +1,13 @@
 #ifndef DOUBLE_TYPE_H
 #define DOUBLE_TYPE_H
 
-#include "type.h"
+#include "genericType.h"
 
 namespace nicole {
 
-class DoubleType final : public Type {
+class DoubleType final : public GenericType {
 public:
-  explicit DoubleType(const bool isConst) noexcept : Type{"double", isConst} {}
+  explicit DoubleType(const bool isConst) noexcept : GenericType{"double", isConst} {}
 };
 
 } // namespace nicole

@@ -1,27 +1,28 @@
 #ifndef USER_TYPE_H
 #define USER_TYPE_H
 
-#include "type.h"
+#include "genericType.h"
 #include <memory>
+#include <vector>
 
 namespace nicole {
 
-class UserType final : public Type {
+class UserType final : public GenericType {
 private:
-  std::shared_ptr<Type> father_{nullptr};
-  std::vector<std::shared_ptr<Type>> storedTypes_;
+  std::shared_ptr<GenericType> father_{nullptr};
+  std::vector<std::shared_ptr<GenericType>> storedTypes_;
 
 public:
   explicit UserType(const std::string &id,
-                    const std::vector<std::shared_ptr<Type>> &storedTypes,
+                    const std::vector<std::shared_ptr<GenericType>> &storedTypes,
                     const bool isConst) noexcept
-      : Type{id, isConst}, storedTypes_{storedTypes} {}
+      : GenericType{id, isConst}, storedTypes_{storedTypes} {}
 
-  [[nodiscard]] const std::shared_ptr<Type> &father() const noexcept {
+  [[nodiscard]] const std::shared_ptr<GenericType> &father() const noexcept {
     return father_;
   }
 
-  [[nodiscard]] const std::vector<std::shared_ptr<Type>> &
+  [[nodiscard]] const std::vector<std::shared_ptr<GenericType>> &
   storedTypes() const noexcept {
     return storedTypes_;
   }

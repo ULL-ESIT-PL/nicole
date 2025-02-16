@@ -1,13 +1,13 @@
 #ifndef FLOAT_TYPE_H
 #define FLOAT_TYPE_H
 
-#include "type.h"
+#include "genericType.h"
 
 namespace nicole {
 
-class FloatType final : public Type {
+class FloatType final : public GenericType {
 public:
-  explicit FloatType(const bool isConst) noexcept : Type{"float", isConst} {}
+  explicit FloatType(const bool isConst) noexcept : GenericType{"float", isConst} {}
 };
 
 } // namespace nicole

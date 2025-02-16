@@ -1,13 +1,13 @@
 #ifndef INT_TYPE_H
 #define INT_TYPE_H
 
-#include "type.h"
+#include "genericType.h"
 
 namespace nicole {
 
-class IntType final : public Type {
+class IntType final : public GenericType {
 public:
-  explicit IntType(const bool isConst) noexcept : Type{"int", isConst} {}
+  explicit IntType(const bool isConst) noexcept : GenericType{"int", isConst} {}
 };
 
 } // namespace nicole

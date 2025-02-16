@@ -1,21 +1,24 @@
 #ifndef VECTOR_TYPE_H
 #define VECTOR_TYPE_H
 
-#include "type.h"
+#include "genericType.h"
 #include <memory>
 
 namespace nicole {
 
-class VectorType final : public Type {
+class VectorType final : public GenericType {
 private:
-  std::shared_ptr<Type> storedType_;
+  std::shared_ptr<GenericType> storedType_;
 
 public:
-  explicit VectorType(const std::shared_ptr<Type> storedType,
+  explicit VectorType(const std::shared_ptr<GenericType> storedType,
                       const bool isConst) noexcept
-      : Type{"vector", isConst}, storedType_{storedType} {}
+      : GenericType{"vector", isConst}, storedType_{storedType} {}
 
-  [[nodiscard]] const std::shared_ptr<Type>& storedType() const noexcept { return storedType_; }
+  [[nodiscard]] const std::shared_ptr<GenericType> &
+  storedType() const noexcept {
+    return storedType_;
+  }
 };
 
 } // namespace nicole

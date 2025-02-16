@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-02-16 12:31:47</td>
+            <td class="headerValue">2025-02-16 23:38:03</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">60.0&nbsp;%</td>
@@ -76,15 +76,15 @@
 <span id="L14"><span class="lineNum">      14</span>              : public:</span>
 <span id="L15"><span class="lineNum">      15</span>              :   explicit AST_CASE(const std::shared_ptr&lt;AST&gt; &amp;match,</span>
 <span id="L16"><span class="lineNum">      16</span>              :                     const std::shared_ptr&lt;AST_BODY&gt; &amp;body) noexcept</span>
-<span id="L17"><span class="lineNum">      17</span> <span class="tlaGNC tlaBgGNC">           6 :       : AST(AST_TYPE::CASE), match_{match}, body_{body} {}</span></span>
+<span id="L17"><span class="lineNum">      17</span> <span class="tlaGNC tlaBgGNC">           8 :       : AST(AST_TYPE::CASE), match_{match}, body_{body} {}</span></span>
 <span id="L18"><span class="lineNum">      18</span>              : </span>
-<span id="L19"><span class="lineNum">      19</span> <span class="tlaGNC">           3 :   [[nodiscard]] const std::shared_ptr&lt;AST&gt; &amp;match() const noexcept {</span></span>
-<span id="L20"><span class="lineNum">      20</span> <span class="tlaGNC">           3 :     return match_;</span></span>
-<span id="L21"><span class="lineNum">      21</span> <span class="tlaGNC">           3 :   }</span></span>
+<span id="L19"><span class="lineNum">      19</span> <span class="tlaGNC">           4 :   [[nodiscard]] const std::shared_ptr&lt;AST&gt; &amp;match() const noexcept {</span></span>
+<span id="L20"><span class="lineNum">      20</span> <span class="tlaGNC">           4 :     return match_;</span></span>
+<span id="L21"><span class="lineNum">      21</span> <span class="tlaGNC">           4 :   }</span></span>
 <span id="L22"><span class="lineNum">      22</span>              : </span>
-<span id="L23"><span class="lineNum">      23</span> <span class="tlaGNC">           3 :   [[nodiscard]] const std::shared_ptr&lt;AST_BODY&gt; &amp;body() const noexcept {</span></span>
-<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">           3 :     return body_;</span></span>
-<span id="L25"><span class="lineNum">      25</span> <span class="tlaGNC">           3 :   }</span></span>
+<span id="L23"><span class="lineNum">      23</span> <span class="tlaGNC">           4 :   [[nodiscard]] const std::shared_ptr&lt;AST_BODY&gt; &amp;body() const noexcept {</span></span>
+<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">           4 :     return body_;</span></span>
+<span id="L25"><span class="lineNum">      25</span> <span class="tlaGNC">           4 :   }</span></span>
 <span id="L26"><span class="lineNum">      26</span>              : </span>
 <span id="L27"><span class="lineNum">      27</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
 <span id="L28"><span class="lineNum">      28</span> <span class="tlaUNC tlaBgUNC">           0 :   accept(const PrintTree &amp;visitor) const noexcept override {</span></span>

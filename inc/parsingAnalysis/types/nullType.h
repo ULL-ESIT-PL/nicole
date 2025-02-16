@@ -1,13 +1,13 @@
 #ifndef NULL_TYPE_H
 #define NULL_TYPE_H
 
-#include "type.h"
+#include "genericType.h"
 
 namespace nicole {
 
-class NullType final : public Type {
+class NullType final : public GenericType {
 public:
-  explicit NullType(const bool isConst) noexcept : Type{"null", isConst} {}
+  explicit NullType(const bool isConst) noexcept : GenericType{"null", isConst} {}
 };
 
 } // namespace nicole
