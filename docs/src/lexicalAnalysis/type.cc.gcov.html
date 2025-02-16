@@ -32,12 +32,12 @@
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
-            <td class="headerCovTableEntry">172</td>
+            <td class="headerCovTableEntry">174</td>
             <td class="headerCovTableEntry">0</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-02-15 23:10:15</td>
+            <td class="headerValue">2025-02-16 12:31:47</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
@@ -166,99 +166,101 @@
 <span id="L104"><span class="lineNum">     104</span> <span class="tlaUNC">           0 :     return &quot;DESTRUCTOR&quot;;</span></span>
 <span id="L105"><span class="lineNum">     105</span> <span class="tlaUNC">           0 :   case TokenType::SUPER:</span></span>
 <span id="L106"><span class="lineNum">     106</span> <span class="tlaUNC">           0 :     return &quot;SUPER&quot;;</span></span>
-<span id="L107"><span class="lineNum">     107</span>              : </span>
-<span id="L108"><span class="lineNum">     108</span> <span class="tlaUNC">           0 :   case TokenType::OR:</span></span>
-<span id="L109"><span class="lineNum">     109</span> <span class="tlaUNC">           0 :     return &quot;OR&quot;;</span></span>
-<span id="L110"><span class="lineNum">     110</span> <span class="tlaUNC">           0 :   case TokenType::AND:</span></span>
-<span id="L111"><span class="lineNum">     111</span> <span class="tlaUNC">           0 :     return &quot;AND&quot;;</span></span>
-<span id="L112"><span class="lineNum">     112</span>              : </span>
-<span id="L113"><span class="lineNum">     113</span> <span class="tlaUNC">           0 :   case TokenType::ID:</span></span>
-<span id="L114"><span class="lineNum">     114</span> <span class="tlaUNC">           0 :     return &quot;ID&quot;;</span></span>
-<span id="L115"><span class="lineNum">     115</span>              : </span>
-<span id="L116"><span class="lineNum">     116</span> <span class="tlaUNC">           0 :   case TokenType::RP:</span></span>
-<span id="L117"><span class="lineNum">     117</span> <span class="tlaUNC">           0 :     return &quot;RP&quot;; // Right Parenthesis ')'</span></span>
-<span id="L118"><span class="lineNum">     118</span> <span class="tlaUNC">           0 :   case TokenType::LP:</span></span>
-<span id="L119"><span class="lineNum">     119</span> <span class="tlaUNC">           0 :     return &quot;LP&quot;; // Left Parenthesis '('</span></span>
-<span id="L120"><span class="lineNum">     120</span> <span class="tlaUNC">           0 :   case TokenType::RB:</span></span>
-<span id="L121"><span class="lineNum">     121</span> <span class="tlaUNC">           0 :     return &quot;RB&quot;; // Right Bracket ']'</span></span>
-<span id="L122"><span class="lineNum">     122</span> <span class="tlaUNC">           0 :   case TokenType::LB:</span></span>
-<span id="L123"><span class="lineNum">     123</span> <span class="tlaUNC">           0 :     return &quot;LB&quot;; // Left Bracket '['</span></span>
-<span id="L124"><span class="lineNum">     124</span> <span class="tlaUNC">           0 :   case TokenType::RC:</span></span>
-<span id="L125"><span class="lineNum">     125</span> <span class="tlaUNC">           0 :     return &quot;RC&quot;; // Right Curly Brace '}'</span></span>
-<span id="L126"><span class="lineNum">     126</span> <span class="tlaUNC">           0 :   case TokenType::LC:</span></span>
-<span id="L127"><span class="lineNum">     127</span> <span class="tlaUNC">           0 :     return &quot;LC&quot;; // Left Curly Brace '{'</span></span>
-<span id="L128"><span class="lineNum">     128</span>              : </span>
-<span id="L129"><span class="lineNum">     129</span> <span class="tlaUNC">           0 :   case TokenType::SEMICOLON:</span></span>
-<span id="L130"><span class="lineNum">     130</span> <span class="tlaUNC">           0 :     return &quot;SEMICOLON&quot;;</span></span>
-<span id="L131"><span class="lineNum">     131</span>              : </span>
-<span id="L132"><span class="lineNum">     132</span> <span class="tlaUNC">           0 :   case TokenType::COMMA:</span></span>
-<span id="L133"><span class="lineNum">     133</span> <span class="tlaUNC">           0 :     return &quot;COMMA&quot;;</span></span>
-<span id="L134"><span class="lineNum">     134</span>              : </span>
-<span id="L135"><span class="lineNum">     135</span> <span class="tlaUNC">           0 :   case TokenType::TERNARY:</span></span>
-<span id="L136"><span class="lineNum">     136</span> <span class="tlaUNC">           0 :     return &quot;TERNARY&quot;;</span></span>
-<span id="L137"><span class="lineNum">     137</span>              : </span>
-<span id="L138"><span class="lineNum">     138</span> <span class="tlaUNC">           0 :   case TokenType::DOT:</span></span>
-<span id="L139"><span class="lineNum">     139</span> <span class="tlaUNC">           0 :     return &quot;DOT&quot;;</span></span>
-<span id="L140"><span class="lineNum">     140</span> <span class="tlaUNC">           0 :   case TokenType::DOTDOT:</span></span>
-<span id="L141"><span class="lineNum">     141</span> <span class="tlaUNC">           0 :     return &quot;DOTDOT&quot;; // :</span></span>
-<span id="L142"><span class="lineNum">     142</span>              : </span>
-<span id="L143"><span class="lineNum">     143</span> <span class="tlaUNC">           0 :   case TokenType::SMALLEREQUAL:</span></span>
-<span id="L144"><span class="lineNum">     144</span> <span class="tlaUNC">           0 :     return &quot;SMALLEREQUAL&quot;;</span></span>
-<span id="L145"><span class="lineNum">     145</span> <span class="tlaUNC">           0 :   case TokenType::BIGGEREQUAL:</span></span>
-<span id="L146"><span class="lineNum">     146</span> <span class="tlaUNC">           0 :     return &quot;BIGGEREQUAL&quot;;</span></span>
-<span id="L147"><span class="lineNum">     147</span> <span class="tlaUNC">           0 :   case TokenType::NOTEQUAL:</span></span>
-<span id="L148"><span class="lineNum">     148</span> <span class="tlaUNC">           0 :     return &quot;NOTEQUAL&quot;;</span></span>
-<span id="L149"><span class="lineNum">     149</span> <span class="tlaUNC">           0 :   case TokenType::EQUAL:</span></span>
-<span id="L150"><span class="lineNum">     150</span> <span class="tlaUNC">           0 :     return &quot;EQUAL&quot;;</span></span>
-<span id="L151"><span class="lineNum">     151</span> <span class="tlaUNC">           0 :   case TokenType::ASSIGNMENT:</span></span>
-<span id="L152"><span class="lineNum">     152</span> <span class="tlaUNC">           0 :     return &quot;ASSIGNMENT&quot;; // '='</span></span>
-<span id="L153"><span class="lineNum">     153</span>              : </span>
-<span id="L154"><span class="lineNum">     154</span> <span class="tlaUNC">           0 :   case TokenType::INCREMENT:</span></span>
-<span id="L155"><span class="lineNum">     155</span> <span class="tlaUNC">           0 :     return &quot;INCREMENT&quot;; // '++'</span></span>
-<span id="L156"><span class="lineNum">     156</span> <span class="tlaUNC">           0 :   case TokenType::DECREMENT:</span></span>
-<span id="L157"><span class="lineNum">     157</span> <span class="tlaUNC">           0 :     return &quot;DECREMENT&quot;; // '--'</span></span>
-<span id="L158"><span class="lineNum">     158</span>              : </span>
-<span id="L159"><span class="lineNum">     159</span> <span class="tlaUNC">           0 :   case TokenType::OPERATOR_ADD:</span></span>
-<span id="L160"><span class="lineNum">     160</span> <span class="tlaUNC">           0 :     return &quot;OPERATOR_ADD&quot;; // '+'</span></span>
-<span id="L161"><span class="lineNum">     161</span> <span class="tlaUNC">           0 :   case TokenType::OPERATOR_SUB:</span></span>
-<span id="L162"><span class="lineNum">     162</span> <span class="tlaUNC">           0 :     return &quot;OPERATOR_SUB&quot;; // '-'</span></span>
-<span id="L163"><span class="lineNum">     163</span> <span class="tlaUNC">           0 :   case TokenType::OPERATOR_MULT:</span></span>
-<span id="L164"><span class="lineNum">     164</span> <span class="tlaUNC">           0 :     return &quot;OPERATOR_MULT&quot;; // '*'</span></span>
-<span id="L165"><span class="lineNum">     165</span> <span class="tlaUNC">           0 :   case TokenType::OPERATOR_DIV:</span></span>
-<span id="L166"><span class="lineNum">     166</span> <span class="tlaUNC">           0 :     return &quot;OPERATOR_DIV&quot;; // '/'</span></span>
-<span id="L167"><span class="lineNum">     167</span> <span class="tlaUNC">           0 :   case TokenType::OPERATOR_SMALLER:</span></span>
-<span id="L168"><span class="lineNum">     168</span> <span class="tlaUNC">           0 :     return &quot;OPERATOR_SMALLER&quot;; // '&lt;'</span></span>
-<span id="L169"><span class="lineNum">     169</span> <span class="tlaUNC">           0 :   case TokenType::OPERATOR_GREATER:</span></span>
-<span id="L170"><span class="lineNum">     170</span> <span class="tlaUNC">           0 :     return &quot;OPERATOR_GREATER&quot;; // '&gt;'</span></span>
-<span id="L171"><span class="lineNum">     171</span> <span class="tlaUNC">           0 :   case TokenType::OPERATOR_NOT:</span></span>
-<span id="L172"><span class="lineNum">     172</span> <span class="tlaUNC">           0 :     return &quot;OPERATOR_NOT&quot;; // '!'</span></span>
-<span id="L173"><span class="lineNum">     173</span> <span class="tlaUNC">           0 :   case TokenType::OPERATOR_MODULE:</span></span>
-<span id="L174"><span class="lineNum">     174</span> <span class="tlaUNC">           0 :     return &quot;OPERATOR_MODULE&quot;; // '%'</span></span>
-<span id="L175"><span class="lineNum">     175</span>              : </span>
-<span id="L176"><span class="lineNum">     176</span> <span class="tlaUNC">           0 :   case TokenType::SELF_ADD:</span></span>
-<span id="L177"><span class="lineNum">     177</span> <span class="tlaUNC">           0 :     return &quot;SELF_ADD&quot;;</span></span>
-<span id="L178"><span class="lineNum">     178</span> <span class="tlaUNC">           0 :   case TokenType::SELF_SUB:</span></span>
-<span id="L179"><span class="lineNum">     179</span> <span class="tlaUNC">           0 :     return &quot;SELF_SUB&quot;;</span></span>
-<span id="L180"><span class="lineNum">     180</span> <span class="tlaUNC">           0 :   case TokenType::SELF_MULT:</span></span>
-<span id="L181"><span class="lineNum">     181</span> <span class="tlaUNC">           0 :     return &quot;SELF_MULT&quot;;</span></span>
-<span id="L182"><span class="lineNum">     182</span> <span class="tlaUNC">           0 :   case TokenType::SELF_DIV:</span></span>
-<span id="L183"><span class="lineNum">     183</span> <span class="tlaUNC">           0 :     return &quot;SELF_DIV&quot;;</span></span>
-<span id="L184"><span class="lineNum">     184</span> <span class="tlaUNC">           0 :   case TokenType::DOTDOT_ASSIGNMENT:</span></span>
-<span id="L185"><span class="lineNum">     185</span> <span class="tlaUNC">           0 :     return &quot;DOTDOT_ASSIGNMENT&quot;;</span></span>
-<span id="L186"><span class="lineNum">     186</span>              : </span>
-<span id="L187"><span class="lineNum">     187</span> <span class="tlaUNC">           0 :   case TokenType::MAIN:</span></span>
-<span id="L188"><span class="lineNum">     188</span> <span class="tlaUNC">           0 :     return &quot;SELF_DIV&quot;;</span></span>
-<span id="L189"><span class="lineNum">     189</span>              : </span>
-<span id="L190"><span class="lineNum">     190</span> <span class="tlaUNC">           0 :   case TokenType::UNMATCHED:</span></span>
-<span id="L191"><span class="lineNum">     191</span> <span class="tlaUNC">           0 :     return &quot;UNMATCHED&quot;; // For unrecognized tokens</span></span>
-<span id="L192"><span class="lineNum">     192</span> <span class="tlaUNC">           0 :   case TokenType::ALL:</span></span>
-<span id="L193"><span class="lineNum">     193</span> <span class="tlaUNC">           0 :     return &quot;ALL&quot;; // Catch-all case for all tokens</span></span>
-<span id="L194"><span class="lineNum">     194</span> <span class="tlaUNC">           0 :   default:</span></span>
-<span id="L195"><span class="lineNum">     195</span> <span class="tlaUNC">           0 :     return &quot;UNKNOWN&quot;; // In case of an unrecognized token type</span></span>
-<span id="L196"><span class="lineNum">     196</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L197"><span class="lineNum">     197</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L198"><span class="lineNum">     198</span>              : </span>
-<span id="L199"><span class="lineNum">     199</span>              : } // namespace nicole</span>
+<span id="L107"><span class="lineNum">     107</span> <span class="tlaUNC">           0 :   case TokenType::VIRTUAL:</span></span>
+<span id="L108"><span class="lineNum">     108</span> <span class="tlaUNC">           0 :     return &quot;VIRTUAL&quot;;</span></span>
+<span id="L109"><span class="lineNum">     109</span>              : </span>
+<span id="L110"><span class="lineNum">     110</span> <span class="tlaUNC">           0 :   case TokenType::OR:</span></span>
+<span id="L111"><span class="lineNum">     111</span> <span class="tlaUNC">           0 :     return &quot;OR&quot;;</span></span>
+<span id="L112"><span class="lineNum">     112</span> <span class="tlaUNC">           0 :   case TokenType::AND:</span></span>
+<span id="L113"><span class="lineNum">     113</span> <span class="tlaUNC">           0 :     return &quot;AND&quot;;</span></span>
+<span id="L114"><span class="lineNum">     114</span>              : </span>
+<span id="L115"><span class="lineNum">     115</span> <span class="tlaUNC">           0 :   case TokenType::ID:</span></span>
+<span id="L116"><span class="lineNum">     116</span> <span class="tlaUNC">           0 :     return &quot;ID&quot;;</span></span>
+<span id="L117"><span class="lineNum">     117</span>              : </span>
+<span id="L118"><span class="lineNum">     118</span> <span class="tlaUNC">           0 :   case TokenType::RP:</span></span>
+<span id="L119"><span class="lineNum">     119</span> <span class="tlaUNC">           0 :     return &quot;RP&quot;; // Right Parenthesis ')'</span></span>
+<span id="L120"><span class="lineNum">     120</span> <span class="tlaUNC">           0 :   case TokenType::LP:</span></span>
+<span id="L121"><span class="lineNum">     121</span> <span class="tlaUNC">           0 :     return &quot;LP&quot;; // Left Parenthesis '('</span></span>
+<span id="L122"><span class="lineNum">     122</span> <span class="tlaUNC">           0 :   case TokenType::RB:</span></span>
+<span id="L123"><span class="lineNum">     123</span> <span class="tlaUNC">           0 :     return &quot;RB&quot;; // Right Bracket ']'</span></span>
+<span id="L124"><span class="lineNum">     124</span> <span class="tlaUNC">           0 :   case TokenType::LB:</span></span>
+<span id="L125"><span class="lineNum">     125</span> <span class="tlaUNC">           0 :     return &quot;LB&quot;; // Left Bracket '['</span></span>
+<span id="L126"><span class="lineNum">     126</span> <span class="tlaUNC">           0 :   case TokenType::RC:</span></span>
+<span id="L127"><span class="lineNum">     127</span> <span class="tlaUNC">           0 :     return &quot;RC&quot;; // Right Curly Brace '}'</span></span>
+<span id="L128"><span class="lineNum">     128</span> <span class="tlaUNC">           0 :   case TokenType::LC:</span></span>
+<span id="L129"><span class="lineNum">     129</span> <span class="tlaUNC">           0 :     return &quot;LC&quot;; // Left Curly Brace '{'</span></span>
+<span id="L130"><span class="lineNum">     130</span>              : </span>
+<span id="L131"><span class="lineNum">     131</span> <span class="tlaUNC">           0 :   case TokenType::SEMICOLON:</span></span>
+<span id="L132"><span class="lineNum">     132</span> <span class="tlaUNC">           0 :     return &quot;SEMICOLON&quot;;</span></span>
+<span id="L133"><span class="lineNum">     133</span>              : </span>
+<span id="L134"><span class="lineNum">     134</span> <span class="tlaUNC">           0 :   case TokenType::COMMA:</span></span>
+<span id="L135"><span class="lineNum">     135</span> <span class="tlaUNC">           0 :     return &quot;COMMA&quot;;</span></span>
+<span id="L136"><span class="lineNum">     136</span>              : </span>
+<span id="L137"><span class="lineNum">     137</span> <span class="tlaUNC">           0 :   case TokenType::TERNARY:</span></span>
+<span id="L138"><span class="lineNum">     138</span> <span class="tlaUNC">           0 :     return &quot;TERNARY&quot;;</span></span>
+<span id="L139"><span class="lineNum">     139</span>              : </span>
+<span id="L140"><span class="lineNum">     140</span> <span class="tlaUNC">           0 :   case TokenType::DOT:</span></span>
+<span id="L141"><span class="lineNum">     141</span> <span class="tlaUNC">           0 :     return &quot;DOT&quot;;</span></span>
+<span id="L142"><span class="lineNum">     142</span> <span class="tlaUNC">           0 :   case TokenType::DOTDOT:</span></span>
+<span id="L143"><span class="lineNum">     143</span> <span class="tlaUNC">           0 :     return &quot;DOTDOT&quot;; // :</span></span>
+<span id="L144"><span class="lineNum">     144</span>              : </span>
+<span id="L145"><span class="lineNum">     145</span> <span class="tlaUNC">           0 :   case TokenType::SMALLEREQUAL:</span></span>
+<span id="L146"><span class="lineNum">     146</span> <span class="tlaUNC">           0 :     return &quot;SMALLEREQUAL&quot;;</span></span>
+<span id="L147"><span class="lineNum">     147</span> <span class="tlaUNC">           0 :   case TokenType::BIGGEREQUAL:</span></span>
+<span id="L148"><span class="lineNum">     148</span> <span class="tlaUNC">           0 :     return &quot;BIGGEREQUAL&quot;;</span></span>
+<span id="L149"><span class="lineNum">     149</span> <span class="tlaUNC">           0 :   case TokenType::NOTEQUAL:</span></span>
+<span id="L150"><span class="lineNum">     150</span> <span class="tlaUNC">           0 :     return &quot;NOTEQUAL&quot;;</span></span>
+<span id="L151"><span class="lineNum">     151</span> <span class="tlaUNC">           0 :   case TokenType::EQUAL:</span></span>
+<span id="L152"><span class="lineNum">     152</span> <span class="tlaUNC">           0 :     return &quot;EQUAL&quot;;</span></span>
+<span id="L153"><span class="lineNum">     153</span> <span class="tlaUNC">           0 :   case TokenType::ASSIGNMENT:</span></span>
+<span id="L154"><span class="lineNum">     154</span> <span class="tlaUNC">           0 :     return &quot;ASSIGNMENT&quot;; // '='</span></span>
+<span id="L155"><span class="lineNum">     155</span>              : </span>
+<span id="L156"><span class="lineNum">     156</span> <span class="tlaUNC">           0 :   case TokenType::INCREMENT:</span></span>
+<span id="L157"><span class="lineNum">     157</span> <span class="tlaUNC">           0 :     return &quot;INCREMENT&quot;; // '++'</span></span>
+<span id="L158"><span class="lineNum">     158</span> <span class="tlaUNC">           0 :   case TokenType::DECREMENT:</span></span>
+<span id="L159"><span class="lineNum">     159</span> <span class="tlaUNC">           0 :     return &quot;DECREMENT&quot;; // '--'</span></span>
+<span id="L160"><span class="lineNum">     160</span>              : </span>
+<span id="L161"><span class="lineNum">     161</span> <span class="tlaUNC">           0 :   case TokenType::OPERATOR_ADD:</span></span>
+<span id="L162"><span class="lineNum">     162</span> <span class="tlaUNC">           0 :     return &quot;OPERATOR_ADD&quot;; // '+'</span></span>
+<span id="L163"><span class="lineNum">     163</span> <span class="tlaUNC">           0 :   case TokenType::OPERATOR_SUB:</span></span>
+<span id="L164"><span class="lineNum">     164</span> <span class="tlaUNC">           0 :     return &quot;OPERATOR_SUB&quot;; // '-'</span></span>
+<span id="L165"><span class="lineNum">     165</span> <span class="tlaUNC">           0 :   case TokenType::OPERATOR_MULT:</span></span>
+<span id="L166"><span class="lineNum">     166</span> <span class="tlaUNC">           0 :     return &quot;OPERATOR_MULT&quot;; // '*'</span></span>
+<span id="L167"><span class="lineNum">     167</span> <span class="tlaUNC">           0 :   case TokenType::OPERATOR_DIV:</span></span>
+<span id="L168"><span class="lineNum">     168</span> <span class="tlaUNC">           0 :     return &quot;OPERATOR_DIV&quot;; // '/'</span></span>
+<span id="L169"><span class="lineNum">     169</span> <span class="tlaUNC">           0 :   case TokenType::OPERATOR_SMALLER:</span></span>
+<span id="L170"><span class="lineNum">     170</span> <span class="tlaUNC">           0 :     return &quot;OPERATOR_SMALLER&quot;; // '&lt;'</span></span>
+<span id="L171"><span class="lineNum">     171</span> <span class="tlaUNC">           0 :   case TokenType::OPERATOR_GREATER:</span></span>
+<span id="L172"><span class="lineNum">     172</span> <span class="tlaUNC">           0 :     return &quot;OPERATOR_GREATER&quot;; // '&gt;'</span></span>
+<span id="L173"><span class="lineNum">     173</span> <span class="tlaUNC">           0 :   case TokenType::OPERATOR_NOT:</span></span>
+<span id="L174"><span class="lineNum">     174</span> <span class="tlaUNC">           0 :     return &quot;OPERATOR_NOT&quot;; // '!'</span></span>
+<span id="L175"><span class="lineNum">     175</span> <span class="tlaUNC">           0 :   case TokenType::OPERATOR_MODULE:</span></span>
+<span id="L176"><span class="lineNum">     176</span> <span class="tlaUNC">           0 :     return &quot;OPERATOR_MODULE&quot;; // '%'</span></span>
+<span id="L177"><span class="lineNum">     177</span>              : </span>
+<span id="L178"><span class="lineNum">     178</span> <span class="tlaUNC">           0 :   case TokenType::SELF_ADD:</span></span>
+<span id="L179"><span class="lineNum">     179</span> <span class="tlaUNC">           0 :     return &quot;SELF_ADD&quot;;</span></span>
+<span id="L180"><span class="lineNum">     180</span> <span class="tlaUNC">           0 :   case TokenType::SELF_SUB:</span></span>
+<span id="L181"><span class="lineNum">     181</span> <span class="tlaUNC">           0 :     return &quot;SELF_SUB&quot;;</span></span>
+<span id="L182"><span class="lineNum">     182</span> <span class="tlaUNC">           0 :   case TokenType::SELF_MULT:</span></span>
+<span id="L183"><span class="lineNum">     183</span> <span class="tlaUNC">           0 :     return &quot;SELF_MULT&quot;;</span></span>
+<span id="L184"><span class="lineNum">     184</span> <span class="tlaUNC">           0 :   case TokenType::SELF_DIV:</span></span>
+<span id="L185"><span class="lineNum">     185</span> <span class="tlaUNC">           0 :     return &quot;SELF_DIV&quot;;</span></span>
+<span id="L186"><span class="lineNum">     186</span> <span class="tlaUNC">           0 :   case TokenType::DOTDOT_ASSIGNMENT:</span></span>
+<span id="L187"><span class="lineNum">     187</span> <span class="tlaUNC">           0 :     return &quot;DOTDOT_ASSIGNMENT&quot;;</span></span>
+<span id="L188"><span class="lineNum">     188</span>              : </span>
+<span id="L189"><span class="lineNum">     189</span> <span class="tlaUNC">           0 :   case TokenType::MAIN:</span></span>
+<span id="L190"><span class="lineNum">     190</span> <span class="tlaUNC">           0 :     return &quot;SELF_DIV&quot;;</span></span>
+<span id="L191"><span class="lineNum">     191</span>              : </span>
+<span id="L192"><span class="lineNum">     192</span> <span class="tlaUNC">           0 :   case TokenType::UNMATCHED:</span></span>
+<span id="L193"><span class="lineNum">     193</span> <span class="tlaUNC">           0 :     return &quot;UNMATCHED&quot;; // For unrecognized tokens</span></span>
+<span id="L194"><span class="lineNum">     194</span> <span class="tlaUNC">           0 :   case TokenType::ALL:</span></span>
+<span id="L195"><span class="lineNum">     195</span> <span class="tlaUNC">           0 :     return &quot;ALL&quot;; // Catch-all case for all tokens</span></span>
+<span id="L196"><span class="lineNum">     196</span> <span class="tlaUNC">           0 :   default:</span></span>
+<span id="L197"><span class="lineNum">     197</span> <span class="tlaUNC">           0 :     return &quot;UNKNOWN&quot;; // In case of an unrecognized token type</span></span>
+<span id="L198"><span class="lineNum">     198</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L199"><span class="lineNum">     199</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L200"><span class="lineNum">     200</span>              : </span>
+<span id="L201"><span class="lineNum">     201</span>              : } // namespace nicole</span>
         </pre>
               </td>
             </tr>

@@ -6,7 +6,7 @@
 using namespace nicole;
 
 TEST_CASE("AST_DELETE class methods", "[AST_DELETE]") {
-  auto value = std::make_shared<AST_BOOL>(true);
+  auto value = *Builder::createBool(true);
   AST_DELETE astDelete{value};
 
   REQUIRE(astDelete.value() == value);
@@ -15,7 +15,7 @@ TEST_CASE("AST_DELETE class methods", "[AST_DELETE]") {
 }
 
 TEST_CASE("AST_DEREF class methods", "[AST_DEREF]") {
-  auto value = std::make_shared<AST_BOOL>(false);
+  auto value = *Builder::createBool(false);
   AST_DEREF astDeref{value};
 
   REQUIRE(astDeref.value() == value);
@@ -24,7 +24,7 @@ TEST_CASE("AST_DEREF class methods", "[AST_DEREF]") {
 }
 
 TEST_CASE("AST_NEW class methods", "[AST_NEW]") {
-  auto value = std::make_shared<AST_BOOL>(true);
+  auto value = *Builder::createBool(true);
   AST_NEW astNew{value};
 
   REQUIRE(astNew.value() == value);
@@ -32,7 +32,7 @@ TEST_CASE("AST_NEW class methods", "[AST_NEW]") {
 }
 
 TEST_CASE("AST_PTR class methods", "[AST_PTR]") {
-  auto value = std::make_shared<AST_BOOL>(false);
+  auto value = *Builder::createBool(false);
   AST_PTR astPtr{"myPtr", "bool", value};
 
   REQUIRE(astPtr.id() == "myPtr");

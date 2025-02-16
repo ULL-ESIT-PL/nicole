@@ -6,8 +6,8 @@ using namespace nicole;
 
 TEST_CASE("AST_DO_WHILE class methods", "[AST_DO_WHILE]") {
   auto condition = *Builder::createCondition(*Builder::createBool(true));
-  auto statement = std::make_shared<AST_STATEMENT>(condition);
-  auto body = std::make_shared<AST_BODY>(
+  auto statement = *Builder::createStatement(condition);
+  auto body = *Builder::createBody(
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
   AST_DO_WHILE astDoWhile{body, condition};
 
@@ -17,12 +17,12 @@ TEST_CASE("AST_DO_WHILE class methods", "[AST_DO_WHILE]") {
 
 TEST_CASE("AST_FOR class methods", "[AST_FOR]") {
   auto init = std::vector<std::shared_ptr<AST>>{
-      std::make_shared<AST_STATEMENT>(std::make_shared<AST_BOOL>(true))};
+      *Builder::createStatement(*Builder::createBool(true))};
   auto condition = *Builder::createCondition(*Builder::createBool(true));
   auto update = std::vector<std::shared_ptr<AST>>{
-      std::make_shared<AST_STATEMENT>(std::make_shared<AST_BOOL>(false))};
-  auto statement = std::make_shared<AST_STATEMENT>(condition);
-  auto body = std::make_shared<AST_BODY>(
+      *Builder::createStatement(*Builder::createBool(false))};
+  auto statement = *Builder::createStatement(condition);
+  auto body = *Builder::createBody(
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
 
   AST_FOR astFor{init, condition, update, body};
@@ -35,8 +35,8 @@ TEST_CASE("AST_FOR class methods", "[AST_FOR]") {
 
 TEST_CASE("AST_WHILE class methods", "[AST_WHILE]") {
   auto condition =*Builder::createCondition(*Builder::createBool(true));
-  auto statement = std::make_shared<AST_STATEMENT>(condition);
-  auto body = std::make_shared<AST_BODY>(
+  auto statement = *Builder::createStatement(condition);
+  auto body = *Builder::createBody(
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
   AST_WHILE astWhile{condition, body};
 
@@ -47,10 +47,10 @@ TEST_CASE("AST_WHILE class methods", "[AST_WHILE]") {
 TEST_CASE("AST_STOP within loops", "[AST_STOP]") {
   auto condition = *Builder::createCondition(*Builder::createBool(true));
   auto body =
-      std::make_shared<AST_BODY>(std::vector<std::shared_ptr<AST_STATEMENT>>{});
+      *Builder::createBody(std::vector<std::shared_ptr<AST_STATEMENT>>{});
 
   SECTION("AST_STOP in AST_FOR") {
-    auto loop = std::make_shared<AST_FOR>(
+    auto loop = *Builder::createFor(
         std::vector<std::shared_ptr<AST>>{}, condition,
         std::vector<std::shared_ptr<AST>>{}, body);
     AST_STOP astStop{loop};
@@ -58,13 +58,13 @@ TEST_CASE("AST_STOP within loops", "[AST_STOP]") {
   }
 
   SECTION("AST_STOP in AST_WHILE") {
-    auto loop = std::make_shared<AST_WHILE>(condition, body);
+    auto loop = *Builder::createWhile(condition, body);
     AST_STOP astStop{loop};
     REQUIRE(astStop.fatherLoop() == loop);
   }
 
   SECTION("AST_STOP in AST_DO_WHILE") {
-    auto loop = std::make_shared<AST_DO_WHILE>(body, condition);
+    auto loop = *Builder::createDoWhile(body, condition);
     AST_STOP astStop{loop};
     REQUIRE(astStop.fatherLoop() == loop);
   }
@@ -73,10 +73,10 @@ TEST_CASE("AST_STOP within loops", "[AST_STOP]") {
 TEST_CASE("AST_PASS within loops", "[AST_PASS]") {
   auto condition = *Builder::createCondition(*Builder::createBool(true));
   auto body =
-      std::make_shared<AST_BODY>(std::vector<std::shared_ptr<AST_STATEMENT>>{});
+      *Builder::createBody(std::vector<std::shared_ptr<AST_STATEMENT>>{});
 
   SECTION("AST_PASS in AST_FOR") {
-    auto loop = std::make_shared<AST_FOR>(
+    auto loop = *Builder::createFor(
         std::vector<std::shared_ptr<AST>>{}, condition,
         std::vector<std::shared_ptr<AST>>{}, body);
     AST_PASS astPass{loop};
@@ -84,13 +84,13 @@ TEST_CASE("AST_PASS within loops", "[AST_PASS]") {
   }
 
   SECTION("AST_PASS in AST_WHILE") {
-    auto loop = std::make_shared<AST_WHILE>(condition, body);
+    auto loop = *Builder::createWhile(condition, body);
     AST_PASS astPass{loop};
     REQUIRE(astPass.fatherLoop() == loop);
   }
 
   SECTION("AST_PASS in AST_DO_WHILE") {
-    auto loop = std::make_shared<AST_DO_WHILE>(body, condition);
+    auto loop = *Builder::createDoWhile(body, condition);
     AST_PASS astPass{loop};
     REQUIRE(astPass.fatherLoop() == loop);
   }

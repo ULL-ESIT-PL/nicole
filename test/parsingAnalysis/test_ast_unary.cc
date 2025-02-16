@@ -7,7 +7,7 @@ using namespace nicole;
 TEST_CASE("AST_UNARY class methods", "[AST_UNARY]") {
   Location loc{"file", 0, 0};
   Token token{TokenType::DECREMENT, "--", loc};
-  auto astInt = std::make_shared<AST_INT>(42);
+  auto astInt = *Builder::createInt(42);
   AST_UNARY astDecrement{token, astInt};
 
   REQUIRE(astDecrement.op().raw() == "--");

@@ -21,8 +21,8 @@ TEST_CASE("Parameters class methods", "[Parameters]") {
 }
 
 TEST_CASE("AST_FUNC_CALL class methods", "[AST_FUNC_CALL]") {
-  auto param1 = std::make_shared<AST_BOOL>(true);
-  auto param2 = std::make_shared<AST_BOOL>(false);
+  auto param1 = *Builder::createBool(true);
+  auto param2 = *Builder::createBool(false);
   AST_FUNC_CALL funcCall("myFunction", {param1, param2});
 
   REQUIRE(funcCall.id() == "myFunction");
@@ -33,9 +33,8 @@ TEST_CASE("AST_FUNC_CALL class methods", "[AST_FUNC_CALL]") {
 
 TEST_CASE("AST_FUNC_DECL class methods", "[AST_FUNC_DECL]") {
   Parameters params({{"x", "int"}, {"y", "float"}});
-  auto statement =
-      std::make_shared<AST_STATEMENT>(std::make_shared<AST_BOOL>(true));
-  auto body = std::make_shared<AST_BODY>(
+  auto statement = *Builder::createStatement(*Builder::createBool(true));
+  auto body = *Builder::createBody(
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
   AST_FUNC_DECL funcDecl("myFunction", params, "void", body);
 
@@ -46,7 +45,7 @@ TEST_CASE("AST_FUNC_DECL class methods", "[AST_FUNC_DECL]") {
 }
 
 TEST_CASE("AST_RETURN class methods", "[AST_RETURN]") {
-  auto returnValue = std::make_shared<AST_BOOL>(true);
+  auto returnValue = *Builder::createBool(true);
   AST_RETURN astReturn{returnValue};
 
   REQUIRE(astReturn.expression() == returnValue);

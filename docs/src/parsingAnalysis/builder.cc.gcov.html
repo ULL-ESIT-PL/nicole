@@ -31,18 +31,18 @@
             <td class="headerValue">coverage.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntryLo">2.3&nbsp;%</td>
-            <td class="headerCovTableEntry">444</td>
-            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntryLo">17.6&nbsp;%</td>
+            <td class="headerCovTableEntry">467</td>
+            <td class="headerCovTableEntry">82</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-02-15 23:10:15</td>
+            <td class="headerValue">2025-02-16 12:31:47</td>
             <td></td>
             <td class="headerItem">Functions:</td>
-            <td class="headerCovTableEntryLo">4.3&nbsp;%</td>
-            <td class="headerCovTableEntry">47</td>
-            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryLo">20.0&nbsp;%</td>
+            <td class="headerCovTableEntry">50</td>
+            <td class="headerCovTableEntry">10</td>
           </tr>
                   <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
                 </table>
@@ -65,9 +65,9 @@
 <span id="L3"><span class="lineNum">       3</span>              : namespace nicole {</span>
 <span id="L4"><span class="lineNum">       4</span>              : </span>
 <span id="L5"><span class="lineNum">       5</span>              : std::expected&lt;std::shared_ptr&lt;AST_BOOL&gt;, Error&gt;</span>
-<span id="L6"><span class="lineNum">       6</span> <span class="tlaGNC tlaBgGNC">          28 : Builder::createBool(const bool value) noexcept {</span></span>
-<span id="L7"><span class="lineNum">       7</span> <span class="tlaGNC">          28 :   return std::make_shared&lt;AST_BOOL&gt;(value);</span></span>
-<span id="L8"><span class="lineNum">       8</span> <span class="tlaGNC">          28 : }</span></span>
+<span id="L6"><span class="lineNum">       6</span> <span class="tlaGNC tlaBgGNC">          73 : Builder::createBool(const bool value) noexcept {</span></span>
+<span id="L7"><span class="lineNum">       7</span> <span class="tlaGNC">          73 :   return std::make_shared&lt;AST_BOOL&gt;(value);</span></span>
+<span id="L8"><span class="lineNum">       8</span> <span class="tlaGNC">          73 : }</span></span>
 <span id="L9"><span class="lineNum">       9</span>              : </span>
 <span id="L10"><span class="lineNum">      10</span>              : std::expected&lt;std::shared_ptr&lt;AST_CHAR&gt;, Error&gt;</span>
 <span id="L11"><span class="lineNum">      11</span> <span class="tlaUNC tlaBgUNC">           0 : Builder::createChar(const std::string &amp;value) noexcept {</span></span>
@@ -107,11 +107,11 @@
 <span id="L45"><span class="lineNum">      45</span> <span class="tlaUNC">           0 : }</span></span>
 <span id="L46"><span class="lineNum">      46</span>              : </span>
 <span id="L47"><span class="lineNum">      47</span>              : std::expected&lt;std::shared_ptr&lt;AST_INT&gt;, Error&gt;</span>
-<span id="L48"><span class="lineNum">      48</span> <span class="tlaUNC">           0 : Builder::createInt(const int value) noexcept {</span></span>
-<span id="L49"><span class="lineNum">      49</span> <span class="tlaUNC">           0 :   return std::make_shared&lt;AST_INT&gt;(value);</span></span>
-<span id="L50"><span class="lineNum">      50</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L48"><span class="lineNum">      48</span> <span class="tlaGNC tlaBgGNC">           3 : Builder::createInt(const int value) noexcept {</span></span>
+<span id="L49"><span class="lineNum">      49</span> <span class="tlaGNC">           3 :   return std::make_shared&lt;AST_INT&gt;(value);</span></span>
+<span id="L50"><span class="lineNum">      50</span> <span class="tlaGNC">           3 : }</span></span>
 <span id="L51"><span class="lineNum">      51</span>              : </span>
-<span id="L52"><span class="lineNum">      52</span> <span class="tlaUNC">           0 : std::expected&lt;std::shared_ptr&lt;AST_NULL&gt;, Error&gt; Builder::createNull() noexcept {</span></span>
+<span id="L52"><span class="lineNum">      52</span> <span class="tlaUNC tlaBgUNC">           0 : std::expected&lt;std::shared_ptr&lt;AST_NULL&gt;, Error&gt; Builder::createNull() noexcept {</span></span>
 <span id="L53"><span class="lineNum">      53</span> <span class="tlaUNC">           0 :   return std::make_shared&lt;AST_NULL&gt;();</span></span>
 <span id="L54"><span class="lineNum">      54</span> <span class="tlaUNC">           0 : }</span></span>
 <span id="L55"><span class="lineNum">      55</span>              : </span>
@@ -260,82 +260,82 @@
 <span id="L198"><span class="lineNum">     198</span> <span class="tlaUNC">           0 : }</span></span>
 <span id="L199"><span class="lineNum">     199</span>              : </span>
 <span id="L200"><span class="lineNum">     200</span>              : std::expected&lt;std::shared_ptr&lt;AST_STATEMENT&gt;, Error&gt;</span>
-<span id="L201"><span class="lineNum">     201</span> <span class="tlaUNC">           0 : Builder::createStatement(const std::shared_ptr&lt;AST&gt; &amp;expression) noexcept {</span></span>
-<span id="L202"><span class="lineNum">     202</span> <span class="tlaUNC">           0 :   const auto astStatement{std::make_shared&lt;AST_STATEMENT&gt;(expression)};</span></span>
-<span id="L203"><span class="lineNum">     203</span> <span class="tlaUNC">           0 :   if (expression) {</span></span>
-<span id="L204"><span class="lineNum">     204</span> <span class="tlaUNC">           0 :     expression-&gt;setFather(astStatement);</span></span>
-<span id="L205"><span class="lineNum">     205</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L206"><span class="lineNum">     206</span> <span class="tlaUNC">           0 :   return astStatement;</span></span>
-<span id="L207"><span class="lineNum">     207</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L201"><span class="lineNum">     201</span> <span class="tlaGNC tlaBgGNC">          16 : Builder::createStatement(const std::shared_ptr&lt;AST&gt; &amp;expression) noexcept {</span></span>
+<span id="L202"><span class="lineNum">     202</span> <span class="tlaGNC">          16 :   const auto astStatement{std::make_shared&lt;AST_STATEMENT&gt;(expression)};</span></span>
+<span id="L203"><span class="lineNum">     203</span> <span class="tlaGNC">          16 :   if (expression) {</span></span>
+<span id="L204"><span class="lineNum">     204</span> <span class="tlaGNC">          16 :     expression-&gt;setFather(astStatement);</span></span>
+<span id="L205"><span class="lineNum">     205</span> <span class="tlaGNC">          16 :   }</span></span>
+<span id="L206"><span class="lineNum">     206</span> <span class="tlaGNC">          16 :   return astStatement;</span></span>
+<span id="L207"><span class="lineNum">     207</span> <span class="tlaGNC">          16 : }</span></span>
 <span id="L208"><span class="lineNum">     208</span>              : </span>
 <span id="L209"><span class="lineNum">     209</span>              : std::expected&lt;std::shared_ptr&lt;AST_BODY&gt;, Error&gt; Builder::createBody(</span>
-<span id="L210"><span class="lineNum">     210</span> <span class="tlaUNC">           0 :     const std::vector&lt;std::shared_ptr&lt;AST_STATEMENT&gt;&gt; &amp;body) noexcept {</span></span>
-<span id="L211"><span class="lineNum">     211</span> <span class="tlaUNC">           0 :   const auto astBody{std::make_shared&lt;AST_BODY&gt;(body)};</span></span>
-<span id="L212"><span class="lineNum">     212</span> <span class="tlaUNC">           0 :   const std::vector&lt;std::shared_ptr&lt;AST_STATEMENT&gt;&gt; &amp;statements{</span></span>
-<span id="L213"><span class="lineNum">     213</span> <span class="tlaUNC">           0 :       astBody-&gt;body()};</span></span>
-<span id="L214"><span class="lineNum">     214</span> <span class="tlaUNC">           0 :   for (const auto &amp;statement : statements) {</span></span>
-<span id="L215"><span class="lineNum">     215</span> <span class="tlaUNC">           0 :     if (statement) {</span></span>
-<span id="L216"><span class="lineNum">     216</span> <span class="tlaUNC">           0 :       statement-&gt;setFather(astBody);</span></span>
-<span id="L217"><span class="lineNum">     217</span> <span class="tlaUNC">           0 :     }</span></span>
-<span id="L218"><span class="lineNum">     218</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L219"><span class="lineNum">     219</span> <span class="tlaUNC">           0 :   return astBody;</span></span>
-<span id="L220"><span class="lineNum">     220</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L210"><span class="lineNum">     210</span> <span class="tlaGNC">          18 :     const std::vector&lt;std::shared_ptr&lt;AST_STATEMENT&gt;&gt; &amp;body) noexcept {</span></span>
+<span id="L211"><span class="lineNum">     211</span> <span class="tlaGNC">          18 :   const auto astBody{std::make_shared&lt;AST_BODY&gt;(body)};</span></span>
+<span id="L212"><span class="lineNum">     212</span> <span class="tlaGNC">          18 :   const std::vector&lt;std::shared_ptr&lt;AST_STATEMENT&gt;&gt; &amp;statements{</span></span>
+<span id="L213"><span class="lineNum">     213</span> <span class="tlaGNC">          18 :       astBody-&gt;body()};</span></span>
+<span id="L214"><span class="lineNum">     214</span> <span class="tlaGNC">          18 :   for (const auto &amp;statement : statements) {</span></span>
+<span id="L215"><span class="lineNum">     215</span> <span class="tlaGNC">          12 :     if (statement) {</span></span>
+<span id="L216"><span class="lineNum">     216</span> <span class="tlaGNC">          12 :       statement-&gt;setFather(astBody);</span></span>
+<span id="L217"><span class="lineNum">     217</span> <span class="tlaGNC">          12 :     }</span></span>
+<span id="L218"><span class="lineNum">     218</span> <span class="tlaGNC">          12 :   }</span></span>
+<span id="L219"><span class="lineNum">     219</span> <span class="tlaGNC">          18 :   return astBody;</span></span>
+<span id="L220"><span class="lineNum">     220</span> <span class="tlaGNC">          18 : }</span></span>
 <span id="L221"><span class="lineNum">     221</span>              : </span>
 <span id="L222"><span class="lineNum">     222</span>              : std::expected&lt;std::shared_ptr&lt;AST_WHILE&gt;, Error&gt;</span>
 <span id="L223"><span class="lineNum">     223</span>              : Builder::createWhile(const std::shared_ptr&lt;AST_CONDITION&gt; &amp;condition,</span>
-<span id="L224"><span class="lineNum">     224</span> <span class="tlaUNC">           0 :                      const std::shared_ptr&lt;AST_BODY&gt; &amp;body) noexcept {</span></span>
-<span id="L225"><span class="lineNum">     225</span> <span class="tlaUNC">           0 :   const auto astWhile{std::make_shared&lt;AST_WHILE&gt;(condition, body)};</span></span>
-<span id="L226"><span class="lineNum">     226</span> <span class="tlaUNC">           0 :   if (condition) {</span></span>
-<span id="L227"><span class="lineNum">     227</span> <span class="tlaUNC">           0 :     condition-&gt;setFather(astWhile);</span></span>
-<span id="L228"><span class="lineNum">     228</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L229"><span class="lineNum">     229</span> <span class="tlaUNC">           0 :   if (body) {</span></span>
-<span id="L230"><span class="lineNum">     230</span> <span class="tlaUNC">           0 :     body-&gt;setFather(astWhile);</span></span>
-<span id="L231"><span class="lineNum">     231</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L232"><span class="lineNum">     232</span> <span class="tlaUNC">           0 :   return astWhile;</span></span>
-<span id="L233"><span class="lineNum">     233</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L224"><span class="lineNum">     224</span> <span class="tlaGNC">           2 :                      const std::shared_ptr&lt;AST_BODY&gt; &amp;body) noexcept {</span></span>
+<span id="L225"><span class="lineNum">     225</span> <span class="tlaGNC">           2 :   const auto astWhile{std::make_shared&lt;AST_WHILE&gt;(condition, body)};</span></span>
+<span id="L226"><span class="lineNum">     226</span> <span class="tlaGNC">           2 :   if (condition) {</span></span>
+<span id="L227"><span class="lineNum">     227</span> <span class="tlaGNC">           2 :     condition-&gt;setFather(astWhile);</span></span>
+<span id="L228"><span class="lineNum">     228</span> <span class="tlaGNC">           2 :   }</span></span>
+<span id="L229"><span class="lineNum">     229</span> <span class="tlaGNC">           2 :   if (body) {</span></span>
+<span id="L230"><span class="lineNum">     230</span> <span class="tlaGNC">           2 :     body-&gt;setFather(astWhile);</span></span>
+<span id="L231"><span class="lineNum">     231</span> <span class="tlaGNC">           2 :   }</span></span>
+<span id="L232"><span class="lineNum">     232</span> <span class="tlaGNC">           2 :   return astWhile;</span></span>
+<span id="L233"><span class="lineNum">     233</span> <span class="tlaGNC">           2 : }</span></span>
 <span id="L234"><span class="lineNum">     234</span>              : </span>
 <span id="L235"><span class="lineNum">     235</span>              : std::expected&lt;std::shared_ptr&lt;AST_FOR&gt;, Error&gt;</span>
 <span id="L236"><span class="lineNum">     236</span>              : Builder::createFor(const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;init,</span>
 <span id="L237"><span class="lineNum">     237</span>              :                    const std::shared_ptr&lt;AST_CONDITION&gt; &amp;condition,</span>
 <span id="L238"><span class="lineNum">     238</span>              :                    const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;update,</span>
-<span id="L239"><span class="lineNum">     239</span> <span class="tlaUNC">           0 :                    const std::shared_ptr&lt;AST_BODY&gt; &amp;body) noexcept {</span></span>
-<span id="L240"><span class="lineNum">     240</span> <span class="tlaUNC">           0 :   const auto astFor{std::make_shared&lt;AST_FOR&gt;(init, condition, update, body)};</span></span>
-<span id="L241"><span class="lineNum">     241</span> <span class="tlaUNC">           0 :   const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;init__{astFor-&gt;init()};</span></span>
-<span id="L242"><span class="lineNum">     242</span> <span class="tlaUNC">           0 :   for (const auto &amp;init_ : init__) {</span></span>
-<span id="L243"><span class="lineNum">     243</span> <span class="tlaUNC">           0 :     if (init_) {</span></span>
+<span id="L239"><span class="lineNum">     239</span> <span class="tlaGNC">           2 :                    const std::shared_ptr&lt;AST_BODY&gt; &amp;body) noexcept {</span></span>
+<span id="L240"><span class="lineNum">     240</span> <span class="tlaGNC">           2 :   const auto astFor{std::make_shared&lt;AST_FOR&gt;(init, condition, update, body)};</span></span>
+<span id="L241"><span class="lineNum">     241</span> <span class="tlaGNC">           2 :   const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;init__{astFor-&gt;init()};</span></span>
+<span id="L242"><span class="lineNum">     242</span> <span class="tlaGNC">           2 :   for (const auto &amp;init_ : init__) {</span></span>
+<span id="L243"><span class="lineNum">     243</span> <span class="tlaUNC tlaBgUNC">           0 :     if (init_) {</span></span>
 <span id="L244"><span class="lineNum">     244</span> <span class="tlaUNC">           0 :       astFor-&gt;setFather(init_);</span></span>
 <span id="L245"><span class="lineNum">     245</span> <span class="tlaUNC">           0 :     }</span></span>
 <span id="L246"><span class="lineNum">     246</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L247"><span class="lineNum">     247</span> <span class="tlaUNC">           0 :   if (condition) {</span></span>
-<span id="L248"><span class="lineNum">     248</span> <span class="tlaUNC">           0 :     condition-&gt;setFather(astFor);</span></span>
-<span id="L249"><span class="lineNum">     249</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L250"><span class="lineNum">     250</span> <span class="tlaUNC">           0 :   const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;update__{astFor-&gt;update()};</span></span>
-<span id="L251"><span class="lineNum">     251</span> <span class="tlaUNC">           0 :   for (const auto &amp;update_ : update__) {</span></span>
-<span id="L252"><span class="lineNum">     252</span> <span class="tlaUNC">           0 :     if (update_) {</span></span>
+<span id="L247"><span class="lineNum">     247</span> <span class="tlaGNC tlaBgGNC">           2 :   if (condition) {</span></span>
+<span id="L248"><span class="lineNum">     248</span> <span class="tlaGNC">           2 :     condition-&gt;setFather(astFor);</span></span>
+<span id="L249"><span class="lineNum">     249</span> <span class="tlaGNC">           2 :   }</span></span>
+<span id="L250"><span class="lineNum">     250</span> <span class="tlaGNC">           2 :   const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;update__{astFor-&gt;update()};</span></span>
+<span id="L251"><span class="lineNum">     251</span> <span class="tlaGNC">           2 :   for (const auto &amp;update_ : update__) {</span></span>
+<span id="L252"><span class="lineNum">     252</span> <span class="tlaUNC tlaBgUNC">           0 :     if (update_) {</span></span>
 <span id="L253"><span class="lineNum">     253</span> <span class="tlaUNC">           0 :       astFor-&gt;setFather(update_);</span></span>
 <span id="L254"><span class="lineNum">     254</span> <span class="tlaUNC">           0 :     }</span></span>
 <span id="L255"><span class="lineNum">     255</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L256"><span class="lineNum">     256</span> <span class="tlaUNC">           0 :   if (body) {</span></span>
-<span id="L257"><span class="lineNum">     257</span> <span class="tlaUNC">           0 :     body-&gt;setFather(astFor);</span></span>
-<span id="L258"><span class="lineNum">     258</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L259"><span class="lineNum">     259</span> <span class="tlaUNC">           0 :   return astFor;</span></span>
-<span id="L260"><span class="lineNum">     260</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L256"><span class="lineNum">     256</span> <span class="tlaGNC tlaBgGNC">           2 :   if (body) {</span></span>
+<span id="L257"><span class="lineNum">     257</span> <span class="tlaGNC">           2 :     body-&gt;setFather(astFor);</span></span>
+<span id="L258"><span class="lineNum">     258</span> <span class="tlaGNC">           2 :   }</span></span>
+<span id="L259"><span class="lineNum">     259</span> <span class="tlaGNC">           2 :   return astFor;</span></span>
+<span id="L260"><span class="lineNum">     260</span> <span class="tlaGNC">           2 : }</span></span>
 <span id="L261"><span class="lineNum">     261</span>              : </span>
 <span id="L262"><span class="lineNum">     262</span>              : std::expected&lt;std::shared_ptr&lt;AST_DO_WHILE&gt;, Error&gt; Builder::createDoWhile(</span>
 <span id="L263"><span class="lineNum">     263</span>              :     const std::shared_ptr&lt;AST_BODY&gt; &amp;body,</span>
-<span id="L264"><span class="lineNum">     264</span> <span class="tlaUNC">           0 :     const std::shared_ptr&lt;AST_CONDITION&gt; &amp;condition) noexcept {</span></span>
-<span id="L265"><span class="lineNum">     265</span> <span class="tlaUNC">           0 :   const auto astDoWhile{std::make_shared&lt;AST_DO_WHILE&gt;(body, condition)};</span></span>
-<span id="L266"><span class="lineNum">     266</span> <span class="tlaUNC">           0 :   if (condition) {</span></span>
-<span id="L267"><span class="lineNum">     267</span> <span class="tlaUNC">           0 :     condition-&gt;setFather(astDoWhile);</span></span>
-<span id="L268"><span class="lineNum">     268</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L269"><span class="lineNum">     269</span> <span class="tlaUNC">           0 :   if (body) {</span></span>
-<span id="L270"><span class="lineNum">     270</span> <span class="tlaUNC">           0 :     body-&gt;setFather(astDoWhile);</span></span>
-<span id="L271"><span class="lineNum">     271</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L272"><span class="lineNum">     272</span> <span class="tlaUNC">           0 :   return astDoWhile;</span></span>
-<span id="L273"><span class="lineNum">     273</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L264"><span class="lineNum">     264</span> <span class="tlaGNC">           2 :     const std::shared_ptr&lt;AST_CONDITION&gt; &amp;condition) noexcept {</span></span>
+<span id="L265"><span class="lineNum">     265</span> <span class="tlaGNC">           2 :   const auto astDoWhile{std::make_shared&lt;AST_DO_WHILE&gt;(body, condition)};</span></span>
+<span id="L266"><span class="lineNum">     266</span> <span class="tlaGNC">           2 :   if (condition) {</span></span>
+<span id="L267"><span class="lineNum">     267</span> <span class="tlaGNC">           2 :     condition-&gt;setFather(astDoWhile);</span></span>
+<span id="L268"><span class="lineNum">     268</span> <span class="tlaGNC">           2 :   }</span></span>
+<span id="L269"><span class="lineNum">     269</span> <span class="tlaGNC">           2 :   if (body) {</span></span>
+<span id="L270"><span class="lineNum">     270</span> <span class="tlaGNC">           2 :     body-&gt;setFather(astDoWhile);</span></span>
+<span id="L271"><span class="lineNum">     271</span> <span class="tlaGNC">           2 :   }</span></span>
+<span id="L272"><span class="lineNum">     272</span> <span class="tlaGNC">           2 :   return astDoWhile;</span></span>
+<span id="L273"><span class="lineNum">     273</span> <span class="tlaGNC">           2 : }</span></span>
 <span id="L274"><span class="lineNum">     274</span>              : </span>
 <span id="L275"><span class="lineNum">     275</span>              : std::expected&lt;std::shared_ptr&lt;AST_PASS&gt;, Error&gt;</span>
-<span id="L276"><span class="lineNum">     276</span> <span class="tlaUNC">           0 : Builder::createPass(const std::shared_ptr&lt;AST&gt; &amp;fatherLoop) noexcept {</span></span>
+<span id="L276"><span class="lineNum">     276</span> <span class="tlaUNC tlaBgUNC">           0 : Builder::createPass(const std::shared_ptr&lt;AST&gt; &amp;fatherLoop) noexcept {</span></span>
 <span id="L277"><span class="lineNum">     277</span> <span class="tlaUNC">           0 :   const auto astPass{std::make_shared&lt;AST_PASS&gt;(fatherLoop)};</span></span>
 <span id="L278"><span class="lineNum">     278</span> <span class="tlaUNC">           0 :   return astPass;</span></span>
 <span id="L279"><span class="lineNum">     279</span> <span class="tlaUNC">           0 : }</span></span>
@@ -372,21 +372,21 @@
 <span id="L310"><span class="lineNum">     310</span>              : </span>
 <span id="L311"><span class="lineNum">     311</span>              : std::expected&lt;std::shared_ptr&lt;AST_ELSE_IF&gt;, Error&gt;</span>
 <span id="L312"><span class="lineNum">     312</span>              : Builder::createElseIf(const std::shared_ptr&lt;AST_CONDITION&gt; &amp;condition,</span>
-<span id="L313"><span class="lineNum">     313</span> <span class="tlaUNC">           0 :                       const std::shared_ptr&lt;AST_BODY&gt; &amp;body) noexcept {</span></span>
-<span id="L314"><span class="lineNum">     314</span> <span class="tlaUNC">           0 :   const auto astIf{std::make_shared&lt;AST_ELSE_IF&gt;(condition, body)};</span></span>
-<span id="L315"><span class="lineNum">     315</span> <span class="tlaUNC">           0 :   if (condition) {</span></span>
-<span id="L316"><span class="lineNum">     316</span> <span class="tlaUNC">           0 :     condition-&gt;setFather(astIf);</span></span>
-<span id="L317"><span class="lineNum">     317</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L318"><span class="lineNum">     318</span> <span class="tlaUNC">           0 :   if (body) {</span></span>
-<span id="L319"><span class="lineNum">     319</span> <span class="tlaUNC">           0 :     body-&gt;setFather(astIf);</span></span>
-<span id="L320"><span class="lineNum">     320</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L321"><span class="lineNum">     321</span> <span class="tlaUNC">           0 :   return astIf;</span></span>
-<span id="L322"><span class="lineNum">     322</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L313"><span class="lineNum">     313</span> <span class="tlaGNC tlaBgGNC">           1 :                       const std::shared_ptr&lt;AST_BODY&gt; &amp;body) noexcept {</span></span>
+<span id="L314"><span class="lineNum">     314</span> <span class="tlaGNC">           1 :   const auto astIf{std::make_shared&lt;AST_ELSE_IF&gt;(condition, body)};</span></span>
+<span id="L315"><span class="lineNum">     315</span> <span class="tlaGNC">           1 :   if (condition) {</span></span>
+<span id="L316"><span class="lineNum">     316</span> <span class="tlaGNC">           1 :     condition-&gt;setFather(astIf);</span></span>
+<span id="L317"><span class="lineNum">     317</span> <span class="tlaGNC">           1 :   }</span></span>
+<span id="L318"><span class="lineNum">     318</span> <span class="tlaGNC">           1 :   if (body) {</span></span>
+<span id="L319"><span class="lineNum">     319</span> <span class="tlaGNC">           1 :     body-&gt;setFather(astIf);</span></span>
+<span id="L320"><span class="lineNum">     320</span> <span class="tlaGNC">           1 :   }</span></span>
+<span id="L321"><span class="lineNum">     321</span> <span class="tlaGNC">           1 :   return astIf;</span></span>
+<span id="L322"><span class="lineNum">     322</span> <span class="tlaGNC">           1 : }</span></span>
 <span id="L323"><span class="lineNum">     323</span>              : </span>
 <span id="L324"><span class="lineNum">     324</span>              : std::expected&lt;std::shared_ptr&lt;AST_SWITCH&gt;, Error&gt;</span>
 <span id="L325"><span class="lineNum">     325</span>              : Builder::createSwitch(const std::shared_ptr&lt;AST_CONDITION&gt; &amp;condition,</span>
 <span id="L326"><span class="lineNum">     326</span>              :                       const std::vector&lt;std::shared_ptr&lt;AST_CASE&gt;&gt; &amp;cases,</span>
-<span id="L327"><span class="lineNum">     327</span> <span class="tlaUNC">           0 :                       const std::shared_ptr&lt;AST_DEFAULT&gt; &amp;default_) noexcept {</span></span>
+<span id="L327"><span class="lineNum">     327</span> <span class="tlaUNC tlaBgUNC">           0 :                       const std::shared_ptr&lt;AST_DEFAULT&gt; &amp;default_) noexcept {</span></span>
 <span id="L328"><span class="lineNum">     328</span> <span class="tlaUNC">           0 :   const auto astSwitch{</span></span>
 <span id="L329"><span class="lineNum">     329</span> <span class="tlaUNC">           0 :       std::make_shared&lt;AST_SWITCH&gt;(condition, cases, default_)};</span></span>
 <span id="L330"><span class="lineNum">     330</span> <span class="tlaUNC">           0 :   if (condition) {</span></span>
@@ -418,18 +418,18 @@
 <span id="L356"><span class="lineNum">     356</span> <span class="tlaUNC">           0 : }</span></span>
 <span id="L357"><span class="lineNum">     357</span>              : </span>
 <span id="L358"><span class="lineNum">     358</span>              : std::expected&lt;std::shared_ptr&lt;AST_DEFAULT&gt;, Error&gt;</span>
-<span id="L359"><span class="lineNum">     359</span> <span class="tlaUNC">           0 : Builder::createDefault(const std::shared_ptr&lt;AST_BODY&gt; &amp;body) noexcept {</span></span>
-<span id="L360"><span class="lineNum">     360</span> <span class="tlaUNC">           0 :   const auto astDefault{std::make_shared&lt;AST_DEFAULT&gt;(body)};</span></span>
-<span id="L361"><span class="lineNum">     361</span> <span class="tlaUNC">           0 :   if (body) {</span></span>
-<span id="L362"><span class="lineNum">     362</span> <span class="tlaUNC">           0 :     body-&gt;setFather(astDefault);</span></span>
-<span id="L363"><span class="lineNum">     363</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L364"><span class="lineNum">     364</span> <span class="tlaUNC">           0 :   return astDefault;</span></span>
-<span id="L365"><span class="lineNum">     365</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L359"><span class="lineNum">     359</span> <span class="tlaGNC tlaBgGNC">           1 : Builder::createDefault(const std::shared_ptr&lt;AST_BODY&gt; &amp;body) noexcept {</span></span>
+<span id="L360"><span class="lineNum">     360</span> <span class="tlaGNC">           1 :   const auto astDefault{std::make_shared&lt;AST_DEFAULT&gt;(body)};</span></span>
+<span id="L361"><span class="lineNum">     361</span> <span class="tlaGNC">           1 :   if (body) {</span></span>
+<span id="L362"><span class="lineNum">     362</span> <span class="tlaGNC">           1 :     body-&gt;setFather(astDefault);</span></span>
+<span id="L363"><span class="lineNum">     363</span> <span class="tlaGNC">           1 :   }</span></span>
+<span id="L364"><span class="lineNum">     364</span> <span class="tlaGNC">           1 :   return astDefault;</span></span>
+<span id="L365"><span class="lineNum">     365</span> <span class="tlaGNC">           1 : }</span></span>
 <span id="L366"><span class="lineNum">     366</span>              : </span>
 <span id="L367"><span class="lineNum">     367</span>              : std::expected&lt;std::shared_ptr&lt;AST_TERNARY&gt;, Error&gt;</span>
 <span id="L368"><span class="lineNum">     368</span>              : Builder::createTernary(const std::shared_ptr&lt;AST_CONDITION&gt; &amp;condition,</span>
 <span id="L369"><span class="lineNum">     369</span>              :                        const std::shared_ptr&lt;AST&gt; &amp;first,</span>
-<span id="L370"><span class="lineNum">     370</span> <span class="tlaUNC">           0 :                        const std::shared_ptr&lt;AST&gt; &amp;second) noexcept {</span></span>
+<span id="L370"><span class="lineNum">     370</span> <span class="tlaUNC tlaBgUNC">           0 :                        const std::shared_ptr&lt;AST&gt; &amp;second) noexcept {</span></span>
 <span id="L371"><span class="lineNum">     371</span> <span class="tlaUNC">           0 :   const auto astTernanry{</span></span>
 <span id="L372"><span class="lineNum">     372</span> <span class="tlaUNC">           0 :       std::make_shared&lt;AST_TERNARY&gt;(condition, first, second)};</span></span>
 <span id="L373"><span class="lineNum">     373</span> <span class="tlaUNC">           0 :   if (condition) {</span></span>
@@ -445,13 +445,13 @@
 <span id="L383"><span class="lineNum">     383</span> <span class="tlaUNC">           0 : }</span></span>
 <span id="L384"><span class="lineNum">     384</span>              : </span>
 <span id="L385"><span class="lineNum">     385</span>              : std::expected&lt;std::shared_ptr&lt;AST_CONDITION&gt;, Error&gt;</span>
-<span id="L386"><span class="lineNum">     386</span> <span class="tlaGNC tlaBgGNC">          28 : Builder::createCondition(const std::shared_ptr&lt;AST&gt; &amp;expression) noexcept {</span></span>
-<span id="L387"><span class="lineNum">     387</span> <span class="tlaGNC">          28 :   const auto astCondition{std::make_shared&lt;AST_CONDITION&gt;(expression)};</span></span>
-<span id="L388"><span class="lineNum">     388</span> <span class="tlaGNC">          28 :   if (expression) {</span></span>
-<span id="L389"><span class="lineNum">     389</span> <span class="tlaGNC">          28 :     expression-&gt;setFather(astCondition);</span></span>
-<span id="L390"><span class="lineNum">     390</span> <span class="tlaGNC">          28 :   }</span></span>
-<span id="L391"><span class="lineNum">     391</span> <span class="tlaGNC">          28 :   return astCondition;</span></span>
-<span id="L392"><span class="lineNum">     392</span> <span class="tlaGNC">          28 : }</span></span>
+<span id="L386"><span class="lineNum">     386</span> <span class="tlaGNC tlaBgGNC">          43 : Builder::createCondition(const std::shared_ptr&lt;AST&gt; &amp;expression) noexcept {</span></span>
+<span id="L387"><span class="lineNum">     387</span> <span class="tlaGNC">          43 :   const auto astCondition{std::make_shared&lt;AST_CONDITION&gt;(expression)};</span></span>
+<span id="L388"><span class="lineNum">     388</span> <span class="tlaGNC">          43 :   if (expression) {</span></span>
+<span id="L389"><span class="lineNum">     389</span> <span class="tlaGNC">          43 :     expression-&gt;setFather(astCondition);</span></span>
+<span id="L390"><span class="lineNum">     390</span> <span class="tlaGNC">          43 :   }</span></span>
+<span id="L391"><span class="lineNum">     391</span> <span class="tlaGNC">          43 :   return astCondition;</span></span>
+<span id="L392"><span class="lineNum">     392</span> <span class="tlaGNC">          43 : }</span></span>
 <span id="L393"><span class="lineNum">     393</span>              : </span>
 <span id="L394"><span class="lineNum">     394</span>              : std::expected&lt;std::shared_ptr&lt;AST_FUNC_CALL&gt;, Error&gt; Builder::createFunCall(</span>
 <span id="L395"><span class="lineNum">     395</span>              :     const std::string &amp;id,</span>
@@ -470,181 +470,215 @@
 <span id="L408"><span class="lineNum">     408</span>              : std::expected&lt;std::shared_ptr&lt;AST_FUNC_DECL&gt;, Error&gt;</span>
 <span id="L409"><span class="lineNum">     409</span>              : Builder::createFuncDecl(const std::string &amp;id, const Parameters &amp;params,</span>
 <span id="L410"><span class="lineNum">     410</span>              :                         const std::string &amp;returnType,</span>
-<span id="L411"><span class="lineNum">     411</span>              :                         const std::shared_ptr&lt;AST_BODY&gt; &amp;body,</span>
-<span id="L412"><span class="lineNum">     412</span> <span class="tlaUNC">           0 :                         const bool isMethod) noexcept {</span></span>
-<span id="L413"><span class="lineNum">     413</span> <span class="tlaUNC">           0 :   const auto astFuncDecl{</span></span>
-<span id="L414"><span class="lineNum">     414</span> <span class="tlaUNC">           0 :       std::make_shared&lt;AST_FUNC_DECL&gt;(id, params, returnType, body, isMethod)};</span></span>
-<span id="L415"><span class="lineNum">     415</span> <span class="tlaUNC">           0 :   if (body) {</span></span>
-<span id="L416"><span class="lineNum">     416</span> <span class="tlaUNC">           0 :     body-&gt;setFather(astFuncDecl);</span></span>
-<span id="L417"><span class="lineNum">     417</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L418"><span class="lineNum">     418</span> <span class="tlaUNC">           0 :   return astFuncDecl;</span></span>
-<span id="L419"><span class="lineNum">     419</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L420"><span class="lineNum">     420</span>              : </span>
-<span id="L421"><span class="lineNum">     421</span>              : std::expected&lt;std::shared_ptr&lt;AST_RETURN&gt;, Error&gt;</span>
-<span id="L422"><span class="lineNum">     422</span> <span class="tlaUNC">           0 : Builder::createReturn(const std::shared_ptr&lt;AST&gt; &amp;value) noexcept {</span></span>
-<span id="L423"><span class="lineNum">     423</span> <span class="tlaUNC">           0 :   const auto astReturn{std::make_shared&lt;AST_RETURN&gt;(value)};</span></span>
-<span id="L424"><span class="lineNum">     424</span> <span class="tlaUNC">           0 :   if (value) {</span></span>
-<span id="L425"><span class="lineNum">     425</span> <span class="tlaUNC">           0 :     value-&gt;setFather(astReturn);</span></span>
-<span id="L426"><span class="lineNum">     426</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L427"><span class="lineNum">     427</span> <span class="tlaUNC">           0 :   return astReturn;</span></span>
-<span id="L428"><span class="lineNum">     428</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L429"><span class="lineNum">     429</span>              : </span>
-<span id="L430"><span class="lineNum">     430</span>              : std::expected&lt;std::shared_ptr&lt;AST_ENUM&gt;, Error&gt;</span>
-<span id="L431"><span class="lineNum">     431</span>              : Builder::createEnum(const std::string &amp;id,</span>
-<span id="L432"><span class="lineNum">     432</span> <span class="tlaUNC">           0 :                     const std::vector&lt;std::string&gt; &amp;enumIdentifiers) noexcept {</span></span>
-<span id="L433"><span class="lineNum">     433</span> <span class="tlaUNC">           0 :   const auto astEnum{std::make_shared&lt;AST_ENUM&gt;(id, enumIdentifiers)};</span></span>
-<span id="L434"><span class="lineNum">     434</span> <span class="tlaUNC">           0 :   return astEnum;</span></span>
-<span id="L435"><span class="lineNum">     435</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L436"><span class="lineNum">     436</span>              : </span>
-<span id="L437"><span class="lineNum">     437</span>              : std::expected&lt;std::shared_ptr&lt;AST_STRUCT&gt;, Error&gt; Builder::createStruct(</span>
-<span id="L438"><span class="lineNum">     438</span>              :     const std::string &amp;id, std::unique_ptr&lt;std::string&gt; fatherType,</span>
-<span id="L439"><span class="lineNum">     439</span>              :     const Attributes &amp;attributes,</span>
-<span id="L440"><span class="lineNum">     440</span>              :     const std::vector&lt;std::shared_ptr&lt;AST_FUNC_DECL&gt;&gt; &amp;methods,</span>
-<span id="L441"><span class="lineNum">     441</span>              :     const std::shared_ptr&lt;AST_FUNC_DECL&gt; &amp;constructor,</span>
-<span id="L442"><span class="lineNum">     442</span> <span class="tlaUNC">           0 :     const std::shared_ptr&lt;AST_FUNC_DECL&gt; &amp;destructor) noexcept {</span></span>
-<span id="L443"><span class="lineNum">     443</span> <span class="tlaUNC">           0 :   const auto astStruct{std::make_shared&lt;AST_STRUCT&gt;(</span></span>
-<span id="L444"><span class="lineNum">     444</span> <span class="tlaUNC">           0 :       id, std::move(fatherType), attributes, methods, constructor, destructor)};</span></span>
-<span id="L445"><span class="lineNum">     445</span> <span class="tlaUNC">           0 :   const std::vector&lt;std::shared_ptr&lt;AST_FUNC_DECL&gt;&gt; &amp;methods__{</span></span>
-<span id="L446"><span class="lineNum">     446</span> <span class="tlaUNC">           0 :       astStruct-&gt;methods()};</span></span>
-<span id="L447"><span class="lineNum">     447</span> <span class="tlaUNC">           0 :   for (const auto &amp;methods_ : methods__) {</span></span>
-<span id="L448"><span class="lineNum">     448</span> <span class="tlaUNC">           0 :     if (methods_) {</span></span>
-<span id="L449"><span class="lineNum">     449</span> <span class="tlaUNC">           0 :       methods_-&gt;setFather(astStruct);</span></span>
-<span id="L450"><span class="lineNum">     450</span> <span class="tlaUNC">           0 :     }</span></span>
-<span id="L451"><span class="lineNum">     451</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L452"><span class="lineNum">     452</span> <span class="tlaUNC">           0 :   if (constructor) {</span></span>
-<span id="L453"><span class="lineNum">     453</span> <span class="tlaUNC">           0 :     constructor-&gt;setFather(astStruct);</span></span>
-<span id="L454"><span class="lineNum">     454</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L455"><span class="lineNum">     455</span> <span class="tlaUNC">           0 :   if (destructor) {</span></span>
-<span id="L456"><span class="lineNum">     456</span> <span class="tlaUNC">           0 :     destructor-&gt;setFather(astStruct);</span></span>
-<span id="L457"><span class="lineNum">     457</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L458"><span class="lineNum">     458</span> <span class="tlaUNC">           0 :   return astStruct;</span></span>
-<span id="L459"><span class="lineNum">     459</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L460"><span class="lineNum">     460</span>              : </span>
-<span id="L461"><span class="lineNum">     461</span>              : std::expected&lt;std::shared_ptr&lt;AST_CLASS&gt;, Error&gt; Builder::createClass(</span>
-<span id="L462"><span class="lineNum">     462</span>              :     const std::string &amp;id, std::unique_ptr&lt;std::string&gt; fatherType,</span>
-<span id="L463"><span class="lineNum">     463</span>              :     const Attributes &amp;attributes,</span>
-<span id="L464"><span class="lineNum">     464</span>              :     const std::vector&lt;std::shared_ptr&lt;AST_FUNC_DECL&gt;&gt; &amp;methods,</span>
-<span id="L465"><span class="lineNum">     465</span>              :     const std::shared_ptr&lt;AST_FUNC_DECL&gt; &amp;constructor,</span>
-<span id="L466"><span class="lineNum">     466</span> <span class="tlaUNC">           0 :     const std::shared_ptr&lt;AST_FUNC_DECL&gt; &amp;destructor) noexcept {</span></span>
-<span id="L467"><span class="lineNum">     467</span> <span class="tlaUNC">           0 :   const auto astClass{std::make_shared&lt;AST_CLASS&gt;(</span></span>
-<span id="L468"><span class="lineNum">     468</span> <span class="tlaUNC">           0 :       id, std::move(fatherType), attributes, methods, constructor, destructor)};</span></span>
-<span id="L469"><span class="lineNum">     469</span> <span class="tlaUNC">           0 :   const std::vector&lt;std::shared_ptr&lt;AST_FUNC_DECL&gt;&gt; &amp;methods__{</span></span>
-<span id="L470"><span class="lineNum">     470</span> <span class="tlaUNC">           0 :       astClass-&gt;methods()};</span></span>
-<span id="L471"><span class="lineNum">     471</span> <span class="tlaUNC">           0 :   for (const auto &amp;methods_ : methods__) {</span></span>
-<span id="L472"><span class="lineNum">     472</span> <span class="tlaUNC">           0 :     if (methods_) {</span></span>
-<span id="L473"><span class="lineNum">     473</span> <span class="tlaUNC">           0 :       methods_-&gt;setFather(astClass);</span></span>
-<span id="L474"><span class="lineNum">     474</span> <span class="tlaUNC">           0 :     }</span></span>
-<span id="L475"><span class="lineNum">     475</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L476"><span class="lineNum">     476</span> <span class="tlaUNC">           0 :   if (constructor) {</span></span>
-<span id="L477"><span class="lineNum">     477</span> <span class="tlaUNC">           0 :     constructor-&gt;setFather(astClass);</span></span>
-<span id="L478"><span class="lineNum">     478</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L479"><span class="lineNum">     479</span> <span class="tlaUNC">           0 :   if (destructor) {</span></span>
-<span id="L480"><span class="lineNum">     480</span> <span class="tlaUNC">           0 :     destructor-&gt;setFather(astClass);</span></span>
-<span id="L481"><span class="lineNum">     481</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L482"><span class="lineNum">     482</span> <span class="tlaUNC">           0 :   return astClass;</span></span>
-<span id="L483"><span class="lineNum">     483</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L484"><span class="lineNum">     484</span>              : </span>
-<span id="L485"><span class="lineNum">     485</span>              : std::expected&lt;std::shared_ptr&lt;AST_ATTR_ACCESS&gt;, Error&gt;</span>
-<span id="L486"><span class="lineNum">     486</span> <span class="tlaUNC">           0 : Builder::createAttrAccess(const std::string &amp;id) noexcept {</span></span>
-<span id="L487"><span class="lineNum">     487</span> <span class="tlaUNC">           0 :   return std::make_shared&lt;AST_ATTR_ACCESS&gt;(id);</span></span>
-<span id="L488"><span class="lineNum">     488</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L489"><span class="lineNum">     489</span>              : </span>
-<span id="L490"><span class="lineNum">     490</span>              : std::expected&lt;std::shared_ptr&lt;AST_METHOD_CALL&gt;, Error&gt;</span>
-<span id="L491"><span class="lineNum">     491</span>              : Builder::createMethodCall(</span>
-<span id="L492"><span class="lineNum">     492</span>              :     const std::string &amp;id,</span>
-<span id="L493"><span class="lineNum">     493</span> <span class="tlaUNC">           0 :     const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;parameters) noexcept {</span></span>
-<span id="L494"><span class="lineNum">     494</span> <span class="tlaUNC">           0 :   const auto astMethodCall{std::make_shared&lt;AST_METHOD_CALL&gt;(id, parameters)};</span></span>
-<span id="L495"><span class="lineNum">     495</span> <span class="tlaUNC">           0 :   const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;parameters__{</span></span>
-<span id="L496"><span class="lineNum">     496</span> <span class="tlaUNC">           0 :       astMethodCall-&gt;parameters()};</span></span>
-<span id="L497"><span class="lineNum">     497</span> <span class="tlaUNC">           0 :   for (const auto &amp;parameters_ : parameters__) {</span></span>
-<span id="L498"><span class="lineNum">     498</span> <span class="tlaUNC">           0 :     if (parameters_) {</span></span>
-<span id="L499"><span class="lineNum">     499</span> <span class="tlaUNC">           0 :       parameters_-&gt;setFather(astMethodCall);</span></span>
-<span id="L500"><span class="lineNum">     500</span> <span class="tlaUNC">           0 :     }</span></span>
-<span id="L501"><span class="lineNum">     501</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L502"><span class="lineNum">     502</span> <span class="tlaUNC">           0 :   return astMethodCall;</span></span>
-<span id="L503"><span class="lineNum">     503</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L504"><span class="lineNum">     504</span>              : </span>
-<span id="L505"><span class="lineNum">     505</span>              : std::expected&lt;std::shared_ptr&lt;AST_CONSTRUCTOR_CALL&gt;, Error&gt;</span>
-<span id="L506"><span class="lineNum">     506</span>              : Builder::createConstructorCall(</span>
-<span id="L507"><span class="lineNum">     507</span>              :     const std::string &amp;id,</span>
-<span id="L508"><span class="lineNum">     508</span> <span class="tlaUNC">           0 :     const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;parameters) noexcept {</span></span>
-<span id="L509"><span class="lineNum">     509</span> <span class="tlaUNC">           0 :   const auto astConstructorall{</span></span>
-<span id="L510"><span class="lineNum">     510</span> <span class="tlaUNC">           0 :       std::make_shared&lt;AST_CONSTRUCTOR_CALL&gt;(id, parameters)};</span></span>
-<span id="L511"><span class="lineNum">     511</span> <span class="tlaUNC">           0 :   const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;parameters__{</span></span>
-<span id="L512"><span class="lineNum">     512</span> <span class="tlaUNC">           0 :       astConstructorall-&gt;parameters()};</span></span>
-<span id="L513"><span class="lineNum">     513</span> <span class="tlaUNC">           0 :   for (const auto &amp;parameters_ : parameters__) {</span></span>
-<span id="L514"><span class="lineNum">     514</span> <span class="tlaUNC">           0 :     if (parameters_) {</span></span>
-<span id="L515"><span class="lineNum">     515</span> <span class="tlaUNC">           0 :       parameters_-&gt;setFather(astConstructorall);</span></span>
-<span id="L516"><span class="lineNum">     516</span> <span class="tlaUNC">           0 :     }</span></span>
-<span id="L517"><span class="lineNum">     517</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L518"><span class="lineNum">     518</span> <span class="tlaUNC">           0 :   return astConstructorall;</span></span>
-<span id="L519"><span class="lineNum">     519</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L520"><span class="lineNum">     520</span>              : </span>
-<span id="L521"><span class="lineNum">     521</span> <span class="tlaUNC">           0 : std::expected&lt;std::shared_ptr&lt;AST_THIS&gt;, Error&gt; Builder::createThis() noexcept {</span></span>
-<span id="L522"><span class="lineNum">     522</span> <span class="tlaUNC">           0 :   const auto astThis{std::make_shared&lt;AST_THIS&gt;()};</span></span>
-<span id="L523"><span class="lineNum">     523</span> <span class="tlaUNC">           0 :   return astThis;</span></span>
-<span id="L524"><span class="lineNum">     524</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L525"><span class="lineNum">     525</span>              : </span>
-<span id="L526"><span class="lineNum">     526</span>              : std::expected&lt;std::shared_ptr&lt;AST_AUTO_DECL&gt;, Error&gt;</span>
-<span id="L527"><span class="lineNum">     527</span>              : Builder::createAutoDecl(const std::string &amp;id,</span>
-<span id="L528"><span class="lineNum">     528</span>              :                         const std::shared_ptr&lt;AST&gt; &amp;value,</span>
-<span id="L529"><span class="lineNum">     529</span> <span class="tlaUNC">           0 :                         const bool isConst) noexcept {</span></span>
-<span id="L530"><span class="lineNum">     530</span> <span class="tlaUNC">           0 :   const auto astAutoDecl{std::make_shared&lt;AST_AUTO_DECL&gt;(id, value, isConst)};</span></span>
-<span id="L531"><span class="lineNum">     531</span> <span class="tlaUNC">           0 :   if (value) {</span></span>
-<span id="L532"><span class="lineNum">     532</span> <span class="tlaUNC">           0 :     value-&gt;setFather(astAutoDecl);</span></span>
-<span id="L533"><span class="lineNum">     533</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L534"><span class="lineNum">     534</span> <span class="tlaUNC">           0 :   return astAutoDecl;</span></span>
-<span id="L535"><span class="lineNum">     535</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L536"><span class="lineNum">     536</span>              : </span>
-<span id="L537"><span class="lineNum">     537</span>              : std::expected&lt;std::shared_ptr&lt;AST_VAR_TYPED_DECL&gt;, Error&gt;</span>
-<span id="L538"><span class="lineNum">     538</span>              : Builder::createVarTypedtDecl(const std::string &amp;id, const std::string &amp;type,</span>
-<span id="L539"><span class="lineNum">     539</span>              :                              const std::shared_ptr&lt;AST&gt; &amp;value,</span>
-<span id="L540"><span class="lineNum">     540</span> <span class="tlaUNC">           0 :                              const bool isConst) noexcept {</span></span>
-<span id="L541"><span class="lineNum">     541</span> <span class="tlaUNC">           0 :   const auto astLetDecl{</span></span>
-<span id="L542"><span class="lineNum">     542</span> <span class="tlaUNC">           0 :       std::make_shared&lt;AST_VAR_TYPED_DECL&gt;(id, type, value, isConst)};</span></span>
-<span id="L543"><span class="lineNum">     543</span> <span class="tlaUNC">           0 :   if (value) {</span></span>
-<span id="L544"><span class="lineNum">     544</span> <span class="tlaUNC">           0 :     value-&gt;setFather(astLetDecl);</span></span>
-<span id="L545"><span class="lineNum">     545</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L546"><span class="lineNum">     546</span> <span class="tlaUNC">           0 :   return astLetDecl;</span></span>
-<span id="L547"><span class="lineNum">     547</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L548"><span class="lineNum">     548</span>              : </span>
-<span id="L549"><span class="lineNum">     549</span>              : std::expected&lt;std::shared_ptr&lt;AST_VAR_CALL&gt;, Error&gt;</span>
-<span id="L550"><span class="lineNum">     550</span> <span class="tlaUNC">           0 : Builder::createVarCall(const std::string &amp;id) noexcept {</span></span>
-<span id="L551"><span class="lineNum">     551</span> <span class="tlaUNC">           0 :   return std::make_shared&lt;AST_VAR_CALL&gt;(id);</span></span>
-<span id="L552"><span class="lineNum">     552</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L553"><span class="lineNum">     553</span>              : </span>
-<span id="L554"><span class="lineNum">     554</span>              : std::expected&lt;std::shared_ptr&lt;AST_CHAINED&gt;, Error&gt; Builder::createChained(</span>
-<span id="L555"><span class="lineNum">     555</span>              :     const std::shared_ptr&lt;AST&gt; &amp;base,</span>
-<span id="L556"><span class="lineNum">     556</span> <span class="tlaUNC">           0 :     const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;operations) noexcept {</span></span>
-<span id="L557"><span class="lineNum">     557</span> <span class="tlaUNC">           0 :   const auto astChained{std::make_shared&lt;AST_CHAINED&gt;(base, operations)};</span></span>
-<span id="L558"><span class="lineNum">     558</span> <span class="tlaUNC">           0 :   if (base) {</span></span>
-<span id="L559"><span class="lineNum">     559</span> <span class="tlaUNC">           0 :     base-&gt;setFather(astChained);</span></span>
-<span id="L560"><span class="lineNum">     560</span>              : </span>
-<span id="L561"><span class="lineNum">     561</span> <span class="tlaUNC">           0 :     const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;operations__{</span></span>
-<span id="L562"><span class="lineNum">     562</span> <span class="tlaUNC">           0 :         astChained-&gt;operations()};</span></span>
-<span id="L563"><span class="lineNum">     563</span>              : </span>
-<span id="L564"><span class="lineNum">     564</span> <span class="tlaUNC">           0 :     if (operations__.size()) {</span></span>
-<span id="L565"><span class="lineNum">     565</span> <span class="tlaUNC">           0 :       operations__[0]-&gt;setFather(base);</span></span>
-<span id="L566"><span class="lineNum">     566</span>              : </span>
-<span id="L567"><span class="lineNum">     567</span> <span class="tlaUNC">           0 :       const std::size_t size{operations__.size()};</span></span>
-<span id="L568"><span class="lineNum">     568</span> <span class="tlaUNC">           0 :       if (size &gt; 1) {</span></span>
-<span id="L569"><span class="lineNum">     569</span> <span class="tlaUNC">           0 :         for (std::size_t i{1}; i &lt; size; ++i) {</span></span>
-<span id="L570"><span class="lineNum">     570</span> <span class="tlaUNC">           0 :           if (operations__[i] and operations__[i - 1]) {</span></span>
-<span id="L571"><span class="lineNum">     571</span> <span class="tlaUNC">           0 :             operations__[i]-&gt;setFather(operations__[i - 1]);</span></span>
-<span id="L572"><span class="lineNum">     572</span> <span class="tlaUNC">           0 :           }</span></span>
-<span id="L573"><span class="lineNum">     573</span> <span class="tlaUNC">           0 :         }</span></span>
-<span id="L574"><span class="lineNum">     574</span> <span class="tlaUNC">           0 :       }</span></span>
-<span id="L575"><span class="lineNum">     575</span> <span class="tlaUNC">           0 :     }</span></span>
-<span id="L576"><span class="lineNum">     576</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L577"><span class="lineNum">     577</span> <span class="tlaUNC">           0 :   return astChained;</span></span>
-<span id="L578"><span class="lineNum">     578</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L579"><span class="lineNum">     579</span>              : </span>
-<span id="L580"><span class="lineNum">     580</span>              : std::expected&lt;std::shared_ptr&lt;Tree&gt;, Error&gt;</span>
-<span id="L581"><span class="lineNum">     581</span> <span class="tlaUNC">           0 : Builder::createTree(const std::shared_ptr&lt;AST_BODY&gt; &amp;statements) noexcept {</span></span>
-<span id="L582"><span class="lineNum">     582</span> <span class="tlaUNC">           0 :   return std::make_shared&lt;Tree&gt;(statements);</span></span>
-<span id="L583"><span class="lineNum">     583</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L584"><span class="lineNum">     584</span>              : </span>
-<span id="L585"><span class="lineNum">     585</span>              : } // namespace nicole</span>
+<span id="L411"><span class="lineNum">     411</span> <span class="tlaUNC">           0 :                         const std::shared_ptr&lt;AST_BODY&gt; &amp;body) noexcept {</span></span>
+<span id="L412"><span class="lineNum">     412</span> <span class="tlaUNC">           0 :   const auto astFuncDecl{</span></span>
+<span id="L413"><span class="lineNum">     413</span> <span class="tlaUNC">           0 :       std::make_shared&lt;AST_FUNC_DECL&gt;(id, params, returnType, body)};</span></span>
+<span id="L414"><span class="lineNum">     414</span> <span class="tlaUNC">           0 :   if (body) {</span></span>
+<span id="L415"><span class="lineNum">     415</span> <span class="tlaUNC">           0 :     body-&gt;setFather(astFuncDecl);</span></span>
+<span id="L416"><span class="lineNum">     416</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L417"><span class="lineNum">     417</span> <span class="tlaUNC">           0 :   return astFuncDecl;</span></span>
+<span id="L418"><span class="lineNum">     418</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L419"><span class="lineNum">     419</span>              : </span>
+<span id="L420"><span class="lineNum">     420</span>              : std::expected&lt;std::shared_ptr&lt;AST_RETURN&gt;, Error&gt;</span>
+<span id="L421"><span class="lineNum">     421</span> <span class="tlaUNC">           0 : Builder::createReturn(const std::shared_ptr&lt;AST&gt; &amp;value) noexcept {</span></span>
+<span id="L422"><span class="lineNum">     422</span> <span class="tlaUNC">           0 :   const auto astReturn{std::make_shared&lt;AST_RETURN&gt;(value)};</span></span>
+<span id="L423"><span class="lineNum">     423</span> <span class="tlaUNC">           0 :   if (value) {</span></span>
+<span id="L424"><span class="lineNum">     424</span> <span class="tlaUNC">           0 :     value-&gt;setFather(astReturn);</span></span>
+<span id="L425"><span class="lineNum">     425</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L426"><span class="lineNum">     426</span> <span class="tlaUNC">           0 :   return astReturn;</span></span>
+<span id="L427"><span class="lineNum">     427</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L428"><span class="lineNum">     428</span>              : </span>
+<span id="L429"><span class="lineNum">     429</span>              : std::expected&lt;std::shared_ptr&lt;AST_ENUM&gt;, Error&gt;</span>
+<span id="L430"><span class="lineNum">     430</span>              : Builder::createEnum(const std::string &amp;id,</span>
+<span id="L431"><span class="lineNum">     431</span> <span class="tlaUNC">           0 :                     const std::vector&lt;std::string&gt; &amp;enumIdentifiers) noexcept {</span></span>
+<span id="L432"><span class="lineNum">     432</span> <span class="tlaUNC">           0 :   const auto astEnum{std::make_shared&lt;AST_ENUM&gt;(id, enumIdentifiers)};</span></span>
+<span id="L433"><span class="lineNum">     433</span> <span class="tlaUNC">           0 :   return astEnum;</span></span>
+<span id="L434"><span class="lineNum">     434</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L435"><span class="lineNum">     435</span>              : </span>
+<span id="L436"><span class="lineNum">     436</span>              : std::expected&lt;std::shared_ptr&lt;AST_STRUCT&gt;, Error&gt; Builder::createStruct(</span>
+<span id="L437"><span class="lineNum">     437</span>              :     const std::string &amp;id, std::unique_ptr&lt;std::string&gt; fatherType,</span>
+<span id="L438"><span class="lineNum">     438</span>              :     const Attributes &amp;attributes,</span>
+<span id="L439"><span class="lineNum">     439</span>              :     const std::vector&lt;std::shared_ptr&lt;AST_METHOD_DECL&gt;&gt; &amp;methods,</span>
+<span id="L440"><span class="lineNum">     440</span>              :     const std::shared_ptr&lt;AST_CONSTRUCTOR_DECL&gt; &amp;constructor,</span>
+<span id="L441"><span class="lineNum">     441</span> <span class="tlaUNC">           0 :     const std::shared_ptr&lt;AST_DESTRUCTOR_DECL&gt; &amp;destructor) noexcept {</span></span>
+<span id="L442"><span class="lineNum">     442</span> <span class="tlaUNC">           0 :   const auto astStruct{std::make_shared&lt;AST_STRUCT&gt;(</span></span>
+<span id="L443"><span class="lineNum">     443</span> <span class="tlaUNC">           0 :       id, std::move(fatherType), attributes, methods, constructor, destructor)};</span></span>
+<span id="L444"><span class="lineNum">     444</span> <span class="tlaUNC">           0 :   const std::vector&lt;std::shared_ptr&lt;AST_METHOD_DECL&gt;&gt; &amp;methods__{</span></span>
+<span id="L445"><span class="lineNum">     445</span> <span class="tlaUNC">           0 :       astStruct-&gt;methods()};</span></span>
+<span id="L446"><span class="lineNum">     446</span> <span class="tlaUNC">           0 :   for (const auto &amp;methods_ : methods__) {</span></span>
+<span id="L447"><span class="lineNum">     447</span> <span class="tlaUNC">           0 :     if (methods_) {</span></span>
+<span id="L448"><span class="lineNum">     448</span> <span class="tlaUNC">           0 :       methods_-&gt;setFather(astStruct);</span></span>
+<span id="L449"><span class="lineNum">     449</span> <span class="tlaUNC">           0 :     }</span></span>
+<span id="L450"><span class="lineNum">     450</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L451"><span class="lineNum">     451</span> <span class="tlaUNC">           0 :   if (constructor) {</span></span>
+<span id="L452"><span class="lineNum">     452</span> <span class="tlaUNC">           0 :     constructor-&gt;setFather(astStruct);</span></span>
+<span id="L453"><span class="lineNum">     453</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L454"><span class="lineNum">     454</span> <span class="tlaUNC">           0 :   if (destructor) {</span></span>
+<span id="L455"><span class="lineNum">     455</span> <span class="tlaUNC">           0 :     destructor-&gt;setFather(astStruct);</span></span>
+<span id="L456"><span class="lineNum">     456</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L457"><span class="lineNum">     457</span> <span class="tlaUNC">           0 :   return astStruct;</span></span>
+<span id="L458"><span class="lineNum">     458</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L459"><span class="lineNum">     459</span>              : </span>
+<span id="L460"><span class="lineNum">     460</span>              : std::expected&lt;std::shared_ptr&lt;AST_CLASS&gt;, Error&gt; Builder::createClass(</span>
+<span id="L461"><span class="lineNum">     461</span>              :     const std::string &amp;id, std::unique_ptr&lt;std::string&gt; fatherType,</span>
+<span id="L462"><span class="lineNum">     462</span>              :     const Attributes &amp;attributes,</span>
+<span id="L463"><span class="lineNum">     463</span>              :     const std::vector&lt;std::shared_ptr&lt;AST_FUNC_DECL&gt;&gt; &amp;methods,</span>
+<span id="L464"><span class="lineNum">     464</span>              :     const std::shared_ptr&lt;AST_FUNC_DECL&gt; &amp;constructor,</span>
+<span id="L465"><span class="lineNum">     465</span> <span class="tlaUNC">           0 :     const std::shared_ptr&lt;AST_FUNC_DECL&gt; &amp;destructor) noexcept {</span></span>
+<span id="L466"><span class="lineNum">     466</span> <span class="tlaUNC">           0 :   const auto astClass{std::make_shared&lt;AST_CLASS&gt;(</span></span>
+<span id="L467"><span class="lineNum">     467</span> <span class="tlaUNC">           0 :       id, std::move(fatherType), attributes, methods, constructor, destructor)};</span></span>
+<span id="L468"><span class="lineNum">     468</span> <span class="tlaUNC">           0 :   const std::vector&lt;std::shared_ptr&lt;AST_FUNC_DECL&gt;&gt; &amp;methods__{</span></span>
+<span id="L469"><span class="lineNum">     469</span> <span class="tlaUNC">           0 :       astClass-&gt;methods()};</span></span>
+<span id="L470"><span class="lineNum">     470</span> <span class="tlaUNC">           0 :   for (const auto &amp;methods_ : methods__) {</span></span>
+<span id="L471"><span class="lineNum">     471</span> <span class="tlaUNC">           0 :     if (methods_) {</span></span>
+<span id="L472"><span class="lineNum">     472</span> <span class="tlaUNC">           0 :       methods_-&gt;setFather(astClass);</span></span>
+<span id="L473"><span class="lineNum">     473</span> <span class="tlaUNC">           0 :     }</span></span>
+<span id="L474"><span class="lineNum">     474</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L475"><span class="lineNum">     475</span> <span class="tlaUNC">           0 :   if (constructor) {</span></span>
+<span id="L476"><span class="lineNum">     476</span> <span class="tlaUNC">           0 :     constructor-&gt;setFather(astClass);</span></span>
+<span id="L477"><span class="lineNum">     477</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L478"><span class="lineNum">     478</span> <span class="tlaUNC">           0 :   if (destructor) {</span></span>
+<span id="L479"><span class="lineNum">     479</span> <span class="tlaUNC">           0 :     destructor-&gt;setFather(astClass);</span></span>
+<span id="L480"><span class="lineNum">     480</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L481"><span class="lineNum">     481</span> <span class="tlaUNC">           0 :   return astClass;</span></span>
+<span id="L482"><span class="lineNum">     482</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L483"><span class="lineNum">     483</span>              : </span>
+<span id="L484"><span class="lineNum">     484</span>              : std::expected&lt;std::shared_ptr&lt;AST_ATTR_ACCESS&gt;, Error&gt;</span>
+<span id="L485"><span class="lineNum">     485</span> <span class="tlaUNC">           0 : Builder::createAttrAccess(const std::string &amp;id) noexcept {</span></span>
+<span id="L486"><span class="lineNum">     486</span> <span class="tlaUNC">           0 :   return std::make_shared&lt;AST_ATTR_ACCESS&gt;(id);</span></span>
+<span id="L487"><span class="lineNum">     487</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L488"><span class="lineNum">     488</span>              : </span>
+<span id="L489"><span class="lineNum">     489</span>              : std::expected&lt;std::shared_ptr&lt;AST_METHOD_CALL&gt;, Error&gt;</span>
+<span id="L490"><span class="lineNum">     490</span>              : Builder::createMethodCall(</span>
+<span id="L491"><span class="lineNum">     491</span>              :     const std::string &amp;id,</span>
+<span id="L492"><span class="lineNum">     492</span> <span class="tlaUNC">           0 :     const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;parameters) noexcept {</span></span>
+<span id="L493"><span class="lineNum">     493</span> <span class="tlaUNC">           0 :   const auto astMethodCall{std::make_shared&lt;AST_METHOD_CALL&gt;(id, parameters)};</span></span>
+<span id="L494"><span class="lineNum">     494</span> <span class="tlaUNC">           0 :   const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;parameters__{</span></span>
+<span id="L495"><span class="lineNum">     495</span> <span class="tlaUNC">           0 :       astMethodCall-&gt;parameters()};</span></span>
+<span id="L496"><span class="lineNum">     496</span> <span class="tlaUNC">           0 :   for (const auto &amp;parameters_ : parameters__) {</span></span>
+<span id="L497"><span class="lineNum">     497</span> <span class="tlaUNC">           0 :     if (parameters_) {</span></span>
+<span id="L498"><span class="lineNum">     498</span> <span class="tlaUNC">           0 :       parameters_-&gt;setFather(astMethodCall);</span></span>
+<span id="L499"><span class="lineNum">     499</span> <span class="tlaUNC">           0 :     }</span></span>
+<span id="L500"><span class="lineNum">     500</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L501"><span class="lineNum">     501</span> <span class="tlaUNC">           0 :   return astMethodCall;</span></span>
+<span id="L502"><span class="lineNum">     502</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L503"><span class="lineNum">     503</span>              : </span>
+<span id="L504"><span class="lineNum">     504</span>              : std::expected&lt;std::shared_ptr&lt;AST_METHOD_DECL&gt;, Error&gt;</span>
+<span id="L505"><span class="lineNum">     505</span>              : Builder::createMethodDecl(const std::string &amp;id, const Parameters &amp;params,</span>
+<span id="L506"><span class="lineNum">     506</span>              :                           const std::string &amp;returnType,</span>
+<span id="L507"><span class="lineNum">     507</span>              :                           const std::shared_ptr&lt;AST_BODY&gt; &amp;body,</span>
+<span id="L508"><span class="lineNum">     508</span> <span class="tlaUNC">           0 :                           const bool isVirtual) noexcept {</span></span>
+<span id="L509"><span class="lineNum">     509</span> <span class="tlaUNC">           0 :   const auto astMethodDecl{std::make_shared&lt;AST_METHOD_DECL&gt;(</span></span>
+<span id="L510"><span class="lineNum">     510</span> <span class="tlaUNC">           0 :       id, params, returnType, body, isVirtual)};</span></span>
+<span id="L511"><span class="lineNum">     511</span> <span class="tlaUNC">           0 :   if (body) {</span></span>
+<span id="L512"><span class="lineNum">     512</span> <span class="tlaUNC">           0 :     body-&gt;setFather(astMethodDecl);</span></span>
+<span id="L513"><span class="lineNum">     513</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L514"><span class="lineNum">     514</span> <span class="tlaUNC">           0 :   return astMethodDecl;</span></span>
+<span id="L515"><span class="lineNum">     515</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L516"><span class="lineNum">     516</span>              : </span>
+<span id="L517"><span class="lineNum">     517</span>              : std::expected&lt;std::shared_ptr&lt;AST_CONSTRUCTOR_CALL&gt;, Error&gt;</span>
+<span id="L518"><span class="lineNum">     518</span>              : Builder::createConstructorCall(</span>
+<span id="L519"><span class="lineNum">     519</span>              :     const std::string &amp;id,</span>
+<span id="L520"><span class="lineNum">     520</span> <span class="tlaUNC">           0 :     const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;parameters) noexcept {</span></span>
+<span id="L521"><span class="lineNum">     521</span> <span class="tlaUNC">           0 :   const auto astConstructorall{</span></span>
+<span id="L522"><span class="lineNum">     522</span> <span class="tlaUNC">           0 :       std::make_shared&lt;AST_CONSTRUCTOR_CALL&gt;(id, parameters)};</span></span>
+<span id="L523"><span class="lineNum">     523</span> <span class="tlaUNC">           0 :   const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;parameters__{</span></span>
+<span id="L524"><span class="lineNum">     524</span> <span class="tlaUNC">           0 :       astConstructorall-&gt;parameters()};</span></span>
+<span id="L525"><span class="lineNum">     525</span> <span class="tlaUNC">           0 :   for (const auto &amp;parameters_ : parameters__) {</span></span>
+<span id="L526"><span class="lineNum">     526</span> <span class="tlaUNC">           0 :     if (parameters_) {</span></span>
+<span id="L527"><span class="lineNum">     527</span> <span class="tlaUNC">           0 :       parameters_-&gt;setFather(astConstructorall);</span></span>
+<span id="L528"><span class="lineNum">     528</span> <span class="tlaUNC">           0 :     }</span></span>
+<span id="L529"><span class="lineNum">     529</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L530"><span class="lineNum">     530</span> <span class="tlaUNC">           0 :   return astConstructorall;</span></span>
+<span id="L531"><span class="lineNum">     531</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L532"><span class="lineNum">     532</span>              : </span>
+<span id="L533"><span class="lineNum">     533</span>              : std::expected&lt;std::shared_ptr&lt;AST_CONSTRUCTOR_DECL&gt;, Error&gt;</span>
+<span id="L534"><span class="lineNum">     534</span>              : Builder::createConstructorDecl(const std::string &amp;id_returnType,</span>
+<span id="L535"><span class="lineNum">     535</span>              :                                const Parameters &amp;params,</span>
+<span id="L536"><span class="lineNum">     536</span> <span class="tlaUNC">           0 :                                const std::shared_ptr&lt;AST_BODY&gt; &amp;body) noexcept {</span></span>
+<span id="L537"><span class="lineNum">     537</span> <span class="tlaUNC">           0 :   const auto astConstructor{</span></span>
+<span id="L538"><span class="lineNum">     538</span> <span class="tlaUNC">           0 :       std::make_shared&lt;AST_CONSTRUCTOR_DECL&gt;(id_returnType, params, body)};</span></span>
+<span id="L539"><span class="lineNum">     539</span> <span class="tlaUNC">           0 :   if (body) {</span></span>
+<span id="L540"><span class="lineNum">     540</span> <span class="tlaUNC">           0 :     body-&gt;setFather(astConstructor);</span></span>
+<span id="L541"><span class="lineNum">     541</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L542"><span class="lineNum">     542</span> <span class="tlaUNC">           0 :   return astConstructor;</span></span>
+<span id="L543"><span class="lineNum">     543</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L544"><span class="lineNum">     544</span>              : </span>
+<span id="L545"><span class="lineNum">     545</span>              : std::expected&lt;std::shared_ptr&lt;AST_DESTRUCTOR_DECL&gt;, Error&gt;</span>
+<span id="L546"><span class="lineNum">     546</span>              : Builder::createDestructorDecl(const std::string &amp;id,</span>
+<span id="L547"><span class="lineNum">     547</span> <span class="tlaUNC">           0 :                               const std::shared_ptr&lt;AST_BODY&gt; &amp;body) noexcept {</span></span>
+<span id="L548"><span class="lineNum">     548</span> <span class="tlaUNC">           0 :   const auto astConstructor{std::make_shared&lt;AST_DESTRUCTOR_DECL&gt;(id, body)};</span></span>
+<span id="L549"><span class="lineNum">     549</span> <span class="tlaUNC">           0 :   if (body) {</span></span>
+<span id="L550"><span class="lineNum">     550</span> <span class="tlaUNC">           0 :     body-&gt;setFather(astConstructor);</span></span>
+<span id="L551"><span class="lineNum">     551</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L552"><span class="lineNum">     552</span> <span class="tlaUNC">           0 :   return astConstructor;</span></span>
+<span id="L553"><span class="lineNum">     553</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L554"><span class="lineNum">     554</span>              : </span>
+<span id="L555"><span class="lineNum">     555</span> <span class="tlaUNC">           0 : std::expected&lt;std::shared_ptr&lt;AST_THIS&gt;, Error&gt; Builder::createThis() noexcept {</span></span>
+<span id="L556"><span class="lineNum">     556</span> <span class="tlaUNC">           0 :   const auto astThis{std::make_shared&lt;AST_THIS&gt;()};</span></span>
+<span id="L557"><span class="lineNum">     557</span> <span class="tlaUNC">           0 :   return astThis;</span></span>
+<span id="L558"><span class="lineNum">     558</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L559"><span class="lineNum">     559</span>              : </span>
+<span id="L560"><span class="lineNum">     560</span>              : std::expected&lt;std::shared_ptr&lt;AST_AUTO_DECL&gt;, Error&gt;</span>
+<span id="L561"><span class="lineNum">     561</span>              : Builder::createAutoDecl(const std::string &amp;id,</span>
+<span id="L562"><span class="lineNum">     562</span>              :                         const std::shared_ptr&lt;AST&gt; &amp;value,</span>
+<span id="L563"><span class="lineNum">     563</span> <span class="tlaUNC">           0 :                         const bool isConst) noexcept {</span></span>
+<span id="L564"><span class="lineNum">     564</span> <span class="tlaUNC">           0 :   const auto astAutoDecl{std::make_shared&lt;AST_AUTO_DECL&gt;(id, value, isConst)};</span></span>
+<span id="L565"><span class="lineNum">     565</span> <span class="tlaUNC">           0 :   if (value) {</span></span>
+<span id="L566"><span class="lineNum">     566</span> <span class="tlaUNC">           0 :     value-&gt;setFather(astAutoDecl);</span></span>
+<span id="L567"><span class="lineNum">     567</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L568"><span class="lineNum">     568</span> <span class="tlaUNC">           0 :   return astAutoDecl;</span></span>
+<span id="L569"><span class="lineNum">     569</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L570"><span class="lineNum">     570</span>              : </span>
+<span id="L571"><span class="lineNum">     571</span>              : std::expected&lt;std::shared_ptr&lt;AST_VAR_TYPED_DECL&gt;, Error&gt;</span>
+<span id="L572"><span class="lineNum">     572</span>              : Builder::createVarTypedtDecl(const std::string &amp;id, const std::string &amp;type,</span>
+<span id="L573"><span class="lineNum">     573</span>              :                              const std::shared_ptr&lt;AST&gt; &amp;value,</span>
+<span id="L574"><span class="lineNum">     574</span> <span class="tlaUNC">           0 :                              const bool isConst) noexcept {</span></span>
+<span id="L575"><span class="lineNum">     575</span> <span class="tlaUNC">           0 :   const auto astLetDecl{</span></span>
+<span id="L576"><span class="lineNum">     576</span> <span class="tlaUNC">           0 :       std::make_shared&lt;AST_VAR_TYPED_DECL&gt;(id, type, value, isConst)};</span></span>
+<span id="L577"><span class="lineNum">     577</span> <span class="tlaUNC">           0 :   if (value) {</span></span>
+<span id="L578"><span class="lineNum">     578</span> <span class="tlaUNC">           0 :     value-&gt;setFather(astLetDecl);</span></span>
+<span id="L579"><span class="lineNum">     579</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L580"><span class="lineNum">     580</span> <span class="tlaUNC">           0 :   return astLetDecl;</span></span>
+<span id="L581"><span class="lineNum">     581</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L582"><span class="lineNum">     582</span>              : </span>
+<span id="L583"><span class="lineNum">     583</span>              : std::expected&lt;std::shared_ptr&lt;AST_VAR_CALL&gt;, Error&gt;</span>
+<span id="L584"><span class="lineNum">     584</span> <span class="tlaUNC">           0 : Builder::createVarCall(const std::string &amp;id) noexcept {</span></span>
+<span id="L585"><span class="lineNum">     585</span> <span class="tlaUNC">           0 :   return std::make_shared&lt;AST_VAR_CALL&gt;(id);</span></span>
+<span id="L586"><span class="lineNum">     586</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L587"><span class="lineNum">     587</span>              : </span>
+<span id="L588"><span class="lineNum">     588</span>              : std::expected&lt;std::shared_ptr&lt;AST_CHAINED&gt;, Error&gt; Builder::createChained(</span>
+<span id="L589"><span class="lineNum">     589</span>              :     const std::shared_ptr&lt;AST&gt; &amp;base,</span>
+<span id="L590"><span class="lineNum">     590</span> <span class="tlaUNC">           0 :     const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;operations) noexcept {</span></span>
+<span id="L591"><span class="lineNum">     591</span> <span class="tlaUNC">           0 :   const auto astChained{std::make_shared&lt;AST_CHAINED&gt;(base, operations)};</span></span>
+<span id="L592"><span class="lineNum">     592</span> <span class="tlaUNC">           0 :   if (base) {</span></span>
+<span id="L593"><span class="lineNum">     593</span> <span class="tlaUNC">           0 :     base-&gt;setFather(astChained);</span></span>
+<span id="L594"><span class="lineNum">     594</span>              : </span>
+<span id="L595"><span class="lineNum">     595</span> <span class="tlaUNC">           0 :     const std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; &amp;operations__{</span></span>
+<span id="L596"><span class="lineNum">     596</span> <span class="tlaUNC">           0 :         astChained-&gt;operations()};</span></span>
+<span id="L597"><span class="lineNum">     597</span>              : </span>
+<span id="L598"><span class="lineNum">     598</span> <span class="tlaUNC">           0 :     if (operations__.size()) {</span></span>
+<span id="L599"><span class="lineNum">     599</span> <span class="tlaUNC">           0 :       operations__[0]-&gt;setFather(base);</span></span>
+<span id="L600"><span class="lineNum">     600</span>              : </span>
+<span id="L601"><span class="lineNum">     601</span> <span class="tlaUNC">           0 :       const std::size_t size{operations__.size()};</span></span>
+<span id="L602"><span class="lineNum">     602</span> <span class="tlaUNC">           0 :       if (size &gt; 1) {</span></span>
+<span id="L603"><span class="lineNum">     603</span> <span class="tlaUNC">           0 :         for (std::size_t i{1}; i &lt; size; ++i) {</span></span>
+<span id="L604"><span class="lineNum">     604</span> <span class="tlaUNC">           0 :           if (operations__[i] and operations__[i - 1]) {</span></span>
+<span id="L605"><span class="lineNum">     605</span> <span class="tlaUNC">           0 :             operations__[i]-&gt;setFather(operations__[i - 1]);</span></span>
+<span id="L606"><span class="lineNum">     606</span> <span class="tlaUNC">           0 :           }</span></span>
+<span id="L607"><span class="lineNum">     607</span> <span class="tlaUNC">           0 :         }</span></span>
+<span id="L608"><span class="lineNum">     608</span> <span class="tlaUNC">           0 :       }</span></span>
+<span id="L609"><span class="lineNum">     609</span> <span class="tlaUNC">           0 :     }</span></span>
+<span id="L610"><span class="lineNum">     610</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L611"><span class="lineNum">     611</span> <span class="tlaUNC">           0 :   return astChained;</span></span>
+<span id="L612"><span class="lineNum">     612</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L613"><span class="lineNum">     613</span>              : </span>
+<span id="L614"><span class="lineNum">     614</span>              : std::expected&lt;std::shared_ptr&lt;Tree&gt;, Error&gt;</span>
+<span id="L615"><span class="lineNum">     615</span> <span class="tlaUNC">           0 : Builder::createTree(const std::shared_ptr&lt;AST_BODY&gt; &amp;statements) noexcept {</span></span>
+<span id="L616"><span class="lineNum">     616</span> <span class="tlaUNC">           0 :   return std::make_shared&lt;Tree&gt;(statements);</span></span>
+<span id="L617"><span class="lineNum">     617</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L618"><span class="lineNum">     618</span>              : </span>
+<span id="L619"><span class="lineNum">     619</span>              : } // namespace nicole</span>
         </pre>
               </td>
             </tr>

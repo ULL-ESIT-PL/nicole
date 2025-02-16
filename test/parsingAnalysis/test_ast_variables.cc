@@ -5,7 +5,7 @@
 using namespace nicole;
 
 TEST_CASE("AST_AUTO_DECL class methods", "[AST_AUTO_DECL]") {
-  auto astBool = std::make_shared<AST_BOOL>(true);
+  auto astBool = *Builder::createBool(true);
 
   AST_AUTO_DECL astAutoDecl{"myVar", astBool, true};
 
@@ -16,7 +16,7 @@ TEST_CASE("AST_AUTO_DECL class methods", "[AST_AUTO_DECL]") {
 }
 
 TEST_CASE("AST_VAR_TYPED_DECL class methods", "[AST_VAR_TYPED_DECL]") {
-  auto astBool = std::make_shared<AST_BOOL>(true);
+  auto astBool = *Builder::createBool(true);
 
   AST_VAR_TYPED_DECL astLetDecl{"myLet", "bool", astBool, true};
 

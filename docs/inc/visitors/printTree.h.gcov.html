@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-02-15 23:10:15</td>
+            <td class="headerValue">2025-02-16 12:31:47</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
@@ -200,35 +200,44 @@
 <span id="L138"><span class="lineNum">     138</span>              :   visit(const AST_METHOD_CALL *node) const noexcept override;</span>
 <span id="L139"><span class="lineNum">     139</span>              : </span>
 <span id="L140"><span class="lineNum">     140</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
-<span id="L141"><span class="lineNum">     141</span>              :   visit(const AST_THIS *node) const noexcept override;</span>
+<span id="L141"><span class="lineNum">     141</span>              :   visit(const AST_METHOD_DECL *node) const noexcept override;</span>
 <span id="L142"><span class="lineNum">     142</span>              : </span>
 <span id="L143"><span class="lineNum">     143</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
-<span id="L144"><span class="lineNum">     144</span>              :   visit(const AST_CONSTRUCTOR_CALL *node) const noexcept override;</span>
+<span id="L144"><span class="lineNum">     144</span>              :   visit(const AST_CONSTRUCTOR_DECL *node) const noexcept override;</span>
 <span id="L145"><span class="lineNum">     145</span>              : </span>
 <span id="L146"><span class="lineNum">     146</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
-<span id="L147"><span class="lineNum">     147</span>              :   visit(const AST_AUTO_DECL *node) const noexcept override;</span>
+<span id="L147"><span class="lineNum">     147</span>              :   visit(const AST_DESTRUCTOR_DECL *node) const noexcept override;</span>
 <span id="L148"><span class="lineNum">     148</span>              : </span>
 <span id="L149"><span class="lineNum">     149</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
-<span id="L150"><span class="lineNum">     150</span>              :   visit(const AST_VAR_TYPED_DECL *node) const noexcept override;</span>
+<span id="L150"><span class="lineNum">     150</span>              :   visit(const AST_THIS *node) const noexcept override;</span>
 <span id="L151"><span class="lineNum">     151</span>              : </span>
 <span id="L152"><span class="lineNum">     152</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
-<span id="L153"><span class="lineNum">     153</span>              :   visit(const AST_VAR_CALL *node) const noexcept override;</span>
+<span id="L153"><span class="lineNum">     153</span>              :   visit(const AST_CONSTRUCTOR_CALL *node) const noexcept override;</span>
 <span id="L154"><span class="lineNum">     154</span>              : </span>
 <span id="L155"><span class="lineNum">     155</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
-<span id="L156"><span class="lineNum">     156</span>              :   visit(const AST_CHAINED *node) const noexcept override;</span>
+<span id="L156"><span class="lineNum">     156</span>              :   visit(const AST_AUTO_DECL *node) const noexcept override;</span>
 <span id="L157"><span class="lineNum">     157</span>              : </span>
 <span id="L158"><span class="lineNum">     158</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
-<span id="L159"><span class="lineNum">     159</span>              :   visit(const Tree *tree) const noexcept override;</span>
+<span id="L159"><span class="lineNum">     159</span>              :   visit(const AST_VAR_TYPED_DECL *node) const noexcept override;</span>
 <span id="L160"><span class="lineNum">     160</span>              : </span>
 <span id="L161"><span class="lineNum">     161</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
-<span id="L162"><span class="lineNum">     162</span> <span class="tlaUNC">           0 :   print(const Tree *tree) const noexcept {</span></span>
-<span id="L163"><span class="lineNum">     163</span> <span class="tlaUNC">           0 :     return visit(tree);</span></span>
-<span id="L164"><span class="lineNum">     164</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L165"><span class="lineNum">     165</span>              : };</span>
+<span id="L162"><span class="lineNum">     162</span>              :   visit(const AST_VAR_CALL *node) const noexcept override;</span>
+<span id="L163"><span class="lineNum">     163</span>              : </span>
+<span id="L164"><span class="lineNum">     164</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
+<span id="L165"><span class="lineNum">     165</span>              :   visit(const AST_CHAINED *node) const noexcept override;</span>
 <span id="L166"><span class="lineNum">     166</span>              : </span>
-<span id="L167"><span class="lineNum">     167</span>              : } // namespace nicole</span>
-<span id="L168"><span class="lineNum">     168</span>              : </span>
-<span id="L169"><span class="lineNum">     169</span>              : #endif</span>
+<span id="L167"><span class="lineNum">     167</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
+<span id="L168"><span class="lineNum">     168</span>              :   visit(const Tree *tree) const noexcept override;</span>
+<span id="L169"><span class="lineNum">     169</span>              : </span>
+<span id="L170"><span class="lineNum">     170</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
+<span id="L171"><span class="lineNum">     171</span> <span class="tlaUNC">           0 :   print(const Tree *tree) const noexcept {</span></span>
+<span id="L172"><span class="lineNum">     172</span> <span class="tlaUNC">           0 :     return visit(tree);</span></span>
+<span id="L173"><span class="lineNum">     173</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L174"><span class="lineNum">     174</span>              : };</span>
+<span id="L175"><span class="lineNum">     175</span>              : </span>
+<span id="L176"><span class="lineNum">     176</span>              : } // namespace nicole</span>
+<span id="L177"><span class="lineNum">     177</span>              : </span>
+<span id="L178"><span class="lineNum">     178</span>              : #endif</span>
         </pre>
               </td>
             </tr>

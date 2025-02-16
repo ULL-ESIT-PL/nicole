@@ -7,8 +7,8 @@ using namespace nicole;
 TEST_CASE("AST_BINARY class methods", "[AST_BINARY]") {
   Location loc{"file", 0, 0};
   Token token{TokenType::OPERATOR_ADD, "+", loc};
-  auto leftOperand = std::make_shared<AST_INT>(21);
-  auto rightOperand = std::make_shared<AST_INT>(21);
+  auto leftOperand = *Builder::createInt(21);
+  auto rightOperand = *Builder::createInt(21);
   AST_BINARY astAdd{token, leftOperand, rightOperand};
 
   REQUIRE(astAdd.op().raw() == "+");

@@ -33,9 +33,9 @@ bool areASTStatementsEqual(const std::shared_ptr<AST_STATEMENT> &lhs,
 
 TEST_CASE("AST_PRINT class methods", "[AST_PRINT]") {
   auto astBool1 =
-      std::make_shared<AST_STATEMENT>(std::make_shared<AST_BOOL>(true));
+      *Builder::createStatement(*Builder::createBool(true));
   auto astBool2 =
-      std::make_shared<AST_STATEMENT>(std::make_shared<AST_BOOL>(false));
+      *Builder::createStatement(*Builder::createBool(false));
   auto astComma =
       std::vector<std::shared_ptr<AST>>{astBool1, astBool2};
 

@@ -817,7 +817,6 @@ PrintTree::visit(const AST_STRUCT *node) const noexcept {
 
   // Constructor
   if (node->constructor()) {
-    result << indent_ << "Constructor:\n";
     increaseIndent();
     const auto ctorStr = node->constructor()->accept(*this);
     if (!ctorStr) {
@@ -829,7 +828,6 @@ PrintTree::visit(const AST_STRUCT *node) const noexcept {
 
   // Destructor
   if (node->destructor()) {
-    result << indent_ << "Destructor:\n";
     increaseIndent();
     const auto dtorStr = node->destructor()->accept(*this);
     if (!dtorStr) {

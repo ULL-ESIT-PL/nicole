@@ -4,8 +4,8 @@
 using namespace nicole;
 
 TEST_CASE("AST_VECTOR class methods", "[AST_VECTOR]") {
-    auto astBool1 = std::make_shared<AST_BOOL>(true);
-    auto astBool2 = std::make_shared<AST_BOOL>(false);
+    auto astBool1 = *Builder::createBool(true);
+    auto astBool2 = *Builder::createBool(false);
 
     std::vector<std::shared_ptr<AST>> values{astBool1, astBool2};
     AST_VECTOR astVector{values};
