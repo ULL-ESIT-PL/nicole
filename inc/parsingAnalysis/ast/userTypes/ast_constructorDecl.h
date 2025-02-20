@@ -1,17 +1,28 @@
 #ifndef AST_CONSTRUCTOR_DECL_H
 #define AST_CONSTRUCTOR_DECL_H
 
+#include "../../types/userTypes/genericParameter.h"
 #include "../functions/ast_parametrizedSubritineDecl.h"
 
 namespace nicole {
 
 class AST_CONSTRUCTOR_DECL final : public AST_PARAMETRIZED_SUBRUTINE_DECL {
+private:
+  std::vector<GenericParameter> generics_;
+
 public:
   explicit AST_CONSTRUCTOR_DECL(const std::string &id_returnType,
+                                const std::vector<GenericParameter> &generics,
                                 const Parameters &params,
                                 const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST_PARAMETRIZED_SUBRUTINE_DECL(AST_TYPE::CONSTRUCTOR_DECL, id_returnType, params,
-                           id_returnType, body) {}
+      : AST_PARAMETRIZED_SUBRUTINE_DECL(AST_TYPE::CONSTRUCTOR_DECL,
+                                        id_returnType, params, id_returnType,
+                                        body),
+        generics_{generics} {}
+
+  [[nodiscard]] const std::vector<GenericParameter> &generics() const noexcept {
+    return generics_;
+  }
 
   [[nodiscard]] std::expected<std::string, Error>
   accept(const PrintTree &visitor) const noexcept override {

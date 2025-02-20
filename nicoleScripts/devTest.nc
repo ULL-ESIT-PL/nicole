@@ -159,10 +159,10 @@ for (;;a := b, a*=b,) {
 struct hola extends adios {
     a: int
     b: int
-    method c(): int {}
+    method c<T>(): int {}
     k: int
     virtual bb(): int {}
-    constructor(a: int, b: int) {}
+    constructor<T, Q>(a: int, b: int) {}
     destructor {}
     ccc: int    
 }

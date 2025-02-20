@@ -435,13 +435,14 @@ Builder::createEnum(const std::string &id,
 }
 
 std::expected<std::shared_ptr<AST_STRUCT>, Error> Builder::createStruct(
-    const std::string &id, std::unique_ptr<std::string> fatherType,
-    const Attributes &attributes,
+    const std::string &id, const std::vector<GenericParameter> &generics,
+    std::unique_ptr<std::string> fatherType, const Attributes &attributes,
     const std::vector<std::shared_ptr<AST_METHOD_DECL>> &methods,
     const std::shared_ptr<AST_CONSTRUCTOR_DECL> &constructor,
     const std::shared_ptr<AST_DESTRUCTOR_DECL> &destructor) noexcept {
   const auto astStruct{std::make_shared<AST_STRUCT>(
-      id, std::move(fatherType), attributes, methods, constructor, destructor)};
+      id, generics, std::move(fatherType), attributes, methods, constructor,
+      destructor)};
   const std::vector<std::shared_ptr<AST_METHOD_DECL>> &methods__{
       astStruct->methods()};
   for (const auto &methods_ : methods__) {
@@ -503,12 +504,14 @@ Builder::createMethodCall(
 }
 
 std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>
-Builder::createMethodDecl(const std::string &id, const Parameters &params,
+Builder::createMethodDecl(const std::string &id,
+                          const std::vector<GenericParameter> &generics,
+                          const Parameters &params,
                           const std::string &returnType,
                           const std::shared_ptr<AST_BODY> &body,
                           const bool isVirtual) noexcept {
   const auto astMethodDecl{std::make_shared<AST_METHOD_DECL>(
-      id, params, returnType, body, isVirtual)};
+      id, generics, params, returnType, body, isVirtual)};
   if (body) {
     body->setFather(astMethodDecl);
   }
@@ -533,10 +536,11 @@ Builder::createConstructorCall(
 
 std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>, Error>
 Builder::createConstructorDecl(const std::string &id_returnType,
+                               const std::vector<GenericParameter> &generics,
                                const Parameters &params,
                                const std::shared_ptr<AST_BODY> &body) noexcept {
-  const auto astConstructor{
-      std::make_shared<AST_CONSTRUCTOR_DECL>(id_returnType, params, body)};
+  const auto astConstructor{std::make_shared<AST_CONSTRUCTOR_DECL>(
+      id_returnType, generics, params, body)};
   if (body) {
     body->setFather(astConstructor);
   }

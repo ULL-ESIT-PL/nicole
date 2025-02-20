@@ -220,7 +220,9 @@ public:
              const std::vector<std::string> &enumIdentifiers) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_STRUCT>, Error>
-  createStruct(const std::string &id, std::unique_ptr<std::string> fatherType,
+  createStruct(const std::string &id,
+               const std::vector<GenericParameter> &generics,
+               std::unique_ptr<std::string> fatherType,
                const Attributes &attributes,
                const std::vector<std::shared_ptr<AST_METHOD_DECL>> &methods,
                const std::shared_ptr<AST_CONSTRUCTOR_DECL> &constructor,
@@ -242,14 +244,16 @@ public:
       const std::vector<std::shared_ptr<AST>> &parameters) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>
-  createMethodDecl(const std::string &id, const Parameters &params,
-                   const std::string &returnType,
+  createMethodDecl(const std::string &id,
+                   const std::vector<GenericParameter> &generics,
+                   const Parameters &params, const std::string &returnType,
                    const std::shared_ptr<AST_BODY> &body,
                    const bool isVirtual) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>,
                                      Error>
   createConstructorDecl(const std::string &id_returnType,
+                        const std::vector<GenericParameter> &generics,
                         const Parameters &params,
                         const std::shared_ptr<AST_BODY> &body) noexcept;
 

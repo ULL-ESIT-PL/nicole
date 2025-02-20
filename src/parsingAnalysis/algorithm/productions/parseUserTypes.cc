@@ -75,6 +75,13 @@ TopDown::parseStructDecl() const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
+  std::expected<std::vector<GenericParameter>, Error> generics{};
+  if (tkStream_.current()->type() == TokenType::OPERATOR_SMALLER) {
+    generics = parseGenerics();
+  }
+  if (!generics) {
+    return createError(generics.error());
+  }
   std::unique_ptr<std::string> fatherType{nullptr};
   if (tkStream_.current()->type() == TokenType::EXTENDS and
       tkStream_.lookAhead(1)->type() == TokenType::ID) {
@@ -202,7 +209,7 @@ TopDown::parseStructDecl() const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
-  return Builder::createStruct(id.raw(), std::move(fatherType),
+  return Builder::createStruct(id.raw(), *generics, std::move(fatherType),
                                Attributes{params}, methods, *constructor,
                                *destructor);
 }
@@ -211,6 +218,13 @@ const std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>, Error>
 TopDown::parseConstructorDecl(const std::string &id_returnType) const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
+  }
+  std::expected<std::vector<GenericParameter>, Error> generics{};
+  if (tkStream_.current()->type() == TokenType::OPERATOR_SMALLER) {
+    generics = parseGenerics();
+  }
+  if (!generics) {
+    return createError(generics.error());
   }
   if (tkStream_.current()->type() != TokenType::LP) {
     return createError(ERROR_TYPE::SINTAX, "missing ( of function at " +
@@ -235,7 +249,8 @@ TopDown::parseConstructorDecl(const std::string &id_returnType) const noexcept {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createConstructorDecl(id_returnType, *params, *body);
+  return Builder::createConstructorDecl(id_returnType, *generics, *params,
+                                        *body);
 }
 
 const std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>, Error>
@@ -251,7 +266,6 @@ TopDown::parseDestructorDecl(const std::string &id) const noexcept {
   return Builder::createDestructorDecl(id, *body);
 }
 
-
 const std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>
 TopDown::parseMethodDecl(const bool isVirtual) const noexcept {
   if (auto res = tryEat(); !res) {
@@ -265,6 +279,13 @@ TopDown::parseMethodDecl(const bool isVirtual) const noexcept {
   const Token id{*tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
+  }
+  std::expected<std::vector<GenericParameter>, Error> generics{};
+  if (tkStream_.current()->type() == TokenType::OPERATOR_SMALLER) {
+    generics = parseGenerics();
+  }
+  if (!generics) {
+    return createError(generics.error());
   }
   if (tkStream_.current()->type() != TokenType::LP) {
     return createError(ERROR_TYPE::SINTAX, "missing ( of function at " +
@@ -308,7 +329,8 @@ TopDown::parseMethodDecl(const bool isVirtual) const noexcept {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createMethodDecl(id.raw(), *params, returnType.raw(), *body, isVirtual);
+  return Builder::createMethodDecl(id.raw(), *generics, *params,
+                                   returnType.raw(), *body, isVirtual);
 }
 
 } // namespace nicole

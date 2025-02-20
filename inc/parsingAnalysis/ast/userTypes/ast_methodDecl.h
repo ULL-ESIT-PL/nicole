@@ -1,22 +1,30 @@
 #ifndef AST_METHOD_DECL_H
 #define AST_METHOD_DECL_H
 
+#include "../../types/userTypes/genericParameter.h"
 #include "../functions/ast_parametrizedSubritineDecl.h"
 
 namespace nicole {
 
 class AST_METHOD_DECL final : public AST_PARAMETRIZED_SUBRUTINE_DECL {
 private:
+  std::vector<GenericParameter> generics_;
   bool isVirtual_;
 
 public:
-  explicit AST_METHOD_DECL(const std::string &id, const Parameters &params,
+  explicit AST_METHOD_DECL(const std::string &id,
+                           const std::vector<GenericParameter> &generics,
+                           const Parameters &params,
                            const std::string &returnType,
                            const std::shared_ptr<AST_BODY> &body,
                            const bool isVirtual) noexcept
       : AST_PARAMETRIZED_SUBRUTINE_DECL(AST_TYPE::METHOD_DECL, id, params,
                                         returnType, body),
-        isVirtual_{isVirtual} {}
+        generics_{generics}, isVirtual_{isVirtual} {}
+
+  [[nodiscard]] const std::vector<GenericParameter> &generics() const noexcept {
+    return generics_;
+  }
 
   [[nodiscard]] bool isVirtual() const noexcept { return isVirtual_; }
 

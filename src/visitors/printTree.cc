@@ -714,7 +714,7 @@ PrintTree::visit(const AST_FUNC_DECL *node) const noexcept {
   increaseIndent();
   result << indent_ << "Name: " << node->id() << "\n";
   result << indent_ << "Generics: ";
-  for (const auto& generic : node->generics()) {
+  for (const auto &generic : node->generics()) {
     result << generic.name() << ", ";
   }
   result << "\n";
@@ -792,7 +792,11 @@ PrintTree::visit(const AST_STRUCT *node) const noexcept {
 
   // Nombre de la estructura
   result << indent_ << "Name: " << node->id() << "\n";
-
+  result << indent_ << "Generics: ";
+  for (const auto &generic : node->generics()) {
+    result << generic.name() << ", ";
+  }
+  result << "\n";
   // Tipo padre (si existe)
   if (node->fatherType()) {
     result << indent_ << "Father Type: " << *node->fatherType() << "\n";
@@ -961,6 +965,11 @@ PrintTree::visit(const AST_METHOD_DECL *node) const noexcept {
   result << indent_ << "Method Declaration:\n";
   increaseIndent();
   result << indent_ << "Name: " << node->id() << "\n";
+  result << indent_ << "Generics: ";
+  for (const auto& generic : node->generics()) {
+    result << generic.name() << ", ";
+  }
+  result << "\n";
   result << indent_ << "Return Type: " << node->returnType() << "\n";
   result << indent_ << "Virtual: " << (node->isVirtual() ? "true" : "false")
          << "\n";
@@ -996,6 +1005,11 @@ PrintTree::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   result << indent_ << "Constructor Decl:\n";
   increaseIndent();
   result << indent_ << "Name: " << node->id() << "\n";
+  result << indent_ << "Generics: ";
+  for (const auto& generic : node->generics()) {
+    result << generic.name() << ", ";
+  }
+  result << "\n";
   result << indent_ << "Parameters:\n";
   increaseIndent();
   for (const auto &param : node->parameters()) {

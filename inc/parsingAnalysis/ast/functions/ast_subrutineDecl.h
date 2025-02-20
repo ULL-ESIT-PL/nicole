@@ -2,7 +2,6 @@
 #define AST_SUBRUTINE_DECL_H
 
 #include "../statements/ast_body.h"
-#include "parameters.h"
 #include <memory>
 #include <string>
 
