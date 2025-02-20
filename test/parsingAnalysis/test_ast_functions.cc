@@ -36,7 +36,7 @@ TEST_CASE("AST_FUNC_DECL class methods", "[AST_FUNC_DECL]") {
   auto statement = *Builder::createStatement(*Builder::createBool(true));
   auto body = *Builder::createBody(
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
-  AST_FUNC_DECL funcDecl("myFunction", params, "void", body);
+  AST_FUNC_DECL funcDecl("myFunction", {}, params, "void", body);
 
   REQUIRE(funcDecl.id() == "myFunction");
   REQUIRE(funcDecl.parameters() == params);

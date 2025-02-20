@@ -167,3 +167,5 @@ struct hola extends adios {
     ccc: int    
 }
 
+
+def foo<T, Q, P, R, T,>(): int {}

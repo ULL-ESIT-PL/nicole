@@ -25,6 +25,8 @@ enum class TokenType {
   AUTO,
   PTR,
 
+  VECTOR,
+
   NEW,
   DELETE,
 

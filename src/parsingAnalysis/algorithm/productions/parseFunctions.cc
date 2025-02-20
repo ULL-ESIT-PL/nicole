@@ -1,4 +1,5 @@
 #include "../../../../inc/parsingAnalysis/algorithm/topDown.h"
+#include <vector>
 
 namespace nicole {
 
@@ -15,6 +16,13 @@ TopDown::parseFuncDecl() const noexcept {
   const Token id{*tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
+  }
+  std::expected<std::vector<GenericParameter>, Error> generics{};
+  if (tkStream_.current()->type() == TokenType::OPERATOR_SMALLER) {
+    generics = parseGenerics();
+  }
+  if (!generics) {
+    return createError(generics.error());
   }
   if (tkStream_.current()->type() != TokenType::LP) {
     return createError(ERROR_TYPE::SINTAX, "missing ( of function at " +
@@ -58,7 +66,8 @@ TopDown::parseFuncDecl() const noexcept {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createFuncDecl(id.raw(), *params, returnType.raw(), *body);
+  return Builder::createFuncDecl(id.raw(), *generics, *params, returnType.raw(),
+                                 *body);
 }
 
 const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {

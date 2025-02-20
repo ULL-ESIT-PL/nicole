@@ -2,6 +2,7 @@
 #define TYPE_TABLE_H
 
 #include "type.h"
+#include "userTypes/genericParameter.h"
 
 #include <memory>
 #include <unordered_map>

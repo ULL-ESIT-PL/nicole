@@ -24,6 +24,7 @@ const Lexer NicoleSintax::createLexer() const noexcept {
       Category{TokenType::LET, "let", false},
       Category{TokenType::AUTO, "auto", false},
       Category{TokenType::PTR, "ptr", false},
+      Category{TokenType::VECTOR, "vector", false},
 
       Category{TokenType::NEW, "new", false},
       Category{TokenType::DELETE, "delete", false},

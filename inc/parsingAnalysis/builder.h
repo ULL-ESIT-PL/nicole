@@ -206,8 +206,9 @@ public:
                 const std::vector<std::shared_ptr<AST>> &parameters) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
-  createFuncDecl(const std::string &id, const Parameters &params,
-                 const std::string &returnType,
+  createFuncDecl(const std::string &id,
+                 const std::vector<GenericParameter> &generics,
+                 const Parameters &params, const std::string &returnType,
                  const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_RETURN>, Error>

@@ -35,6 +35,9 @@ std::string tokenTypeToString(const TokenType &tk) noexcept {
   case TokenType::PTR:
     return "PTR";
 
+  case TokenType::VECTOR:
+    return "VECTOR";
+
   case TokenType::NEW:
     return "NEW";
   case TokenType::DELETE:

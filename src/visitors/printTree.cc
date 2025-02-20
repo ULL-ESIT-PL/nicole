@@ -713,6 +713,11 @@ PrintTree::visit(const AST_FUNC_DECL *node) const noexcept {
   result << indent_ << "Function Declaration:\n";
   increaseIndent();
   result << indent_ << "Name: " << node->id() << "\n";
+  result << indent_ << "Generics: ";
+  for (const auto& generic : node->generics()) {
+    result << generic.name() << ", ";
+  }
+  result << "\n";
   result << indent_ << "Return Type: " << node->returnType() << "\n";
 
   result << indent_ << "Parameters:\n";
