@@ -3,49 +3,49 @@
 
 #include "../type.h"
 #include "genericParameter.h"
-#include <iostream>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
 namespace nicole {
 
-class UserType : public Type {
-  std::string name;
-  std::shared_ptr<UserType> baseType; // Solo se permite una base
-  std::vector<GenericParameter> genericParams;
+class UserType final : public Type {
+  std::string name_;
+  std::shared_ptr<UserType> baseType_; // Solo se permite una base
+  std::vector<GenericParameter> genericParams_;
 
 public:
-  explicit UserType(std::string n) : name(std::move(n)), baseType(nullptr) {}
+  explicit UserType(const std::string &name,
+                    const std::shared_ptr<UserType> &baseType,
+                    const std::vector<GenericParameter> &genericParams) noexcept
+      : name_{name}, baseType_(baseType), genericParams_{genericParams} {}
 
-  void setBase(const std::shared_ptr<UserType> &base) {
-    if (baseType != nullptr) {
-      std::cerr << "Error: La herencia múltiple no está permitida."
-                << std::endl;
-      return;
-    }
-    baseType = base;
+  [[nodiscard]] const std::string &name() const noexcept { return name_; }
+
+  [[nodiscard]] const std::shared_ptr<UserType> &baseType() const noexcept {
+    return baseType_;
   }
 
-  void addGenericParam(GenericParameter param) {
-    genericParams.push_back(param);
+  [[nodiscard]] const std::vector<GenericParameter> &
+  genericParams() const noexcept {
+    return genericParams_;
   }
 
   [[nodiscard]] std::string toString() const noexcept override {
     std::ostringstream oss;
-    oss << name;
-    if (!genericParams.empty()) {
+    oss << name_;
+    if (!genericParams_.empty()) {
       oss << "<";
-      for (size_t i = 0; i < genericParams.size(); ++i) {
-        oss << genericParams[i].toString();
-        if (i != genericParams.size() - 1)
+      for (size_t i = 0; i < genericParams_.size(); ++i) {
+        oss << genericParams_[i].name();
+        if (i != genericParams_.size() - 1)
           oss << ", ";
       }
       oss << ">";
     }
-    if (baseType) {
-      oss << " : " << baseType->toString();
+    if (baseType_) {
+      oss << " : " << baseType_->toString();
     }
     return oss.str();
   }

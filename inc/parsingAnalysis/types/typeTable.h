@@ -13,7 +13,9 @@ private:
   std::unordered_map<std::string, std::shared_ptr<Type>> types_{};
 
 public:
-   [[nodiscard]] bool hasType(std::string) const noexcept;
+   [[nodiscard]] bool hasType(const std::shared_ptr<Type>& type) const noexcept;
+
+   void insertType(const std::shared_ptr<Type>& type) const noexcept;
 };
 
 } // namespace nicole

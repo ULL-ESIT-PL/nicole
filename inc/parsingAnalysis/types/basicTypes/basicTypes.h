@@ -10,13 +10,15 @@ namespace nicole {
 enum class BasicKind { Bool, Int, Float, Double, Char, Str };
 
 class BasicType : public Type {
-  BasicKind kind;
+  BasicKind kind_;
 
 public:
-  explicit BasicType(BasicKind k) : kind(k) {}
-  
+  explicit BasicType(const BasicKind k) noexcept : kind_(k) {}
+
+  [[nodiscard]] const BasicKind baseKind() const noexcept { return kind_; }
+
   [[nodiscard]] std::string toString() const noexcept override {
-    switch (kind) {
+    switch (kind_) {
     case BasicKind::Bool:
       return "bool";
     case BasicKind::Int:

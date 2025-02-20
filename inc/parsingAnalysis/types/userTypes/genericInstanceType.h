@@ -1,5 +1,5 @@
 #ifndef GENERIC_INSTANCE_TYPE_TYPE_H
-#define POINTER_TYPE_H
+#define GENERIC_INSTANCE_TYPE_TYPE_H
 
 #include "userType.h"
 #include <memory>
@@ -8,21 +8,21 @@
 
 namespace nicole {
 
-class GenericInstanceType : public Type {
-  std::unique_ptr<UserType> genericType;
-  std::vector<std::unique_ptr<Type>> typeArgs;
+class GenericInstanceType final : public Type {
+  std::shared_ptr<UserType> genericType_;
+  std::vector<std::shared_ptr<Type>> typeArgs_;
 
 public:
-  GenericInstanceType(std::unique_ptr<UserType> genType,
-                      std::vector<std::unique_ptr<Type>> args)
-      : genericType(std::move(genType)), typeArgs(std::move(args)) {}
+  GenericInstanceType(const std::shared_ptr<UserType> &genType,
+                      const std::vector<std::shared_ptr<Type>> &args) noexcept
+      : genericType_{genType}, typeArgs_{args} {}
 
   [[nodiscard]] std::string toString() const noexcept override {
     std::ostringstream oss;
-    oss << genericType->toString() << "(";
-    for (size_t i = 0; i < typeArgs.size(); ++i) {
-      oss << typeArgs[i]->toString();
-      if (i != typeArgs.size() - 1)
+    oss << genericType_->toString() << "(";
+    for (size_t i = 0; i < typeArgs_.size(); ++i) {
+      oss << typeArgs_[i]->toString();
+      if (i != typeArgs_.size() - 1)
         oss << ", ";
     }
     oss << ")";

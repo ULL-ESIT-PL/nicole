@@ -6,7 +6,7 @@
 
 namespace nicole {
 
-class VoidType : public Type {
+class VoidType final : public Type {
 public:
   [[nodiscard]] std::string toString() const noexcept override {
     return "void";

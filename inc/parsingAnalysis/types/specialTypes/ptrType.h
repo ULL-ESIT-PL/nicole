@@ -7,15 +7,19 @@
 
 namespace nicole {
 
-class PointerType : public Type {
-  std::unique_ptr<Type> baseType;
+class PointerType final : public Type {
+  std::shared_ptr<Type> baseType_;
 
 public:
-  explicit PointerType(std::unique_ptr<Type> base)
-      : baseType(std::move(base)) {}
-      
+  explicit PointerType(const std::shared_ptr<Type> &baseType)
+      : baseType_{baseType} {}
+
+  [[nodiscard]] const std::shared_ptr<Type> &baseType() const noexcept {
+    return baseType_;
+  }
+
   [[nodiscard]] std::string toString() const noexcept override {
-    return baseType->toString() + "*";
+    return baseType_->toString() + "*";
   }
 };
 

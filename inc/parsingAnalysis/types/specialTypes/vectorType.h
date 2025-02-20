@@ -7,15 +7,19 @@
 
 namespace nicole {
 
-class VectorType : public Type {
-  std::unique_ptr<Type> elementType;
+class VectorType final : public Type {
+  std::shared_ptr<Type> elementType_;
 
 public:
-  explicit VectorType(std::unique_ptr<Type> elem)
-      : elementType(std::move(elem)) {}
+  explicit VectorType(const std::shared_ptr<Type>& elementType)
+      : elementType_{elementType} {}
+
+  [[nodiscard]] const std::shared_ptr<Type> &elementType() const noexcept {
+    return elementType_;
+  }
       
   [[nodiscard]] std::string toString() const noexcept override {
-    return "vector<" + elementType->toString() + ">";
+    return "vector<" + elementType_->toString() + ">";
   }
 };
 

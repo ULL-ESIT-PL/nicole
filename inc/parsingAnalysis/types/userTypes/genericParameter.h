@@ -5,13 +5,13 @@
 
 namespace nicole {
 
-class GenericParameter {
-  std::string name;
+class GenericParameter final {
+  std::string name_;
 
 public:
-  explicit GenericParameter(std::string n) : name(std::move(n)) {}
+  explicit GenericParameter(const std::string& name) noexcept : name_{name} {}
 
-  [[nodiscard]] std::string toString() const noexcept { return name; }
+  [[nodiscard]] const std::string& name() const noexcept { return name_; }
 };
 
 } // namespace nicole

@@ -7,14 +7,19 @@
 
 namespace nicole {
 
-class ConstType : public Type {
-  std::unique_ptr<Type> baseType;
+class ConstType final : public Type {
+  std::shared_ptr<Type> baseType_;
 
 public:
-  explicit ConstType(std::unique_ptr<Type> base) : baseType(std::move(base)) {}
-  
+  explicit ConstType(const std::shared_ptr<Type> &baseType) noexcept
+      : baseType_{baseType} {}
+
+  [[nodiscard]] const std::shared_ptr<Type> &baseType() const noexcept {
+    return baseType_;
+  }
+
   [[nodiscard]] std::string toString() const noexcept override {
-    return "const " + baseType->toString();
+    return "const " + baseType_->toString();
   }
 };
 

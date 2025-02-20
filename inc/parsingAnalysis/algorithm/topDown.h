@@ -17,6 +17,9 @@ private:
   [[nodiscard]] const std::expected<std::shared_ptr<Type>, Error>
   parseType() const noexcept;
 
+  [[nodiscard]] const std::expected<std::shared_ptr<Type>, Error>
+  parseTypeAtVarDecl(const bool isConst) const noexcept;
+
   [[nodiscard]] const std::expected<std::shared_ptr<AST_BODY>, Error>
   parseBody() const noexcept;
 
