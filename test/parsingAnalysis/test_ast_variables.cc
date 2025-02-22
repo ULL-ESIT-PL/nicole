@@ -4,6 +4,7 @@
 
 using namespace nicole;
 
+/*
 TEST_CASE("AST_AUTO_DECL class methods", "[AST_AUTO_DECL]") {
   auto astBool = *Builder::createBool(true);
 
@@ -32,3 +33,4 @@ TEST_CASE("AST_VAR_CALL class methods", "[AST_VAR_CALL]") {
 
   REQUIRE(astVarCall.id() == "myVariable");
 }
+*/

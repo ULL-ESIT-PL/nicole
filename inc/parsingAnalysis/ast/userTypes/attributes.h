@@ -2,21 +2,23 @@
 #define ATTRIBUTES_H
 
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <vector>
+#include "../../types/type.h"
 
 namespace nicole {
 
 class Attributes {
 private:
-  std::vector<std::pair<std::string, std::string>> params_;
+  std::vector<std::pair<std::string, std::shared_ptr<Type>>> params_;
 
 public:
   explicit Attributes(
-      const std::vector<std::pair<std::string, std::string>> &params) noexcept
+      const std::vector<std::pair<std::string, std::shared_ptr<Type>>> &params) noexcept
       : params_{params} {}
 
-  [[nodiscard]] const std::vector<std::pair<std::string, std::string>> &
+  [[nodiscard]] const std::vector<std::pair<std::string, std::shared_ptr<Type>>> &
   params() const noexcept {
     return params_;
   }

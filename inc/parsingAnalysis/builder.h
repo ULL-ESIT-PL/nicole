@@ -203,6 +203,7 @@ public:
   // Functions
   [[nodiscard]] static std::expected<std::shared_ptr<AST_FUNC_CALL>, Error>
   createFunCall(const std::string &id,
+                const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
                 const std::vector<std::shared_ptr<AST>> &parameters) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
@@ -242,12 +243,14 @@ public:
   [[nodiscard]] static std::expected<std::shared_ptr<AST_METHOD_CALL>, Error>
   createMethodCall(
       const std::string &id,
+      const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
       const std::vector<std::shared_ptr<AST>> &parameters) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>
   createMethodDecl(const std::string &id,
                    const std::vector<GenericParameter> &generics,
-                   const Parameters &params, const std::shared_ptr<Type> &returnType,
+                   const Parameters &params,
+                   const std::shared_ptr<Type> &returnType,
                    const std::shared_ptr<AST_BODY> &body,
                    const bool isVirtual) noexcept;
 
@@ -256,7 +259,7 @@ public:
   createConstructorDecl(const std::string &id,
                         const std::vector<GenericParameter> &generics,
                         const Parameters &params,
-                        const std::shared_ptr<Type>& returnType,
+                        const std::shared_ptr<Type> &returnType,
                         const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>,
@@ -271,6 +274,7 @@ public:
                                      Error>
   createConstructorCall(
       const std::string &id,
+      const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
       const std::vector<std::shared_ptr<AST>> &parameters) noexcept;
 
   // Variables
@@ -279,7 +283,7 @@ public:
                  const bool isConst) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_VAR_TYPED_DECL>, Error>
-  createVarTypedtDecl(const std::string &id, const std::string &type,
+  createVarTypedtDecl(const std::string &id, const std::shared_ptr<Type> &type,
                       const std::shared_ptr<AST> &value,
                       const bool isConst) noexcept;
 

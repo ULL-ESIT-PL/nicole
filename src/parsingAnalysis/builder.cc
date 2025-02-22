@@ -393,8 +393,10 @@ Builder::createCondition(const std::shared_ptr<AST> &expression) noexcept {
 
 std::expected<std::shared_ptr<AST_FUNC_CALL>, Error> Builder::createFunCall(
     const std::string &id,
+    const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
     const std::vector<std::shared_ptr<AST>> &parameters) noexcept {
-  const auto astFuncCall{std::make_shared<AST_FUNC_CALL>(id, parameters)};
+  const auto astFuncCall{
+      std::make_shared<AST_FUNC_CALL>(id, replaceOfGenerics, parameters)};
   const std::vector<std::shared_ptr<AST>> &parameters__{
       astFuncCall->parameters()};
   for (const auto &parameters_ : parameters__) {
@@ -490,8 +492,10 @@ Builder::createAttrAccess(const std::string &id) noexcept {
 std::expected<std::shared_ptr<AST_METHOD_CALL>, Error>
 Builder::createMethodCall(
     const std::string &id,
+    const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
     const std::vector<std::shared_ptr<AST>> &parameters) noexcept {
-  const auto astMethodCall{std::make_shared<AST_METHOD_CALL>(id, parameters)};
+  const auto astMethodCall{
+      std::make_shared<AST_METHOD_CALL>(id, replaceOfGenerics, parameters)};
   const std::vector<std::shared_ptr<AST>> &parameters__{
       astMethodCall->parameters()};
   for (const auto &parameters_ : parameters__) {
@@ -520,9 +524,10 @@ Builder::createMethodDecl(const std::string &id,
 std::expected<std::shared_ptr<AST_CONSTRUCTOR_CALL>, Error>
 Builder::createConstructorCall(
     const std::string &id,
+    const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
     const std::vector<std::shared_ptr<AST>> &parameters) noexcept {
   const auto astConstructorall{
-      std::make_shared<AST_CONSTRUCTOR_CALL>(id, parameters)};
+      std::make_shared<AST_CONSTRUCTOR_CALL>(id, replaceOfGenerics, parameters)};
   const std::vector<std::shared_ptr<AST>> &parameters__{
       astConstructorall->parameters()};
   for (const auto &parameters_ : parameters__) {
@@ -574,7 +579,8 @@ Builder::createAutoDecl(const std::string &id,
 }
 
 std::expected<std::shared_ptr<AST_VAR_TYPED_DECL>, Error>
-Builder::createVarTypedtDecl(const std::string &id, const std::string &type,
+Builder::createVarTypedtDecl(const std::string &id,
+                             const std::shared_ptr<Type> &type,
                              const std::shared_ptr<AST> &value,
                              const bool isConst) noexcept {
   const auto astLetDecl{

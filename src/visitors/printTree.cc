@@ -689,6 +689,11 @@ PrintTree::visit(const AST_FUNC_CALL *node) const noexcept {
   result << indent_ << "Function Call:\n";
   increaseIndent();
   result << indent_ << "Name: " << node->id() << "\n";
+  result << indent_ << "Replacement of generics:\n";
+  for (const auto &generic : node->replaceOfGenerics()) {
+    result << indent_ << generic->toString() << ", ";
+  }
+  result << "\n";
   result << indent_ << "Arguments:\n";
   increaseIndent();
   for (const auto &arg : node->parameters()) {
@@ -718,13 +723,14 @@ PrintTree::visit(const AST_FUNC_DECL *node) const noexcept {
     result << generic.name() << ", ";
   }
   result << "\n";
-  result << indent_ << "Return Type: " << node->returnType()->toString() << "\n";
+  result << indent_ << "Return Type: " << node->returnType()->toString()
+         << "\n";
 
   result << indent_ << "Parameters:\n";
   increaseIndent();
   for (const auto &param : node->parameters()) {
-    result << indent_ << "var " << param.first << " type " << param.second->toString()
-           << "\n";
+    result << indent_ << "var " << param.first << " type "
+           << param.second->toString() << "\n";
   }
   decreaseIndent();
 
@@ -807,8 +813,8 @@ PrintTree::visit(const AST_STRUCT *node) const noexcept {
   // Atributos
   result << indent_ << "Attributes:\n";
   increaseIndent();
-  for (const auto &[type, name] : node->attributes().params()) {
-    result << indent_ << type << " " << name << "\n";
+  for (const auto &[name, type] : node->attributes().params()) {
+    result << indent_ << name << " " << type->toString() << "\n";
   }
   decreaseIndent();
 
@@ -872,8 +878,8 @@ PrintTree::visit(const AST_CLASS *node) const noexcept {
   // Atributos
   result << indent_ << "Attributes:\n";
   increaseIndent();
-  for (const auto &[type, name] : node->attributes().params()) {
-    result << indent_ << type << " " << name << "\n";
+  for (const auto &[name, type] : node->attributes().params()) {
+    result << indent_ << name << " " << type->toString() << "\n";
   }
   decreaseIndent();
 
@@ -940,6 +946,11 @@ PrintTree::visit(const AST_METHOD_CALL *node) const noexcept {
   result << indent_ << "Method Call:\n";
   increaseIndent();
   result << indent_ << "Name: " << node->id() << "\n";
+  result << indent_ << "Replacement of generics:\n";
+  for (const auto &generic : node->replaceOfGenerics()) {
+    result << indent_ << generic->toString() << ", ";
+  }
+  result << "\n";
   result << indent_ << "Arguments:\n";
   increaseIndent();
   for (const auto &arg : node->parameters()) {
@@ -970,7 +981,8 @@ PrintTree::visit(const AST_METHOD_DECL *node) const noexcept {
     result << generic.name() << ", ";
   }
   result << "\n";
-  result << indent_ << "Return Type: " << node->returnType()->toString() << "\n";
+  result << indent_ << "Return Type: " << node->returnType()->toString()
+         << "\n";
   result << indent_ << "Virtual: " << (node->isVirtual() ? "true" : "false")
          << "\n";
   result << indent_ << "Parameters:\n";
@@ -1077,6 +1089,11 @@ PrintTree::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   result << indent_ << "Constructor Call:\n";
   increaseIndent();
   result << indent_ << "Name: " << node->id() << "\n";
+  result << indent_ << "Replacement of generics:\n";
+  for (const auto &generic : node->replaceOfGenerics()) {
+    result << indent_ << generic->toString() << ", ";
+  }
+  result << "\n";
   result << indent_ << "Arguments:\n";
   increaseIndent();
   for (const auto &arg : node->parameters()) {
@@ -1122,7 +1139,7 @@ PrintTree::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   result << indent_ << "var typed decl\n";
   increaseIndent();
   result << indent_ << "id: " << node->id() << "\n";
-  result << indent_ << "type: " << node->varType() << "\n";
+  result << indent_ << "type: " << node->varType()->toString() << "\n";
   result << indent_ << "const: " << ((node->isConst()) ? "true" : "false")
          << "\n";
   result << indent_ << "value:\n";

@@ -1,4 +1,8 @@
 #include "../../../../inc/parsingAnalysis/algorithm/topDown.h"
+#include <expected>
+#include <iostream>
+#include <memory>
+#include <vector>
 
 namespace nicole {
 
@@ -15,17 +19,30 @@ TopDown::parseChainedExpression() const noexcept {
     return createError(res.error());
   }
 
+  std::expected<std::vector<std::shared_ptr<Type>>, Error>
+      replacementOfGenerics{parseReplacementOfGenerics()};
+  bool cannotBeVarCall{false};
+  if (!replacementOfGenerics) {
+    return createError(replacementOfGenerics.error());
+  }
+
+  if ((tkStream_.current()->type() != TokenType::LP or
+      tkStream_.current()->type() != TokenType::LB) and replacementOfGenerics->size()) {
+    cannotBeVarCall = true;
+  }
+
   // 2. Determinar si es un simple varCall o una funcCall
   std::shared_ptr<AST> basePtr = nullptr;
   if (tkStream_.current()->type() == TokenType::LP) {
     const std::expected<std::vector<std::shared_ptr<AST>>, Error> arguemnts{
-        parseArguments({TokenType::LB, TokenType::RB}, true)};
+        parseArguments({TokenType::LP, TokenType::RP}, true)};
     if (!arguemnts) {
       return createError(arguemnts.error());
     }
 
     // Crear nodo de función
-    auto funcCall = Builder::createFunCall(baseToken.raw(), *arguemnts);
+    auto funcCall = Builder::createFunCall(baseToken.raw(),
+                                           *replacementOfGenerics, *arguemnts);
     if (!funcCall || !*funcCall) {
       return createError(
           funcCall ? Error{ERROR_TYPE::NULL_NODE, "Failed to create func call"}
@@ -40,8 +57,8 @@ TopDown::parseChainedExpression() const noexcept {
       return createError(arguemnts.error());
     }
 
-    auto constructorCall =
-        Builder::createConstructorCall(baseToken.raw(), *arguemnts);
+    auto constructorCall = Builder::createConstructorCall(
+        baseToken.raw(), *replacementOfGenerics, *arguemnts);
     if (!constructorCall || !*constructorCall) {
       return createError(constructorCall
                              ? Error{ERROR_TYPE::NULL_NODE,
@@ -50,6 +67,12 @@ TopDown::parseChainedExpression() const noexcept {
     }
     basePtr = *constructorCall;
   } else {
+    if (cannotBeVarCall) {
+      return createError(
+          ERROR_TYPE::SINTAX,
+          "a variable call cannot have replacements of generics, at" +
+              tkStream_.lastRead()->locInfo());
+    }
     // Variable normal
     auto varCall = Builder::createVarCall(baseToken.raw());
     if (!varCall || !*varCall) {
@@ -114,6 +137,17 @@ TopDown::parseChainedExpression() const noexcept {
         return createError(res.error());
       }
 
+      std::expected<std::vector<std::shared_ptr<Type>>, Error>
+          replacementOfGenerics2{parseReplacementOfGenerics()};
+      bool cannotBeAttrAccess{false};
+      if (!replacementOfGenerics2) {
+        return createError(replacementOfGenerics2.error());
+      }
+
+      if (tkStream_.current()->type() != TokenType::LP and replacementOfGenerics->size()) {
+        cannotBeAttrAccess = true;
+      }
+
       // Comprobar si es método -> un '(' a continuación
       if (tkStream_.current()->type() == TokenType::LP) {
 
@@ -123,8 +157,8 @@ TopDown::parseChainedExpression() const noexcept {
           return createError(arguemnts.error());
         }
 
-        auto methodNode =
-            Builder::createMethodCall(attrToken.raw(), *arguemnts);
+        auto methodNode = Builder::createMethodCall(
+            attrToken.raw(), *replacementOfGenerics2, *arguemnts);
         if (!methodNode || !*methodNode) {
           return createError(methodNode ? Error{ERROR_TYPE::NULL_NODE,
                                                 "Failed to create method call"}
@@ -132,6 +166,12 @@ TopDown::parseChainedExpression() const noexcept {
         }
         operations.push_back(*methodNode);
       } else {
+        if (cannotBeAttrAccess) {
+          return createError(
+              ERROR_TYPE::SINTAX,
+              "a attr access cannot have replacements of generics, at" +
+                  tkStream_.lastRead()->locInfo());
+        }
         // Es un atributo
         auto attrNode = Builder::createAttrAccess(attrToken.raw());
         if (!attrNode || !*attrNode) {

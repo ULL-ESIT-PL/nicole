@@ -1,6 +1,7 @@
 #ifndef AST_CONSTRUCTOR_CALL_H
 #define AST_CONSTRUCTOR_CALL_H
 
+#include "../../types/type.h"
 #include "../ast.h"
 #include <string>
 #include <vector>
@@ -10,15 +11,23 @@ namespace nicole {
 class AST_CONSTRUCTOR_CALL final : public AST {
 private:
   std::string id_;
+  std::vector<std::shared_ptr<Type>> replaceOfGenerics_;
   std::vector<std::shared_ptr<AST>> parameters_;
 
 public:
   explicit AST_CONSTRUCTOR_CALL(
       const std::string &id,
+      const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
       const std::vector<std::shared_ptr<AST>> &parameters) noexcept
-      : AST(AST_TYPE::CONSTRUCTOR_CALL), id_{id}, parameters_{parameters} {}
+      : AST(AST_TYPE::CONSTRUCTOR_CALL), id_{id},
+        replaceOfGenerics_{replaceOfGenerics}, parameters_{parameters} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
+
+  [[nodiscard]] const std::vector<std::shared_ptr<Type>> &
+  replaceOfGenerics() const noexcept {
+    return replaceOfGenerics_;
+  }
 
   [[nodiscard]] const std::vector<std::shared_ptr<AST>> &
   parameters() const noexcept {

@@ -169,3 +169,6 @@ struct hola extends adios {
 
 
 def foo<T, Q, P, R, T,>(): int {}
+
+
+foo<int>();

@@ -128,4 +128,45 @@ TopDown::parseReturn() const noexcept {
   return Builder::createReturn(*value);
 }
 
+const std::expected<std::vector<std::shared_ptr<Type>>, Error>
+TopDown::parseReplacementOfGenerics() const noexcept {
+  std::vector<std::shared_ptr<Type>> replacemments{};
+  if (tkStream_.current()->type() == TokenType::OPERATOR_SMALLER) {
+     auto res = tryEat(); // consume el identificador
+    if (!res) {
+      return createError(res.error());
+    } 
+    auto argExpected = parseType();
+    if (!argExpected) {
+      return createError(argExpected.error());
+    }
+    replacemments.push_back(argExpected.value());
+    // Se admiten múltiples argumentos separados por ','
+      while (tkStream_.current() &&
+             tkStream_.current()->type() == TokenType::COMMA) {
+        res = tryEat(); // consume ','
+        if (!res) {
+          return createError(res.error());
+        }
+        argExpected = parseType();
+        if (!argExpected) {
+          return createError(argExpected.error());
+        }
+        replacemments.push_back(argExpected.value());
+      }
+      if (!tkStream_.current() ||
+          tkStream_.current()->type() != TokenType::OPERATOR_GREATER) {
+        return createError(
+            ERROR_TYPE::SINTAX,
+            "Se esperaba '>' para cerrar los argumentos genéricos en " +
+                tkStream_.lastRead()->locInfo());
+      }
+      res = tryEat(); // consume '>'
+      if (!res) {
+        return createError(res.error());
+      }
+  }
+  return replacemments;
+}
+
 } // namespace nicole

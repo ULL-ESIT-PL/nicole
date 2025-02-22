@@ -107,7 +107,7 @@ TopDown::parseStructDecl() const noexcept {
   bool isConstructorParsed{false};
   bool isDestructorParsed{false};
   std::vector<std::shared_ptr<AST_METHOD_DECL>> methods{};
-  std::vector<std::pair<std::string, std::string>> params{};
+  std::vector<std::pair<std::string, std::shared_ptr<Type>>> params{};
   std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>, Error> constructor{
       nullptr};
   std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>, Error> destructor{
@@ -130,16 +130,11 @@ TopDown::parseStructDecl() const noexcept {
       if (auto res = tryEat(); !res) {
         return createError(res.error());
       }
-      if (tkStream_.current()->type() != TokenType::ID) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "missing type of attr at " +
-                               tkStream_.current()->locInfo());
+      const std::expected<std::shared_ptr<Type>, Error> type{parseType()};
+      if (!type) {
+        return createError(type.error());
       }
-      const Token attrType{*tkStream_.current()};
-      if (auto res = tryEat(); !res) {
-        return createError(res.error());
-      }
-      params.push_back({attrID.raw(), attrType.raw()});
+      params.push_back({attrID.raw(), *type});
       break;
     }
 
@@ -252,7 +247,9 @@ TopDown::parseConstructorDecl(const std::string &id_returnType) const noexcept {
   }
   return Builder::createConstructorDecl(
       id_returnType, *generics, *params,
-      std::make_shared<UserType>(id_returnType, nullptr, std::vector<GenericParameter>{}), *body);
+      std::make_shared<UserType>(id_returnType, nullptr,
+                                 std::vector<GenericParameter>{}),
+      *body);
 }
 
 const std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>, Error>

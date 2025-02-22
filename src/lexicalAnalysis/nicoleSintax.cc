@@ -22,7 +22,6 @@ const Lexer NicoleSintax::createLexer() const noexcept {
       Category{TokenType::TYPE_DOUBLE, "double", false},
       Category{TokenType::TYPE_FLOAT, "float", false},
       Category{TokenType::TYPE_INT, "int", false},
-      Category{TokenType::TYPE_STR, "str", false},
 
       // constructor here to avoid conflict eith const
       Category{TokenType::CONSTRUCTOR, "constructor", false},
@@ -69,6 +68,9 @@ const Lexer NicoleSintax::createLexer() const noexcept {
       Category{TokenType::THIS, "this", false},
       Category{TokenType::OVERRIDE, "override", false},
       Category{TokenType::VIRTUAL, "virtual", false},
+
+      // str here so it does not conflict with struct
+      Category{TokenType::TYPE_STR, "str", false},
 
       Category{TokenType::SUPER, "super", false},
 

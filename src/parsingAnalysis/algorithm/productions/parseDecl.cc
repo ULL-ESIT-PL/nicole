@@ -1,4 +1,5 @@
 #include "../../../../inc/parsingAnalysis/algorithm/topDown.h"
+#include <memory>
 
 namespace nicole {
 
@@ -6,7 +7,7 @@ const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseVarDecl(const bool insideFor) const noexcept {
   const Token token{*tkStream_.current()};
   std::string varName;
-  std::string varType;
+  std::shared_ptr<Type> varType{nullptr};
   std::shared_ptr<AST> valueExpr;
 
   // Función auxiliar para manejar la parte común de las declaraciones
@@ -28,15 +29,11 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
       if (auto res = tryEat(); !res) {
         return createError(res.error());
       }
-      if (tkStream_.current()->type() != TokenType::ID) {
-        return createError(ERROR_TYPE::SINTAX,
-                           "Expected type name at " +
-                               tkStream_.current()->locInfo());
+      const std::expected<std::shared_ptr<Type>, Error> returnType{parseType()};
+      if (!returnType) {
+        return createError(returnType.error());
       }
-      varType = tkStream_.current()->raw();
-      if (auto res = tryEat(); !res) {
-        return createError(res.error());
-      }
+      varType = *returnType;
     }
 
     // Verificar si hay un operador de asignación '='
@@ -82,11 +79,6 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
     if (!result) {
       return createError(result.error());
     }
-    if (varType.empty()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "Const variable must have a type specified at " +
-                             tkStream_.current()->locInfo());
-    }
     return Builder::createVarTypedtDecl(varName, varType, valueExpr, true);
   }
   case TokenType::LET: { // let variable: type = expression;
@@ -96,11 +88,6 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
     auto result = parseCommon();
     if (!result) {
       return createError(result.error());
-    }
-    if (varType.empty()) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "Let variable must have a type specified at " +
-                             tkStream_.current()->locInfo());
     }
     return Builder::createVarTypedtDecl(varName, varType, valueExpr, false);
   }
@@ -112,7 +99,7 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
     if (!result) {
       return createError(result.error());
     }
-    if (!varType.empty()) {
+    if (varType) {
       return createError(ERROR_TYPE::SINTAX,
                          "Auto variable should not have a type specified at " +
                              tkStream_.current()->locInfo());
