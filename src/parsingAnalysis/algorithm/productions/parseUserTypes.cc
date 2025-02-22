@@ -1,4 +1,5 @@
 #include "../../../../inc/parsingAnalysis/algorithm/topDown.h"
+#include <memory>
 
 namespace nicole {
 
@@ -249,8 +250,9 @@ TopDown::parseConstructorDecl(const std::string &id_returnType) const noexcept {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createConstructorDecl(id_returnType, *generics, *params,
-                                        *body);
+  return Builder::createConstructorDecl(
+      id_returnType, *generics, *params,
+      std::make_shared<UserType>(id_returnType, nullptr, std::vector<GenericParameter>{}), *body);
 }
 
 const std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>, Error>
@@ -314,23 +316,17 @@ TopDown::parseMethodDecl(const bool isVirtual) const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
-  if (tkStream_.current()->type() != TokenType::ID) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "missing returnt type of function decl at " +
-                           tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
-  }
-  const Token returnType{*tkStream_.current()};
-  if (auto res = tryEat(); !res) {
-    return createError(res.error());
+  const std::expected<std::shared_ptr<Type>, Error> returnType{parseType()};
+  if (!returnType) {
+    return createError(returnType.error());
   }
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
   if (!body || !*body) {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createMethodDecl(id.raw(), *generics, *params,
-                                   returnType.raw(), *body, isVirtual);
+  return Builder::createMethodDecl(id.raw(), *generics, *params, *returnType,
+                                   *body, isVirtual);
 }
 
 } // namespace nicole

@@ -108,7 +108,6 @@ add_executable(tests
     src/parsingAnalysis/ast/astType.cc 
     src/parsingAnalysis/builder.cc
     src/parsingAnalysis/checkPosition.cc
-    src/parsingAnalysis/ast/functions/parameters.cc
     src/parsingAnalysis/algorithm/topDown.cc
 
     src/parsingAnalysis/algorithm/productions/parseBinary.cc
@@ -224,7 +223,6 @@ set(SRC_FILES
     src/parsingAnalysis/ast/astType.cc
     src/parsingAnalysis/builder.cc
     src/parsingAnalysis/checkPosition.cc
-    src/parsingAnalysis/ast/functions/parameters.cc
     src/parsingAnalysis/algorithm/topDown.cc
 
     src/parsingAnalysis/algorithm/productions/parseBinary.cc

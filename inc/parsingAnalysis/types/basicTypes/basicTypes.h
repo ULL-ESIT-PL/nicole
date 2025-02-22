@@ -1,5 +1,5 @@
-#ifndef CONST_TYPE_H
-#define CONST_TYPE_H
+#ifndef BASIC_TYPES_H
+#define BASIC_TYPES_H
 
 #include "../type.h"
 #include <memory>
@@ -15,7 +15,7 @@ class BasicType : public Type {
 public:
   explicit BasicType(const BasicKind k) noexcept : kind_(k) {}
 
-  [[nodiscard]] const BasicKind baseKind() const noexcept { return kind_; }
+  [[nodiscard]] BasicKind baseKind() const noexcept { return kind_; }
 
   [[nodiscard]] std::string toString() const noexcept override {
     switch (kind_) {

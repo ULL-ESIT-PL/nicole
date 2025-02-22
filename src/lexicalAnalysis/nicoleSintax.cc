@@ -16,6 +16,14 @@ const Lexer NicoleSintax::createLexer() const noexcept {
       Category{TokenType::FALSE, "false", false},
       Category{TokenType::NULLPTR, "null", false},
 
+      Category{TokenType::TYPE_VOID, "void", false},
+      Category{TokenType::TYPE_BOOL, "bool", false},
+      Category{TokenType::TYPE_CHAR, "char", false},
+      Category{TokenType::TYPE_DOUBLE, "double", false},
+      Category{TokenType::TYPE_FLOAT, "float", false},
+      Category{TokenType::TYPE_INT, "int", false},
+      Category{TokenType::TYPE_STR, "str", false},
+
       // constructor here to avoid conflict eith const
       Category{TokenType::CONSTRUCTOR, "constructor", false},
       Category{TokenType::DESTRUCTOR, "destructor", false},

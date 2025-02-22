@@ -20,6 +20,14 @@ enum class TokenType {
   FALSE,
   NULLPTR,
 
+  TYPE_VOID,
+  TYPE_INT,
+  TYPE_BOOL,
+  TYPE_CHAR,
+  TYPE_FLOAT,
+  TYPE_DOUBLE,
+  TYPE_STR,
+
   LET,
   CONST,
   AUTO,

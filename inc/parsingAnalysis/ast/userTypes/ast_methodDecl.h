@@ -3,6 +3,7 @@
 
 #include "../../types/userTypes/genericParameter.h"
 #include "../functions/ast_parametrizedSubritineDecl.h"
+#include <memory>
 
 namespace nicole {
 
@@ -15,7 +16,7 @@ public:
   explicit AST_METHOD_DECL(const std::string &id,
                            const std::vector<GenericParameter> &generics,
                            const Parameters &params,
-                           const std::string &returnType,
+                           const std::shared_ptr<Type> &returnType,
                            const std::shared_ptr<AST_BODY> &body,
                            const bool isVirtual) noexcept
       : AST_PARAMETRIZED_SUBRUTINE_DECL(AST_TYPE::METHOD_DECL, id, params,

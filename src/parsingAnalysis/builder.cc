@@ -405,11 +405,10 @@ std::expected<std::shared_ptr<AST_FUNC_CALL>, Error> Builder::createFunCall(
   return astFuncCall;
 }
 
-std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
-Builder::createFuncDecl(const std::string &id,
-                        const std::vector<GenericParameter> &generics,
-                        const Parameters &params, const std::string &returnType,
-                        const std::shared_ptr<AST_BODY> &body) noexcept {
+std::expected<std::shared_ptr<AST_FUNC_DECL>, Error> Builder::createFuncDecl(
+    const std::string &id, const std::vector<GenericParameter> &generics,
+    const Parameters &params, const std::shared_ptr<Type> &returnType,
+    const std::shared_ptr<AST_BODY> &body) noexcept {
   const auto astFuncDecl{
       std::make_shared<AST_FUNC_DECL>(id, generics, params, returnType, body)};
   if (body) {
@@ -507,7 +506,7 @@ std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>
 Builder::createMethodDecl(const std::string &id,
                           const std::vector<GenericParameter> &generics,
                           const Parameters &params,
-                          const std::string &returnType,
+                          const std::shared_ptr<Type> &returnType,
                           const std::shared_ptr<AST_BODY> &body,
                           const bool isVirtual) noexcept {
   const auto astMethodDecl{std::make_shared<AST_METHOD_DECL>(
@@ -535,12 +534,13 @@ Builder::createConstructorCall(
 }
 
 std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>, Error>
-Builder::createConstructorDecl(const std::string &id_returnType,
+Builder::createConstructorDecl(const std::string &id,
                                const std::vector<GenericParameter> &generics,
                                const Parameters &params,
+                               const std::shared_ptr<Type> &returnType,
                                const std::shared_ptr<AST_BODY> &body) noexcept {
   const auto astConstructor{std::make_shared<AST_CONSTRUCTOR_DECL>(
-      id_returnType, generics, params, body)};
+      id, generics, params, returnType, body)};
   if (body) {
     body->setFather(astConstructor);
   }

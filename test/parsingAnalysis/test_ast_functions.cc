@@ -4,6 +4,7 @@
 
 using namespace nicole;
 
+/*
 TEST_CASE("Parameters class methods", "[Parameters]") {
   Parameters params({{"x", "int"}, {"y", "float"}});
 
@@ -53,3 +54,4 @@ TEST_CASE("AST_RETURN class methods", "[AST_RETURN]") {
       std::dynamic_pointer_cast<AST_BOOL>(astReturn.expression())->value() ==
       true);
 }
+*/

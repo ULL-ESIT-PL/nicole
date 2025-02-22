@@ -1,7 +1,9 @@
 #ifndef PARAMETERS_H
 #define PARAMETERS_H
 
+#include "../../types/type.h"
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -9,14 +11,16 @@ namespace nicole {
 
 class Parameters {
 private:
-  std::vector<std::pair<std::string, std::string>> params_;
+  std::vector<std::pair<std::string, std::shared_ptr<Type>>> params_;
 
 public:
   explicit Parameters(
-      const std::vector<std::pair<std::string, std::string>> &params) noexcept
+      const std::vector<std::pair<std::string, std::shared_ptr<Type>>>
+          &params) noexcept
       : params_{params} {}
 
-  [[nodiscard]] const std::vector<std::pair<std::string, std::string>> &
+  [[nodiscard]] const std::vector<
+      std::pair<std::string, std::shared_ptr<Type>>> &
   params() const noexcept {
     return params_;
   }
@@ -26,8 +30,6 @@ public:
   auto begin() const noexcept { return params_.begin(); }
 
   auto end() const noexcept { return params_.end(); }
-
-  [[nodiscard]] bool operator==(const Parameters &other) const noexcept;
 };
 
 } // namespace nicole

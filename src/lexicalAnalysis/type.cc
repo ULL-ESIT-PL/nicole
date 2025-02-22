@@ -26,6 +26,21 @@ std::string tokenTypeToString(const TokenType &tk) noexcept {
   case TokenType::NULLPTR:
     return "NULLPTR";
 
+  case TokenType::TYPE_VOID:
+    return "TYPE_VOID";
+  case TokenType::TYPE_INT:
+    return "TYPE_INT";
+  case TokenType::TYPE_BOOL:
+    return "TYPE_BOOL";
+  case TokenType::TYPE_CHAR:
+    return "TYPE_CHAR";
+  case TokenType::TYPE_FLOAT:
+    return "TYPE_FLOAT";
+  case TokenType::TYPE_DOUBLE:
+    return "TYPE_DOUBLE";
+  case TokenType::TYPE_STR:
+    return "TYPE_STR";
+
   case TokenType::LET:
     return "LET";
   case TokenType::CONST:

@@ -11,13 +11,13 @@ private:
   std::vector<GenericParameter> generics_;
 
 public:
-  explicit AST_CONSTRUCTOR_DECL(const std::string &id_returnType,
+  explicit AST_CONSTRUCTOR_DECL(const std::string &id,
                                 const std::vector<GenericParameter> &generics,
                                 const Parameters &params,
+                                const std::shared_ptr<Type> &returnType,
                                 const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST_PARAMETRIZED_SUBRUTINE_DECL(AST_TYPE::CONSTRUCTOR_DECL,
-                                        id_returnType, params, id_returnType,
-                                        body),
+      : AST_PARAMETRIZED_SUBRUTINE_DECL(AST_TYPE::CONSTRUCTOR_DECL, id, params,
+                                        returnType, body),
         generics_{generics} {}
 
   [[nodiscard]] const std::vector<GenericParameter> &generics() const noexcept {

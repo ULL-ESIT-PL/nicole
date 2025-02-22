@@ -1,0 +1,1 @@
+def foo<T, Q>(a: T*, b: vector<str>): void* {}

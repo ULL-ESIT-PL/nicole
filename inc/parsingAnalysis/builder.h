@@ -208,7 +208,8 @@ public:
   [[nodiscard]] static std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
   createFuncDecl(const std::string &id,
                  const std::vector<GenericParameter> &generics,
-                 const Parameters &params, const std::string &returnType,
+                 const Parameters &params,
+                 const std::shared_ptr<Type> &returnType,
                  const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_RETURN>, Error>
@@ -246,15 +247,16 @@ public:
   [[nodiscard]] static std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>
   createMethodDecl(const std::string &id,
                    const std::vector<GenericParameter> &generics,
-                   const Parameters &params, const std::string &returnType,
+                   const Parameters &params, const std::shared_ptr<Type> &returnType,
                    const std::shared_ptr<AST_BODY> &body,
                    const bool isVirtual) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>,
                                      Error>
-  createConstructorDecl(const std::string &id_returnType,
+  createConstructorDecl(const std::string &id,
                         const std::vector<GenericParameter> &generics,
                         const Parameters &params,
+                        const std::shared_ptr<Type>& returnType,
                         const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>,

@@ -1,4 +1,5 @@
 #include "../../../../inc/parsingAnalysis/algorithm/topDown.h"
+#include <memory>
 #include <vector>
 
 namespace nicole {
@@ -51,27 +52,21 @@ TopDown::parseFuncDecl() const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
-  if (tkStream_.current()->type() != TokenType::ID) {
-    return createError(ERROR_TYPE::SINTAX,
-                       "missing returnt type of function decl at " +
-                           tkStream_.current()->raw() + " at " +
-                           tkStream_.current()->locInfo());
-  }
-  const Token returnType{*tkStream_.current()};
-  if (auto res = tryEat(); !res) {
-    return createError(res.error());
+  const std::expected<std::shared_ptr<Type>, Error> returnType{parseType()};
+  if (!returnType) {
+    return createError(returnType.error());
   }
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
   if (!body || !*body) {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createFuncDecl(id.raw(), *generics, *params, returnType.raw(),
+  return Builder::createFuncDecl(id.raw(), *generics, *params, *returnType,
                                  *body);
 }
 
 const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {
-  std::vector<std::pair<std::string, std::string>> params{};
+  std::vector<std::pair<std::string, std::shared_ptr<Type>>> params{};
   while (tkStream_.currentPos() < tkStream_.size() and
          tkStream_.current()->type() != TokenType::RP) {
     if (tkStream_.current()->type() != TokenType::ID) {
@@ -93,17 +88,11 @@ const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {
     if (auto res = tryEat(); !res) {
       return createError(res.error());
     }
-    if (tkStream_.current()->type() != TokenType::ID) {
-      return createError(ERROR_TYPE::SINTAX,
-                         "missing type of param of function decl at " +
-                             tkStream_.current()->raw() + " at " +
-                             tkStream_.current()->locInfo());
+    const std::expected<std::shared_ptr<Type>, Error> returnType{parseType()};
+    if (!returnType) {
+      return createError(returnType.error());
     }
-    const Token type{*tkStream_.current()};
-    params.push_back({id.raw(), type.raw()});
-    if (auto res = tryEat(); !res) {
-      return createError(res.error());
-    }
+    params.push_back({id.raw(), *returnType});
     if (tkStream_.current()->type() == TokenType::COMMA) {
       if (auto res = tryEat(); !res) {
         return createError(res.error());

@@ -14,7 +14,7 @@ public:
   explicit AST_FUNC_DECL(const std::string &id,
                          const std::vector<GenericParameter> &generics,
                          const Parameters &params,
-                         const std::string &returnType,
+                         const std::shared_ptr<Type> &returnType,
                          const std::shared_ptr<AST_BODY> &body) noexcept
       : AST_PARAMETRIZED_SUBRUTINE_DECL(AST_TYPE::FUNC_DECL, id, params,
                                         returnType, body),
