@@ -79,6 +79,7 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
     if (!result) {
       return createError(result.error());
     }
+    varType = std::make_shared<ConstType>(varType);
     return Builder::createVarTypedtDecl(varName, varType, valueExpr, true);
   }
   case TokenType::LET: { // let variable: type = expression;

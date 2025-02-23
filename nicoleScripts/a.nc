@@ -6,3 +6,6 @@ foo<int>();
 foor<int>{}.metodo<int>().metodos();
 
 a.a.a + b.b.b;
+
+
+const a: b*** = 10;

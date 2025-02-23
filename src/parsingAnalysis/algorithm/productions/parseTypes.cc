@@ -158,19 +158,6 @@ TopDown::parsePrimaryType() const noexcept {
                      "Error inesperado en parsePrimaryType.");
 }
 
-const std::expected<std::shared_ptr<Type>, Error>
-TopDown::parseTypeAtVarDecl(const bool isConst) const noexcept {
-  std::expected<std::shared_ptr<Type>, Error> expectedType{parseType()};
-  if (!expectedType) {
-    return createError(expectedType.error());
-  }
-  std::shared_ptr<Type> type{*expectedType};
-  if (isConst) {
-    type = std::make_shared<ConstType>(type);
-  }
-  return type;
-}
-
 const std::expected<std::vector<GenericParameter>, Error>
 TopDown::parseGenerics() const noexcept {
   std::vector<GenericParameter> result{};
