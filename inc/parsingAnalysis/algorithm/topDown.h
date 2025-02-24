@@ -35,9 +35,6 @@ private:
   [[nodiscard]] const std::expected<std::shared_ptr<AST_ENUM>, Error>
   parseEnum() const noexcept;
 
-  [[nodiscard]] const std::expected<std::shared_ptr<AST_CLASS>, Error>
-  parseClassDecl() const noexcept;
-
   [[nodiscard]] const std::expected<std::shared_ptr<AST_STRUCT>, Error>
   parseStructDecl() const noexcept;
 

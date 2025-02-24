@@ -10,8 +10,8 @@ namespace nicole {
 
 class Scope {
 private:
-  std::unique_ptr<SymbolTable> symbolTable_;
   std::shared_ptr<Scope> parent_;
+  std::unique_ptr<SymbolTable> symbolTable_;
 
 public:
   explicit Scope(std::shared_ptr<Scope> parent = nullptr) noexcept

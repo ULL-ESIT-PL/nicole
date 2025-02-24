@@ -41,7 +41,6 @@
 #include "../../inc/parsingAnalysis/ast/functions/ast_return.h"
 
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_attrAccess.h"
-#include "../../inc/parsingAnalysis/ast/userTypes/ast_class.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_constructorCall.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_enum.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_methodCall.h"
@@ -695,33 +694,6 @@ ValidateTree::visit(const AST_STRUCT *node) const noexcept {
   if (CheckPosition::itsBodyAncestorHasParent(node)) {
     return createError(ERROR_TYPE::VALIDATE_TREE,
                        "a struct declaration must be outside of any scope");
-  }
-  const auto constructor{node->constructor()->accept(*this)};
-  if (!constructor) {
-    return createError(constructor.error());
-  }
-  const auto destructor{node->destructor()->accept(*this)};
-  if (!destructor) {
-    return createError(destructor.error());
-  }
-  for (const auto &chain : node->methods()) {
-    const auto result{chain->accept(*this)};
-    if (!result) {
-      return createError(result.error());
-    }
-  }
-  return true;
-}
-
-// statement / body / null
-std::expected<bool, Error>
-ValidateTree::visit(const AST_CLASS *node) const noexcept {
-  if (!node) {
-    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CLASS");
-  }
-  if (CheckPosition::itsBodyAncestorHasParent(node)) {
-    return createError(ERROR_TYPE::VALIDATE_TREE,
-                       "a class declaration must be outside of any scope");
   }
   const auto constructor{node->constructor()->accept(*this)};
   if (!constructor) {

@@ -58,11 +58,6 @@ TopDown::parseEnum() const noexcept {
   return Builder::createEnum(id.raw(), identifiers);
 }
 
-const std::expected<std::shared_ptr<AST_CLASS>, Error>
-TopDown::parseClassDecl() const noexcept {
-  return nullptr;
-}
-
 const std::expected<std::shared_ptr<AST_STRUCT>, Error>
 TopDown::parseStructDecl() const noexcept {
   if (auto res = tryEat(); !res) {

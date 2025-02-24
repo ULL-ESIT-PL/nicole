@@ -59,7 +59,6 @@ class AST_RETURN;
 
 class AST_ENUM;
 class AST_STRUCT;
-class AST_CLASS;
 class AST_ATTR_ACCESS;
 class AST_METHOD_CALL;
 class AST_THIS;
@@ -191,9 +190,6 @@ public:
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_STRUCT *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_CLASS *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_ATTR_ACCESS *node) const noexcept = 0;

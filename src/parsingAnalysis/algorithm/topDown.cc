@@ -139,8 +139,6 @@ TopDown::parseStatement() const noexcept {
       return parseEnum();
     case TokenType::STRUCT:
       return parseStructDecl();
-    case TokenType::CLASS:
-      return parseClassDecl();
     case TokenType::DELETE:
       return parseDelete();
     case TokenType::IMPORT:

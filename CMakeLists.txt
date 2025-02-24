@@ -139,6 +139,7 @@ add_executable(tests
     # visitors
     src/visitors/printTree.cc
     src/visitors/validateTree.cc
+    src/visitors/fillScopes.cc
 )
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 target_compile_options(tests PRIVATE
@@ -241,6 +242,7 @@ set(SRC_FILES
     # visitors
     src/visitors/printTree.cc
     src/visitors/validateTree.cc
+    src/visitors/fillScopes.cc
     
    # src/parsingAnalysis/ast/nodeType.cc
    # src/parsingAnalysis/ast/literals/nodeLiteralChar.cc

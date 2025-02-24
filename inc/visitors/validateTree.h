@@ -121,9 +121,6 @@ public:
   visit(const AST_STRUCT *node) const noexcept override;
 
   [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_CLASS *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
   visit(const AST_ATTR_ACCESS *node) const noexcept override;
 
   [[nodiscard]] std::expected<bool, Error>

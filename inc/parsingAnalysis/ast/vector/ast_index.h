@@ -28,6 +28,11 @@ public:
   accept(const ValidateTree &visitor) const noexcept override {
     return visitor.visit(this);
   }
+
+  [[nodiscard]] std::expected<std::monostate, Error>
+  accept(const FillScopes &visitor) const noexcept override {
+    return visitor.visit(this);
+  }
 };
 
 } // namespace nicole

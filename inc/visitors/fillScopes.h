@@ -1,11 +1,17 @@
-#ifndef FILL_SYMBOL_TABLE_H
-#define FILL_SYMBOL_TABLE_H
+#ifndef FILL_SCOPES_H
+#define FILL_SCOPES_H
 
 #include "visitor.h"
+#include "../symbolTable/scope.h"
+#include <memory>
 
 namespace nicole {
 
-class FillSymbolTable final : public Visitor<std::monostate> {
+class FillScopes final : public Visitor<std::monostate> {
+private:
+  std::shared_ptr<Scope> firstScope_{nullptr};
+  std::shared_ptr<Scope> currentScope_{nullptr};
+
 public:
   [[nodiscard]] std::expected<std::monostate, Error>
   visit(const AST_BOOL *node) const noexcept override;
@@ -119,9 +125,6 @@ public:
   visit(const AST_STRUCT *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::monostate, Error>
-  visit(const AST_CLASS *node) const noexcept override;
-
-  [[nodiscard]] std::expected<std::monostate, Error>
   visit(const AST_ATTR_ACCESS *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::monostate, Error>
@@ -158,7 +161,7 @@ public:
   visit(const Tree *tree) const noexcept override;
 
   [[nodiscard]] std::expected<std::monostate, Error>
-  print(const Tree *tree) const noexcept {
+  fill(const Tree *tree) const noexcept {
     return visit(tree);
   }
 };

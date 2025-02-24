@@ -460,30 +460,6 @@ std::expected<std::shared_ptr<AST_STRUCT>, Error> Builder::createStruct(
   return astStruct;
 }
 
-std::expected<std::shared_ptr<AST_CLASS>, Error> Builder::createClass(
-    const std::string &id, std::unique_ptr<std::string> fatherType,
-    const Attributes &attributes,
-    const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
-    const std::shared_ptr<AST_FUNC_DECL> &constructor,
-    const std::shared_ptr<AST_FUNC_DECL> &destructor) noexcept {
-  const auto astClass{std::make_shared<AST_CLASS>(
-      id, std::move(fatherType), attributes, methods, constructor, destructor)};
-  const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods__{
-      astClass->methods()};
-  for (const auto &methods_ : methods__) {
-    if (methods_) {
-      methods_->setFather(astClass);
-    }
-  }
-  if (constructor) {
-    constructor->setFather(astClass);
-  }
-  if (destructor) {
-    destructor->setFather(astClass);
-  }
-  return astClass;
-}
-
 std::expected<std::shared_ptr<AST_ATTR_ACCESS>, Error>
 Builder::createAttrAccess(const std::string &id) noexcept {
   return std::make_shared<AST_ATTR_ACCESS>(id);

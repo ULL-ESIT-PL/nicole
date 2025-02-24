@@ -30,7 +30,6 @@
 #include "ast/vector/ast_vector.h"
 
 #include "ast/userTypes/ast_attrAccess.h"
-#include "ast/userTypes/ast_class.h"
 #include "ast/userTypes/ast_enum.h"
 #include "ast/userTypes/ast_methodCall.h"
 #include "ast/userTypes/ast_struct.h"
@@ -229,13 +228,6 @@ public:
                const std::vector<std::shared_ptr<AST_METHOD_DECL>> &methods,
                const std::shared_ptr<AST_CONSTRUCTOR_DECL> &constructor,
                const std::shared_ptr<AST_DESTRUCTOR_DECL> &destructor) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_CLASS>, Error>
-  createClass(const std::string &id, std::unique_ptr<std::string> fatherType,
-              const Attributes &attributes,
-              const std::vector<std::shared_ptr<AST_FUNC_DECL>> &methods,
-              const std::shared_ptr<AST_FUNC_DECL> &constructor,
-              const std::shared_ptr<AST_FUNC_DECL> &destructor) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_ATTR_ACCESS>, Error>
   createAttrAccess(const std::string &id) noexcept;
