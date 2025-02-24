@@ -33,6 +33,11 @@ enum class ERROR_TYPE {
 
   NULL_NODE,
 
+  ENUM,
+  VARIABLE,
+  TYPE,
+  FUNCTION,
+
   PRINT_TREE,
   VALIDATE_TREE
 };
@@ -81,6 +86,18 @@ enum class ERROR_TYPE {
 
   case ERROR_TYPE::NULL_NODE:
     return "NULL_NODE";
+
+  case ERROR_TYPE::ENUM:
+    return "ENUM";
+
+  case ERROR_TYPE::TYPE:
+    return "TYPE";
+
+  case ERROR_TYPE::VARIABLE:
+    return "VARIABLE";
+
+  case ERROR_TYPE::FUNCTION:
+    return "FUNCTION";
 
   case ERROR_TYPE::PRINT_TREE:
     return "PRINT_TREE";

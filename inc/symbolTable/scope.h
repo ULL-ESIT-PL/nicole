@@ -1,36 +1,21 @@
 #ifndef SCOPE_H
 #define SCOPE_H
 
-#include "symbolTable.h"
+#include "../errors.h"
+#include <expected>
 #include <memory>
 #include <string>
+#include <unordered_map>
+#include "../parsingAnalysis/types/type.h"
+#include <variant>
 #include <vector>
 
 namespace nicole {
 
-class Scope {
-private:
-  std::shared_ptr<Scope> parent_;
-  std::unique_ptr<SymbolTable> symbolTable_;
+class Scope final {
 
-public:
-  explicit Scope(std::shared_ptr<Scope> parent = nullptr) noexcept
-      : parent_(parent), symbolTable_(std::make_unique<SymbolTable>()) {}
-
-  void addSymbol(const std::shared_ptr<Symbol> &symbol) {
-    symbolTable_->addSymbol(symbol);
-  }
-
-  std::vector<std::shared_ptr<Symbol>> lookup(const std::string &name) const {
-    auto result = symbolTable_->getSymbols(name);
-    if (parent_) {
-      auto parentResult = parent_->lookup(name);
-      result.insert(result.end(), parentResult.begin(), parentResult.end());
-    }
-    return result;
-  }
 };
 
 } // namespace nicole
 
-#endif // SCOPE_H
+#endif

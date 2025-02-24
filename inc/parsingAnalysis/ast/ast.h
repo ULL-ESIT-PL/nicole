@@ -3,10 +3,8 @@
 
 #include "../../visitors/printTree.h"
 #include "../../visitors/validateTree.h"
-#include "../../visitors/fillScopes.h"
 #include "astType.h"
 #include <memory>
-#include <variant>
 
 namespace nicole {
 
@@ -35,9 +33,6 @@ public:
 
   [[nodiscard]] virtual std::expected<bool, Error>
   accept(const ValidateTree &visitor) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<std::monostate, Error>
-  accept(const FillScopes &visitor) const noexcept = 0;
 };
 
 } // namespace nicole

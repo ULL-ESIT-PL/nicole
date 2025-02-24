@@ -3,6 +3,7 @@
 
 #include "../parsingAnalysis/types/type.h"
 #include "../parsingAnalysis/types/userTypes/genericParameter.h"
+#include "symbol.h"
 #include "variableSymbol.h"
 #include <memory>
 #include <string>
@@ -18,11 +19,10 @@ private:
 
 public:
   explicit FunctionSymbol(
-      const std::string &id, const SymbolKind kind,
-      const std::vector<GenericParameter> &generics,
+      const std::string &id, const std::vector<GenericParameter> &generics,
       const std::vector<std::shared_ptr<VariableSymbol>> &params,
       const std::shared_ptr<Type> &returnType) noexcept
-      : Symbol{id, kind}, generics_{generics}, params_{params},
+      : Symbol{id, SymbolKind::Function}, generics_{generics}, params_{params},
         returnType_{returnType} {}
 
   [[nodiscard]] const std::vector<GenericParameter> &generics() const noexcept {

@@ -13,9 +13,9 @@ private:
   std::shared_ptr<Type> type_;
 
 public:
-  explicit VariableSymbol(const std::string &id, const SymbolKind kind,
+  explicit VariableSymbol(const std::string &id, 
                       const std::shared_ptr<Type> &type) noexcept
-      : Symbol{id, kind}, type_{type} {}
+      : Symbol{id, SymbolKind::Variable}, type_{type} {}
 
   [[nodiscard]] const std::shared_ptr<Type> &type() const noexcept {
     return type_;

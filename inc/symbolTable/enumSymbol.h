@@ -12,9 +12,9 @@ private:
   std::vector<std::string> enumerators_;
 
 public:
-  explicit EnumSymbol(const std::string &id, const SymbolKind kind,
+  explicit EnumSymbol(const std::string &id,
                       const std::vector<std::string> &enumerators) noexcept
-      : Symbol{id, kind}, enumerators_{enumerators} {}
+      : Symbol{id, SymbolKind::Enum}, enumerators_{enumerators} {}
 
   [[nodiscard]] const std::vector<std::string> &enumerators() const noexcept {
     return enumerators_;

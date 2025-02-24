@@ -1,18 +1,40 @@
 #ifndef FILL_SCOPES_H
 #define FILL_SCOPES_H
 
-#include "visitor.h"
 #include "../symbolTable/scope.h"
+#include "visitor.h"
 #include <memory>
 
 namespace nicole {
 
 class FillScopes final : public Visitor<std::monostate> {
 private:
-  std::shared_ptr<Scope> firstScope_{nullptr};
-  std::shared_ptr<Scope> currentScope_{nullptr};
+  mutable std::shared_ptr<Scope> currentScope_;
+  mutable std::shared_ptr<Scope> firstScope_;
+
+  void pushScope() const {
+    auto newScope = std::make_shared<Scope>(currentScope_);
+    currentScope_ = newScope;
+    if (!firstScope_) {
+      firstScope_ = currentScope_;
+    }
+  }
+
+  void popScope() const {
+    if (currentScope_) {
+      currentScope_ = currentScope_->father();
+    }
+  }
 
 public:
+  FillScopes() noexcept
+      : currentScope_{std::make_shared<Scope>(nullptr)},
+        firstScope_{currentScope_} {}
+
+  [[nodiscard]] const std::shared_ptr<Scope> getGlobalScope() const noexcept {
+    return firstScope_;
+  }
+
   [[nodiscard]] std::expected<std::monostate, Error>
   visit(const AST_BOOL *node) const noexcept override;
 
