@@ -13,8 +13,8 @@ private:
 
 public:
   explicit AST_VAR_TYPED_DECL(const std::string &id, const std::shared_ptr<Type> &type,
-                        const std::shared_ptr<AST> &value, const bool isConst) noexcept
-      : AST_VAR_DECL(AST_TYPE::VAR_TYPED_DECL, id, value, isConst), type_{type} {}
+                        const std::shared_ptr<AST> &value) noexcept
+      : AST_VAR_DECL(AST_TYPE::VAR_TYPED_DECL, id, value), type_{type} {}
 
   [[nodiscard]] const std::shared_ptr<Type> &varType() const noexcept { return type_; }
 
@@ -25,6 +25,11 @@ public:
 
   [[nodiscard]] std::expected<bool, Error>
   accept(const ValidateTree &visitor) const noexcept override {
+    return visitor.visit(this);
+  }
+
+  [[nodiscard]] std::expected<std::monostate, Error>
+  accept(const FillSemanticInfo &visitor) const noexcept override {
     return visitor.visit(this);
   }
 };

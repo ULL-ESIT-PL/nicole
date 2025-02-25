@@ -32,16 +32,16 @@
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
-            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntry">10</td>
             <td class="headerCovTableEntry">0</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-02-22 00:05:20</td>
+            <td class="headerValue">2025-02-25 19:21:33</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
-            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">4</td>
             <td class="headerCovTableEntry">0</td>
           </tr>
                   <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
@@ -82,11 +82,16 @@
 <span id="L20"><span class="lineNum">      20</span> <span class="tlaUNC">           0 :   accept(const ValidateTree &amp;visitor) const noexcept override {</span></span>
 <span id="L21"><span class="lineNum">      21</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
 <span id="L22"><span class="lineNum">      22</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L23"><span class="lineNum">      23</span>              : };</span>
-<span id="L24"><span class="lineNum">      24</span>              : </span>
-<span id="L25"><span class="lineNum">      25</span>              : } // namespace nicole</span>
-<span id="L26"><span class="lineNum">      26</span>              : </span>
-<span id="L27"><span class="lineNum">      27</span>              : #endif // AST_H</span>
+<span id="L23"><span class="lineNum">      23</span>              : </span>
+<span id="L24"><span class="lineNum">      24</span>              :   [[nodiscard]] std::expected&lt;std::monostate, Error&gt;</span>
+<span id="L25"><span class="lineNum">      25</span> <span class="tlaUNC">           0 :   accept(const FillSemanticInfo &amp;visitor) const noexcept override {</span></span>
+<span id="L26"><span class="lineNum">      26</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
+<span id="L27"><span class="lineNum">      27</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L28"><span class="lineNum">      28</span>              : };</span>
+<span id="L29"><span class="lineNum">      29</span>              : </span>
+<span id="L30"><span class="lineNum">      30</span>              : } // namespace nicole</span>
+<span id="L31"><span class="lineNum">      31</span>              : </span>
+<span id="L32"><span class="lineNum">      32</span>              : #endif // AST_H</span>
         </pre>
               </td>
             </tr>

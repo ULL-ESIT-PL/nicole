@@ -46,9 +46,6 @@ public:
   visit(const AST_DEREF *node) const noexcept override;
 
   [[nodiscard]] std::expected<bool, Error>
-  visit(const AST_PTR *node) const noexcept override;
-
-  [[nodiscard]] std::expected<bool, Error>
   visit(const AST_BINARY *node) const noexcept override;
 
   [[nodiscard]] std::expected<bool, Error>

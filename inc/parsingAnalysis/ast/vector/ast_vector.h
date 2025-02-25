@@ -3,6 +3,7 @@
 
 #include "../ast.h"
 #include <memory>
+#include <variant>
 #include <vector>
 
 namespace nicole {
@@ -27,6 +28,11 @@ public:
 
   [[nodiscard]] std::expected<bool, Error>
   accept(const ValidateTree &visitor) const noexcept override {
+    return visitor.visit(this);
+  }
+
+  [[nodiscard]] std::expected<std::monostate, Error>
+  accept(const FillSemanticInfo &visitor) const noexcept override {
     return visitor.visit(this);
   }
 };

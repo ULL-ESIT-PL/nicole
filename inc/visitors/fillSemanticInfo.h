@@ -1,16 +1,22 @@
-#ifndef FILL_SCOPES_H
-#define FILL_SCOPES_H
+#ifndef FILL_SEMANTIC_INFO_H
+#define FILL_SEMANTIC_INFO_H
 
-#include "../symbolTable/scope.h"
+#include "../tables/enumTable/eumTable.h"
+#include "../tables/scope/scope.h"
+#include "../tables/typeTable/typeTable.h"
+//#include "../tables/functionTable/functionTable.h"
 #include "visitor.h"
 #include <memory>
 
 namespace nicole {
 
-class FillScopes final : public Visitor<std::monostate> {
+class FillSemanticInfo final : public Visitor<std::monostate> {
 private:
   mutable std::shared_ptr<Scope> currentScope_;
   mutable std::shared_ptr<Scope> firstScope_;
+  mutable EnumTable enumTable_;
+  //mutable FunctionTable functionTable_;
+  mutable TypeTable typeTable_;
 
   void pushScope() const {
     auto newScope = std::make_shared<Scope>(currentScope_);
@@ -27,9 +33,11 @@ private:
   }
 
 public:
-  FillScopes() noexcept
+  FillSemanticInfo(EnumTable &enumTable, /*FunctionTable &functionTable,*/
+                   TypeTable &typeTable) noexcept
       : currentScope_{std::make_shared<Scope>(nullptr)},
-        firstScope_{currentScope_} {}
+        firstScope_{currentScope_}, enumTable_{enumTable},
+        /*functionTable_{functionTable},*/ typeTable_{typeTable} {}
 
   [[nodiscard]] const std::shared_ptr<Scope> getGlobalScope() const noexcept {
     return firstScope_;
@@ -70,9 +78,6 @@ public:
 
   [[nodiscard]] std::expected<std::monostate, Error>
   visit(const AST_DEREF *node) const noexcept override;
-
-  [[nodiscard]] std::expected<std::monostate, Error>
-  visit(const AST_PTR *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::monostate, Error>
   visit(const AST_BINARY *node) const noexcept override;

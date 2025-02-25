@@ -6,10 +6,16 @@
 namespace nicole {
 
 class AST_AUTO_DECL : public AST_VAR_DECL {
+private:
+  bool isConst_;
+
 public:
   explicit AST_AUTO_DECL(const std::string &id,
-                         const std::shared_ptr<AST> &value, const bool isConst) noexcept
-      : AST_VAR_DECL(AST_TYPE::AUTO_DECL, id, value, isConst) {}
+                         const std::shared_ptr<AST> &value,
+                         const bool isConst) noexcept
+      : AST_VAR_DECL(AST_TYPE::AUTO_DECL, id, value), isConst_{isConst} {}
+
+  [[nodiscard]] bool isConst() const noexcept { return isConst_; }
 
   [[nodiscard]] std::expected<std::string, Error>
   accept(const PrintTree &visitor) const noexcept override {
@@ -18,6 +24,11 @@ public:
 
   [[nodiscard]] std::expected<bool, Error>
   accept(const ValidateTree &visitor) const noexcept override {
+    return visitor.visit(this);
+  }
+
+  [[nodiscard]] std::expected<std::monostate, Error>
+  accept(const FillSemanticInfo &visitor) const noexcept override {
     return visitor.visit(this);
   }
 };

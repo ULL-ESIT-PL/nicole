@@ -30,14 +30,3 @@ TEST_CASE("AST_NEW class methods", "[AST_NEW]") {
   REQUIRE(astNew.value() == value);
   REQUIRE(std::dynamic_pointer_cast<AST_BOOL>(astNew.value())->value() == true);
 }
-
-TEST_CASE("AST_PTR class methods", "[AST_PTR]") {
-  auto value = *Builder::createBool(false);
-  AST_PTR astPtr{"myPtr", "bool", value};
-
-  REQUIRE(astPtr.id() == "myPtr");
-  REQUIRE(astPtr.valueType() == "bool");
-  REQUIRE(astPtr.value() == value);
-  REQUIRE(std::dynamic_pointer_cast<AST_BOOL>(astPtr.value())->value() ==
-          false);
-}

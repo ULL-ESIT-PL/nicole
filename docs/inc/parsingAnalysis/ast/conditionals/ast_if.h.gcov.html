@@ -31,17 +31,17 @@
             <td class="headerValue">coverage.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntryLo">70.0&nbsp;%</td>
-            <td class="headerCovTableEntry">20</td>
+            <td class="headerCovTableEntryLo">60.9&nbsp;%</td>
+            <td class="headerCovTableEntry">23</td>
             <td class="headerCovTableEntry">14</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-02-22 00:05:20</td>
+            <td class="headerValue">2025-02-25 19:21:33</td>
             <td></td>
             <td class="headerItem">Functions:</td>
-            <td class="headerCovTableEntryLo">71.4&nbsp;%</td>
-            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryLo">62.5&nbsp;%</td>
+            <td class="headerCovTableEntry">8</td>
             <td class="headerCovTableEntry">5</td>
           </tr>
                   <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
@@ -82,25 +82,25 @@
 <span id="L20"><span class="lineNum">      20</span>              :                   const std::shared_ptr&lt;AST_BODY&gt; &amp;body,</span>
 <span id="L21"><span class="lineNum">      21</span>              :                   const std::vector&lt;std::shared_ptr&lt;AST_ELSE_IF&gt;&gt; &amp;elseIf,</span>
 <span id="L22"><span class="lineNum">      22</span>              :                   const std::shared_ptr&lt;AST_BODY&gt; &amp;elseBody) noexcept</span>
-<span id="L23"><span class="lineNum">      23</span> <span class="tlaGNC tlaBgGNC">           6 :       : AST(AST_TYPE::IF), condition_{condition}, body_{body}, elseIf_{elseIf},</span></span>
-<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">           6 :         elseBody_{elseBody} {}</span></span>
+<span id="L23"><span class="lineNum">      23</span> <span class="tlaGNC tlaBgGNC">           1 :       : AST(AST_TYPE::IF), condition_{condition}, body_{body}, elseIf_{elseIf},</span></span>
+<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">           1 :         elseBody_{elseBody} {}</span></span>
 <span id="L25"><span class="lineNum">      25</span>              : </span>
-<span id="L26"><span class="lineNum">      26</span> <span class="tlaGNC">           6 :   [[nodiscard]] const std::shared_ptr&lt;AST_CONDITION&gt; &amp;condition() const noexcept {</span></span>
-<span id="L27"><span class="lineNum">      27</span> <span class="tlaGNC">           6 :     return condition_;</span></span>
-<span id="L28"><span class="lineNum">      28</span> <span class="tlaGNC">           6 :   }</span></span>
+<span id="L26"><span class="lineNum">      26</span> <span class="tlaGNC">           1 :   [[nodiscard]] const std::shared_ptr&lt;AST_CONDITION&gt; &amp;condition() const noexcept {</span></span>
+<span id="L27"><span class="lineNum">      27</span> <span class="tlaGNC">           1 :     return condition_;</span></span>
+<span id="L28"><span class="lineNum">      28</span> <span class="tlaGNC">           1 :   }</span></span>
 <span id="L29"><span class="lineNum">      29</span>              : </span>
-<span id="L30"><span class="lineNum">      30</span> <span class="tlaGNC">           6 :   [[nodiscard]] const std::shared_ptr&lt;AST_BODY&gt; &amp;body() const noexcept {</span></span>
-<span id="L31"><span class="lineNum">      31</span> <span class="tlaGNC">           6 :     return body_;</span></span>
-<span id="L32"><span class="lineNum">      32</span> <span class="tlaGNC">           6 :   }</span></span>
+<span id="L30"><span class="lineNum">      30</span> <span class="tlaGNC">           1 :   [[nodiscard]] const std::shared_ptr&lt;AST_BODY&gt; &amp;body() const noexcept {</span></span>
+<span id="L31"><span class="lineNum">      31</span> <span class="tlaGNC">           1 :     return body_;</span></span>
+<span id="L32"><span class="lineNum">      32</span> <span class="tlaGNC">           1 :   }</span></span>
 <span id="L33"><span class="lineNum">      33</span>              : </span>
 <span id="L34"><span class="lineNum">      34</span>              :   [[nodiscard]] const std::vector&lt;std::shared_ptr&lt;AST_ELSE_IF&gt;&gt; &amp;</span>
-<span id="L35"><span class="lineNum">      35</span> <span class="tlaGNC">          12 :   elseIf() const noexcept {</span></span>
-<span id="L36"><span class="lineNum">      36</span> <span class="tlaGNC">          12 :     return elseIf_;</span></span>
-<span id="L37"><span class="lineNum">      37</span> <span class="tlaGNC">          12 :   }</span></span>
+<span id="L35"><span class="lineNum">      35</span> <span class="tlaGNC">           2 :   elseIf() const noexcept {</span></span>
+<span id="L36"><span class="lineNum">      36</span> <span class="tlaGNC">           2 :     return elseIf_;</span></span>
+<span id="L37"><span class="lineNum">      37</span> <span class="tlaGNC">           2 :   }</span></span>
 <span id="L38"><span class="lineNum">      38</span>              : </span>
-<span id="L39"><span class="lineNum">      39</span> <span class="tlaGNC">           6 :   [[nodiscard]] const std::shared_ptr&lt;AST_BODY&gt; &amp;elseBody() const noexcept {</span></span>
-<span id="L40"><span class="lineNum">      40</span> <span class="tlaGNC">           6 :     return elseBody_;</span></span>
-<span id="L41"><span class="lineNum">      41</span> <span class="tlaGNC">           6 :   }</span></span>
+<span id="L39"><span class="lineNum">      39</span> <span class="tlaGNC">           1 :   [[nodiscard]] const std::shared_ptr&lt;AST_BODY&gt; &amp;elseBody() const noexcept {</span></span>
+<span id="L40"><span class="lineNum">      40</span> <span class="tlaGNC">           1 :     return elseBody_;</span></span>
+<span id="L41"><span class="lineNum">      41</span> <span class="tlaGNC">           1 :   }</span></span>
 <span id="L42"><span class="lineNum">      42</span>              : </span>
 <span id="L43"><span class="lineNum">      43</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
 <span id="L44"><span class="lineNum">      44</span> <span class="tlaUNC tlaBgUNC">           0 :   accept(const PrintTree &amp;visitor) const noexcept override {</span></span>
@@ -111,11 +111,16 @@
 <span id="L49"><span class="lineNum">      49</span> <span class="tlaUNC">           0 :   accept(const ValidateTree &amp;visitor) const noexcept override {</span></span>
 <span id="L50"><span class="lineNum">      50</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
 <span id="L51"><span class="lineNum">      51</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L52"><span class="lineNum">      52</span>              : };</span>
-<span id="L53"><span class="lineNum">      53</span>              : </span>
-<span id="L54"><span class="lineNum">      54</span>              : } // namespace nicole</span>
-<span id="L55"><span class="lineNum">      55</span>              : </span>
-<span id="L56"><span class="lineNum">      56</span>              : #endif</span>
+<span id="L52"><span class="lineNum">      52</span>              : </span>
+<span id="L53"><span class="lineNum">      53</span>              :   [[nodiscard]] std::expected&lt;std::monostate, Error&gt;</span>
+<span id="L54"><span class="lineNum">      54</span> <span class="tlaUNC">           0 :   accept(const FillSemanticInfo &amp;visitor) const noexcept override {</span></span>
+<span id="L55"><span class="lineNum">      55</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
+<span id="L56"><span class="lineNum">      56</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L57"><span class="lineNum">      57</span>              : };</span>
+<span id="L58"><span class="lineNum">      58</span>              : </span>
+<span id="L59"><span class="lineNum">      59</span>              : } // namespace nicole</span>
+<span id="L60"><span class="lineNum">      60</span>              : </span>
+<span id="L61"><span class="lineNum">      61</span>              : #endif</span>
         </pre>
               </td>
             </tr>

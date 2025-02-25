@@ -132,16 +132,6 @@ Builder::createDeref(const std::shared_ptr<AST> &value) noexcept {
   return astDeref;
 }
 
-std::expected<std::shared_ptr<AST_PTR>, Error>
-Builder::createPtr(const std::string &id, const std::string &type,
-                   const std::shared_ptr<AST> &value) noexcept {
-  const auto astPtr{std::make_shared<AST_PTR>(id, type, value)};
-  if (value) {
-    value->setFather(astPtr);
-  }
-  return astPtr;
-}
-
 std::expected<std::shared_ptr<AST_BINARY>, Error>
 Builder::createBinary(const Token &op, const std::shared_ptr<AST> &left,
                       const std::shared_ptr<AST> &right) noexcept {
@@ -502,8 +492,8 @@ Builder::createConstructorCall(
     const std::string &id,
     const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
     const std::vector<std::shared_ptr<AST>> &parameters) noexcept {
-  const auto astConstructorall{
-      std::make_shared<AST_CONSTRUCTOR_CALL>(id, replaceOfGenerics, parameters)};
+  const auto astConstructorall{std::make_shared<AST_CONSTRUCTOR_CALL>(
+      id, replaceOfGenerics, parameters)};
   const std::vector<std::shared_ptr<AST>> &parameters__{
       astConstructorall->parameters()};
   for (const auto &parameters_ : parameters__) {
@@ -557,10 +547,8 @@ Builder::createAutoDecl(const std::string &id,
 std::expected<std::shared_ptr<AST_VAR_TYPED_DECL>, Error>
 Builder::createVarTypedtDecl(const std::string &id,
                              const std::shared_ptr<Type> &type,
-                             const std::shared_ptr<AST> &value,
-                             const bool isConst) noexcept {
-  const auto astLetDecl{
-      std::make_shared<AST_VAR_TYPED_DECL>(id, type, value, isConst)};
+                             const std::shared_ptr<AST> &value) noexcept {
+  const auto astLetDecl{std::make_shared<AST_VAR_TYPED_DECL>(id, type, value)};
   if (value) {
     value->setFather(astLetDecl);
   }

@@ -1,7 +1,7 @@
 #ifndef AST_DESTRUCTOR_DECL_H
 #define AST_DESTRUCTOR_DECL_H
 
-#include "../../types/typeTable.h"
+#include "../../types/specialTypes/voidType.h"
 #include "../functions/ast_subrutineDecl.h"
 #include <memory>
 
@@ -21,6 +21,11 @@ public:
 
   [[nodiscard]] std::expected<bool, Error>
   accept(const ValidateTree &visitor) const noexcept override {
+    return visitor.visit(this);
+  }
+
+  [[nodiscard]] std::expected<std::monostate, Error>
+  accept(const FillSemanticInfo &visitor) const noexcept override {
     return visitor.visit(this);
   }
 };

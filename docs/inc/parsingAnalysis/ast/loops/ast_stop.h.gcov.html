@@ -31,17 +31,17 @@
             <td class="headerValue">coverage.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntryLo">40.0&nbsp;%</td>
-            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntryLo">30.8&nbsp;%</td>
+            <td class="headerCovTableEntry">13</td>
             <td class="headerCovTableEntry">4</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-02-22 00:05:20</td>
+            <td class="headerValue">2025-02-25 19:21:33</td>
             <td></td>
             <td class="headerItem">Functions:</td>
-            <td class="headerCovTableEntryLo">50.0&nbsp;%</td>
-            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryLo">40.0&nbsp;%</td>
+            <td class="headerCovTableEntry">5</td>
             <td class="headerCovTableEntry">2</td>
           </tr>
                   <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
@@ -74,11 +74,11 @@
 <span id="L12"><span class="lineNum">      12</span>              : </span>
 <span id="L13"><span class="lineNum">      13</span>              : public:</span>
 <span id="L14"><span class="lineNum">      14</span>              :   explicit AST_STOP(const std::shared_ptr&lt;AST&gt; &amp;fatherLoop) noexcept</span>
-<span id="L15"><span class="lineNum">      15</span> <span class="tlaGNC tlaBgGNC">          18 :       : AST(AST_TYPE::STOP), fatherLoop_{fatherLoop} {}</span></span>
+<span id="L15"><span class="lineNum">      15</span> <span class="tlaGNC tlaBgGNC">           3 :       : AST(AST_TYPE::STOP), fatherLoop_{fatherLoop} {}</span></span>
 <span id="L16"><span class="lineNum">      16</span>              : </span>
-<span id="L17"><span class="lineNum">      17</span> <span class="tlaGNC">          18 :   [[nodiscard]] const std::shared_ptr&lt;AST&gt; &amp;fatherLoop() const noexcept {</span></span>
-<span id="L18"><span class="lineNum">      18</span> <span class="tlaGNC">          18 :     return fatherLoop_;</span></span>
-<span id="L19"><span class="lineNum">      19</span> <span class="tlaGNC">          18 :   }</span></span>
+<span id="L17"><span class="lineNum">      17</span> <span class="tlaGNC">           3 :   [[nodiscard]] const std::shared_ptr&lt;AST&gt; &amp;fatherLoop() const noexcept {</span></span>
+<span id="L18"><span class="lineNum">      18</span> <span class="tlaGNC">           3 :     return fatherLoop_;</span></span>
+<span id="L19"><span class="lineNum">      19</span> <span class="tlaGNC">           3 :   }</span></span>
 <span id="L20"><span class="lineNum">      20</span>              : </span>
 <span id="L21"><span class="lineNum">      21</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
 <span id="L22"><span class="lineNum">      22</span> <span class="tlaUNC tlaBgUNC">           0 :   accept(const PrintTree &amp;visitor) const noexcept override {</span></span>
@@ -89,11 +89,16 @@
 <span id="L27"><span class="lineNum">      27</span> <span class="tlaUNC">           0 :   accept(const ValidateTree &amp;visitor) const noexcept override {</span></span>
 <span id="L28"><span class="lineNum">      28</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
 <span id="L29"><span class="lineNum">      29</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L30"><span class="lineNum">      30</span>              : };</span>
-<span id="L31"><span class="lineNum">      31</span>              : </span>
-<span id="L32"><span class="lineNum">      32</span>              : } // namespace nicole</span>
-<span id="L33"><span class="lineNum">      33</span>              : </span>
-<span id="L34"><span class="lineNum">      34</span>              : #endif</span>
+<span id="L30"><span class="lineNum">      30</span>              : </span>
+<span id="L31"><span class="lineNum">      31</span>              :   [[nodiscard]] std::expected&lt;std::monostate, Error&gt;</span>
+<span id="L32"><span class="lineNum">      32</span> <span class="tlaUNC">           0 :   accept(const FillSemanticInfo &amp;visitor) const noexcept override {</span></span>
+<span id="L33"><span class="lineNum">      33</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
+<span id="L34"><span class="lineNum">      34</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L35"><span class="lineNum">      35</span>              : };</span>
+<span id="L36"><span class="lineNum">      36</span>              : </span>
+<span id="L37"><span class="lineNum">      37</span>              : } // namespace nicole</span>
+<span id="L38"><span class="lineNum">      38</span>              : </span>
+<span id="L39"><span class="lineNum">      39</span>              : #endif</span>
         </pre>
               </td>
             </tr>

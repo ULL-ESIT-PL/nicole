@@ -1,10 +1,12 @@
 #ifndef AST_H
 #define AST_H
 
+#include "../../visitors/fillSemanticInfo.h"
 #include "../../visitors/printTree.h"
 #include "../../visitors/validateTree.h"
 #include "astType.h"
 #include <memory>
+#include <variant>
 
 namespace nicole {
 
@@ -33,6 +35,9 @@ public:
 
   [[nodiscard]] virtual std::expected<bool, Error>
   accept(const ValidateTree &visitor) const noexcept = 0;
+
+  [[nodiscard]] virtual std::expected<std::monostate, Error>
+  accept(const FillSemanticInfo &visitor) const noexcept = 0;
 };
 
 } // namespace nicole

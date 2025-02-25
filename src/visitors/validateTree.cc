@@ -13,7 +13,6 @@
 #include "../../inc/parsingAnalysis/ast/pointer/ast_delete.h"
 #include "../../inc/parsingAnalysis/ast/pointer/ast_deref.h"
 #include "../../inc/parsingAnalysis/ast/pointer/ast_new.h"
-#include "../../inc/parsingAnalysis/ast/pointer/ast_ptr.h"
 
 #include "../../inc/parsingAnalysis/ast/operators/ast_binary.h"
 #include "../../inc/parsingAnalysis/ast/operators/ast_unary.h"
@@ -224,17 +223,6 @@ ValidateTree::visit(const AST_DEREF *node) const noexcept {
   if (!result) {
     return createError(result.error());
   }
-  return true;
-}
-
-std::expected<bool, Error>
-ValidateTree::visit(const AST_PTR *node) const noexcept {
-  if (!node) {
-    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PTR");
-  }
-
-  return createError(ERROR_TYPE::VALIDATE_TREE, "ptr not implemented");
-
   return true;
 }
 

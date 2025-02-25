@@ -80,7 +80,7 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
       return createError(result.error());
     }
     varType = std::make_shared<ConstType>(varType);
-    return Builder::createVarTypedtDecl(varName, varType, valueExpr, true);
+    return Builder::createVarTypedtDecl(varName, varType, valueExpr);
   }
   case TokenType::LET: { // let variable: type = expression;
     if (auto res = tryEat(); !res) {
@@ -90,7 +90,7 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
     if (!result) {
       return createError(result.error());
     }
-    return Builder::createVarTypedtDecl(varName, varType, valueExpr, false);
+    return Builder::createVarTypedtDecl(varName, varType, valueExpr);
   }
   case TokenType::AUTO: { // auto variable = expression;
     if (auto res = tryEat(); !res) {

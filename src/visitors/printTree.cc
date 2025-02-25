@@ -13,7 +13,6 @@
 #include "../../inc/parsingAnalysis/ast/pointer/ast_delete.h"
 #include "../../inc/parsingAnalysis/ast/pointer/ast_deref.h"
 #include "../../inc/parsingAnalysis/ast/pointer/ast_new.h"
-#include "../../inc/parsingAnalysis/ast/pointer/ast_ptr.h"
 
 #include "../../inc/parsingAnalysis/ast/operators/ast_binary.h"
 #include "../../inc/parsingAnalysis/ast/operators/ast_unary.h"
@@ -197,25 +196,6 @@ PrintTree::visit(const AST_DEREF *node) const noexcept {
     return createError(val.error());
   }
   result << *val;
-  decreaseIndent();
-  return result.str();
-}
-
-std::expected<std::string, Error>
-PrintTree::visit(const AST_PTR *node) const noexcept {
-  if (!node) {
-    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PTR");
-  }
-  std::ostringstream result;
-  result << indent_ << "ptr:\n";
-  increaseIndent();
-  result << indent_ << "id:\n" << node->id();
-  result << indent_ << "type: " << node->valueType();
-  const auto val{node->value()->accept(*this)};
-  if (!val) {
-    return createError(val.error());
-  }
-  result << indent_ << "value:\n" << *val;
   decreaseIndent();
   return result.str();
 }
@@ -1072,8 +1052,6 @@ PrintTree::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   increaseIndent();
   result << indent_ << "id: " << node->id() << "\n";
   result << indent_ << "type: " << node->varType()->toString() << "\n";
-  result << indent_ << "const: " << ((node->isConst()) ? "true" : "false")
-         << "\n";
   result << indent_ << "value:\n";
   const auto val{node->value()->accept(*this)};
   if (!val) {

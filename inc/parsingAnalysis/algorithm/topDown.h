@@ -2,7 +2,7 @@
 #define TOP_DOWN_H
 
 #include "../builder.h"
-#include "../types/typeTable.h"
+#include "../../tables/typeTable/typeTable.h"
 #include "parser.h"
 #include <memory>
 #include <variant>

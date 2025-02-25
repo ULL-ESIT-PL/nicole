@@ -25,7 +25,6 @@ class AST_INDEX;
 class AST_DELETE;
 class AST_NEW;
 class AST_DEREF;
-class AST_PTR;
 
 class AST_BINARY;
 
@@ -115,9 +114,6 @@ public:
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_DEREF *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_PTR *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_BINARY *node) const noexcept = 0;
