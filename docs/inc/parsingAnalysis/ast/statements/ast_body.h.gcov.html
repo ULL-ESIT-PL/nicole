@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-02-25 19:21:33</td>
+            <td class="headerValue">2025-02-27 15:49:37</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">28.6&nbsp;%</td>
@@ -73,23 +73,23 @@
 <span id="L11"><span class="lineNum">      11</span>              : class AST_BODY : public AST {</span>
 <span id="L12"><span class="lineNum">      12</span>              : private:</span>
 <span id="L13"><span class="lineNum">      13</span>              :   std::vector&lt;std::shared_ptr&lt;AST_STATEMENT&gt;&gt; body_;</span>
-<span id="L14"><span class="lineNum">      14</span>              :   std::shared_ptr&lt;Scope&gt; scope_;</span>
+<span id="L14"><span class="lineNum">      14</span>              :   mutable std::shared_ptr&lt;Scope&gt; scope_;</span>
 <span id="L15"><span class="lineNum">      15</span>              : </span>
 <span id="L16"><span class="lineNum">      16</span>              : public:</span>
 <span id="L17"><span class="lineNum">      17</span>              :   explicit AST_BODY(</span>
 <span id="L18"><span class="lineNum">      18</span>              :       const std::vector&lt;std::shared_ptr&lt;AST_STATEMENT&gt;&gt; &amp;body) noexcept</span>
-<span id="L19"><span class="lineNum">      19</span> <span class="tlaGNC tlaBgGNC">          18 :       : AST(AST_TYPE::BODY), body_{body} {}</span></span>
+<span id="L19"><span class="lineNum">      19</span> <span class="tlaGNC tlaBgGNC">          36 :       : AST(AST_TYPE::BODY), body_{body} {}</span></span>
 <span id="L20"><span class="lineNum">      20</span>              : </span>
 <span id="L21"><span class="lineNum">      21</span>              :   [[nodiscard]] const std::vector&lt;std::shared_ptr&lt;AST_STATEMENT&gt;&gt; &amp;</span>
-<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">          20 :   body() const noexcept {</span></span>
-<span id="L23"><span class="lineNum">      23</span> <span class="tlaGNC">          20 :     return body_;</span></span>
-<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">          20 :   }</span></span>
+<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">          40 :   body() const noexcept {</span></span>
+<span id="L23"><span class="lineNum">      23</span> <span class="tlaGNC">          40 :     return body_;</span></span>
+<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">          40 :   }</span></span>
 <span id="L25"><span class="lineNum">      25</span>              : </span>
 <span id="L26"><span class="lineNum">      26</span> <span class="tlaUNC tlaBgUNC">           0 :   [[nodiscard]] const std::shared_ptr&lt;Scope&gt; &amp;scope() const noexcept {</span></span>
 <span id="L27"><span class="lineNum">      27</span> <span class="tlaUNC">           0 :     return scope_;</span></span>
 <span id="L28"><span class="lineNum">      28</span> <span class="tlaUNC">           0 :   }</span></span>
 <span id="L29"><span class="lineNum">      29</span>              : </span>
-<span id="L30"><span class="lineNum">      30</span> <span class="tlaUNC">           0 :   void setScope(const std::shared_ptr&lt;Scope&gt; &amp;scope) noexcept {</span></span>
+<span id="L30"><span class="lineNum">      30</span> <span class="tlaUNC">           0 :   void setScope(const std::shared_ptr&lt;Scope&gt; &amp;scope) const noexcept {</span></span>
 <span id="L31"><span class="lineNum">      31</span> <span class="tlaUNC">           0 :     scope_ = scope;</span></span>
 <span id="L32"><span class="lineNum">      32</span> <span class="tlaUNC">           0 :   }</span></span>
 <span id="L33"><span class="lineNum">      33</span>              : </span>

@@ -1,10 +1,6 @@
 # Minimum CMake version
 cmake_minimum_required(VERSION 3.10)
 
-# usar en la linea de comandos para generar compile_commands.json y que .clangd detecte catch2
-# cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
-
-
 # Detectar y configurar el compilador
 if(NOT DEFINED CMAKE_CXX_COMPILER)
     find_program(CLANG_COMPILER clang++)
@@ -20,9 +16,7 @@ if(NOT DEFINED CMAKE_CXX_COMPILER)
     endif()
 endif()
 
-# Project name
 project(MyProject LANGUAGES CXX)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Configurar ccache (si está instalado)
 find_program(CCACHE_PROGRAM ccache)
@@ -31,18 +25,13 @@ if(CCACHE_PROGRAM)
     set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
 endif()
 
-# C++ standard
+# C++ standard y optimizaciones
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
-# Detectar el compilador
-# Tipo de build (recomendado en CI)
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
-endif()
-
+# Configurar warnings
 option(ENABLE_WARNINGS "Activar flags de warnings" ON)
 if(ENABLE_WARNINGS)
     if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -66,67 +55,56 @@ else()
     set(COMPILER_WARNINGS "")
 endif()
 
-
+# Directorios de salida
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 ###########################################################
 # catch2
-Include(FetchContent)
-
+include(FetchContent)
 FetchContent_Declare(
   Catch2
   GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.7.0 # or a later release
+  GIT_TAG        v3.7.0
 )
-
 FetchContent_MakeAvailable(Catch2)
 
 add_executable(tests
-    # errors
+    # Lista de archivos para tests
     test/errors/test_error.cc
-    # options
     test/options/test_options.cc
     test/options/test_optionsParser.cc
     src/options/optionsParser.cc
     # lexicalAnalysis
     test/lexicalAnalysis/test_category.cc
-
     test/lexicalAnalysis/test_lexer.cc
     src/lexicalAnalysis/lexer.cc
     src/lexicalAnalysis/type.cc
-    
     test/lexicalAnalysis/test_location.cc
-    
     test/lexicalAnalysis/test_regexWrapper.cc
-    
     test/lexicalAnalysis/test_sintax.cc
     src/lexicalAnalysis/nicoleSintax.cc
-    
     test/lexicalAnalysis/test_token.cc
-    
     test/lexicalAnalysis/test_tokenStream.cc
     src/lexicalAnalysis/tokenStream.cc
-    
     test/lexicalAnalysis/test_type.cc
-
     # parsingAnalysis
     src/parsingAnalysis/ast/astType.cc 
     src/parsingAnalysis/builder.cc
     src/parsingAnalysis/checkPosition.cc
     src/parsingAnalysis/algorithm/topDown.cc
-
     src/parsingAnalysis/algorithm/productions/parseBinary.cc
     src/parsingAnalysis/algorithm/productions/parseConditionals.cc
     src/parsingAnalysis/algorithm/productions/parseDecl.cc
     src/parsingAnalysis/algorithm/productions/parseFactor.cc
     src/parsingAnalysis/algorithm/productions/parseFunctions.cc
-    
     src/parsingAnalysis/algorithm/productions/parseLoops.cc
     src/parsingAnalysis/algorithm/productions/parseSelfAssignment.cc
     src/parsingAnalysis/algorithm/productions/parseUserTypes.cc
     src/parsingAnalysis/algorithm/productions/parseUtils.cc
     src/parsingAnalysis/algorithm/productions/parseChained.cc
     src/parsingAnalysis/algorithm/productions/parseTypes.cc
-
     test/parsingAnalysis/test_ast_literals.cc
     test/parsingAnalysis/test_ast_vector.cc 
     test/parsingAnalysis/test_ast_variables.cc 
@@ -139,7 +117,6 @@ add_executable(tests
     test/parsingAnalysis/test_ast_loops.cc
     test/parsingAnalysis/test_ast_functions.cc
     test/parsingAnalysis/test_ast_pointers.cc
-
     # visitors
     src/visitors/printTree.cc
     src/visitors/validateTree.cc
@@ -152,7 +129,7 @@ target_compile_options(tests PRIVATE
     -Wno-error=sign-conversion
 )
 
-# Habilitar coverage para tests solo si se activa la opción ENABLE_COVERAGE
+# Habilitar coverage para tests si se activa la opción ENABLE_COVERAGE
 option(ENABLE_COVERAGE "Habilitar flags de coverage para tests" OFF)
 if(ENABLE_COVERAGE)
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -168,102 +145,79 @@ if(ENABLE_COVERAGE)
     endif()
 endif()
 
-
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(CTest)
 include(Catch)
 catch_discover_tests(tests)
 
 ###########################################################
-
-# Get LLVM configuration using llvm-config
+# Configuración de LLVM
 execute_process(
     COMMAND llvm-config --cxxflags
     OUTPUT_VARIABLE LLVM_CXX_FLAGS
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-
 execute_process(
     COMMAND llvm-config --ldflags
     OUTPUT_VARIABLE LLVM_LDFLAGS
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-
 execute_process(
     COMMAND llvm-config --system-libs
     OUTPUT_VARIABLE LLVM_SYSTEM_LIBS
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-
 execute_process(
     COMMAND llvm-config --libs core
     OUTPUT_VARIABLE LLVM_LIBS
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-
-# Agregar directorio de inclusión de LLVM
 execute_process(
     COMMAND llvm-config --includedir
     OUTPUT_VARIABLE LLVM_INCLUDEDIR
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+# Si lo necesitas solo para algunos targets, considera quitar esta línea global:
 include_directories(${LLVM_INCLUDEDIR})
 
 # Set compiler and linker flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O3 ${COMPILER_WARNINGS} ${LLVM_CXX_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LLVM_LDFLAGS} ${LLVM_SYSTEM_LIBS} ${LLVM_LIBS}")
 
-# Source files
+# Source files para el ejecutable principal
 set(SRC_FILES
     src/main.cc
-    # Options
     src/options/optionsParser.cc
-    # Lexer
     src/lexicalAnalysis/type.cc
     src/lexicalAnalysis/tokenStream.cc
     src/lexicalAnalysis/lexer.cc
     src/lexicalAnalysis/nicoleSintax.cc
-
-    # parsingAnalysis
     src/parsingAnalysis/ast/astType.cc
     src/parsingAnalysis/builder.cc
     src/parsingAnalysis/checkPosition.cc
     src/parsingAnalysis/algorithm/topDown.cc
-
     src/parsingAnalysis/algorithm/productions/parseBinary.cc
     src/parsingAnalysis/algorithm/productions/parseConditionals.cc
     src/parsingAnalysis/algorithm/productions/parseDecl.cc
     src/parsingAnalysis/algorithm/productions/parseFactor.cc
     src/parsingAnalysis/algorithm/productions/parseFunctions.cc
-    
     src/parsingAnalysis/algorithm/productions/parseLoops.cc
     src/parsingAnalysis/algorithm/productions/parseSelfAssignment.cc
     src/parsingAnalysis/algorithm/productions/parseUserTypes.cc
     src/parsingAnalysis/algorithm/productions/parseUtils.cc
     src/parsingAnalysis/algorithm/productions/parseChained.cc
     src/parsingAnalysis/algorithm/productions/parseTypes.cc
-
-    # visitors
     src/visitors/printTree.cc
     src/visitors/validateTree.cc
     src/visitors/fillSemanticInfo.cc
 )
 
-# Output directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-
-# Include directories
+# Include directories para el ejecutable principal
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
-# Executable
+# Executable principal
 add_executable(binaries ${SRC_FILES})
-
-# Agregar la ruta de inclusión de LLVM solo para 'binaries'
 target_include_directories(binaries PRIVATE ${LLVM_INCLUDEDIR})
-
-# Link LLVM libraries
 target_link_libraries(binaries ${LLVM_LIBS} ${LLVM_SYSTEM_LIBS})
 
 # Custom targets
@@ -272,13 +226,10 @@ add_custom_target(run
     DEPENDS binaries
     COMMENT "Running the program..."
 )
-
 add_custom_target(ignore
     COMMAND git add .gitignore
     COMMENT "Adding .gitignore file to git..."
 )
-
-# Clean command
 add_custom_target(cln
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/obj
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin
