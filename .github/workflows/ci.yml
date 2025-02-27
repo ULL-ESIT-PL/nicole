@@ -16,17 +16,21 @@ jobs:
       - name: Install dependencies and clang 19
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake wget gnupg lsb-release
+          sudo apt-get install -y cmake wget gnupg lsb-release llvm-19-dev
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
           sudo ./llvm.sh 19
           rm llvm.sh
 
       - name: Configure project
-        run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DENABLE_WARNINGS=OFF -DCMAKE_CXX_COMPILER=clang++-19
+        run: |
+          export CMAKE_PREFIX_PATH=/usr/lib/llvm-19
+          cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DENABLE_WARNINGS=OFF -DCMAKE_CXX_COMPILER=clang++-19
 
       - name: Build project
         run: cmake --build build -- -j$(nproc)
 
       - name: Run tests
-        run: cd build && ctest --verbose --output-on-failure
+        run: |
+          chmod +x nicole.sh
+          ./nicole.sh -t

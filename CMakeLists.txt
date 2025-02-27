@@ -38,8 +38,12 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
 # Detectar el compilador
-option(ENABLE_WARNINGS "Activar flags de warnings" ON)
+# Tipo de build (recomendado en CI)
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
+endif()
 
+option(ENABLE_WARNINGS "Activar flags de warnings" ON)
 if(ENABLE_WARNINGS)
     if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         set(COMPILER_WARNINGS "-Wall -Wextra -Werror -Wpedantic \
@@ -243,30 +247,6 @@ set(SRC_FILES
     src/visitors/printTree.cc
     src/visitors/validateTree.cc
     src/visitors/fillSemanticInfo.cc
-    
-   # src/parsingAnalysis/ast/nodeType.cc
-   # src/parsingAnalysis/ast/literals/nodeLiteralChar.cc
-   # src/parsingAnalysis/ast/literals/nodeLiteralString.cc
-   # src/parsingAnalysis/ast/declaration/varTable.cc
-   #  src/parsingAnalysis/ast/declaration/functionTable.cc
-   #  src/parsingAnalysis/ast/utils/convert.cc
-   #  src/parsingAnalysis/types/typeTable.cc
-   #  src/parsingAnalysis/parsingAlgorithms/topDown.cc
-   #  src/parsingAnalysis/parsingAlgorithms/productions/parseBinary.cc
-   #  src/parsingAnalysis/parsingAlgorithms/productions/parseFactor.cc
-   #  src/parsingAnalysis/parsingAlgorithms/productions/parseUtils.cc
-   #  src/parsingAnalysis/parsingAlgorithms/productions/parseLoop.cc
-   #  src/parsingAnalysis/parsingAlgorithms/productions/parseConditional.cc
-   #  src/parsingAnalysis/parsingAlgorithms/productions/parseDecl.cc
-   #  src/visitors/codeGen/codeGeneration.cc
-   #  src/visitors/codeGen/codeGenFactor.cc
-   #  src/visitors/codeGen/codeGenLoop.cc
-   #  src/visitors/codeGen/codeGenConditional.cc
-   #  src/visitors/codeGen/codeGenBinary.cc
-   #  src/visitors/codeGen/codeGenDecl.cc
-   #  src/visitors/codeGen/codeGenCall.cc
-   #  src/visitors/codeGen/codeGenUtils.cc
-   #  src/visitors/printTree.cc
 )
 
 # Output directories

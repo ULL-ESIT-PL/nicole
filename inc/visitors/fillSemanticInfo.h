@@ -2,9 +2,9 @@
 #define FILL_SEMANTIC_INFO_H
 
 #include "../tables/enumTable/eumTable.h"
+#include "../tables/functionTable/functionTable.h"
 #include "../tables/scope/scope.h"
 #include "../tables/typeTable/typeTable.h"
-//#include "../tables/functionTable/functionTable.h"
 #include "visitor.h"
 #include <memory>
 
@@ -12,11 +12,11 @@ namespace nicole {
 
 class FillSemanticInfo final : public Visitor<std::monostate> {
 private:
+  mutable EnumTable enumTable_;
+  mutable FunctionTable functionTable_;
+  mutable TypeTable typeTable_;
   mutable std::shared_ptr<Scope> currentScope_;
   mutable std::shared_ptr<Scope> firstScope_;
-  mutable EnumTable enumTable_;
-  //mutable FunctionTable functionTable_;
-  mutable TypeTable typeTable_;
 
   void pushScope() const {
     auto newScope = std::make_shared<Scope>(currentScope_);
@@ -33,11 +33,10 @@ private:
   }
 
 public:
-  FillSemanticInfo(EnumTable &enumTable, /*FunctionTable &functionTable,*/
+  FillSemanticInfo(EnumTable &enumTable, FunctionTable &functionTable,
                    TypeTable &typeTable) noexcept
-      : currentScope_{std::make_shared<Scope>(nullptr)},
-        firstScope_{currentScope_}, enumTable_{enumTable},
-        /*functionTable_{functionTable},*/ typeTable_{typeTable} {}
+      : enumTable_{enumTable}, functionTable_{functionTable},
+        typeTable_{typeTable} {}
 
   [[nodiscard]] const std::shared_ptr<Scope> getGlobalScope() const noexcept {
     return firstScope_;

@@ -3,7 +3,9 @@
 #include "../inc/parsingAnalysis/algorithm/topDown.h"
 #include "../inc/visitors/printTree.h"
 #include "../inc/visitors/validateTree.h"
+#include "../inc/visitors/fillSemanticInfo.h"
 #include <iostream>
+#include <memory>
 
 void helper() noexcept {
   std::cout
@@ -87,6 +89,16 @@ int main(int argc, char *argv[]) {
       return 4;
     }
     std::cout << *toStr << "\n";
+  }
+
+  nicole::EnumTable enumTable{};
+  nicole::FunctionTable functionTable{};
+  nicole::TypeTable typeTable{};
+  const nicole::FillSemanticInfo semanticFiller{enumTable, functionTable, typeTable};
+  const auto isTableFilled{semanticFiller.fill((*tree).get())};
+  if (!isTableFilled) {
+    std::cout << isTableFilled.error() << "\n" << std::flush;
+    return 5;
   }
 
   return EXIT_SUCCESS;

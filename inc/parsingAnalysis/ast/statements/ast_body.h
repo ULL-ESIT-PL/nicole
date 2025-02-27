@@ -11,7 +11,7 @@ namespace nicole {
 class AST_BODY : public AST {
 private:
   std::vector<std::shared_ptr<AST_STATEMENT>> body_;
-  std::shared_ptr<Scope> scope_;
+  mutable std::shared_ptr<Scope> scope_;
 
 public:
   explicit AST_BODY(
@@ -27,7 +27,7 @@ public:
     return scope_;
   }
 
-  void setScope(const std::shared_ptr<Scope> &scope) noexcept {
+  void setScope(const std::shared_ptr<Scope> &scope) const noexcept {
     scope_ = scope;
   }
 

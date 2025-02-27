@@ -1,7 +1,10 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
-#include "../../parsingAnalysis/ast/functions/ast_funcDecl.h"
+#include "../../parsingAnalysis/ast/functions/parameters.h"
+#include "../../parsingAnalysis/types/userTypes/genericParameter.h"
+#include <llvm/IR/Function.h>
+#include <memory>
 
 namespace nicole {
 
@@ -11,16 +14,15 @@ private:
   std::vector<GenericParameter> generics_;
   Parameters params_;
   std::shared_ptr<Type> returnType_;
-  std::shared_ptr<AST_BODY> body_;
+  mutable std::shared_ptr<llvm::Function> llvmVersion_;
 
 public:
   explicit Function(const std::string &id,
                     const std::vector<GenericParameter> &generics,
                     const Parameters &params,
-                    const std::shared_ptr<Type> &returnType,
-                    const std::shared_ptr<AST_BODY> &body) noexcept
-      : id_{id}, generics_{generics}, params_{params}, returnType_{returnType},
-        body_{body} {}
+                    const std::shared_ptr<Type> &returnType) noexcept
+      : id_{id}, generics_{generics}, params_{params}, returnType_{returnType} {
+  }
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 
@@ -34,8 +36,14 @@ public:
     return returnType_;
   }
 
-  [[nodiscard]] const std::shared_ptr<AST_BODY> &body() const noexcept {
-    return body_;
+  [[nodiscard]] const std::shared_ptr<llvm::Function> &
+  llvmVersion() const noexcept {
+    return llvmVersion_;
+  }
+
+  void
+  setLlvmVersion(const std::shared_ptr<llvm::Function> &llvmVersion) noexcept {
+    llvmVersion_ = llvmVersion;
   }
 };
 

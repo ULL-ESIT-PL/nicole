@@ -12,7 +12,7 @@ class AST_VAR_DECL : public AST {
 private:
   std::string id_;
   std::shared_ptr<AST> value_;
-  std::shared_ptr<Scope> scope_;
+  mutable std::shared_ptr<Scope> scope_;
 
 public:
   explicit AST_VAR_DECL(const AST_TYPE astType, const std::string &id,
@@ -29,7 +29,7 @@ public:
     return scope_;
   }
 
-  void setScope(const std::shared_ptr<Scope> &scope) noexcept {
+  void setScope(const std::shared_ptr<Scope> &scope) const noexcept {
     scope_ = scope;
   }
 };

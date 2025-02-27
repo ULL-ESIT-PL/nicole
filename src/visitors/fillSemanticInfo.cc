@@ -1,3 +1,4 @@
+#include "../../inc/visitors/fillSemanticInfo.h"
 #include "../../inc/parsingAnalysis/ast/literals/ast_bool.h"
 #include "../../inc/parsingAnalysis/ast/literals/ast_char.h"
 #include "../../inc/parsingAnalysis/ast/literals/ast_double.h"
@@ -5,7 +6,6 @@
 #include "../../inc/parsingAnalysis/ast/literals/ast_int.h"
 #include "../../inc/parsingAnalysis/ast/literals/ast_null.h"
 #include "../../inc/parsingAnalysis/ast/literals/ast_string.h"
-#include "../../inc/visitors/fillSemanticInfo.h"
 
 #include "../../inc/parsingAnalysis/ast/vector/ast_index.h"
 #include "../../inc/parsingAnalysis/ast/vector/ast_vector.h"
@@ -53,6 +53,7 @@
 #include "../../inc/parsingAnalysis/ast/chained/ast_chained.h"
 
 #include "../../inc/parsingAnalysis/ast/tree.h"
+#include <memory>
 
 namespace nicole {
 
@@ -117,6 +118,12 @@ FillSemanticInfo::visit(const AST_VECTOR *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VECTOR");
   }
+  for (const auto &expr : node->values()) {
+    const auto result{expr->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
   return {};
 }
 
@@ -125,7 +132,7 @@ FillSemanticInfo::visit(const AST_INDEX *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_INDEX");
   }
-  return {};
+  return node->index()->accept(*this);
 }
 
 std::expected<std::monostate, Error>
@@ -133,7 +140,7 @@ FillSemanticInfo::visit(const AST_DELETE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DELETE");
   }
-  return {};
+  return node->value()->accept(*this);
 }
 
 std::expected<std::monostate, Error>
@@ -141,7 +148,7 @@ FillSemanticInfo::visit(const AST_NEW *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_NEW");
   }
-  return {};
+  return node->value()->accept(*this);
 }
 
 std::expected<std::monostate, Error>
@@ -149,13 +156,21 @@ FillSemanticInfo::visit(const AST_DEREF *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DEREF");
   }
-  return {};
+  return node->value()->accept(*this);
 }
 
 std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_BINARY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BINARY");
+  }
+  const auto left{node->left()->accept(*this)};
+  if (!left) {
+    return createError(left.error());
+  }
+  const auto right{node->right()->accept(*this)};
+  if (!right) {
+    return createError(right.error());
   }
   return {};
 }
@@ -165,13 +180,21 @@ FillSemanticInfo::visit(const AST_UNARY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_UNARY");
   }
-  return {};
+  return node->value()->accept(*this);
 }
 
 std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_ASSIGNMENT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ASSIGNMENT");
+  }
+  const auto left{node->left()->accept(*this)};
+  if (!left) {
+    return createError(left.error());
+  }
+  const auto value{node->value()->accept(*this)};
+  if (!value) {
+    return createError(value.error());
   }
   return {};
 }
@@ -180,6 +203,12 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_PRINT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PRINT");
+  }
+  for (const auto &expr : node->values()) {
+    const auto result{expr->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
   }
   return {};
 }
@@ -205,6 +234,12 @@ FillSemanticInfo::visit(const AST_BODY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BODY");
   }
+  for (const auto &expr : node->body()) {
+    const auto result{expr->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
   return {};
 }
 
@@ -213,6 +248,17 @@ FillSemanticInfo::visit(const AST_WHILE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_WHILE");
   }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  pushScope();
+  node->body()->setScope(currentScope_);
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+  popScope();
   return {};
 }
 
@@ -221,6 +267,29 @@ FillSemanticInfo::visit(const AST_FOR *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FOR");
   }
+  pushScope();
+  node->body()->setScope(currentScope_);
+  for (const auto &expr : node->init()) {
+    const auto result{expr->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  for (const auto &expr : node->update()) {
+    const auto result{expr->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+  popScope();
   return {};
 }
 
@@ -228,6 +297,17 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_DO_WHILE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DO_WHILE");
+  }
+  pushScope();
+  node->body()->setScope(currentScope_);
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+  popScope();
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
   }
   return {};
 }
@@ -253,6 +333,32 @@ FillSemanticInfo::visit(const AST_IF *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_IF");
   }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  pushScope();
+  node->body()->setScope(currentScope_);
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+  popScope();
+  for (const auto &elseIf : node->elseIf()) {
+    const auto result{elseIf->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
+  if (node->elseBody()) {
+    pushScope();
+    node->elseBody()->setScope(currentScope_);
+    const auto elseBody{node->elseBody()->accept(*this)};
+    if (!elseBody) {
+      return createError(elseBody.error());
+    }
+    popScope();
+  }
   return {};
 }
 
@@ -261,6 +367,17 @@ FillSemanticInfo::visit(const AST_ELSE_IF *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ELSE_IF");
   }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  pushScope();
+  node->body()->setScope(currentScope_);
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+  popScope();
   return {};
 }
 
@@ -268,6 +385,22 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_SWITCH *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SWITCH");
+  }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  for (const auto &case_ : node->cases()) {
+    const auto result{case_->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
+  if (node->defaultCase()) {
+    const auto defaultCase{node->defaultCase()->accept(*this)};
+    if (!defaultCase) {
+      return createError(defaultCase.error());
+    }
   }
   return {};
 }
@@ -277,6 +410,17 @@ FillSemanticInfo::visit(const AST_CASE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CASE");
   }
+  const auto match{node->match()->accept(*this)};
+  if (!match) {
+    return createError(match.error());
+  }
+  pushScope();
+  node->body()->setScope(currentScope_);
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+  popScope();
   return {};
 }
 
@@ -285,6 +429,13 @@ FillSemanticInfo::visit(const AST_DEFAULT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DEFAULT");
   }
+  pushScope();
+  node->body()->setScope(currentScope_);
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+  popScope();
   return {};
 }
 
@@ -292,6 +443,18 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_TERNARY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_TERNARY");
+  }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  const auto first{node->first()->accept(*this)};
+  if (!first) {
+    return createError(first.error());
+  }
+  const auto second{node->second()->accept(*this)};
+  if (!second) {
+    return createError(second.error());
   }
   return {};
 }
@@ -301,13 +464,19 @@ FillSemanticInfo::visit(const AST_CONDITION *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CONDITION");
   }
-  return {};
+  return node->condition()->accept(*this);
 }
 
 std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_FUNC_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_FUNC_CALL");
+  }
+  for (const auto &expr : node->parameters()) {
+    const auto resul{expr->accept(*this)};
+    if (!resul) {
+      return createError(resul.error());
+    }
   }
   return {};
 }
@@ -317,6 +486,20 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
   }
+  pushScope();
+  node->body()->setScope(currentScope_);
+  for (const auto &param : node->parameters()) {
+    if (currentScope_->has(param.first)) {
+      return createError(ERROR_TYPE::VARIABLE,
+                         "variable: " + param.first + " does not exist");
+    }
+    currentScope_->insert(Variable{param.first, param.second, nullptr}, false);
+  }
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+  popScope();
   return {};
 }
 
@@ -325,7 +508,7 @@ FillSemanticInfo::visit(const AST_RETURN *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_RETURN");
   }
-  return {};
+  return node->expression()->accept(*this);
 }
 
 std::expected<std::monostate, Error>
@@ -341,6 +524,26 @@ FillSemanticInfo::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
   }
+  pushScope();
+  // node->body()->setScope(currentScope_);
+  for (const auto &param : node->attributes()) {
+    currentScope_->insert(Variable{param.first, param.second, nullptr}, true);
+  }
+  for (const auto &method : node->methods()) {
+    const auto result{method->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
+  const auto constructor{node->constructor()->accept(*this)};
+  if (!constructor) {
+    return createError(constructor.error());
+  }
+  const auto destructor{node->destructor()->accept(*this)};
+  if (!destructor) {
+    return createError(destructor.error());
+  }
+  popScope();
   return {};
 }
 
@@ -357,6 +560,12 @@ FillSemanticInfo::visit(const AST_METHOD_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL");
   }
+  for (const auto &expr : node->parameters()) {
+    const auto result{expr->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
   return {};
 }
 
@@ -365,6 +574,20 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_DECL");
   }
+  pushScope();
+  node->body()->setScope(currentScope_);
+  for (const auto &param : node->parameters()) {
+    if (currentScope_->has(param.first)) {
+      return createError(ERROR_TYPE::VARIABLE,
+                         "variable: " + param.first + " does not exist");
+    }
+    currentScope_->insert(Variable{param.first, param.second, nullptr}, false);
+  }
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+  popScope();
   return {};
 }
 
@@ -373,6 +596,20 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_DECL");
   }
+  pushScope();
+  node->body()->setScope(currentScope_);
+  for (const auto &param : node->parameters()) {
+    if (currentScope_->has(param.first)) {
+      return createError(ERROR_TYPE::VARIABLE,
+                         "variable: " + param.first + " does not exist");
+    }
+    currentScope_->insert(Variable{param.first, param.second, nullptr}, false);
+  }
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+  popScope();
   return {};
 }
 
@@ -381,6 +618,13 @@ FillSemanticInfo::visit(const AST_DESTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_DESTRUCTOR_DECL");
   }
+  pushScope();
+  node->body()->setScope(currentScope_);
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+  popScope();
   return {};
 }
 
@@ -397,6 +641,12 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL");
   }
+  for (const auto &expr : node->parameters()) {
+    const auto result{expr->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
   return {};
 }
 
@@ -405,6 +655,11 @@ FillSemanticInfo::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
   }
+  if (currentScope_->has(node->id())) {
+    return createError(ERROR_TYPE::VARIABLE,
+                       "the variable: " + node->id() + " already exist");
+  }
+  currentScope_->insert(Variable{node->id(), nullptr, nullptr}, false);
   return {};
 }
 
@@ -413,6 +668,11 @@ FillSemanticInfo::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_TYPED_DECL");
   }
+  if (currentScope_->has(node->id())) {
+    return createError(ERROR_TYPE::VARIABLE,
+                       "the variable: " + node->id() + " already exist");
+  }
+  currentScope_->insert(Variable{node->id(), node->varType(), nullptr}, false);
   return {};
 }
 
@@ -420,6 +680,10 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_VAR_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_CALL");
+  }
+  if (!currentScope_->has(node->id())) {
+    return createError(ERROR_TYPE::VARIABLE,
+                       "the variable: " + node->id() + " does not exist");
   }
   return {};
 }
@@ -429,6 +693,16 @@ FillSemanticInfo::visit(const AST_CHAINED *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CHAINED");
   }
+  const auto base{node->base()->accept(*this)};
+  if (!base) {
+    return createError(base.error());
+  }
+  for (const auto &operations : node->operations()) {
+    const auto result{operations->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
   return {};
 }
 
@@ -437,7 +711,14 @@ FillSemanticInfo::visit(const Tree *tree) const noexcept {
   if (!tree) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid Tree");
   }
-  return tree->root()->accept(*this);
+  pushScope();
+  tree->root()->setScope(currentScope_);
+  const auto result{tree->root()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
+  }
+  popScope();
+  return {};
 }
 
 } // namespace nicole
