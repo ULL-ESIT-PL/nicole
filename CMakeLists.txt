@@ -1,6 +1,9 @@
 # Minimum CMake version
 cmake_minimum_required(VERSION 3.10)
 
+# usar en la linea de comandos para generar compile_commands.json y que .clangd detecte catch2
+# cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
+
 # Detectar y configurar el compilador
 if(NOT DEFINED CMAKE_CXX_COMPILER)
     find_program(CLANG_COMPILER clang++)
@@ -153,31 +156,31 @@ catch_discover_tests(tests)
 ###########################################################
 # Configuración de LLVM
 execute_process(
-    COMMAND llvm-config --cxxflags
+    COMMAND llvm-config-19 --cxxflags
     OUTPUT_VARIABLE LLVM_CXX_FLAGS
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 execute_process(
-    COMMAND llvm-config --ldflags
+    COMMAND llvm-config-19 --ldflags
     OUTPUT_VARIABLE LLVM_LDFLAGS
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 execute_process(
-    COMMAND llvm-config --system-libs
+    COMMAND llvm-config-19 --system-libs
     OUTPUT_VARIABLE LLVM_SYSTEM_LIBS
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 execute_process(
-    COMMAND llvm-config --libs core
+    COMMAND llvm-config-19 --libs core
     OUTPUT_VARIABLE LLVM_LIBS
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 execute_process(
-    COMMAND llvm-config --includedir
+    COMMAND llvm-config-19 --includedir
     OUTPUT_VARIABLE LLVM_INCLUDEDIR
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-# Si lo necesitas solo para algunos targets, considera quitar esta línea global:
+
 include_directories(${LLVM_INCLUDEDIR})
 
 # Set compiler and linker flags
