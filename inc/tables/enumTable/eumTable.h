@@ -1,10 +1,11 @@
 #ifndef ENUM_TABLE_H
 #define ENUM_TABLE_H
 
+#include "../../errors.h"
 #include "enum.h"
+#include <expected>
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 namespace nicole {
 
@@ -21,7 +22,15 @@ public:
     return table_.at(id);
   };
 
-  void insert(const Enum &enum_) noexcept;
+  [[nodiscard]] std::expected<std::monostate, Error>
+  insert(const Enum &enum_) noexcept {
+    if (!table_.count(enum_.id())) {
+      table_.emplace(enum_.id(), enum_);
+      return {};
+    }
+    return createError(ERROR_TYPE::ENUM,
+                       "the enum: " + enum_.id() + " already exists");
+  }
 };
 
 } // namespace nicole

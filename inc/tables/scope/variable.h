@@ -2,6 +2,7 @@
 #define VARIABLE_H
 
 #include "../../parsingAnalysis/types/type.h"
+#include "../symbol.h"
 #include <expected>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Value.h>
@@ -10,9 +11,8 @@
 
 namespace nicole {
 
-class Variable final {
+class Variable final : public Symbol {
 private:
-  std::string id_;
   mutable std::shared_ptr<Type> type_;
   mutable std::shared_ptr<llvm::Value> value_;
   mutable std::shared_ptr<llvm::AllocaInst> address_;
@@ -20,9 +20,7 @@ private:
 public:
   explicit Variable(const std::string &id, const std::shared_ptr<Type> &type,
                     const std::shared_ptr<llvm::Value> &value) noexcept
-      : id_{id}, type_{type}, value_{value} {}
-
-  [[nodiscard]] const std::string &id() const noexcept { return id_; }
+      : Symbol{id}, type_{type}, value_{value} {}
 
   [[nodiscard]] const std::shared_ptr<Type> &type() const noexcept {
     return type_;

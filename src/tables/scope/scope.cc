@@ -1,0 +1,52 @@
+#include "../../../inc/tables/scope/scope.h"
+
+namespace nicole {
+
+bool Scope::has(const std::string &id) const noexcept {
+  if (table_.count(id)) {
+    return true;
+  }
+  if (father_) {
+    return father_->has(id);
+  }
+  return false;
+}
+
+const std::expected<Variable, Error>
+Scope::getVariable(const std::string &id) const noexcept {
+  if (table_.count(id)) {
+    return table_.at(id);
+  }
+  if (father_) {
+    return father_->getVariable(id);
+  }
+  return createError(ERROR_TYPE::VARIABLE,
+                     "variable: " + id + " does not exist");
+}
+
+std::expected<std::monostate, Error>
+Scope::insert(const Variable &variable, const bool forceInsert) noexcept {
+  if (forceInsert or !has(variable.id())) {
+    table_.emplace(variable.id(), variable);
+    return {};
+  }
+  return createError(ERROR_TYPE::VARIABLE,
+                     "the variable: " + variable.id() + " already exists");
+}
+
+std::ostream &operator<<(std::ostream &os, const Scope &scope) noexcept {
+  os << "Scope { ";
+  for (auto it = scope.table_.cbegin(); it != scope.table_.cend(); ++it) {
+    os << it->first;
+    if (std::next(it) != scope.table_.cend()) {
+      os << ", ";
+    }
+  }
+  os << " }";
+  if (scope.father_) {
+    os << " -> " << *scope.father_;
+  }
+  return os;
+}
+
+} // namespace nicole

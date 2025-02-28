@@ -32,16 +32,16 @@
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
-            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntry">10</td>
             <td class="headerCovTableEntry">0</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-02-27 16:26:10</td>
+            <td class="headerValue">2025-02-28 14:32:05</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
-            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">4</td>
             <td class="headerCovTableEntry">0</td>
           </tr>
                   <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
@@ -64,17 +64,17 @@
 <span id="L2"><span class="lineNum">       2</span>              : #define VARIABLE_H</span>
 <span id="L3"><span class="lineNum">       3</span>              : </span>
 <span id="L4"><span class="lineNum">       4</span>              : #include &quot;../../parsingAnalysis/types/type.h&quot;</span>
-<span id="L5"><span class="lineNum">       5</span>              : #include &lt;expected&gt;</span>
-<span id="L6"><span class="lineNum">       6</span>              : #include &lt;llvm/IR/Instructions.h&gt;</span>
-<span id="L7"><span class="lineNum">       7</span>              : #include &lt;llvm/IR/Value.h&gt;</span>
-<span id="L8"><span class="lineNum">       8</span>              : #include &lt;memory&gt;</span>
-<span id="L9"><span class="lineNum">       9</span>              : #include &lt;string&gt;</span>
-<span id="L10"><span class="lineNum">      10</span>              : </span>
-<span id="L11"><span class="lineNum">      11</span>              : namespace nicole {</span>
-<span id="L12"><span class="lineNum">      12</span>              : </span>
-<span id="L13"><span class="lineNum">      13</span>              : class Variable final {</span>
-<span id="L14"><span class="lineNum">      14</span>              : private:</span>
-<span id="L15"><span class="lineNum">      15</span>              :   std::string id_;</span>
+<span id="L5"><span class="lineNum">       5</span>              : #include &quot;../symbol.h&quot;</span>
+<span id="L6"><span class="lineNum">       6</span>              : #include &lt;expected&gt;</span>
+<span id="L7"><span class="lineNum">       7</span>              : #include &lt;llvm/IR/Instructions.h&gt;</span>
+<span id="L8"><span class="lineNum">       8</span>              : #include &lt;llvm/IR/Value.h&gt;</span>
+<span id="L9"><span class="lineNum">       9</span>              : #include &lt;memory&gt;</span>
+<span id="L10"><span class="lineNum">      10</span>              : #include &lt;string&gt;</span>
+<span id="L11"><span class="lineNum">      11</span>              : </span>
+<span id="L12"><span class="lineNum">      12</span>              : namespace nicole {</span>
+<span id="L13"><span class="lineNum">      13</span>              : </span>
+<span id="L14"><span class="lineNum">      14</span>              : class Variable final : public Symbol {</span>
+<span id="L15"><span class="lineNum">      15</span>              : private:</span>
 <span id="L16"><span class="lineNum">      16</span>              :   mutable std::shared_ptr&lt;Type&gt; type_;</span>
 <span id="L17"><span class="lineNum">      17</span>              :   mutable std::shared_ptr&lt;llvm::Value&gt; value_;</span>
 <span id="L18"><span class="lineNum">      18</span>              :   mutable std::shared_ptr&lt;llvm::AllocaInst&gt; address_;</span>
@@ -82,27 +82,25 @@
 <span id="L20"><span class="lineNum">      20</span>              : public:</span>
 <span id="L21"><span class="lineNum">      21</span>              :   explicit Variable(const std::string &amp;id, const std::shared_ptr&lt;Type&gt; &amp;type,</span>
 <span id="L22"><span class="lineNum">      22</span>              :                     const std::shared_ptr&lt;llvm::Value&gt; &amp;value) noexcept</span>
-<span id="L23"><span class="lineNum">      23</span> <span class="tlaUNC tlaBgUNC">           0 :       : id_{id}, type_{type}, value_{value} {}</span></span>
+<span id="L23"><span class="lineNum">      23</span> <span class="tlaUNC tlaBgUNC">           0 :       : Symbol{id}, type_{type}, value_{value} {}</span></span>
 <span id="L24"><span class="lineNum">      24</span>              : </span>
-<span id="L25"><span class="lineNum">      25</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::string &amp;id() const noexcept { return id_; }</span></span>
-<span id="L26"><span class="lineNum">      26</span>              : </span>
-<span id="L27"><span class="lineNum">      27</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::shared_ptr&lt;Type&gt; &amp;type() const noexcept {</span></span>
-<span id="L28"><span class="lineNum">      28</span> <span class="tlaUNC">           0 :     return type_;</span></span>
-<span id="L29"><span class="lineNum">      29</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L30"><span class="lineNum">      30</span>              : </span>
-<span id="L31"><span class="lineNum">      31</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::shared_ptr&lt;llvm::Value&gt; &amp;value() const noexcept {</span></span>
-<span id="L32"><span class="lineNum">      32</span> <span class="tlaUNC">           0 :     return value_;</span></span>
-<span id="L33"><span class="lineNum">      33</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L34"><span class="lineNum">      34</span>              : </span>
-<span id="L35"><span class="lineNum">      35</span>              :   [[nodiscard]] const std::shared_ptr&lt;llvm::AllocaInst&gt; &amp;</span>
-<span id="L36"><span class="lineNum">      36</span> <span class="tlaUNC">           0 :   address() const noexcept {</span></span>
-<span id="L37"><span class="lineNum">      37</span> <span class="tlaUNC">           0 :     return address_;</span></span>
-<span id="L38"><span class="lineNum">      38</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L39"><span class="lineNum">      39</span>              : };</span>
+<span id="L25"><span class="lineNum">      25</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::shared_ptr&lt;Type&gt; &amp;type() const noexcept {</span></span>
+<span id="L26"><span class="lineNum">      26</span> <span class="tlaUNC">           0 :     return type_;</span></span>
+<span id="L27"><span class="lineNum">      27</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L28"><span class="lineNum">      28</span>              : </span>
+<span id="L29"><span class="lineNum">      29</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::shared_ptr&lt;llvm::Value&gt; &amp;value() const noexcept {</span></span>
+<span id="L30"><span class="lineNum">      30</span> <span class="tlaUNC">           0 :     return value_;</span></span>
+<span id="L31"><span class="lineNum">      31</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L32"><span class="lineNum">      32</span>              : </span>
+<span id="L33"><span class="lineNum">      33</span>              :   [[nodiscard]] const std::shared_ptr&lt;llvm::AllocaInst&gt; &amp;</span>
+<span id="L34"><span class="lineNum">      34</span> <span class="tlaUNC">           0 :   address() const noexcept {</span></span>
+<span id="L35"><span class="lineNum">      35</span> <span class="tlaUNC">           0 :     return address_;</span></span>
+<span id="L36"><span class="lineNum">      36</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L37"><span class="lineNum">      37</span>              : };</span>
+<span id="L38"><span class="lineNum">      38</span>              : </span>
+<span id="L39"><span class="lineNum">      39</span>              : } // namespace nicole</span>
 <span id="L40"><span class="lineNum">      40</span>              : </span>
-<span id="L41"><span class="lineNum">      41</span>              : } // namespace nicole</span>
-<span id="L42"><span class="lineNum">      42</span>              : </span>
-<span id="L43"><span class="lineNum">      43</span>              : #endif</span>
+<span id="L41"><span class="lineNum">      41</span>              : #endif</span>
         </pre>
               </td>
             </tr>

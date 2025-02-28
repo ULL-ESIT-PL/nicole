@@ -5,12 +5,12 @@
 #include "../../parsingAnalysis/types/userTypes/genericParameter.h"
 #include <llvm/IR/Function.h>
 #include <memory>
+#include "../symbol.h"
 
 namespace nicole {
 
-class Function final {
+class Function final : public Symbol {
 private:
-  std::string id_;
   std::vector<GenericParameter> generics_;
   Parameters params_;
   std::shared_ptr<Type> returnType_;
@@ -21,10 +21,8 @@ public:
                     const std::vector<GenericParameter> &generics,
                     const Parameters &params,
                     const std::shared_ptr<Type> &returnType) noexcept
-      : id_{id}, generics_{generics}, params_{params}, returnType_{returnType} {
+      : Symbol{id}, generics_{generics}, params_{params}, returnType_{returnType} {
   }
-
-  [[nodiscard]] const std::string &id() const noexcept { return id_; }
 
   [[nodiscard]] const std::vector<GenericParameter> &generics() const noexcept {
     return generics_;
@@ -45,6 +43,8 @@ public:
   setLlvmVersion(const std::shared_ptr<llvm::Function> &llvmVersion) noexcept {
     llvmVersion_ = llvmVersion;
   }
+
+  [[nodiscard]] bool operator==(const Function &other) const noexcept;
 };
 
 } // namespace nicole

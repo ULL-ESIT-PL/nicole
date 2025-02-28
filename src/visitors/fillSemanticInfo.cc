@@ -486,14 +486,20 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
   }
+  const auto insertFunc{functionTable_->insert(Function{
+      node->id(), node->generics(), node->parameters(), node->returnType()})};
+  if (!insertFunc) {
+    return createError(insertFunc.error());
+  }
+
   pushScope();
   node->body()->setScope(currentScope_);
   for (const auto &param : node->parameters()) {
-    if (currentScope_->has(param.first)) {
-      return createError(ERROR_TYPE::VARIABLE,
-                         "variable: " + param.first + " does not exist");
+    const auto insertVar{currentScope_->insert(
+        Variable{param.first, param.second, nullptr}, false)};
+    if (!insertVar) {
+      return createError(insertVar.error());
     }
-    currentScope_->insert(Variable{param.first, param.second, nullptr}, false);
   }
   const auto body{node->body()->accept(*this)};
   if (!body) {
@@ -516,6 +522,10 @@ FillSemanticInfo::visit(const AST_ENUM *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM");
   }
+  const auto insert{enumTable_->insert(Enum{node->id(), node->identifiers()})};
+  if (!insert) {
+    return createError(insert.error());
+  }
   return {};
 }
 
@@ -527,7 +537,11 @@ FillSemanticInfo::visit(const AST_STRUCT *node) const noexcept {
   pushScope();
   // node->body()->setScope(currentScope_);
   for (const auto &param : node->attributes()) {
-    currentScope_->insert(Variable{param.first, param.second, nullptr}, true);
+    const auto insertVar{currentScope_->insert(
+        Variable{param.first, param.second, nullptr}, true)};
+    if (!insertVar) {
+      return createError(insertVar.error());
+    }
   }
   for (const auto &method : node->methods()) {
     const auto result{method->accept(*this)};
@@ -577,11 +591,11 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
   pushScope();
   node->body()->setScope(currentScope_);
   for (const auto &param : node->parameters()) {
-    if (currentScope_->has(param.first)) {
-      return createError(ERROR_TYPE::VARIABLE,
-                         "variable: " + param.first + " does not exist");
+    const auto insertVar{currentScope_->insert(
+        Variable{param.first, param.second, nullptr}, false)};
+    if (!insertVar) {
+      return createError(insertVar.error());
     }
-    currentScope_->insert(Variable{param.first, param.second, nullptr}, false);
   }
   const auto body{node->body()->accept(*this)};
   if (!body) {
@@ -599,11 +613,11 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   pushScope();
   node->body()->setScope(currentScope_);
   for (const auto &param : node->parameters()) {
-    if (currentScope_->has(param.first)) {
-      return createError(ERROR_TYPE::VARIABLE,
-                         "variable: " + param.first + " does not exist");
+    const auto insertVar{currentScope_->insert(
+        Variable{param.first, param.second, nullptr}, false)};
+    if (!insertVar) {
+      return createError(insertVar.error());
     }
-    currentScope_->insert(Variable{param.first, param.second, nullptr}, false);
   }
   const auto body{node->body()->accept(*this)};
   if (!body) {
@@ -655,11 +669,11 @@ FillSemanticInfo::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
   }
-  if (currentScope_->has(node->id())) {
-    return createError(ERROR_TYPE::VARIABLE,
-                       "the variable: " + node->id() + " already exist");
+  const auto insertVar{currentScope_->insert(
+      Variable{node->id(), nullptr, nullptr}, false)};
+  if (!insertVar) {
+    return createError(insertVar.error());
   }
-  currentScope_->insert(Variable{node->id(), nullptr, nullptr}, false);
   return {};
 }
 
@@ -668,11 +682,11 @@ FillSemanticInfo::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_TYPED_DECL");
   }
-  if (currentScope_->has(node->id())) {
-    return createError(ERROR_TYPE::VARIABLE,
-                       "the variable: " + node->id() + " already exist");
+  const auto insertVar{currentScope_->insert(
+      Variable{node->id(), node->varType(), nullptr}, false)};
+  if (!insertVar) {
+    return createError(insertVar.error());
   }
-  currentScope_->insert(Variable{node->id(), node->varType(), nullptr}, false);
   return {};
 }
 

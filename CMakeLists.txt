@@ -1,5 +1,5 @@
 # Minimum CMake version
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.30.5)
 
 # usar en la linea de comandos para generar compile_commands.json y que .clangd detecte catch2
 # cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
@@ -31,7 +31,11 @@ endif()
 # C++ standard y optimizaciones
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Activate LTO optimization
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+
+# Colored erros
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
 # Configurar warnings
@@ -120,6 +124,13 @@ add_executable(tests
     test/parsingAnalysis/test_ast_loops.cc
     test/parsingAnalysis/test_ast_functions.cc
     test/parsingAnalysis/test_ast_pointers.cc
+
+    # tables
+    src/tables/functionTable/functionTable.cc
+    src/tables/functionTable/function.cc
+    src/tables/typeTable/typeTable.cc
+    src/tables/scope/scope.cc
+
     # visitors
     src/visitors/printTree.cc
     src/visitors/validateTree.cc
@@ -217,6 +228,12 @@ set(SRC_FILES
     src/parsingAnalysis/algorithm/productions/parseUtils.cc
     src/parsingAnalysis/algorithm/productions/parseChained.cc
     src/parsingAnalysis/algorithm/productions/parseTypes.cc
+
+    src/tables/functionTable/functionTable.cc
+    src/tables/functionTable/function.cc
+    src/tables/typeTable/typeTable.cc
+    src/tables/scope/scope.cc
+
     src/visitors/printTree.cc
     src/visitors/validateTree.cc
     src/visitors/fillSemanticInfo.cc

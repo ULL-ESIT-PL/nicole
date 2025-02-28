@@ -1,6 +1,7 @@
 #ifndef TYPE_TABLE_H
 #define TYPE_TABLE_H
 
+#include "../../errors.h"
 #include "../../parsingAnalysis/types/basicTypes/basicTypes.h"
 #include "../../parsingAnalysis/types/specialTypes/constType.h"
 #include "../../parsingAnalysis/types/specialTypes/nullType.h"
@@ -31,10 +32,11 @@ private:
 public:
   [[nodiscard]] bool has(const std::string &id) const noexcept;
 
-  [[nodiscard]] const std::shared_ptr<Type> &
+  [[nodiscard]] const std::expected<std::shared_ptr<Type>, Error>
   getType(const std::string &id) const noexcept;
 
-  void insert(const std::shared_ptr<Type> &type) noexcept;
+  [[nodiscard]] std::expected<std::monostate, Error>
+  insert(const std::shared_ptr<Type> &type) noexcept;
 };
 
 } // namespace nicole

@@ -1,22 +1,20 @@
 #ifndef ENUM_H
 #define ENUM_H
 
+#include "../symbol.h"
 #include <string>
 #include <vector>
 
 namespace nicole {
 
-class Enum final {
+class Enum final : public Symbol {
 private:
-  std::string id_;
   std::vector<std::string> identifiers_;
 
 public:
   explicit Enum(const std::string &id,
                 const std::vector<std::string> &identifiers) noexcept
-      : id_{id}, identifiers_{identifiers} {}
-
-  [[nodiscard]] const std::string &id() const noexcept { return id_; }
+      : Symbol{id}, identifiers_{identifiers} {}
 
   [[nodiscard]] const std::vector<std::string> &identifiers() const noexcept {
     return identifiers_;

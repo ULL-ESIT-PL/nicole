@@ -25,52 +25,19 @@ public:
     return father_;
   }
 
-  [[nodiscard]] bool has(const std::string &id) const noexcept {
-    if (table_.count(id)) {
-      return true;
-    }
-    if (father_) {
-      return father_->has(id);
-    }
-    return false;
-  };
+  [[nodiscard]] bool has(const std::string &id) const noexcept;
 
   [[nodiscard]] const std::expected<Variable, Error>
-  getVariable(const std::string &id) const noexcept {
-    if (table_.count(id)) {
-      return table_.at(id);
-    }
-    if (father_) {
-      return father_->getVariable(id);
-    }
-    return createError(ERROR_TYPE::VARIABLE,
-                       "variable: " + id + " does not exist");
-  };
+  getVariable(const std::string &id) const noexcept;
 
-  void insert(const Variable &variable, const bool forceInsert) noexcept {
-    if (forceInsert or !has(variable.id())) {
-      table_.emplace(variable.id(), variable);
-    }
-  };
+  [[nodiscard]] std::expected<std::monostate, Error>
+  insert(const Variable &variable, const bool forceInsert) noexcept;
 
   friend std::ostream &operator<<(std::ostream &os,
-                                  const Scope &scope) noexcept {
-                                    std::cout << "hola" << std::flush;
-    os << "Scope { ";
-    for (auto it = scope.table_.cbegin(); it != scope.table_.cend(); ++it) {
-      os << it->first;
-      if (std::next(it) != scope.table_.cend()) {
-        os << ", ";
-      }
-    }
-    os << " }";
-    if (scope.father_) {
-      os << " -> " << *scope.father_;
-    }
-    return os;
-  }
-};
+                                  const Scope &scope) noexcept;
 
-} // namespace nicole
+}; // namespace nicole
+
+}
 
 #endif

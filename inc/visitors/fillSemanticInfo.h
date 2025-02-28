@@ -12,9 +12,9 @@ namespace nicole {
 
 class FillSemanticInfo final : public Visitor<std::monostate> {
 private:
-  mutable EnumTable enumTable_;
-  mutable FunctionTable functionTable_;
-  mutable TypeTable typeTable_;
+  mutable std::shared_ptr<EnumTable> enumTable_;
+  mutable std::shared_ptr<FunctionTable> functionTable_;
+  mutable std::shared_ptr<TypeTable> typeTable_;
   mutable std::shared_ptr<Scope> currentScope_;
   mutable std::shared_ptr<Scope> firstScope_;
 
@@ -33,8 +33,9 @@ private:
   }
 
 public:
-  FillSemanticInfo(EnumTable &enumTable, FunctionTable &functionTable,
-                   TypeTable &typeTable) noexcept
+  FillSemanticInfo(const std::shared_ptr<EnumTable> &enumTable,
+                   const std::shared_ptr<FunctionTable> &functionTable,
+                   std::shared_ptr<TypeTable> &typeTable) noexcept
       : enumTable_{enumTable}, functionTable_{functionTable},
         typeTable_{typeTable} {}
 
