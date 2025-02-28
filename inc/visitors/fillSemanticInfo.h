@@ -15,8 +15,9 @@ private:
   mutable std::shared_ptr<EnumTable> enumTable_;
   mutable std::shared_ptr<FunctionTable> functionTable_;
   mutable std::shared_ptr<TypeTable> typeTable_;
-  mutable std::shared_ptr<Scope> currentScope_;
-  mutable std::shared_ptr<Scope> firstScope_;
+  mutable std::shared_ptr<Scope> currentScope_{nullptr};
+  mutable std::shared_ptr<Scope> firstScope_{nullptr};
+  mutable std::shared_ptr<Type> currentType_{nullptr};
 
   void pushScope() const {
     auto newScope = std::make_shared<Scope>(currentScope_);

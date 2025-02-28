@@ -39,7 +39,7 @@ FunctionTable::getFunctions(const std::string &id) const noexcept {
     return table_.at(id);
   }
   return createError(ERROR_TYPE::FUNCTION,
-                     "the functions with: " + id + " do not exists");
+                     "the functions with name: " + id + " do not exists");
 }
 
 std::expected<std::monostate, Error>

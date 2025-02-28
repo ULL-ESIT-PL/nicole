@@ -676,7 +676,7 @@ FillSemanticInfo::visit(const AST_AUTO_DECL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
   }
   const auto insertVar{
-      currentScope_->insert(Variable{node->id(), nullptr, nullptr}, false)};
+      currentScope_->insert(Variable{node->id(), currentType_, nullptr}, false)};
   if (!insertVar) {
     return createError(insertVar.error());
   }
