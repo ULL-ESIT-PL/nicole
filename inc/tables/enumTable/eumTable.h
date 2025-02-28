@@ -18,18 +18,22 @@ public:
     return table_.count(id);
   };
 
-  [[nodiscard]] const Enum &getEnum(const std::string &id) const noexcept {
+  [[nodiscard]] const std::expected<Enum, Error> getEnum(const std::string &id) const noexcept {
+    if (!has(id)) {
+      return createError(ERROR_TYPE::ENUM,
+                         "the enum: " + id + " does not exists");
+    }
     return table_.at(id);
   };
 
   [[nodiscard]] std::expected<std::monostate, Error>
   insert(const Enum &enum_) noexcept {
-    if (!table_.count(enum_.id())) {
-      table_.emplace(enum_.id(), enum_);
-      return {};
+    if (table_.count(enum_.id())) {
+      return createError(ERROR_TYPE::ENUM,
+                         "the enum: " + enum_.id() + " already exists");
     }
-    return createError(ERROR_TYPE::ENUM,
-                       "the enum: " + enum_.id() + " already exists");
+    table_.emplace(enum_.id(), enum_);
+    return {};
   }
 };
 

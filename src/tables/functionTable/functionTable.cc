@@ -44,12 +44,12 @@ FunctionTable::getFunctions(const std::string &id) const noexcept {
 
 std::expected<std::monostate, Error>
 FunctionTable::insert(const Function &function) noexcept {
-  if (!has(function)) {
-    table_[function.id()].push_back(function);
-    return {};
+  if (has(function)) {
+    return createError(ERROR_TYPE::FUNCTION,
+                       "the function: " + function.id() + " already exists");
   }
-  return createError(ERROR_TYPE::FUNCTION,
-                     "the function: " + function.id() + " already exists");
+  table_[function.id()].push_back(function);
+  return {};
 }
 
 void FunctionTable::print() const noexcept {

@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-02-28 14:32:05</td>
+            <td class="headerValue">2025-02-28 15:01:01</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">57.1&nbsp;%</td>
@@ -79,17 +79,17 @@
 <span id="L17"><span class="lineNum">      17</span>              :   explicit AST_ASSIGNMENT(const Token &amp;op,</span>
 <span id="L18"><span class="lineNum">      18</span>              :                                const std::shared_ptr&lt;AST&gt; &amp;left,</span>
 <span id="L19"><span class="lineNum">      19</span>              :                                const std::shared_ptr&lt;AST&gt; &amp;value) noexcept</span>
-<span id="L20"><span class="lineNum">      20</span> <span class="tlaGNC tlaBgGNC">           9 :       : AST(AST_TYPE::ASSIGNMENT), op_{op}, left_{left}, value_{value} {}</span></span>
+<span id="L20"><span class="lineNum">      20</span> <span class="tlaGNC tlaBgGNC">          10 :       : AST(AST_TYPE::ASSIGNMENT), op_{op}, left_{left}, value_{value} {}</span></span>
 <span id="L21"><span class="lineNum">      21</span>              : </span>
-<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">           9 :   [[nodiscard]] const Token &amp;op() const noexcept { return op_; }</span></span>
+<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">          10 :   [[nodiscard]] const Token &amp;op() const noexcept { return op_; }</span></span>
 <span id="L23"><span class="lineNum">      23</span>              : </span>
-<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">           9 :   [[nodiscard]] const std::shared_ptr&lt;AST&gt; &amp;left() const noexcept {</span></span>
-<span id="L25"><span class="lineNum">      25</span> <span class="tlaGNC">           9 :     return left_;</span></span>
-<span id="L26"><span class="lineNum">      26</span> <span class="tlaGNC">           9 :   }</span></span>
+<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">          10 :   [[nodiscard]] const std::shared_ptr&lt;AST&gt; &amp;left() const noexcept {</span></span>
+<span id="L25"><span class="lineNum">      25</span> <span class="tlaGNC">          10 :     return left_;</span></span>
+<span id="L26"><span class="lineNum">      26</span> <span class="tlaGNC">          10 :   }</span></span>
 <span id="L27"><span class="lineNum">      27</span>              : </span>
-<span id="L28"><span class="lineNum">      28</span> <span class="tlaGNC">          18 :   [[nodiscard]] const std::shared_ptr&lt;AST&gt; &amp;value() const noexcept {</span></span>
-<span id="L29"><span class="lineNum">      29</span> <span class="tlaGNC">          18 :     return value_;</span></span>
-<span id="L30"><span class="lineNum">      30</span> <span class="tlaGNC">          18 :   }</span></span>
+<span id="L28"><span class="lineNum">      28</span> <span class="tlaGNC">          20 :   [[nodiscard]] const std::shared_ptr&lt;AST&gt; &amp;value() const noexcept {</span></span>
+<span id="L29"><span class="lineNum">      29</span> <span class="tlaGNC">          20 :     return value_;</span></span>
+<span id="L30"><span class="lineNum">      30</span> <span class="tlaGNC">          20 :   }</span></span>
 <span id="L31"><span class="lineNum">      31</span>              : </span>
 <span id="L32"><span class="lineNum">      32</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
 <span id="L33"><span class="lineNum">      33</span> <span class="tlaUNC tlaBgUNC">           0 :   accept(const PrintTree &amp;visitor) const noexcept override {</span></span>

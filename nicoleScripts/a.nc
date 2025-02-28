@@ -7,8 +7,6 @@ foor<int>{}.metodo<int>().metodos();
 
 
 
-
-
 let a: int = 0;
 
 struct A {
@@ -22,4 +20,9 @@ struct A {
     destructor {
         a;
     }
+}
+
+enum Hola {
+    hola,
+    adios
 }

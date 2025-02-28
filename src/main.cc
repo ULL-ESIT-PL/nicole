@@ -100,7 +100,6 @@ int main(int argc, char *argv[]) {
     std::cout << isTableFilled.error() << "\n" << std::flush;
     return 5;
   }
-  functionTable->print();
   return EXIT_SUCCESS;
 }
 
