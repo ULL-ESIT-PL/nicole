@@ -2,7 +2,7 @@
 #define AST_SUBRUTINE_DECL_H
 
 #include "../statements/ast_body.h"
-#include "../../types/type.h"
+#include "../../../tables/typeTable/types/type.h"
 #include <memory>
 #include <string>
 

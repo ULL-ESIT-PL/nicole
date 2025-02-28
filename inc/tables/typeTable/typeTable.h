@@ -2,15 +2,15 @@
 #define TYPE_TABLE_H
 
 #include "../../errors.h"
-#include "../../parsingAnalysis/types/basicTypes/basicTypes.h"
-#include "../../parsingAnalysis/types/specialTypes/constType.h"
-#include "../../parsingAnalysis/types/specialTypes/nullType.h"
-#include "../../parsingAnalysis/types/specialTypes/ptrType.h"
-#include "../../parsingAnalysis/types/specialTypes/vectorType.h"
-#include "../../parsingAnalysis/types/specialTypes/voidType.h"
-#include "../../parsingAnalysis/types/type.h"
-#include "../../parsingAnalysis/types/userTypes/genericInstanceType.h"
-#include "../../parsingAnalysis/types/userTypes/userType.h"
+#include "types/basicTypes/basicTypes.h"
+#include "types/specialTypes/constType.h"
+#include "types/specialTypes/nullType.h"
+#include "types/specialTypes/ptrType.h"
+#include "types/specialTypes/vectorType.h"
+#include "types/specialTypes/voidType.h"
+#include "types/type.h"
+#include "types/userTypes/genericInstanceType.h"
+#include "types/userTypes/userType.h"
 #include <memory>
 #include <string>
 #include <unordered_map>

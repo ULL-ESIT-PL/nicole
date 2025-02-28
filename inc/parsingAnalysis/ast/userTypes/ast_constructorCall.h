@@ -1,7 +1,7 @@
 #ifndef AST_CONSTRUCTOR_CALL_H
 #define AST_CONSTRUCTOR_CALL_H
 
-#include "../../types/type.h"
+#include "../../../tables/typeTable/types/type.h"
 #include "../ast.h"
 #include <string>
 #include <vector>

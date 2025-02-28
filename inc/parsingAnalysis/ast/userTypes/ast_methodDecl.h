@@ -1,7 +1,7 @@
 #ifndef AST_METHOD_DECL_H
 #define AST_METHOD_DECL_H
 
-#include "../../types/userTypes/genericParameter.h"
+#include "../../../tables/typeTable/types/userTypes/genericParameter.h"
 #include "../functions/ast_parametrizedSubritineDecl.h"
 #include <memory>
 

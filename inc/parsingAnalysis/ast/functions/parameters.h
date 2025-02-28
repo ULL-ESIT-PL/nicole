@@ -1,7 +1,7 @@
 #ifndef PARAMETERS_H
 #define PARAMETERS_H
 
-#include "../../types/type.h"
+#include "../../../tables/typeTable/types/type.h"
 #include <cstddef>
 #include <memory>
 #include <string>

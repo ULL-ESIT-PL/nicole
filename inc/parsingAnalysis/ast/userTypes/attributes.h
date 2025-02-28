@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "../../types/type.h"
+#include "../../../tables/typeTable/types/type.h"
 
 namespace nicole {
 

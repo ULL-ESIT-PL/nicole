@@ -1,7 +1,7 @@
 #ifndef VARIABLE_H
 #define VARIABLE_H
 
-#include "../../parsingAnalysis/types/type.h"
+#include "../typeTable/types/type.h"
 #include "../symbol.h"
 #include <expected>
 #include <llvm/IR/Instructions.h>

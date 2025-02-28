@@ -1,7 +1,7 @@
 #ifndef AST_METHOD_CALL_H
 #define AST_METHOD_CALL_H
 
-#include "../../types/type.h"
+#include "../../../tables/typeTable/types/type.h"
 #include "../ast.h"
 #include <memory>
 #include <vector>

@@ -1,7 +1,7 @@
 #ifndef AST_DESTRUCTOR_DECL_H
 #define AST_DESTRUCTOR_DECL_H
 
-#include "../../types/specialTypes/voidType.h"
+#include "../../../tables/typeTable/types/specialTypes/voidType.h"
 #include "../functions/ast_subrutineDecl.h"
 #include <memory>
 

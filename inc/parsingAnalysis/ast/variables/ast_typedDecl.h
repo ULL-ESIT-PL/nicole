@@ -2,7 +2,7 @@
 #define AST_VAR_TYPED_DECL_H
 
 #include "ast_varDecl.h"
-#include "../../types/type.h"
+#include "../../../tables/typeTable/types/type.h"
 #include <memory>
 
 namespace nicole {

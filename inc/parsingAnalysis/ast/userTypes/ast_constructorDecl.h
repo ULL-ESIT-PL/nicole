@@ -1,7 +1,7 @@
 #ifndef AST_CONSTRUCTOR_DECL_H
 #define AST_CONSTRUCTOR_DECL_H
 
-#include "../../types/userTypes/genericParameter.h"
+#include "../../../tables/typeTable/types/userTypes/genericParameter.h"
 #include "../functions/ast_parametrizedSubritineDecl.h"
 
 namespace nicole {

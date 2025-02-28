@@ -2,7 +2,7 @@
 #define FUNCTION_H
 
 #include "../../parsingAnalysis/ast/functions/parameters.h"
-#include "../../parsingAnalysis/types/userTypes/genericParameter.h"
+#include "../typeTable/types/userTypes/genericParameter.h"
 #include <llvm/IR/Function.h>
 #include <memory>
 #include "../symbol.h"

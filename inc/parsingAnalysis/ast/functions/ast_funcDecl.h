@@ -1,7 +1,7 @@
 #ifndef AST_FUNC_DECL_H
 #define AST_FUNC_DECL_H
 
-#include "../../types/userTypes/genericParameter.h"
+#include "../../../tables/typeTable/types/userTypes/genericParameter.h"
 #include "ast_parametrizedSubritineDecl.h"
 
 namespace nicole {
