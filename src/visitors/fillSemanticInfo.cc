@@ -472,6 +472,12 @@ FillSemanticInfo::visit(const AST_FUNC_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_FUNC_CALL");
   }
+
+  const auto exists{functionTable_->getFunctions(node->id())};
+  if (!exists) {
+    return createError(exists.error());
+  }
+
   for (const auto &expr : node->parameters()) {
     const auto resul{expr->accept(*this)};
     if (!resul) {
@@ -669,8 +675,8 @@ FillSemanticInfo::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
   }
-  const auto insertVar{currentScope_->insert(
-      Variable{node->id(), nullptr, nullptr}, false)};
+  const auto insertVar{
+      currentScope_->insert(Variable{node->id(), nullptr, nullptr}, false)};
   if (!insertVar) {
     return createError(insertVar.error());
   }
