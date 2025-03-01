@@ -8,6 +8,7 @@
 namespace nicole {
 
 class PointerType final : public Type {
+private:
   std::shared_ptr<Type> baseType_;
 
 public:

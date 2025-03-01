@@ -6,12 +6,13 @@
 namespace nicole {
 
 class GenericParameter final {
+private:
   std::string name_;
 
 public:
-  explicit GenericParameter(const std::string& name) noexcept : name_{name} {}
+  explicit GenericParameter(const std::string &name) noexcept : name_{name} {}
 
-  [[nodiscard]] const std::string& name() const noexcept { return name_; }
+  [[nodiscard]] const std::string &name() const noexcept { return name_; }
 };
 
 } // namespace nicole

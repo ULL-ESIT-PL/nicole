@@ -37,6 +37,7 @@ enum class ERROR_TYPE {
   VARIABLE,
   TYPE,
   FUNCTION,
+  METHOD,
 
   PRINT_TREE,
   VALIDATE_TREE
@@ -98,6 +99,9 @@ enum class ERROR_TYPE {
 
   case ERROR_TYPE::FUNCTION:
     return "FUNCTION";
+
+  case ERROR_TYPE::METHOD:
+    return "METHOD";
 
   case ERROR_TYPE::PRINT_TREE:
     return "PRINT_TREE";

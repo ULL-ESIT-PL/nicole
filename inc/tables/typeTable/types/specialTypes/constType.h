@@ -8,6 +8,7 @@
 namespace nicole {
 
 class ConstType final : public Type {
+private:
   std::shared_ptr<Type> baseType_;
 
 public:

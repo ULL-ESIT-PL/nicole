@@ -10,6 +10,7 @@ namespace nicole {
 enum class BasicKind { Bool, Int, Float, Double, Char, Str };
 
 class BasicType : public Type {
+private:
   BasicKind kind_;
 
 public:

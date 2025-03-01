@@ -129,6 +129,8 @@ add_executable(tests
     src/tables/functionTable/functionTable.cc
     src/tables/functionTable/function.cc
     src/tables/typeTable/typeTable.cc
+    src/tables/typeTable/method.cc
+    src/tables/typeTable/methodTable.cc
     src/tables/scope/scope.cc
 
     # visitors
@@ -232,6 +234,8 @@ set(SRC_FILES
     src/tables/functionTable/functionTable.cc
     src/tables/functionTable/function.cc
     src/tables/typeTable/typeTable.cc
+    src/tables/typeTable/method.cc
+    src/tables/typeTable/methodTable.cc
     src/tables/scope/scope.cc
 
     src/visitors/printTree.cc

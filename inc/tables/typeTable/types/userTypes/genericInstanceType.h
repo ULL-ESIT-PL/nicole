@@ -9,6 +9,7 @@
 namespace nicole {
 
 class GenericInstanceType final : public Type {
+private:
   std::shared_ptr<UserType> genericType_;
   std::vector<std::shared_ptr<Type>> typeArgs_;
 

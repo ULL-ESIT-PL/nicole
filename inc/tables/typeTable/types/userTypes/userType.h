@@ -1,19 +1,24 @@
 #ifndef USER_TYPE_H
 #define USER_TYPE_H
 
-#include "../type.h"
+#include "attribute.h"
+#include "methodTable.h"
 #include "genericParameter.h"
 #include <memory>
 #include <sstream>
 #include <string>
+#include <set>
 #include <vector>
 
 namespace nicole {
 
 class UserType final : public Type {
+private:
   std::string name_;
   std::shared_ptr<UserType> baseType_; // Solo se permite una base
   std::vector<GenericParameter> genericParams_;
+  std::set<Attribute> attributes_;
+  MethodTable methodTable_{};
 
 public:
   explicit UserType(const std::string &name,

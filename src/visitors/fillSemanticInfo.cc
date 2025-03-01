@@ -661,6 +661,10 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL");
   }
+  const auto type{typeTable_->getType(node->id())};
+  if (!type) {
+    return createError(type.error());
+  }
   for (const auto &expr : node->parameters()) {
     const auto result{expr->accept(*this)};
     if (!result) {
@@ -675,8 +679,12 @@ FillSemanticInfo::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
   }
+  const auto expr{node->value()->accept(*this)};
+  if (!expr) {
+    return createError(expr.error());
+  }
   const auto insertVar{
-      currentScope_->insert(Variable{node->id(), currentType_, nullptr}, false)};
+      currentScope_->insert(Variable{node->id(), nullptr, nullptr}, false)};
   if (!insertVar) {
     return createError(insertVar.error());
   }
@@ -687,6 +695,10 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_TYPED_DECL");
+  }
+  const auto expr{node->value()->accept(*this)};
+  if (!expr) {
+    return createError(expr.error());
   }
   const auto insertVar{currentScope_->insert(
       Variable{node->id(), node->varType(), nullptr}, false)};
