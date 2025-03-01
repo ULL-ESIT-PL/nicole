@@ -2,7 +2,6 @@
 #define BASIC_TYPES_H
 
 #include "../type.h"
-#include <memory>
 #include <string>
 
 namespace nicole {

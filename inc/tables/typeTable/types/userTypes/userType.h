@@ -1,7 +1,7 @@
 #ifndef USER_TYPE_H
 #define USER_TYPE_H
 
-#include "attribute.h"
+#include "attrTable.h"
 #include "methodTable.h"
 #include "genericParameter.h"
 #include <memory>
@@ -17,8 +17,8 @@ private:
   std::string name_;
   std::shared_ptr<UserType> baseType_; // Solo se permite una base
   std::vector<GenericParameter> genericParams_;
-  std::set<Attribute> attributes_;
-  MethodTable methodTable_{};
+  AttrTable attrTable_;
+  MethodTable methodTable_;
 
 public:
   explicit UserType(const std::string &name,
