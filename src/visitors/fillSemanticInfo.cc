@@ -552,13 +552,15 @@ FillSemanticInfo::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
   }
-  if (!dynamic_cast<UserType *>(node->fatherType().get()) and
-      !dynamic_cast<GenericInstanceType *>(node->fatherType().get())) {
-    return createError(ERROR_TYPE::TYPE,
-                       "a father type can only be a user type or a generic "
-                       "Instance type of a user type: " + node->fatherType()->toString());
+  if (node->fatherType()) {
+    if (!dynamic_cast<UserType *>(node->fatherType().get()) and
+        !dynamic_cast<GenericInstanceType *>(node->fatherType().get())) {
+      return createError(ERROR_TYPE::TYPE,
+                         "a father type can only be a user type or a generic "
+                         "Instance type of a user type: " +
+                             node->fatherType()->toString());
+    }
   }
-
   const std::shared_ptr<UserType> usertType{std::make_shared<UserType>(
       node->id(), node->fatherType(), node->generics())};
 

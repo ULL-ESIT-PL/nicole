@@ -5,7 +5,9 @@ let a: int = 0;
 struct B {
     constructor() {}
     destructor {}
-
+method b(): void {
+        a;
+    }
 }
 
 struct A extends B {
