@@ -25,8 +25,8 @@ Scope::getVariable(const std::string &id) const noexcept {
 }
 
 std::expected<std::monostate, Error>
-Scope::insert(const Variable &variable, const bool forceInsert) noexcept {
-  if (forceInsert or !has(variable.id())) {
+Scope::insert(const Variable &variable) noexcept {
+  if (!has(variable.id())) {
     table_.emplace(variable.id(), variable);
     return {};
   }

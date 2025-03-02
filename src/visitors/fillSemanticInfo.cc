@@ -55,6 +55,18 @@
 #include "../../inc/parsingAnalysis/ast/tree.h"
 #include <memory>
 
+/**
+
+FillSemanticInfo ---> insertar delcaraciones en las tablas / insertar tipos /
+comprobar que las variables pertenecen al scope (llamadas a variables) /
+comrpobar llamadas a enum
+
+TypeAnalysis ---> comprobar en una llamada a funcion que esta existe debido a
+sobrecarga de funciones requiere que se trate en el typeAnalysis / igual con
+metodos / llamadas a atributos / variables auto
+
+ */
+
 namespace nicole {
 
 std::expected<std::monostate, Error>
@@ -501,8 +513,8 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
   pushScope();
   node->body()->setScope(currentScope_);
   for (const auto &param : node->parameters()) {
-    const auto insertVar{currentScope_->insert(
-        Variable{param.first, param.second, nullptr}, false)};
+    const auto insertVar{
+        currentScope_->insert(Variable{param.first, param.second, nullptr})};
     if (!insertVar) {
       return createError(insertVar.error());
     }
@@ -540,21 +552,47 @@ FillSemanticInfo::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
   }
-  pushScope();
-  // node->body()->setScope(currentScope_);
-  for (const auto &param : node->attributes()) {
-    const auto insertVar{currentScope_->insert(
-        Variable{param.first, param.second, nullptr}, true)};
-    if (!insertVar) {
-      return createError(insertVar.error());
-    }
+  if (!dynamic_cast<UserType *>(node->fatherType().get()) and
+      !dynamic_cast<GenericInstanceType *>(node->fatherType().get())) {
+    return createError(ERROR_TYPE::TYPE,
+                       "a father type can only be a user type or a generic "
+                       "Instance type of a user type: " + node->fatherType()->toString());
   }
+
+  const std::shared_ptr<UserType> usertType{std::make_shared<UserType>(
+      node->id(), node->fatherType(), node->generics())};
+
+  const auto inserType{typeTable_->insert(usertType)};
+  if (!inserType) {
+    return createError(inserType.error());
+  }
+
+  AttrTable attrTable;
+  size_t position{0};
+  for (const auto &param : node->attributes()) {
+    const auto insertAttr{
+        attrTable.insert(Attribute{param.first, param.second, position})};
+    if (!insertAttr) {
+      return createError(insertAttr.error());
+    }
+    ++position;
+  }
+  usertType->setAttrTable(attrTable);
+  pushScope();
+  MethodTable methodTable;
   for (const auto &method : node->methods()) {
+    const auto insertMethod{
+        methodTable.insert(Method{method->id(), method->generics(),
+                                  method->parameters(), method->returnType()})};
+    if (!insertMethod) {
+      return createError(insertMethod.error());
+    }
     const auto result{method->accept(*this)};
     if (!result) {
       return createError(result.error());
     }
   }
+  usertType->setMethodTable(methodTable);
   const auto constructor{node->constructor()->accept(*this)};
   if (!constructor) {
     return createError(constructor.error());
@@ -597,8 +635,8 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
   pushScope();
   node->body()->setScope(currentScope_);
   for (const auto &param : node->parameters()) {
-    const auto insertVar{currentScope_->insert(
-        Variable{param.first, param.second, nullptr}, false)};
+    const auto insertVar{
+        currentScope_->insert(Variable{param.first, param.second, nullptr})};
     if (!insertVar) {
       return createError(insertVar.error());
     }
@@ -619,8 +657,8 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   pushScope();
   node->body()->setScope(currentScope_);
   for (const auto &param : node->parameters()) {
-    const auto insertVar{currentScope_->insert(
-        Variable{param.first, param.second, nullptr}, false)};
+    const auto insertVar{
+        currentScope_->insert(Variable{param.first, param.second, nullptr})};
     if (!insertVar) {
       return createError(insertVar.error());
     }
@@ -684,7 +722,7 @@ FillSemanticInfo::visit(const AST_AUTO_DECL *node) const noexcept {
     return createError(expr.error());
   }
   const auto insertVar{
-      currentScope_->insert(Variable{node->id(), nullptr, nullptr}, false)};
+      currentScope_->insert(Variable{node->id(), nullptr, nullptr})};
   if (!insertVar) {
     return createError(insertVar.error());
   }
@@ -700,8 +738,8 @@ FillSemanticInfo::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   if (!expr) {
     return createError(expr.error());
   }
-  const auto insertVar{currentScope_->insert(
-      Variable{node->id(), node->varType(), nullptr}, false)};
+  const auto insertVar{
+      currentScope_->insert(Variable{node->id(), node->varType(), nullptr})};
   if (!insertVar) {
     return createError(insertVar.error());
   }

@@ -78,17 +78,15 @@ TopDown::parseStructDecl() const noexcept {
   if (!generics) {
     return createError(generics.error());
   }
-  std::unique_ptr<std::string> fatherType{nullptr};
-  if (tkStream_.current()->type() == TokenType::EXTENDS and
-      tkStream_.lookAhead(1)->type() == TokenType::ID) {
+  std::expected<std::shared_ptr<Type>, Error> fatherType{nullptr};
+  if (tkStream_.current()->type() == TokenType::EXTENDS) {
     if (auto res = tryEat(); !res) {
       return createError(res.error());
     }
-    const Token fatherTypeToken{*tkStream_.current()};
-    if (auto res = tryEat(); !res) {
-      return createError(res.error());
+    fatherType = parseType();
+    if (!fatherType) {
+      return createError(fatherType.error());
     }
-    fatherType = std::make_unique<std::string>(fatherTypeToken.raw());
   }
 
   if (tkStream_.current()->type() != TokenType::LB) {
@@ -200,7 +198,7 @@ TopDown::parseStructDecl() const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
-  return Builder::createStruct(id.raw(), *generics, std::move(fatherType),
+  return Builder::createStruct(id.raw(), *generics, *fatherType,
                                Attributes{params}, methods, *constructor,
                                *destructor);
 }

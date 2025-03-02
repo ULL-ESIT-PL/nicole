@@ -218,7 +218,7 @@ public:
   [[nodiscard]] static std::expected<std::shared_ptr<AST_STRUCT>, Error>
   createStruct(const std::string &id,
                const std::vector<GenericParameter> &generics,
-               std::unique_ptr<std::string> fatherType,
+               const std::shared_ptr<Type> &fatherType,
                const Attributes &attributes,
                const std::vector<std::shared_ptr<AST_METHOD_DECL>> &methods,
                const std::shared_ptr<AST_CONSTRUCTOR_DECL> &constructor,

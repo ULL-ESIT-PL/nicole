@@ -427,13 +427,12 @@ Builder::createEnum(const std::string &id,
 
 std::expected<std::shared_ptr<AST_STRUCT>, Error> Builder::createStruct(
     const std::string &id, const std::vector<GenericParameter> &generics,
-    std::unique_ptr<std::string> fatherType, const Attributes &attributes,
+    const std::shared_ptr<Type> &fatherType, const Attributes &attributes,
     const std::vector<std::shared_ptr<AST_METHOD_DECL>> &methods,
     const std::shared_ptr<AST_CONSTRUCTOR_DECL> &constructor,
     const std::shared_ptr<AST_DESTRUCTOR_DECL> &destructor) noexcept {
   const auto astStruct{std::make_shared<AST_STRUCT>(
-      id, generics, std::move(fatherType), attributes, methods, constructor,
-      destructor)};
+      id, generics, fatherType, attributes, methods, constructor, destructor)};
   const std::vector<std::shared_ptr<AST_METHOD_DECL>> &methods__{
       astStruct->methods()};
   for (const auto &methods_ : methods__) {

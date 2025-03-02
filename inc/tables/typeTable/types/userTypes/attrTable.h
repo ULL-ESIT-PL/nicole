@@ -23,7 +23,7 @@ public:
   getAttribute(const std::string &id) const noexcept;
 
   [[nodiscard]] std::expected<std::monostate, Error>
-  insert(const Attribute &variable, const bool forceInsert) noexcept;
+  insert(const Attribute &variable) noexcept;
 }; // namespace nicole
 
 }

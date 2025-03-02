@@ -22,7 +22,7 @@ public:
     return type_;
   }
 
-  [[nodiscard]] const std::size_t position() const noexcept { return position_; }
+  [[nodiscard]] std::size_t position() const noexcept { return position_; }
 };
 
 } // namespace nicole

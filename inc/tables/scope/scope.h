@@ -31,7 +31,7 @@ public:
   getVariable(const std::string &id) const noexcept;
 
   [[nodiscard]] std::expected<std::monostate, Error>
-  insert(const Variable &variable, const bool forceInsert) noexcept;
+  insert(const Variable &variable) noexcept;
 
   friend std::ostream &operator<<(std::ostream &os,
                                   const Scope &scope) noexcept;

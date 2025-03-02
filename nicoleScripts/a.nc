@@ -1,13 +1,14 @@
 def foo<T, Q>(a: T*, b: vector<tuple<str***, bool, complexNumber>>): void* {}
 
-
-foor<int>{}.metodo<int>().metodos();
-
-
-
 let a: int = 0;
 
-struct A {
+struct B {
+    constructor() {}
+    destructor {}
+
+}
+
+struct A extends B {
     a: int
     method b(): void {
         a;

@@ -14,7 +14,7 @@ class AST_STRUCT final : public AST {
 private:
   std::string id_;
   std::vector<GenericParameter> generics_;
-  std::unique_ptr<std::string> fatherType_;
+  std::shared_ptr<Type> fatherType_;
   Attributes attributes_;
   std::vector<std::shared_ptr<AST_METHOD_DECL>> methods_;
   std::shared_ptr<AST_CONSTRUCTOR_DECL> constructor_;
@@ -23,12 +23,12 @@ private:
 public:
   explicit AST_STRUCT(
       const std::string &id, const std::vector<GenericParameter> &generics,
-      std::unique_ptr<std::string> fatherType, const Attributes &attributes,
+      const std::shared_ptr<Type>& fatherType, const Attributes &attributes,
       const std::vector<std::shared_ptr<AST_METHOD_DECL>> &methods,
       const std::shared_ptr<AST_CONSTRUCTOR_DECL> &constructor,
       const std::shared_ptr<AST_DESTRUCTOR_DECL> &destructor) noexcept
       : AST(AST_TYPE::STRUCT_DECL), id_{id}, generics_{generics},
-        fatherType_{std::move(fatherType)}, attributes_{attributes},
+        fatherType_{fatherType}, attributes_{attributes},
         methods_{methods}, constructor_{constructor}, destructor_{destructor} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
@@ -37,7 +37,7 @@ public:
     return generics_;
   }
 
-  [[nodiscard]] const std::unique_ptr<std::string> &
+  [[nodiscard]] const std::shared_ptr<Type> &
   fatherType() const noexcept {
     return fatherType_;
   }

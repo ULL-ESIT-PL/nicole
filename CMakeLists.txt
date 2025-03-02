@@ -131,6 +131,7 @@ add_executable(tests
     src/tables/typeTable/typeTable.cc
     src/tables/typeTable/method.cc
     src/tables/typeTable/methodTable.cc
+    src/tables/typeTable/attrTable.cc
     src/tables/scope/scope.cc
 
     # visitors
@@ -236,6 +237,7 @@ set(SRC_FILES
     src/tables/typeTable/typeTable.cc
     src/tables/typeTable/method.cc
     src/tables/typeTable/methodTable.cc
+    src/tables/typeTable/attrTable.cc
     src/tables/scope/scope.cc
 
     src/visitors/printTree.cc

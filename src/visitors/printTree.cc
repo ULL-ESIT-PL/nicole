@@ -784,7 +784,7 @@ PrintTree::visit(const AST_STRUCT *node) const noexcept {
   result << "\n";
   // Tipo padre (si existe)
   if (node->fatherType()) {
-    result << indent_ << "Father Type: " << *node->fatherType() << "\n";
+    result << indent_ << "Father Type: " << node->fatherType()->toString() << "\n";
   } else {
     result << indent_ << "No Father Type\n";
   }
