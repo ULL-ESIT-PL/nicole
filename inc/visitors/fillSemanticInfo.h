@@ -17,6 +17,7 @@ private:
   mutable std::shared_ptr<TypeTable> typeTable_;
   mutable std::shared_ptr<Scope> currentScope_{nullptr};
   mutable std::shared_ptr<Scope> firstScope_{nullptr};
+  bool validateMode_;
 
   void pushScope() const {
     auto newScope = std::make_shared<Scope>(currentScope_);
@@ -35,9 +36,10 @@ private:
 public:
   FillSemanticInfo(const std::shared_ptr<EnumTable> &enumTable,
                    const std::shared_ptr<FunctionTable> &functionTable,
-                   std::shared_ptr<TypeTable> &typeTable) noexcept
+                   std::shared_ptr<TypeTable> &typeTable,
+                   const bool validateMode) noexcept
       : enumTable_{enumTable}, functionTable_{functionTable},
-        typeTable_{typeTable} {}
+        typeTable_{typeTable}, validateMode_{validateMode} {}
 
   [[nodiscard]] const std::shared_ptr<Scope> getGlobalScope() const noexcept {
     return firstScope_;

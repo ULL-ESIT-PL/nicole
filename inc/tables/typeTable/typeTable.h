@@ -37,6 +37,9 @@ public:
 
   [[nodiscard]] std::expected<std::monostate, Error>
   insert(const std::shared_ptr<Type> &type) noexcept;
+
+  [[nodiscard]] bool
+  isPossibleType(const std::shared_ptr<Type> &type) const noexcept;
 };
 
 } // namespace nicole

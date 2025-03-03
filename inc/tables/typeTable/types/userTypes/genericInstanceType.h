@@ -18,6 +18,15 @@ public:
                       const std::vector<std::shared_ptr<Type>> &args) noexcept
       : genericType_{genType}, typeArgs_{args} {}
 
+  [[nodiscard]] const std::shared_ptr<UserType> &genericType() const noexcept {
+    return genericType_;
+  }
+
+  [[nodiscard]] const std::vector<std::shared_ptr<Type>> &
+  typeArgs() const noexcept {
+    return typeArgs_;
+  }
+
   [[nodiscard]] std::string toString() const noexcept override {
     std::ostringstream oss;
     oss << genericType_->toString() << "(";
