@@ -3,6 +3,8 @@
 
 #include "attrTable.h"
 #include "attribute.h"
+#include "constructor.h"
+#include "destructor.h"
 #include "genericParameter.h"
 #include "method.h"
 #include "methodTable.h"
@@ -20,6 +22,8 @@ private:
   std::vector<GenericParameter> genericParams_;
   mutable AttrTable attrTable_;
   mutable MethodTable methodTable_;
+  mutable std::shared_ptr<Constructor> constructor_;
+  mutable std::shared_ptr<Destructor> destructor_;
 
 public:
   explicit UserType(const std::string &name,
@@ -113,6 +117,16 @@ public:
   }
 
   void setAttrTable(const AttrTable &tb) const noexcept { attrTable_ = tb; }
+
+  void
+  setDestructor(const std::shared_ptr<Destructor> &destructor) const noexcept {
+    destructor_ = destructor;
+  }
+
+  void
+  setConstructor(const std::shared_ptr<Constructor> &constructor) const noexcept {
+    constructor_ = constructor;
+  }
 
   void setMethodTable(const MethodTable &tb) const noexcept {
     methodTable_ = tb;

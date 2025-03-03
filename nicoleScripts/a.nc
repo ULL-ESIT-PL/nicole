@@ -3,6 +3,7 @@ def foo<T, Q>(a: T*, b: vector<tuple<str***, bool, complexNumber>>): void* {}
 let a: int = 0;
 
 struct B {
+    a: int
     constructor() {}
     destructor {}
 method b(): void {

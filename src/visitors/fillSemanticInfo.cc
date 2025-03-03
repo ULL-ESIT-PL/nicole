@@ -485,6 +485,13 @@ FillSemanticInfo::visit(const AST_FUNC_CALL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_FUNC_CALL");
   }
 
+  for (const auto &typeReplacement : node->replaceOfGenerics()) {
+    const auto exist{typeTable_->getType(typeReplacement->toString())};
+    if (!exist) {
+      return createError(exist.error());
+    }
+  }
+
   const auto exists{functionTable_->getFunctions(node->id())};
   if (!exists) {
     return createError(exists.error());
@@ -503,6 +510,12 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
+  }
+  if (!typeTable_->has(node->returnType()->toString())) {
+    const auto insert{typeTable_->insert(node->returnType())};
+    if (!insert) {
+      return createError(insert.error());
+    }
   }
   const auto insertFunc{functionTable_->insert(Function{
       node->id(), node->generics(), node->parameters(), node->returnType()})};
@@ -595,10 +608,16 @@ FillSemanticInfo::visit(const AST_STRUCT *node) const noexcept {
     }
   }
   usertType->setMethodTable(methodTable);
+  const auto constructorSymbol{std::make_shared<Constructor>(
+      node->id(), node->constructor()->generics(),
+      node->constructor()->parameters(), node->constructor()->returnType())};
+  usertType->setConstructor(constructorSymbol);
   const auto constructor{node->constructor()->accept(*this)};
   if (!constructor) {
     return createError(constructor.error());
   }
+  const auto desstructorSymbol{std::make_shared<Destructor>(node->id())};
+  usertType->setDestructor(desstructorSymbol);
   const auto destructor{node->destructor()->accept(*this)};
   if (!destructor) {
     return createError(destructor.error());
@@ -620,6 +639,12 @@ FillSemanticInfo::visit(const AST_METHOD_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL");
   }
+  for (const auto &typeReplacement : node->replaceOfGenerics()) {
+    const auto exist{typeTable_->getType(typeReplacement->toString())};
+    if (!exist) {
+      return createError(exist.error());
+    }
+  }
   for (const auto &expr : node->parameters()) {
     const auto result{expr->accept(*this)};
     if (!result) {
@@ -633,6 +658,12 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_DECL");
+  }
+  if (!typeTable_->has(node->returnType()->toString())) {
+    const auto insert{typeTable_->insert(node->returnType())};
+    if (!insert) {
+      return createError(insert.error());
+    }
   }
   pushScope();
   node->body()->setScope(currentScope_);
@@ -705,6 +736,12 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!type) {
     return createError(type.error());
   }
+  for (const auto &typeReplacement : node->replaceOfGenerics()) {
+    const auto exist{typeTable_->getType(typeReplacement->toString())};
+    if (!exist) {
+      return createError(exist.error());
+    }
+  }
   for (const auto &expr : node->parameters()) {
     const auto result{expr->accept(*this)};
     if (!result) {
@@ -735,6 +772,12 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_TYPED_DECL");
+  }
+  if (!typeTable_->has(node->varType()->toString())) {
+    const auto inserted{typeTable_->insert(node->varType())};
+    if (!inserted) {
+      return createError(inserted.error());
+    }
   }
   const auto expr{node->value()->accept(*this)};
   if (!expr) {
