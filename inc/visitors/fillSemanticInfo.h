@@ -15,9 +15,11 @@ private:
   mutable std::shared_ptr<EnumTable> enumTable_;
   mutable std::shared_ptr<FunctionTable> functionTable_;
   mutable std::shared_ptr<TypeTable> typeTable_;
+  bool validateMode_;
+
   mutable std::shared_ptr<Scope> currentScope_{nullptr};
   mutable std::shared_ptr<Scope> firstScope_{nullptr};
-  bool validateMode_;
+  mutable std::vector<GenericParameter> currentGenericList_;
 
   void pushScope() const {
     auto newScope = std::make_shared<Scope>(currentScope_);

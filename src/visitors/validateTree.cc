@@ -648,7 +648,7 @@ ValidateTree::visit(const AST_RETURN *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_RETURN");
   }
-  if (!CheckPosition::hasAnyAncestorOf(node, {AST_TYPE::FUNC_DECL})) {
+  if (!CheckPosition::hasAnyAncestorOf(node, {AST_TYPE::FUNC_DECL, AST_TYPE::METHOD_DECL})) {
     return createError(ERROR_TYPE::VALIDATE_TREE,
                        "a return declaration must has a function "
                        "declaration in its hierarchy");
