@@ -10,6 +10,7 @@
 #include "types/specialTypes/voidType.h"
 #include "types/type.h"
 #include "types/userTypes/genericInstanceType.h"
+#include "types/userTypes/genericParameter.h"
 #include "types/userTypes/userType.h"
 #include <memory>
 #include <string>
@@ -40,6 +41,10 @@ public:
 
   [[nodiscard]] bool
   isPossibleType(const std::shared_ptr<Type> &type) const noexcept;
+
+  [[nodiscard]] bool
+  isGenericType(const std::shared_ptr<Type> &type,
+                const std::vector<GenericParameter> &generics) const noexcept;
 };
 
 } // namespace nicole

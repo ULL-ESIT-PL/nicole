@@ -19,7 +19,11 @@ private:
 
   mutable std::shared_ptr<Scope> currentScope_{nullptr};
   mutable std::shared_ptr<Scope> firstScope_{nullptr};
-  mutable std::vector<GenericParameter> currentGenericList_;
+  mutable std::vector<GenericParameter> currentGenericList_{};
+  mutable std::shared_ptr<AttrTable> currentAttrTable_{nullptr};
+  mutable std::shared_ptr<MethodTable> currentMethodTable_{nullptr};
+  mutable std::shared_ptr<UserType> currentUserType_{nullptr};
+  mutable bool analyzingInsideClass{false};
 
   void pushScope() const {
     auto newScope = std::make_shared<Scope>(currentScope_);
