@@ -55,7 +55,6 @@ class AST_CONDITION;
 class AST_FUNC_CALL;
 class AST_FUNC_DECL;
 class AST_RETURN;
-class AST_PARAMETER;
 
 class AST_ENUM;
 class AST_ENUM_ACCESS;
@@ -184,9 +183,6 @@ public:
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_RETURN *node) const noexcept = 0;
-
-  [[nodiscard]] virtual std::expected<T, Error>
-  visit(const AST_PARAMETER *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_ENUM *node) const noexcept = 0;

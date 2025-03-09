@@ -636,12 +636,6 @@ ValidateTree::visit(const AST_FUNC_DECL *node) const noexcept {
                        "a funciton declaration cant appear inside a scope: " +
                            node->id());
   }
-  for (const auto &param : node->parameters()) {
-    const auto result{param->accept(*this)};
-    if (!result) {
-      return createError(result.error());
-    }
-  }
   const auto result{node->body()->accept(*this)};
   if (!result) {
     return createError(result.error());
@@ -664,20 +658,6 @@ ValidateTree::visit(const AST_RETURN *node) const noexcept {
   const auto result{node->expression()->accept(*this)};
   if (!result) {
     return createError(result.error());
-  }
-  return true;
-}
-
-std::expected<bool, Error>
-ValidateTree::visit(const AST_PARAMETER *node) const noexcept {
-  if (!node) {
-    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PARAMETER");
-  }
-  if (CheckPosition::hasEveryAncestorInOrder(
-          node, {AST_TYPE::FUNC_DECL, AST_TYPE::METHOD_DECL,
-                 AST_TYPE::CONSTRUCTOR_DECL})) {
-    return createError(ERROR_TYPE::VALIDATE_TREE,
-                       "a enum declaration must be outside of any scope");
   }
   return true;
 }
@@ -779,12 +759,6 @@ ValidateTree::visit(const AST_METHOD_DECL *node) const noexcept {
     return createError(ERROR_TYPE::VALIDATE_TREE,
                        "invalid hierarchy for Method decl");
   }
-  for (const auto &param : node->parameters()) {
-    const auto result{param->accept(*this)};
-    if (!result) {
-      return createError(result.error());
-    }
-  }
   const auto result{node->body()->accept(*this)};
   if (!result) {
     return createError(result.error());
@@ -800,12 +774,6 @@ ValidateTree::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   if (!CheckPosition::hasEveryAncestorInOrder(node, {AST_TYPE::STRUCT_DECL})) {
     return createError(ERROR_TYPE::VALIDATE_TREE,
                        "invalid hierarchy for constructor decl");
-  }
-  for (const auto &param : node->parameters()) {
-    const auto result{param->accept(*this)};
-    if (!result) {
-      return createError(result.error());
-    }
   }
   if (node->super()) {
     const auto result{node->super()->accept(*this)};
@@ -825,7 +793,8 @@ ValidateTree::visit(const AST_SUPER *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_SUPER");
   }
-  if (!CheckPosition::hasEveryAncestorInOrder(node, {AST_TYPE::DESTRUCTOR_DECL})) {
+  if (!CheckPosition::hasEveryAncestorInOrder(node,
+                                              {AST_TYPE::DESTRUCTOR_DECL})) {
     return createError(ERROR_TYPE::VALIDATE_TREE,
                        "invalid hierarchy for destructor decl");
   }

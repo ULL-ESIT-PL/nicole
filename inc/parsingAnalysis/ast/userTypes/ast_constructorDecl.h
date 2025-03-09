@@ -16,7 +16,7 @@ private:
 public:
   explicit AST_CONSTRUCTOR_DECL(
       const std::string &id, const std::vector<GenericParameter> &generics,
-      const std::vector<std::shared_ptr<AST_PARAMETER>> &params,
+      const Parameters &params,
       const std::shared_ptr<AST_SUPER> super,
       const std::shared_ptr<Type> &returnType,
       const std::shared_ptr<AST_BODY> &body) noexcept

@@ -120,9 +120,6 @@ public:
   visit(const AST_RETURN *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>
-  visit(const AST_PARAMETER *node) const noexcept override;
-
-  [[nodiscard]] std::expected<std::string, Error>
   visit(const AST_ENUM *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>

@@ -136,7 +136,7 @@ private:
   [[nodiscard]] const std::expected<std::shared_ptr<AST_CHAINED>, Error>
   parseChainedExpression() const noexcept;
 
-  [[nodiscard]] const std::expected<std::vector<std::shared_ptr<AST_PARAMETER>>, Error>
+  [[nodiscard]] const std::expected<Parameters, Error>
   parseParams() const noexcept;
 
   [[nodiscard]] const std::expected<std::vector<std::shared_ptr<AST>>, Error>

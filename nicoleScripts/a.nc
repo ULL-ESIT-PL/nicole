@@ -1,3 +1,11 @@
+let x:int = 10;
+def foo<T, Q>(y: T, y:Q) : Q* {
+    let z: T = 10;
+}
+
+
+/*
+
 let a: int = 10;
 
 struct A {
@@ -25,8 +33,6 @@ struct C<T, Q> extends W<T> {
     }
 }
 
-
-/*
 
 def foo<T, Q>(a: T*, b: vector<tuple<str***, bool, complexNumber>>): void* {
     let a: T = "hola";
@@ -63,6 +69,6 @@ enum Hola {
     adios
 }
 
-*/
-
 ss::foo;
+
+*/

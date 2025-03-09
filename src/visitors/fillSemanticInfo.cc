@@ -55,6 +55,7 @@
 
 #include "../../inc/parsingAnalysis/ast/tree.h"
 #include <memory>
+#include <variant>
 
 /**
 
@@ -69,6 +70,36 @@ metodos / llamadas a atributos / variables auto
  */
 
 namespace nicole {
+
+void FillSemanticInfo::pushScope() const noexcept {
+  auto newScope = std::make_shared<Scope>(currentScope_);
+  currentScope_ = newScope;
+  if (!firstScope_) {
+    firstScope_ = currentScope_;
+  }
+}
+
+void FillSemanticInfo::popScope() const noexcept {
+  if (currentScope_) {
+    currentScope_ = currentScope_->father();
+  }
+}
+
+std::expected<std::unordered_set<GenericParameter>, Error>
+FillSemanticInfo::mergeGenericList(
+    const std::vector<GenericParameter> &list) const noexcept {
+  std::unordered_set<GenericParameter> set(list.begin(), list.end());
+  if (set.size() != list.size()) {
+    return createError(ERROR_TYPE::TYPE, "Duplicate generic parameter found.");
+  }
+  return set;
+}
+
+bool FillSemanticInfo::hasDuplicatedGenerics(
+    const std::vector<GenericParameter> &list) const noexcept {
+  std::unordered_set<GenericParameter> set(list.begin(), list.end());
+  return set.size() != list.size();
+}
 
 std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_BOOL *node) const noexcept {
@@ -501,8 +532,46 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
   }
 
+  const auto insert{functionTable_->insert(Function{
+      node->id(), node->generics(), node->parameters(), node->returnType()})};
+  if (!insert) {
+    return createError(insert.error());
+  }
+
   pushScope();
   node->body()->setScope(currentScope_);
+
+  currentGenericList_ = node->generics();
+  if (hasDuplicatedGenerics(currentGenericList_)) {
+    return createError(ERROR_TYPE::FUNCTION, "has duplicated generics");
+  }
+
+  for (const auto &param : node->parameters()) {
+    if (!typeTable_->isPossibleType(param.second) and
+        !typeTable_->isGenericType(param.second, currentGenericList_)) {
+      return createError(ERROR_TYPE::TYPE,
+                         param.second->toString() +
+                             " is not a posibble type or generic");
+    }
+    const auto insertVariable{
+        currentScope_->insert(Variable{param.first, param.second, nullptr})};
+    if (!insertVariable) {
+      return createError(insertVariable.error());
+    }
+  }
+
+  if (!typeTable_->isPossibleType(node->returnType()) and
+      !typeTable_->isGenericType(node->returnType(), currentGenericList_)) {
+    return createError(ERROR_TYPE::TYPE,
+                       node->returnType()->toString() +
+                           " is not a posibble type or generic");
+  }
+
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+
   popScope();
   return {};
 }
@@ -513,14 +582,6 @@ FillSemanticInfo::visit(const AST_RETURN *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_RETURN");
   }
   return node->expression()->accept(*this);
-}
-
-std::expected<std::monostate, Error>
-FillSemanticInfo::visit(const AST_PARAMETER *node) const noexcept {
-  if (!node) {
-    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PARAMETER");
-  }
-  return {};
 }
 
 std::expected<std::monostate, Error>
@@ -640,6 +701,17 @@ FillSemanticInfo::visit(const AST_AUTO_DECL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
   }
 
+  if (analyzingInsideClass and currentUserType_->hasAttribute(node->id())) {
+    return createError(ERROR_TYPE::ATTR, " the variable " + node->id() +
+                                             " is shadowing the atribute");
+  }
+
+  const auto insert{
+      currentScope_->insert(Variable{node->id(), nullptr, nullptr})};
+  if (!insert) {
+    return createError(insert.error());
+  }
+
   return {};
 }
 
@@ -649,6 +721,24 @@ FillSemanticInfo::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_TYPED_DECL");
   }
 
+  if (analyzingInsideClass and currentUserType_->hasAttribute(node->id())) {
+    return createError(ERROR_TYPE::ATTR, " the variable " + node->id() +
+                                             " is shadowing the atribute");
+  }
+
+  if (!typeTable_->isPossibleType(node->varType()) and
+      !typeTable_->isGenericType(node->varType(), currentGenericList_)) {
+    return createError(ERROR_TYPE::TYPE,
+                       node->varType()->toString() +
+                           " is not a posibble type or generic");
+  }
+
+  const auto insert{
+      currentScope_->insert(Variable{node->id(), node->varType(), nullptr})};
+  if (!insert) {
+    return createError(insert.error());
+  }
+
   return {};
 }
 
@@ -656,6 +746,13 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_VAR_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_CALL");
+  }
+  if (analyzingInsideClass and currentUserType_->hasAttribute(node->id())) {
+    return {};
+  }
+  if (!currentScope_->has(node->id())) {
+    return createError(ERROR_TYPE::VARIABLE,
+                       "the variable " + node->id() + " does not exist");
   }
   return {};
 }

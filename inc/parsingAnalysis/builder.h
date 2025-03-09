@@ -7,7 +7,6 @@
 #include "ast/conditionals/ast_default.h"
 #include "ast/functions/ast_funcCall.h"
 #include "ast/functions/ast_funcDecl.h"
-#include "ast/functions/ast_parameter.h"
 #include "ast/functions/ast_return.h"
 
 #include "ast/literals/ast_bool.h"
@@ -207,16 +206,12 @@ public:
   [[nodiscard]] static std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
   createFuncDecl(const std::string &id,
                  const std::vector<GenericParameter> &generics,
-                 const std::vector<std::shared_ptr<AST_PARAMETER>> &params,
+                 const Parameters &params,
                  const std::shared_ptr<Type> &returnType,
                  const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_RETURN>, Error>
   createReturn(const std::shared_ptr<AST> &value) noexcept;
-
-  [[nodiscard]] static std::expected<std::shared_ptr<AST_PARAMETER>, Error>
-  createParameter(const std::string &id,
-                  const std::shared_ptr<Type> &type) noexcept;
 
   // Enum
   [[nodiscard]] static std::expected<std::shared_ptr<AST_ENUM>, Error>
@@ -249,7 +244,7 @@ public:
   [[nodiscard]] static std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>
   createMethodDecl(const std::string &id,
                    const std::vector<GenericParameter> &generics,
-                   const std::vector<std::shared_ptr<AST_PARAMETER>> &params,
+                   const Parameters &params,
 
                    const std::shared_ptr<Type> &returnType,
                    const std::shared_ptr<AST_BODY> &body,
@@ -259,7 +254,7 @@ public:
                                      Error>
   createConstructorDecl(
       const std::string &id, const std::vector<GenericParameter> &generics,
-      const std::vector<std::shared_ptr<AST_PARAMETER>> &params,
+      const Parameters &params,
       const std::shared_ptr<AST_SUPER> &super,
       const std::shared_ptr<Type> &returnType,
       const std::shared_ptr<AST_BODY> &body) noexcept;

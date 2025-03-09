@@ -709,11 +709,8 @@ PrintTree::visit(const AST_FUNC_DECL *node) const noexcept {
   result << indent_ << "Parameters:\n";
   increaseIndent();
   for (const auto &param : node->parameters()) {
-    const auto paramStr{param->accept(*this)};
-    if (!paramStr) {
-      return createError(paramStr.error());
-    }
-    result << *paramStr << "\n";
+    result << indent_ << "Param: " << param.first << " type: " << param.second->toString()
+           << "\n";
   }
   decreaseIndent();
 
@@ -748,20 +745,6 @@ PrintTree::visit(const AST_RETURN *node) const noexcept {
   } else {
     result << indent_ << "empty";
   }
-  decreaseIndent();
-  return result.str();
-}
-
-std::expected<std::string, Error>
-PrintTree::visit(const AST_PARAMETER *node) const noexcept {
-  if (!node) {
-    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PARAMETER");
-  }
-  std::ostringstream result;
-  result << indent_ << "Parameter:\n";
-  increaseIndent();
-  result << indent_ << "id: " << node->id() << "\n";
-  result << indent_ << "type: " << node->varType()->toString() << "\n";
   decreaseIndent();
   return result.str();
 }
@@ -933,11 +916,8 @@ PrintTree::visit(const AST_METHOD_DECL *node) const noexcept {
   result << indent_ << "Parameters:\n";
   increaseIndent();
   for (const auto &param : node->parameters()) {
-    const auto paramStr{param->accept(*this)};
-    if (!paramStr) {
-      return createError(paramStr.error());
-    }
-    result << *paramStr << "\n";
+    result << indent_ << "Param: " << param.first << " type: " << param.second->toString()
+           << "\n";
   }
   decreaseIndent();
 
@@ -973,11 +953,8 @@ PrintTree::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   result << indent_ << "Parameters:\n";
   increaseIndent();
   for (const auto &param : node->parameters()) {
-    const auto paramStr{param->accept(*this)};
-    if (!paramStr) {
-      return createError(paramStr.error());
-    }
-    result << *paramStr << "\n";
+    result << indent_ << "Param: " << param.first
+           << " type: " << param.second->toString() << "\n";
   }
   decreaseIndent();
 

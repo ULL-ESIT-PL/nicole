@@ -8,6 +8,7 @@
 #include "visitor.h"
 #include <memory>
 #include <unordered_set>
+#include <variant>
 #include <vector>
 
 namespace nicole {
@@ -25,35 +26,15 @@ private:
   mutable std::shared_ptr<UserType> currentUserType_{nullptr};
   mutable bool analyzingInsideClass{false};
 
-  void pushScope() const {
-    auto newScope = std::make_shared<Scope>(currentScope_);
-    currentScope_ = newScope;
-    if (!firstScope_) {
-      firstScope_ = currentScope_;
-    }
-  }
+  void pushScope() const noexcept;
 
-  void popScope() const {
-    if (currentScope_) {
-      currentScope_ = currentScope_->father();
-    }
-  }
+  void popScope() const noexcept;
 
   [[nodiscard]] std::expected<std::unordered_set<GenericParameter>, Error>
-  mergeGenericList(const std::vector<GenericParameter> &list) const noexcept {
-    std::unordered_set<GenericParameter> set(list.begin(), list.end());
-    if (set.size() != list.size()) {
-      return createError(ERROR_TYPE::TYPE,
-                         "Duplicate generic parameter found.");
-    }
-    return set;
-  }
+  mergeGenericList(const std::vector<GenericParameter> &list) const noexcept;
 
   [[nodiscard]] bool hasDuplicatedGenerics(
-      const std::vector<GenericParameter> &list) const noexcept {
-    std::unordered_set<GenericParameter> set(list.begin(), list.end());
-    return set.size() != list.size();
-  }
+      const std::vector<GenericParameter> &list) const noexcept;
 
 public:
   FillSemanticInfo(const std::shared_ptr<EnumTable> &enumTable,
@@ -168,9 +149,6 @@ public:
 
   [[nodiscard]] std::expected<std::monostate, Error>
   visit(const AST_RETURN *node) const noexcept override;
-
-  [[nodiscard]] std::expected<std::monostate, Error>
-  visit(const AST_PARAMETER *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::monostate, Error>
   visit(const AST_ENUM *node) const noexcept override;

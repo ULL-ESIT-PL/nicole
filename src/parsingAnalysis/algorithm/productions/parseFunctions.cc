@@ -65,9 +65,9 @@ TopDown::parseFuncDecl() const noexcept {
                                  *body);
 }
 
-const std::expected<std::vector<std::shared_ptr<AST_PARAMETER>>, Error>
+const std::expected<Parameters, Error>
 TopDown::parseParams() const noexcept {
-  std::vector<std::shared_ptr<AST_PARAMETER>> params{};
+  std::vector<std::pair<std::string, std::shared_ptr<Type>>> params{};
   while (tkStream_.currentPos() < tkStream_.size() and
          tkStream_.current()->type() != TokenType::RP) {
     if (tkStream_.current()->type() != TokenType::ID) {
@@ -93,8 +93,7 @@ TopDown::parseParams() const noexcept {
     if (!returnType) {
       return createError(returnType.error());
     }
-    const auto param{Builder::createParameter(id.raw(), *returnType)};
-    params.push_back(*param);
+    params.push_back({id.raw(), *returnType});
     if (tkStream_.current()->type() == TokenType::COMMA) {
       if (auto res = tryEat(); !res) {
         return createError(res.error());
@@ -107,7 +106,7 @@ TopDown::parseParams() const noexcept {
     }
     break;
   }
-  return params;
+  return Parameters{params};
 }
 
 const std::expected<std::shared_ptr<AST_RETURN>, Error>
