@@ -1,7 +1,9 @@
 let x:int = 10;
-def foo<T, Q>(y: T, y:Q) : Q* {
+def foo<T, Q>(y: T, o:Q) : Q* {
     let z: T = 10;
 }
+
+foo<int, int>(x);
 
 
 /*

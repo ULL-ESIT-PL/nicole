@@ -517,6 +517,20 @@ FillSemanticInfo::visit(const AST_FUNC_CALL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_FUNC_CALL");
   }
 
+  const auto exists{functionTable_->getFunctions(node->id())};
+  if (!exists) {
+    return createError(exists.error());
+  }
+
+  for (const auto& replacement : node->replaceOfGenerics()) {
+    if (!typeTable_->isPossibleType(replacement) and
+        !typeTable_->isGenericType(replacement, currentGenericList_)) {
+      return createError(ERROR_TYPE::TYPE,
+                         replacement->toString() +
+                             " is not a posibble type or generic");
+    }
+  }
+
   for (const auto &expr : node->parameters()) {
     const auto resul{expr->accept(*this)};
     if (!resul) {
@@ -573,6 +587,9 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
   }
 
   popScope();
+
+  currentGenericList_.clear();
+
   return {};
 }
 
