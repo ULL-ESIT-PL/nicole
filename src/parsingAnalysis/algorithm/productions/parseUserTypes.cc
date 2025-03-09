@@ -58,6 +58,34 @@ TopDown::parseEnum() const noexcept {
   return Builder::createEnum(id.raw(), identifiers);
 }
 
+const std::expected<std::shared_ptr<AST_ENUM_ACCESS>, Error>
+TopDown::parseEnumAccess() const noexcept {
+  const Token id{*tkStream_.current()};
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
+  }
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
+  }
+  if (tkStream_.current()->type() != TokenType::DOTDOT) {
+    return createError(ERROR_TYPE::SINTAX, "missing : in enum access at " +
+                                               tkStream_.lastRead()->locInfo());
+  }
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
+  }
+  if (tkStream_.current()->type() != TokenType::ID) {
+    return createError(ERROR_TYPE::SINTAX,
+                       "missing identifier in enum access at " +
+                           tkStream_.lastRead()->locInfo());
+  }
+  const Token identifier{*tkStream_.current()};
+  if (auto res = tryEat(); !res) {
+    return createError(res.error());
+  }
+  return Builder::createEnumAccess(id.raw(), identifier.raw());
+}
+
 const std::expected<std::shared_ptr<AST_STRUCT>, Error>
 TopDown::parseStructDecl() const noexcept {
   if (auto res = tryEat(); !res) {
@@ -160,7 +188,8 @@ TopDown::parseStructDecl() const noexcept {
                                tkStream_.current()->locInfo());
       }
       isConstructorParsed = true;
-      constructor = parseConstructorDecl(id.raw());
+      constructor = (fatherType) ? parseConstructorDecl(id.raw(), *fatherType)
+                                 : parseConstructorDecl(id.raw(), nullptr);
       if (!constructor || !*constructor) {
         return createError(constructor
                                ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
@@ -204,7 +233,9 @@ TopDown::parseStructDecl() const noexcept {
 }
 
 const std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>, Error>
-TopDown::parseConstructorDecl(const std::string &id_returnType) const noexcept {
+TopDown::parseConstructorDecl(
+    const std::string &id_returnType,
+    const std::shared_ptr<Type> &fatherType) const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -222,7 +253,7 @@ TopDown::parseConstructorDecl(const std::string &id_returnType) const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
-  const std::expected<Parameters, Error> params{parseParams()};
+  const auto params{parseParams()};
   if (!params) {
     return createError(params.error());
   }
@@ -233,13 +264,42 @@ TopDown::parseConstructorDecl(const std::string &id_returnType) const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
+  std::expected<std::shared_ptr<AST_SUPER>, Error> super{nullptr};
+  if (fatherType) {
+    if (tkStream_.current()->type() != TokenType::DOTDOT) {
+      return createError(ERROR_TYPE::SINTAX,
+                         "missing : at " + tkStream_.current()->locInfo());
+    }
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
+    }
+    if (tkStream_.current()->type() != TokenType::SUPER) {
+      return createError(ERROR_TYPE::SINTAX,
+                         "missing super at " + tkStream_.current()->locInfo());
+    }
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
+    }
+    const auto replacements{parseReplacementOfGenerics()};
+    if (!replacements) {
+      return createError(replacements.error());
+    }
+    const auto arguments{parseArguments({TokenType::LP, TokenType::RP}, true)};
+    if (!arguments) {
+      return createError(arguments.error());
+    }
+    super = Builder::createSuper(fatherType, *replacements, *arguments);
+    if (!super) {
+      return createError(super.error());
+    }
+  }
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
   if (!body || !*body) {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
   return Builder::createConstructorDecl(
-      id_returnType, *generics, *params,
+      id_returnType, *generics, *params, *super,
       std::make_shared<UserType>(id_returnType, nullptr,
                                  std::vector<GenericParameter>{}),
       *body);
@@ -286,7 +346,7 @@ TopDown::parseMethodDecl(const bool isVirtual) const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
-  const std::expected<Parameters, Error> params{parseParams()};
+  const auto params{parseParams()};
   if (!params) {
     return createError(params.error());
   }

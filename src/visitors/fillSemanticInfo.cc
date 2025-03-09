@@ -39,9 +39,10 @@
 #include "../../inc/parsingAnalysis/ast/functions/ast_funcDecl.h"
 #include "../../inc/parsingAnalysis/ast/functions/ast_return.h"
 
+#include "../../inc/parsingAnalysis/ast/enum/ast_enum.h"
+#include "../../inc/parsingAnalysis/ast/enum/ast_enumAccess.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_attrAccess.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_constructorCall.h"
-#include "../../inc/parsingAnalysis/ast/userTypes/ast_enum.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_methodCall.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_struct.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_this.h"
@@ -485,19 +486,6 @@ FillSemanticInfo::visit(const AST_FUNC_CALL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_FUNC_CALL");
   }
 
-  const auto exists{functionTable_->getFunctions(node->id())};
-  if (!exists) {
-    return createError(exists.error());
-  }
-
-  for (const auto &param : node->replaceOfGenerics()) {
-    if (!typeTable_->isPossibleType(param)) {
-      return createError(ERROR_TYPE::TYPE,
-                         "the replacement of generic is not a possible type: " +
-                             param->toString());
-    }
-  }
-
   for (const auto &expr : node->parameters()) {
     const auto resul{expr->accept(*this)};
     if (!resul) {
@@ -513,36 +501,8 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
   }
 
-  const auto insertFunc{functionTable_->insert(Function{
-      node->id(), node->generics(), node->parameters(), node->returnType()})};
-  if (!insertFunc) {
-    return createError(insertFunc.error());
-  }
-
   pushScope();
   node->body()->setScope(currentScope_);
-  for (const auto &param : node->parameters()) {
-    if (!typeTable_->isPossibleType(param.second)) {
-      return createError(ERROR_TYPE::TYPE, param.second->toString() +
-                                               " is not a possible type: ");
-    }
-
-    const auto insertVar{
-        currentScope_->insert(Variable{param.first, param.second, nullptr})};
-    if (!insertVar) {
-      return createError(insertVar.error());
-    }
-  }
-
-  if (!typeTable_->isPossibleType(node->returnType())) {
-    return createError(ERROR_TYPE::TYPE, node->returnType()->toString() +
-                                             " is not a possible type: ");
-  }
-
-  const auto body{node->body()->accept(*this)};
-  if (!body) {
-    return createError(body.error());
-  }
   popScope();
   return {};
 }
@@ -553,6 +513,14 @@ FillSemanticInfo::visit(const AST_RETURN *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_RETURN");
   }
   return node->expression()->accept(*this);
+}
+
+std::expected<std::monostate, Error>
+FillSemanticInfo::visit(const AST_PARAMETER *node) const noexcept {
+  if (!node) {
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PARAMETER");
+  }
+  return {};
 }
 
 std::expected<std::monostate, Error>
@@ -568,93 +536,22 @@ FillSemanticInfo::visit(const AST_ENUM *node) const noexcept {
 }
 
 std::expected<std::monostate, Error>
+FillSemanticInfo::visit(const AST_ENUM_ACCESS *node) const noexcept {
+  if (!node) {
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM_ACCESS");
+  }
+  return {};
+}
+
+std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
   }
-  if (node->fatherType()) {
-    if (!std::dynamic_pointer_cast<UserType>(node->fatherType()) and
-        !std::dynamic_pointer_cast<GenericInstanceType>(node->fatherType())) {
-      return createError(ERROR_TYPE::TYPE,
-                         "a father type can only be a user type or a generic "
-                         "Instance type of a user type: " +
-                             node->fatherType()->toString());
-    }
-
-    if (const auto fatherTypeAsUserType{
-            std::dynamic_pointer_cast<UserType>(node->fatherType())}) {
-      const auto fatherExists{
-          typeTable_->getType(fatherTypeAsUserType->name())};
-      if (!fatherExists) {
-        return createError(fatherExists.error());
-      }
-    } else if (const auto fatherTypeAsInstance{
-                   std::dynamic_pointer_cast<UserType>(node->fatherType())}) {
-      const auto fatherExists{
-          typeTable_->getType(fatherTypeAsInstance->name())};
-      if (!fatherExists) {
-        return createError(fatherExists.error());
-      }
-    }
-  }
-
-  const std::shared_ptr<UserType> usertType{std::make_shared<UserType>(
-      node->id(), node->fatherType(), node->generics())};
-
-  const auto typeInserteed{typeTable_->insert(usertType)};
-  if (!typeInserteed) {
-    return createError(typeInserteed.error());
-  }
-
-  /**
-  -----------------------------
-   */
-
-  AttrTable attrTable;
-  size_t position{0};
-  for (const auto &param : node->attributes()) {
-    const auto insertAttr{
-        attrTable.insert(Attribute{param.first, param.second, position})};
-    if (!insertAttr) {
-      return createError(insertAttr.error());
-    }
-    ++position;
-  }
-  usertType->setAttrTable(attrTable);
 
   pushScope();
-
-  MethodTable methodTable;
-  for (const auto &method : node->methods()) {
-    const auto insertMethod{
-        methodTable.insert(Method{method->id(), method->generics(),
-                                  method->parameters(), method->returnType()})};
-    if (!insertMethod) {
-      return createError(insertMethod.error());
-    }
-    const auto result{method->accept(*this)};
-    if (!result) {
-      return createError(result.error());
-    }
-  }
-  usertType->setMethodTable(methodTable);
-
-  const auto constructorSymbol{std::make_shared<Constructor>(
-      node->id(), node->constructor()->generics(),
-      node->constructor()->parameters(), node->constructor()->returnType())};
-  usertType->setConstructor(constructorSymbol);
-  const auto constructor{node->constructor()->accept(*this)};
-  if (!constructor) {
-    return createError(constructor.error());
-  }
-
-  const auto desstructorSymbol{std::make_shared<Destructor>(node->id())};
-  usertType->setDestructor(desstructorSymbol);
-  const auto destructor{node->destructor()->accept(*this)};
-  if (!destructor) {
-    return createError(destructor.error());
-  }
   popScope();
+
   return {};
 }
 
@@ -672,20 +569,6 @@ FillSemanticInfo::visit(const AST_METHOD_CALL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL");
   }
 
-  for (const auto &param : node->replaceOfGenerics()) {
-    if (!typeTable_->isPossibleType(param)) {
-      return createError(ERROR_TYPE::TYPE,
-                         "the replacement of generic is not a possible type: " +
-                             param->toString());
-    }
-  }
-
-  for (const auto &expr : node->parameters()) {
-    const auto result{expr->accept(*this)};
-    if (!result) {
-      return createError(result.error());
-    }
-  }
   return {};
 }
 
@@ -697,28 +580,8 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
 
   pushScope();
   node->body()->setScope(currentScope_);
-  for (const auto &param : node->parameters()) {
-    if (!typeTable_->isPossibleType(param.second)) {
-      return createError(ERROR_TYPE::TYPE, param.second->toString() +
-                                               " is not a possible type: ");
-    }
-    const auto insertVar{
-        currentScope_->insert(Variable{param.first, param.second, nullptr})};
-    if (!insertVar) {
-      return createError(insertVar.error());
-    }
-  }
-
-  if (!typeTable_->isPossibleType(node->returnType())) {
-    return createError(ERROR_TYPE::TYPE, node->returnType()->toString() +
-                                             " is not a possible type: ");
-  }
-
-  const auto body{node->body()->accept(*this)};
-  if (!body) {
-    return createError(body.error());
-  }
   popScope();
+
   return {};
 }
 
@@ -729,28 +592,16 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   }
   pushScope();
   node->body()->setScope(currentScope_);
-  for (const auto &param : node->parameters()) {
-    if (!typeTable_->isPossibleType(param.second)) {
-      return createError(ERROR_TYPE::TYPE, param.second->toString() +
-                                               " is not a possible type: ");
-    }
-    const auto insertVar{
-        currentScope_->insert(Variable{param.first, param.second, nullptr})};
-    if (!insertVar) {
-      return createError(insertVar.error());
-    }
-  }
-
-  if (!typeTable_->isPossibleType(node->returnType())) {
-    return createError(ERROR_TYPE::TYPE, node->returnType()->toString() +
-                                             " is not a possible type: ");
-  }
-
-  const auto body{node->body()->accept(*this)};
-  if (!body) {
-    return createError(body.error());
-  }
   popScope();
+
+  return {};
+}
+
+std::expected<std::monostate, Error>
+FillSemanticInfo::visit(const AST_SUPER *node) const noexcept {
+  if (!node) {
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SUPER");
+  }
   return {};
 }
 
@@ -761,11 +612,8 @@ FillSemanticInfo::visit(const AST_DESTRUCTOR_DECL *node) const noexcept {
   }
   pushScope();
   node->body()->setScope(currentScope_);
-  const auto body{node->body()->accept(*this)};
-  if (!body) {
-    return createError(body.error());
-  }
   popScope();
+
   return {};
 }
 
@@ -783,25 +631,6 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL");
   }
 
-  const auto typeEXists{typeTable_->getType(node->id())};
-  if (!typeEXists) {
-    return createError(typeEXists.error());
-  }
-
-  for (const auto &param : node->replaceOfGenerics()) {
-    if (!typeTable_->isPossibleType(param)) {
-      return createError(ERROR_TYPE::TYPE,
-                         "the replacement of generic is not a possible type: " +
-                             param->toString());
-    }
-  }
-
-  for (const auto &expr : node->parameters()) {
-    const auto result{expr->accept(*this)};
-    if (!result) {
-      return createError(result.error());
-    }
-  }
   return {};
 }
 
@@ -810,15 +639,7 @@ FillSemanticInfo::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
   }
-  const auto expr{node->value()->accept(*this)};
-  if (!expr) {
-    return createError(expr.error());
-  }
-  const auto insertVar{
-      currentScope_->insert(Variable{node->id(), nullptr, nullptr})};
-  if (!insertVar) {
-    return createError(insertVar.error());
-  }
+
   return {};
 }
 
@@ -828,21 +649,6 @@ FillSemanticInfo::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_TYPED_DECL");
   }
 
-  if (!typeTable_->isPossibleType(node->varType())) {
-    return createError(ERROR_TYPE::TYPE,
-                       "the replacement of generic is not a possible type: " +
-                           node->varType()->toString());
-  }
-
-  const auto expr{node->value()->accept(*this)};
-  if (!expr) {
-    return createError(expr.error());
-  }
-  const auto insertVar{
-      currentScope_->insert(Variable{node->id(), node->varType(), nullptr})};
-  if (!insertVar) {
-    return createError(insertVar.error());
-  }
   return {};
 }
 
@@ -850,10 +656,6 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_VAR_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_CALL");
-  }
-  if (!currentScope_->has(node->id())) {
-    return createError(ERROR_TYPE::VARIABLE,
-                       "the variable: " + node->id() + " does not exist");
   }
   return {};
 }

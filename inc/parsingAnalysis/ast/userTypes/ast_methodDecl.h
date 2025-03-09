@@ -15,7 +15,7 @@ private:
 public:
   explicit AST_METHOD_DECL(const std::string &id,
                            const std::vector<GenericParameter> &generics,
-                           const Parameters &params,
+                           const std::vector<std::shared_ptr<AST_PARAMETER>> &params,
                            const std::shared_ptr<Type> &returnType,
                            const std::shared_ptr<AST_BODY> &body,
                            const bool isVirtual) noexcept

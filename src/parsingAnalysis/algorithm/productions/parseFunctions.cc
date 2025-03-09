@@ -32,7 +32,7 @@ TopDown::parseFuncDecl() const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
-  const std::expected<Parameters, Error> params{parseParams()};
+  const auto params{parseParams()};
   if (!params) {
     return createError(params.error());
   }
@@ -65,8 +65,9 @@ TopDown::parseFuncDecl() const noexcept {
                                  *body);
 }
 
-const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {
-  std::vector<std::pair<std::string, std::shared_ptr<Type>>> params{};
+const std::expected<std::vector<std::shared_ptr<AST_PARAMETER>>, Error>
+TopDown::parseParams() const noexcept {
+  std::vector<std::shared_ptr<AST_PARAMETER>> params{};
   while (tkStream_.currentPos() < tkStream_.size() and
          tkStream_.current()->type() != TokenType::RP) {
     if (tkStream_.current()->type() != TokenType::ID) {
@@ -92,7 +93,8 @@ const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {
     if (!returnType) {
       return createError(returnType.error());
     }
-    params.push_back({id.raw(), *returnType});
+    const auto param{Builder::createParameter(id.raw(), *returnType)};
+    params.push_back(*param);
     if (tkStream_.current()->type() == TokenType::COMMA) {
       if (auto res = tryEat(); !res) {
         return createError(res.error());
@@ -105,7 +107,7 @@ const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {
     }
     break;
   }
-  return Parameters{params};
+  return params;
 }
 
 const std::expected<std::shared_ptr<AST_RETURN>, Error>
@@ -132,39 +134,39 @@ const std::expected<std::vector<std::shared_ptr<Type>>, Error>
 TopDown::parseReplacementOfGenerics() const noexcept {
   std::vector<std::shared_ptr<Type>> replacemments{};
   if (tkStream_.current()->type() == TokenType::OPERATOR_SMALLER) {
-     auto res = tryEat(); // consume el identificador
+    auto res = tryEat(); // consume el identificador
     if (!res) {
       return createError(res.error());
-    } 
+    }
     auto argExpected = parseType();
     if (!argExpected) {
       return createError(argExpected.error());
     }
     replacemments.push_back(argExpected.value());
     // Se admiten múltiples argumentos separados por ','
-      while (tkStream_.current() &&
-             tkStream_.current()->type() == TokenType::COMMA) {
-        res = tryEat(); // consume ','
-        if (!res) {
-          return createError(res.error());
-        }
-        argExpected = parseType();
-        if (!argExpected) {
-          return createError(argExpected.error());
-        }
-        replacemments.push_back(argExpected.value());
-      }
-      if (!tkStream_.current() ||
-          tkStream_.current()->type() != TokenType::OPERATOR_GREATER) {
-        return createError(
-            ERROR_TYPE::SINTAX,
-            "Se esperaba '>' para cerrar los argumentos genéricos en " +
-                tkStream_.lastRead()->locInfo());
-      }
-      res = tryEat(); // consume '>'
+    while (tkStream_.current() &&
+           tkStream_.current()->type() == TokenType::COMMA) {
+      res = tryEat(); // consume ','
       if (!res) {
         return createError(res.error());
       }
+      argExpected = parseType();
+      if (!argExpected) {
+        return createError(argExpected.error());
+      }
+      replacemments.push_back(argExpected.value());
+    }
+    if (!tkStream_.current() ||
+        tkStream_.current()->type() != TokenType::OPERATOR_GREATER) {
+      return createError(
+          ERROR_TYPE::SINTAX,
+          "Se esperaba '>' para cerrar los argumentos genéricos en " +
+              tkStream_.lastRead()->locInfo());
+    }
+    res = tryEat(); // consume '>'
+    if (!res) {
+      return createError(res.error());
+    }
   }
   return replacemments;
 }

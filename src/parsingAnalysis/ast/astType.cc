@@ -102,6 +102,8 @@ std::string astTypeToStr(const AST_TYPE type) noexcept {
     // Functions
   case AST_TYPE::FUNC_DECL:
     return "FUNC_DECL";
+  case AST_TYPE::PARAMETER:
+    return "PARAMETER";
   case AST_TYPE::RETURN:
     return "RETURN";
   case AST_TYPE::FUN_CALL:
@@ -136,9 +138,15 @@ std::string astTypeToStr(const AST_TYPE type) noexcept {
   case AST_TYPE::CONSTRUCTOR_CALL:
     return "CONSTRUCTOR_CALL";
 
+  case AST_TYPE::SUPER:
+    return "SUPER";
+
     // Enum
   case AST_TYPE::ENUM:
     return "ENUM";
+
+  case AST_TYPE::ENUM_ACCESS:
+    return "ENUM_ACCESS";
 
   // Chained expression
   case AST_TYPE::CHAIN:

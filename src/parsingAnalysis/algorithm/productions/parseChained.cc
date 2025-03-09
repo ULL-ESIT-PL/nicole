@@ -1,6 +1,5 @@
 #include "../../../../inc/parsingAnalysis/algorithm/topDown.h"
 #include <expected>
-#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -8,7 +7,6 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_CHAINED>, Error>
 TopDown::parseChainedExpression() const noexcept {
-  // 1. Verificar que el primer token sea ID
   if (tkStream_.current()->type() != TokenType::ID) {
     return createError(ERROR_TYPE::SINTAX, "Expected identifier at " +
                                                tkStream_.current()->locInfo());

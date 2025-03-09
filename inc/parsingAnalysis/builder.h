@@ -7,6 +7,7 @@
 #include "ast/conditionals/ast_default.h"
 #include "ast/functions/ast_funcCall.h"
 #include "ast/functions/ast_funcDecl.h"
+#include "ast/functions/ast_parameter.h"
 #include "ast/functions/ast_return.h"
 
 #include "ast/literals/ast_bool.h"
@@ -25,12 +26,14 @@
 #include "ast/userTypes/ast_constructorDecl.h"
 #include "ast/userTypes/ast_destructorDecl.h"
 #include "ast/userTypes/ast_methodDecl.h"
+#include "ast/userTypes/ast_super.h"
 #include "ast/userTypes/ast_this.h"
 #include "ast/vector/ast_index.h"
 #include "ast/vector/ast_vector.h"
 
+#include "ast/enum/ast_enum.h"
+#include "ast/enum/ast_enumAccess.h"
 #include "ast/userTypes/ast_attrAccess.h"
-#include "ast/userTypes/ast_enum.h"
 #include "ast/userTypes/ast_methodCall.h"
 #include "ast/userTypes/ast_struct.h"
 
@@ -66,6 +69,7 @@
 #include "../errors.h"
 
 #include <expected>
+#include <memory>
 
 namespace nicole {
 
@@ -203,18 +207,27 @@ public:
   [[nodiscard]] static std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
   createFuncDecl(const std::string &id,
                  const std::vector<GenericParameter> &generics,
-                 const Parameters &params,
+                 const std::vector<std::shared_ptr<AST_PARAMETER>> &params,
                  const std::shared_ptr<Type> &returnType,
                  const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_RETURN>, Error>
   createReturn(const std::shared_ptr<AST> &value) noexcept;
 
-  // Usert types
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_PARAMETER>, Error>
+  createParameter(const std::string &id,
+                  const std::shared_ptr<Type> &type) noexcept;
+
+  // Enum
   [[nodiscard]] static std::expected<std::shared_ptr<AST_ENUM>, Error>
   createEnum(const std::string &id,
              const std::vector<std::string> &enumIdentifiers) noexcept;
 
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_ENUM_ACCESS>, Error>
+  createEnumAccess(const std::string &id,
+                   const std::string &identifiers) noexcept;
+
+  // Usert types
   [[nodiscard]] static std::expected<std::shared_ptr<AST_STRUCT>, Error>
   createStruct(const std::string &id,
                const std::vector<GenericParameter> &generics,
@@ -236,23 +249,30 @@ public:
   [[nodiscard]] static std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>
   createMethodDecl(const std::string &id,
                    const std::vector<GenericParameter> &generics,
-                   const Parameters &params,
+                   const std::vector<std::shared_ptr<AST_PARAMETER>> &params,
+
                    const std::shared_ptr<Type> &returnType,
                    const std::shared_ptr<AST_BODY> &body,
                    const bool isVirtual) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>,
                                      Error>
-  createConstructorDecl(const std::string &id,
-                        const std::vector<GenericParameter> &generics,
-                        const Parameters &params,
-                        const std::shared_ptr<Type> &returnType,
-                        const std::shared_ptr<AST_BODY> &body) noexcept;
+  createConstructorDecl(
+      const std::string &id, const std::vector<GenericParameter> &generics,
+      const std::vector<std::shared_ptr<AST_PARAMETER>> &params,
+      const std::shared_ptr<AST_SUPER> &super,
+      const std::shared_ptr<Type> &returnType,
+      const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>,
                                      Error>
   createDestructorDecl(const std::string &id,
                        const std::shared_ptr<AST_BODY> &body) noexcept;
+
+  [[nodiscard]] static std::expected<std::shared_ptr<AST_SUPER>, Error>
+  createSuper(const std::shared_ptr<Type> &fatherType,
+              const std::vector<std::shared_ptr<Type>> &replacements,
+              const std::vector<std::shared_ptr<AST>> &arguments) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_THIS>, Error>
   createThis() noexcept;

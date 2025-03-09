@@ -120,7 +120,13 @@ public:
   visit(const AST_RETURN *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>
+  visit(const AST_PARAMETER *node) const noexcept override;
+
+  [[nodiscard]] std::expected<std::string, Error>
   visit(const AST_ENUM *node) const noexcept override;
+
+  [[nodiscard]] std::expected<std::string, Error>
+  visit(const AST_ENUM_ACCESS *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>
   visit(const AST_STRUCT *node) const noexcept override;
@@ -136,6 +142,9 @@ public:
 
   [[nodiscard]] std::expected<std::string, Error>
   visit(const AST_CONSTRUCTOR_DECL *node) const noexcept override;
+
+  [[nodiscard]] std::expected<std::string, Error>
+  visit(const AST_SUPER *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::string, Error>
   visit(const AST_DESTRUCTOR_DECL *node) const noexcept override;

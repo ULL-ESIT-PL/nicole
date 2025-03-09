@@ -1,4 +1,5 @@
 #include "../../inc/parsingAnalysis/builder.h"
+#include <memory>
 
 namespace nicole {
 
@@ -399,10 +400,18 @@ std::expected<std::shared_ptr<AST_FUNC_CALL>, Error> Builder::createFunCall(
 
 std::expected<std::shared_ptr<AST_FUNC_DECL>, Error> Builder::createFuncDecl(
     const std::string &id, const std::vector<GenericParameter> &generics,
-    const Parameters &params, const std::shared_ptr<Type> &returnType,
+    const std::vector<std::shared_ptr<AST_PARAMETER>> &params,
+    const std::shared_ptr<Type> &returnType,
     const std::shared_ptr<AST_BODY> &body) noexcept {
   const auto astFuncDecl{
       std::make_shared<AST_FUNC_DECL>(id, generics, params, returnType, body)};
+  const std::vector<std::shared_ptr<AST_PARAMETER>> &parameters__{
+      astFuncDecl->parameters()};
+  for (const auto &parameters_ : parameters__) {
+    if (parameters_) {
+      parameters_->setFather(astFuncDecl);
+    }
+  }
   if (body) {
     body->setFather(astFuncDecl);
   }
@@ -418,11 +427,22 @@ Builder::createReturn(const std::shared_ptr<AST> &value) noexcept {
   return astReturn;
 }
 
+std::expected<std::shared_ptr<AST_PARAMETER>, Error>
+Builder::createParameter(const std::string &id,
+                         const std::shared_ptr<Type> &type) noexcept {
+  return std::make_shared<AST_PARAMETER>(id, type);
+}
+
 std::expected<std::shared_ptr<AST_ENUM>, Error>
 Builder::createEnum(const std::string &id,
                     const std::vector<std::string> &enumIdentifiers) noexcept {
-  const auto astEnum{std::make_shared<AST_ENUM>(id, enumIdentifiers)};
-  return astEnum;
+  return std::make_shared<AST_ENUM>(id, enumIdentifiers);
+}
+
+std::expected<std::shared_ptr<AST_ENUM_ACCESS>, Error>
+Builder::createEnumAccess(const std::string &id,
+                          const std::string &identifiers) noexcept {
+  return std::make_shared<AST_ENUM_ACCESS>(id, identifiers);
 }
 
 std::expected<std::shared_ptr<AST_STRUCT>, Error> Builder::createStruct(
@@ -472,14 +492,21 @@ Builder::createMethodCall(
 }
 
 std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>
-Builder::createMethodDecl(const std::string &id,
-                          const std::vector<GenericParameter> &generics,
-                          const Parameters &params,
-                          const std::shared_ptr<Type> &returnType,
-                          const std::shared_ptr<AST_BODY> &body,
-                          const bool isVirtual) noexcept {
+Builder::createMethodDecl(
+    const std::string &id, const std::vector<GenericParameter> &generics,
+    const std::vector<std::shared_ptr<AST_PARAMETER>> &params,
+
+    const std::shared_ptr<Type> &returnType,
+    const std::shared_ptr<AST_BODY> &body, const bool isVirtual) noexcept {
   const auto astMethodDecl{std::make_shared<AST_METHOD_DECL>(
       id, generics, params, returnType, body, isVirtual)};
+  const std::vector<std::shared_ptr<AST_PARAMETER>> &parameters__{
+      astMethodDecl->parameters()};
+  for (const auto &parameters_ : parameters__) {
+    if (parameters_) {
+      parameters_->setFather(astMethodDecl);
+    }
+  }
   if (body) {
     body->setFather(astMethodDecl);
   }
@@ -504,17 +531,43 @@ Builder::createConstructorCall(
 }
 
 std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>, Error>
-Builder::createConstructorDecl(const std::string &id,
-                               const std::vector<GenericParameter> &generics,
-                               const Parameters &params,
-                               const std::shared_ptr<Type> &returnType,
-                               const std::shared_ptr<AST_BODY> &body) noexcept {
+Builder::createConstructorDecl(
+    const std::string &id, const std::vector<GenericParameter> &generics,
+    const std::vector<std::shared_ptr<AST_PARAMETER>> &params,
+    const std::shared_ptr<AST_SUPER> &super,
+    const std::shared_ptr<Type> &returnType,
+    const std::shared_ptr<AST_BODY> &body) noexcept {
   const auto astConstructor{std::make_shared<AST_CONSTRUCTOR_DECL>(
-      id, generics, params, returnType, body)};
+      id, generics, params, super, returnType, body)};
+  const std::vector<std::shared_ptr<AST_PARAMETER>> &parameters__{
+      astConstructor->parameters()};
+  for (const auto &parameters_ : parameters__) {
+    if (parameters_) {
+      parameters_->setFather(astConstructor);
+    }
+  }
+  if (super) {
+    super->setFather(astConstructor);
+  }
   if (body) {
     body->setFather(astConstructor);
   }
   return astConstructor;
+}
+
+std::expected<std::shared_ptr<AST_SUPER>, Error> Builder::createSuper(
+    const std::shared_ptr<Type> &fatherType,
+    const std::vector<std::shared_ptr<Type>> &replacements,
+    const std::vector<std::shared_ptr<AST>> &arguments) noexcept {
+  const auto astSuper{
+      std::make_shared<AST_SUPER>(fatherType, replacements, arguments)};
+  const std::vector<std::shared_ptr<AST>> &values__{astSuper->arguments()};
+  for (const auto &values_ : values__) {
+    if (values_) {
+      values_->setFather(astSuper);
+    }
+  }
+  return astSuper;
 }
 
 std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>, Error>

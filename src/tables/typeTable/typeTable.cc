@@ -21,7 +21,8 @@ TypeTable::insert(const std::shared_ptr<Type> &type) noexcept {
     return createError(ERROR_TYPE::TYPE,
                        "the type: " + type->toString() + " already exists");
   }
-  table_[type->toString()] = type;
+  const auto &userType = std::dynamic_pointer_cast<UserType>(type);
+  table_[userType->name()] = type;
   return {};
 }
 

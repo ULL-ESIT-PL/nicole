@@ -7,6 +7,8 @@
 #include "../tables/typeTable/typeTable.h"
 #include "visitor.h"
 #include <memory>
+#include <unordered_set>
+#include <vector>
 
 namespace nicole {
 
@@ -20,8 +22,6 @@ private:
   mutable std::shared_ptr<Scope> currentScope_{nullptr};
   mutable std::shared_ptr<Scope> firstScope_{nullptr};
   mutable std::vector<GenericParameter> currentGenericList_{};
-  mutable std::shared_ptr<AttrTable> currentAttrTable_{nullptr};
-  mutable std::shared_ptr<MethodTable> currentMethodTable_{nullptr};
   mutable std::shared_ptr<UserType> currentUserType_{nullptr};
   mutable bool analyzingInsideClass{false};
 
@@ -37,6 +37,22 @@ private:
     if (currentScope_) {
       currentScope_ = currentScope_->father();
     }
+  }
+
+  [[nodiscard]] std::expected<std::unordered_set<GenericParameter>, Error>
+  mergeGenericList(const std::vector<GenericParameter> &list) const noexcept {
+    std::unordered_set<GenericParameter> set(list.begin(), list.end());
+    if (set.size() != list.size()) {
+      return createError(ERROR_TYPE::TYPE,
+                         "Duplicate generic parameter found.");
+    }
+    return set;
+  }
+
+  [[nodiscard]] bool hasDuplicatedGenerics(
+      const std::vector<GenericParameter> &list) const noexcept {
+    std::unordered_set<GenericParameter> set(list.begin(), list.end());
+    return set.size() != list.size();
   }
 
 public:
@@ -154,7 +170,13 @@ public:
   visit(const AST_RETURN *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::monostate, Error>
+  visit(const AST_PARAMETER *node) const noexcept override;
+
+  [[nodiscard]] std::expected<std::monostate, Error>
   visit(const AST_ENUM *node) const noexcept override;
+
+  [[nodiscard]] std::expected<std::monostate, Error>
+  visit(const AST_ENUM_ACCESS *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::monostate, Error>
   visit(const AST_STRUCT *node) const noexcept override;
@@ -170,6 +192,9 @@ public:
 
   [[nodiscard]] std::expected<std::monostate, Error>
   visit(const AST_CONSTRUCTOR_DECL *node) const noexcept override;
+
+  [[nodiscard]] std::expected<std::monostate, Error>
+  visit(const AST_SUPER *node) const noexcept override;
 
   [[nodiscard]] std::expected<std::monostate, Error>
   visit(const AST_DESTRUCTOR_DECL *node) const noexcept override;

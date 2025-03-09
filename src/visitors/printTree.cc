@@ -39,9 +39,10 @@
 #include "../../inc/parsingAnalysis/ast/functions/ast_funcDecl.h"
 #include "../../inc/parsingAnalysis/ast/functions/ast_return.h"
 
+#include "../../inc/parsingAnalysis/ast/enum/ast_enum.h"
+#include "../../inc/parsingAnalysis/ast/enum/ast_enumAccess.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_attrAccess.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_constructorCall.h"
-#include "../../inc/parsingAnalysis/ast/userTypes/ast_enum.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_methodCall.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_struct.h"
 #include "../../inc/parsingAnalysis/ast/userTypes/ast_this.h"
@@ -708,8 +709,11 @@ PrintTree::visit(const AST_FUNC_DECL *node) const noexcept {
   result << indent_ << "Parameters:\n";
   increaseIndent();
   for (const auto &param : node->parameters()) {
-    result << indent_ << "var " << param.first << " type "
-           << param.second->toString() << "\n";
+    const auto paramStr{param->accept(*this)};
+    if (!paramStr) {
+      return createError(paramStr.error());
+    }
+    result << *paramStr << "\n";
   }
   decreaseIndent();
 
@@ -749,6 +753,20 @@ PrintTree::visit(const AST_RETURN *node) const noexcept {
 }
 
 std::expected<std::string, Error>
+PrintTree::visit(const AST_PARAMETER *node) const noexcept {
+  if (!node) {
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PARAMETER");
+  }
+  std::ostringstream result;
+  result << indent_ << "Parameter:\n";
+  increaseIndent();
+  result << indent_ << "id: " << node->id() << "\n";
+  result << indent_ << "type: " << node->varType()->toString() << "\n";
+  decreaseIndent();
+  return result.str();
+}
+
+std::expected<std::string, Error>
 PrintTree::visit(const AST_ENUM *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM");
@@ -761,6 +779,20 @@ PrintTree::visit(const AST_ENUM *node) const noexcept {
   for (const auto &id : node->identifiers()) {
     result << indent_ << id << "\n";
   }
+  decreaseIndent();
+  return result.str();
+}
+
+std::expected<std::string, Error>
+PrintTree::visit(const AST_ENUM_ACCESS *node) const noexcept {
+  if (!node) {
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM_ACCESS");
+  }
+  std::ostringstream result;
+  result << indent_ << "Enum Access:\n";
+  increaseIndent();
+  result << indent_ << "id: " << node->enumId() << "\n";
+  result << indent_ << "name: " + node->identifier() + "\n";
   decreaseIndent();
   return result.str();
 }
@@ -784,7 +816,8 @@ PrintTree::visit(const AST_STRUCT *node) const noexcept {
   result << "\n";
   // Tipo padre (si existe)
   if (node->fatherType()) {
-    result << indent_ << "Father Type: " << node->fatherType()->toString() << "\n";
+    result << indent_ << "Father Type: " << node->fatherType()->toString()
+           << "\n";
   } else {
     result << indent_ << "No Father Type\n";
   }
@@ -900,8 +933,11 @@ PrintTree::visit(const AST_METHOD_DECL *node) const noexcept {
   result << indent_ << "Parameters:\n";
   increaseIndent();
   for (const auto &param : node->parameters()) {
-    result << indent_ << "var " << param.first << " type " << param.second
-           << "\n";
+    const auto paramStr{param->accept(*this)};
+    if (!paramStr) {
+      return createError(paramStr.error());
+    }
+    result << *paramStr << "\n";
   }
   decreaseIndent();
 
@@ -937,10 +973,21 @@ PrintTree::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   result << indent_ << "Parameters:\n";
   increaseIndent();
   for (const auto &param : node->parameters()) {
-    result << indent_ << "var " << param.first << " type " << param.second
-           << "\n";
+    const auto paramStr{param->accept(*this)};
+    if (!paramStr) {
+      return createError(paramStr.error());
+    }
+    result << *paramStr << "\n";
   }
   decreaseIndent();
+
+  if (node->super()) {
+    const auto super{node->super()->accept(*this)};
+    if (!super) {
+      return createError(super.error());
+    }
+    result << *super;
+  }
 
   if (node->body()) {
     const auto bodyStr{node->body()->accept(*this)};
@@ -953,6 +1000,32 @@ PrintTree::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   }
   decreaseIndent();
 
+  return result.str();
+}
+
+std::expected<std::string, Error>
+PrintTree::visit(const AST_SUPER *node) const noexcept {
+  if (!node) {
+    return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_SUPER");
+  }
+  std::ostringstream result;
+  result << indent_ << "Super:\n";
+  result << indent_ << "Type: " + node->fatherType()->toString() << "\n";
+  result << indent_ << "Replacement of generics:\n";
+  for (const auto &generic : node->replacements()) {
+    result << indent_ << generic->toString() << ", ";
+  }
+  result << "\n";
+  result << indent_ << "Arguments:\n";
+  increaseIndent();
+  for (const auto &arg : node->arguments()) {
+    const auto argStr = arg->accept(*this);
+    if (!argStr) {
+      return createError(argStr.error());
+    }
+    result << *argStr;
+  }
+  decreaseIndent();
   return result.str();
 }
 

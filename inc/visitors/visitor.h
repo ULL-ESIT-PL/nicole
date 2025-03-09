@@ -55,8 +55,11 @@ class AST_CONDITION;
 class AST_FUNC_CALL;
 class AST_FUNC_DECL;
 class AST_RETURN;
+class AST_PARAMETER;
 
 class AST_ENUM;
+class AST_ENUM_ACCESS;
+
 class AST_STRUCT;
 class AST_ATTR_ACCESS;
 class AST_METHOD_CALL;
@@ -65,6 +68,7 @@ class AST_CONSTRUCTOR_CALL;
 class AST_METHOD_DECL;
 class AST_CONSTRUCTOR_DECL;
 class AST_DESTRUCTOR_DECL;
+class AST_SUPER;
 
 class AST_AUTO_DECL;
 class AST_VAR_TYPED_DECL;
@@ -182,7 +186,13 @@ public:
   visit(const AST_RETURN *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_PARAMETER *node) const noexcept = 0;
+
+  [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_ENUM *node) const noexcept = 0;
+
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_ENUM_ACCESS *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_STRUCT *node) const noexcept = 0;
@@ -204,6 +214,9 @@ public:
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_CONSTRUCTOR_DECL *node) const noexcept = 0;
+
+  [[nodiscard]] virtual std::expected<T, Error>
+  visit(const AST_SUPER *node) const noexcept = 0;
 
   [[nodiscard]] virtual std::expected<T, Error>
   visit(const AST_DESTRUCTOR_DECL *node) const noexcept = 0;

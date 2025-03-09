@@ -67,6 +67,7 @@ enum class AST_TYPE : int {
 
   // Functions
   FUNC_DECL,
+  PARAMETER,
   RETURN,
   FUN_CALL,
 
@@ -83,9 +84,11 @@ enum class AST_TYPE : int {
   METHOD_DECL,
   CONSTRUCTOR_DECL,
   DESTRUCTOR_DECL,
+  SUPER,
 
   // Enum
   ENUM,
+  ENUM_ACCESS,
 
   // Chained expression
   CHAIN

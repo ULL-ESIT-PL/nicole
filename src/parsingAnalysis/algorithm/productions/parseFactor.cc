@@ -77,6 +77,9 @@ TopDown::parseFactor() const noexcept {
   }
 
   case TokenType::ID: {
+    if (tkStream_.lookAhead(1)->type() == TokenType::DOTDOT) {
+      return parseEnumAccess();
+    }
     return parseChainedExpression();
   }
 

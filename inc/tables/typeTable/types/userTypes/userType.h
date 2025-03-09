@@ -11,6 +11,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <variant>
 #include <vector>
 
 namespace nicole {
@@ -42,113 +43,36 @@ public:
     return genericParams_;
   }
 
-  [[nodiscard]] bool hasAttribute(const std::string &id) const noexcept {
-    if (attrTable_.has(id)) {
-      return true;
-    }
-    if (baseType_) {
-      if (const auto userType = static_cast<UserType *>(baseType_.get()))
-        return userType->hasAttribute(id);
-    }
-    return false;
-  }
+  [[nodiscard]] bool hasAttribute(const std::string &id) const noexcept;
 
-  [[nodiscard]] bool hasMethod(const Method &id) const noexcept {
-    if (methodTable_.has(id)) {
-      return true;
-    }
-    if (baseType_) {
-      if (const auto userType = static_cast<UserType *>(baseType_.get()))
-        return userType->hasMethod(id);
-    }
-    return false;
-  }
+  [[nodiscard]] bool hasMethod(const Method &id) const noexcept;
 
   [[nodiscard]] const std::expected<Attribute, Error>
-  getAttribute(const std::string &id) const noexcept {
-    if (attrTable_.has(id)) {
-      return attrTable_.getAttribute(id);
-    }
-    if (baseType_) {
-      if (const auto userType = static_cast<UserType *>(baseType_.get()))
-        return userType->getAttribute(id);
-    }
-    return createError(ERROR_TYPE::ATTR,
-                       "the attribute: " + id + " does not exist in " + name_);
-  }
+  getAttribute(const std::string &id) const noexcept;
 
   [[nodiscard]] const std::expected<Method, Error>
-  getMethod(const std::string &id, const Parameters &params) const noexcept {
-    if (methodTable_.has(Method{id, {}, params, nullptr})) {
-      return methodTable_.getMethod(id, params);
-    }
-    if (baseType_) {
-      if (const auto userType = static_cast<UserType *>(baseType_.get()))
-        return userType->getMethod(id, params);
-    }
-    return createError(ERROR_TYPE::METHOD,
-                       "the method: " + id + " does not exist in " + name_ +
-                           " with the given parameters does not exist");
-  }
+  getMethod(const std::string &id, const Parameters &params) const noexcept;
 
   [[nodiscard]] const std::expected<std::vector<Method>, Error>
-  getMethods(const std::string &id) const noexcept {
-    std::vector<Method> combinedMethods;
-    if (methodTable_.hasSymbol(id)) {
-      auto childRes = methodTable_.getMethods(id);
-      if (childRes)
-        combinedMethods.insert(combinedMethods.end(), childRes.value().begin(),
-                               childRes.value().end());
-    }
-    if (baseType_) {
-      if (const auto userType = static_cast<UserType *>(baseType_.get())) {
-        auto parentRes = userType->getMethods(id);
-        if (parentRes)
-          combinedMethods.insert(combinedMethods.end(),
-                                 parentRes.value().begin(),
-                                 parentRes.value().end());
-      }
-    }
-    if (!combinedMethods.empty())
-      return combinedMethods;
-
-    return createError(ERROR_TYPE::METHOD,
-                       "the method: " + id + " does not exist in " + name_);
-  }
-
-  void setAttrTable(const AttrTable &tb) const noexcept { attrTable_ = tb; }
+  getMethods(const std::string &id) const noexcept;
 
   void
   setDestructor(const std::shared_ptr<Destructor> &destructor) const noexcept {
     destructor_ = destructor;
   }
 
-  void
-  setConstructor(const std::shared_ptr<Constructor> &constructor) const noexcept {
+  void setConstructor(
+      const std::shared_ptr<Constructor> &constructor) const noexcept {
     constructor_ = constructor;
   }
 
-  void setMethodTable(const MethodTable &tb) const noexcept {
-    methodTable_ = tb;
-  }
+  [[nodiscard]] std::expected<std::monostate, Error>
+  insertAttr(const Attribute &attr) const noexcept;
 
-  [[nodiscard]] std::string toString() const noexcept override {
-    std::ostringstream oss;
-    oss << name_;
-    if (!genericParams_.empty()) {
-      oss << "<";
-      for (size_t i = 0; i < genericParams_.size(); ++i) {
-        oss << genericParams_[i].name();
-        if (i != genericParams_.size() - 1)
-          oss << ", ";
-      }
-      oss << ">";
-    }
-    if (baseType_) {
-      oss << " : " << baseType_->toString();
-    }
-    return oss.str();
-  }
+  [[nodiscard]] std::expected<std::monostate, Error>
+  insertMethod(const Method &method) const noexcept;
+
+  [[nodiscard]] std::string toString() const noexcept override;
 };
 
 } // namespace nicole

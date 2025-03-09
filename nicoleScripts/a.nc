@@ -1,3 +1,33 @@
+let a: int = 10;
+
+struct A {
+    a: int
+    constructor() {
+       a;
+    }
+
+    destructor {}
+}
+
+struct B extends A {
+    a: int
+    constructor(): super() {
+       a;
+    }
+
+    destructor {}
+}
+
+struct C<T, Q> extends W<T> {
+    a: Q
+    constructor<P>(param: P): super<P>(10, 60) {
+
+    }
+}
+
+
+/*
+
 def foo<T, Q>(a: T*, b: vector<tuple<str***, bool, complexNumber>>): void* {
     let a: T = "hola";
 }
@@ -8,7 +38,7 @@ struct B {
     a: int
     constructor() {}
     destructor { return 10; }
-method b(): void {
+    method b(): void {
         a;
     }
 }
@@ -32,3 +62,7 @@ enum Hola {
     hola,
     adios
 }
+
+*/
+
+ss::foo;
