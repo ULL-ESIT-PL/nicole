@@ -3,14 +3,14 @@
 namespace nicole {
 
 bool UserType::hasAttribute(const std::string &id) const noexcept {
-  if (attrTable_.has(id)) {
-    return true;
-  }
   if (baseType_) {
     if (const auto userType = std::dynamic_pointer_cast<UserType>(baseType_)) {
-      std::cout << " hola";
+      std::cout << "hola";
       return userType->hasAttribute(id);
     }
+  }
+  if (attrTable_.has(id)) {
+    return true;
   }
   return false;
 }

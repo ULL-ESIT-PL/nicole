@@ -636,6 +636,7 @@ FillSemanticInfo::visit(const AST_STRUCT *node) const noexcept {
     return createError(ERROR_TYPE::TYPE, "has duplicated generics");
   }
 
+  std::shared_ptr<Type> father{nullptr};
   if (node->fatherType()) {
     const auto userType =
         std::dynamic_pointer_cast<UserType>(node->fatherType());
@@ -653,10 +654,15 @@ FillSemanticInfo::visit(const AST_STRUCT *node) const noexcept {
                          node->fatherType()->toString() +
                              " is not a posibble type or generic");
     }
+    if (userType) {
+      father = *typeTable_->getType(userType->name());
+    } else if (instanceType) {
+      father = *typeTable_->getType(instanceType->genericType()->name());
+    }
   }
 
-  currentUserType_ = std::make_shared<UserType>(node->id(), node->fatherType(),
-                                                node->generics());
+  currentUserType_ =
+      std::make_shared<UserType>(node->id(), father, node->generics());
 
   const auto insertType{typeTable_->insert(currentUserType_)};
   if (!insertType) {

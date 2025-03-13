@@ -12,7 +12,6 @@ struct B {
 }
 
 struct A<T, Q> extends B {
-    x: int
     constructor(): super() {}
     destructor {}
 }
