@@ -11,7 +11,7 @@ struct B {
     destructor {}
 }
 
-struct A<T, Q> extends B {
+struct A<T, Q> extends T {
     constructor(): super() {}
     destructor {}
 }
