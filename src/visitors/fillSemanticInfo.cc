@@ -655,8 +655,18 @@ FillSemanticInfo::visit(const AST_STRUCT *node) const noexcept {
                              " is not a posibble type or generic");
     }
     if (userType) {
+      if (typeTable_->isGenericType(userType, currentStructGenericList_)) {
+        return createError(ERROR_TYPE::TYPE,
+                           userType->toString() +
+                               " is a generic so you cannot extend from it");
+      }
       father = *typeTable_->getType(userType->name());
     } else if (instanceType) {
+      if (typeTable_->isGenericType(instanceType->genericType(), currentStructGenericList_)) {
+        return createError(ERROR_TYPE::TYPE,
+                           instanceType->toString() +
+                               " is a generic so you cannot extend from it");
+      }
       father = *typeTable_->getType(instanceType->genericType()->name());
     }
   }
