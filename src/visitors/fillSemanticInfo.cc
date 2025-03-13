@@ -54,6 +54,7 @@
 #include "../../inc/parsingAnalysis/ast/chained/ast_chained.h"
 
 #include "../../inc/parsingAnalysis/ast/tree.h"
+#include <cstddef>
 #include <memory>
 #include <variant>
 
@@ -522,7 +523,7 @@ FillSemanticInfo::visit(const AST_FUNC_CALL *node) const noexcept {
     return createError(exists.error());
   }
 
-  for (const auto& replacement : node->replaceOfGenerics()) {
+  for (const auto &replacement : node->replaceOfGenerics()) {
     if (!typeTable_->isPossibleType(replacement) and
         !typeTable_->isGenericType(replacement, currentGenericList_)) {
       return createError(ERROR_TYPE::TYPE,
@@ -627,8 +628,75 @@ FillSemanticInfo::visit(const AST_STRUCT *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
   }
 
+  analyzingInsideClass = true;
+
+  currentStructGenericList_ = node->generics();
+
+  if (hasDuplicatedGenerics(currentStructGenericList_)) {
+    return createError(ERROR_TYPE::TYPE, "has duplicated generics");
+  }
+
+  if (node->fatherType()) {
+    const auto userType =
+        std::dynamic_pointer_cast<UserType>(node->fatherType());
+    const auto instanceType =
+        std::dynamic_pointer_cast<GenericInstanceType>(node->fatherType());
+    if (!userType && !instanceType) {
+      return createError(
+          ERROR_TYPE::TYPE,
+          "father type can only be a user type or generic instance");
+    }
+    if (!typeTable_->isPossibleType(node->fatherType()) and
+        !typeTable_->isGenericType(node->fatherType(),
+                                   currentStructGenericList_)) {
+      return createError(ERROR_TYPE::TYPE,
+                         node->fatherType()->toString() +
+                             " is not a posibble type or generic");
+    }
+  }
+
+  currentUserType_ = std::make_shared<UserType>(node->id(), node->fatherType(),
+                                                node->generics());
+
+  const auto insertType{typeTable_->insert(currentUserType_)};
+  if (!insertType) {
+    return createError(insertType.error());
+  }
+
   pushScope();
+
+  size_t pos{0};
+  for (const auto &attr : node->attributes()) {
+    const auto insert{
+        currentUserType_->insertAttr(Attribute{attr.first, attr.second, pos})};
+    if (!insert) {
+      return createError(insert.error());
+    }
+    ++pos;
+  }
+
+  for (const auto &method : node->methods()) {
+    const auto result{method->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
+
+  const auto constructor{node->constructor()->accept(*this)};
+  if (!constructor) {
+    return createError(constructor.error());
+  }
+
+  const auto destructor{node->destructor()->accept(*this)};
+  if (!destructor) {
+    return createError(destructor.error());
+  }
+
   popScope();
+
+  analyzingInsideClass = false;
+  currentStructGenericList_.clear();
+  currentGenericList_.clear();
 
   return {};
 }

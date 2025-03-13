@@ -5,6 +5,17 @@ def foo<T, Q>(y: T, o:Q) : Q* {
 
 foo<int, int>(x);
 
+struct B {
+    x: int
+     constructor() {}
+    destructor {}
+}
+
+struct A<T, Q> extends B {
+    x: int
+    constructor(): super() {}
+    destructor {}
+}
 
 /*
 

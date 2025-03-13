@@ -23,6 +23,7 @@ private:
   mutable std::shared_ptr<Scope> currentScope_{nullptr};
   mutable std::shared_ptr<Scope> firstScope_{nullptr};
   mutable std::vector<GenericParameter> currentGenericList_{};
+  mutable std::vector<GenericParameter> currentStructGenericList_{};
   mutable std::shared_ptr<UserType> currentUserType_{nullptr};
   mutable bool analyzingInsideClass{false};
 
