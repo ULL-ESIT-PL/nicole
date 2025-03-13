@@ -7,8 +7,10 @@ bool UserType::hasAttribute(const std::string &id) const noexcept {
     return true;
   }
   if (baseType_) {
-    if (const auto userType = std::dynamic_pointer_cast<UserType>(baseType_))
+    if (const auto userType = std::dynamic_pointer_cast<UserType>(baseType_)) {
+      std::cout << " hola";
       return userType->hasAttribute(id);
+    }
   }
   return false;
 }
