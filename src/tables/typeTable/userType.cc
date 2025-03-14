@@ -5,7 +5,6 @@ namespace nicole {
 bool UserType::hasAttribute(const std::string &id) const noexcept {
   if (baseType_) {
     if (const auto userType = std::dynamic_pointer_cast<UserType>(baseType_)) {
-      std::cout << "hola";
       return userType->hasAttribute(id);
     }
   }
@@ -16,12 +15,12 @@ bool UserType::hasAttribute(const std::string &id) const noexcept {
 }
 
 bool UserType::hasMethod(const Method &id) const noexcept {
-  if (methodTable_.has(id)) {
-    return true;
-  }
   if (baseType_) {
     if (const auto userType = std::dynamic_pointer_cast<UserType>(baseType_))
       return userType->hasMethod(id);
+  }
+  if (methodTable_.has(id)) {
+    return true;
   }
   return false;
 }

@@ -86,14 +86,23 @@ void FillSemanticInfo::popScope() const noexcept {
   }
 }
 
-std::expected<std::unordered_set<GenericParameter>, Error>
-FillSemanticInfo::mergeGenericList(
-    const std::vector<GenericParameter> &list) const noexcept {
-  std::unordered_set<GenericParameter> set(list.begin(), list.end());
-  if (set.size() != list.size()) {
-    return createError(ERROR_TYPE::TYPE, "Duplicate generic parameter found.");
+std::expected<std::vector<GenericParameter>, Error>
+FillSemanticInfo::mergeGenericLists(
+    const std::vector<GenericParameter> &list,
+    const std::vector<GenericParameter> &list1) const noexcept {
+  if (hasDuplicatedGenerics(list)) {
+    return createError(ERROR_TYPE::TYPE, "has duplicated generics");
   }
-  return set;
+  if (hasDuplicatedGenerics(list1)) {
+    return createError(ERROR_TYPE::TYPE, "has duplicated generics");
+  }
+  std::vector<GenericParameter> result{};
+  result.insert(result.end(), list.begin(), list.end());
+  result.insert(result.end(), list1.begin(), list1.end());
+  if (hasDuplicatedGenerics(result)) {
+    return createError(ERROR_TYPE::TYPE, "has duplicated generics");
+  }
+  return result;
 }
 
 bool FillSemanticInfo::hasDuplicatedGenerics(
@@ -662,7 +671,8 @@ FillSemanticInfo::visit(const AST_STRUCT *node) const noexcept {
       }
       father = *typeTable_->getType(userType->name());
     } else if (instanceType) {
-      if (typeTable_->isGenericType(instanceType->genericType(), currentStructGenericList_)) {
+      if (typeTable_->isGenericType(instanceType->genericType(),
+                                    currentStructGenericList_)) {
         return createError(ERROR_TYPE::TYPE,
                            instanceType->toString() +
                                " is a generic so you cannot extend from it");
@@ -740,9 +750,58 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_DECL");
   }
 
+  currentGenericList_ = node->generics();
+
+  const auto genrics{
+      mergeGenericLists(currentStructGenericList_, currentGenericList_)};
+  if (!genrics) {
+    return createError(genrics.error());
+  }
+
+  const auto insertMethod{currentUserType_->insertMethod(Method{
+      node->id(), node->generics(), node->parameters(), node->returnType()})};
+  if (!insertMethod) {
+    return createError(insertMethod.error());
+  }
+
   pushScope();
   node->body()->setScope(currentScope_);
+
+  for (const auto &param : node->parameters()) {
+    if (currentUserType_->hasAttribute(param.first)) {
+      return createError(ERROR_TYPE::ATTR, " the variable " + param.first +
+                                               " is shadowing the atribute");
+    }
+
+    if (!typeTable_->isPossibleType(param.second) and
+        !typeTable_->isGenericType(param.second, *genrics)) {
+      return createError(ERROR_TYPE::TYPE,
+                         param.second->toString() +
+                             " is not a posibble type or generic");
+    }
+
+    const auto insert{
+        currentScope_->insert(Variable{param.first, param.second, nullptr})};
+    if (!insert) {
+      return createError(insert.error());
+    }
+  }
+
+  if (!typeTable_->isPossibleType(node->returnType()) and
+      !typeTable_->isGenericType(node->returnType(), *genrics)) {
+    return createError(ERROR_TYPE::TYPE,
+                       node->returnType()->toString() +
+                           " is not a posibble type or generic");
+  }
+
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+
   popScope();
+
+  currentGenericList_.clear();
 
   return {};
 }

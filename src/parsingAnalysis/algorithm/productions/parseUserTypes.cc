@@ -333,6 +333,10 @@ TopDown::parseMethodDecl(const bool isVirtual) const noexcept {
     return createError(res.error());
   }
   std::expected<std::vector<GenericParameter>, Error> generics{};
+  if (isVirtual and tkStream_.current()->type() == TokenType::OPERATOR_SMALLER) {
+    return createError(ERROR_TYPE::SINTAX, "a virtual method cannot be templated " +
+                                               tkStream_.current()->locInfo());
+  }
   if (tkStream_.current()->type() == TokenType::OPERATOR_SMALLER) {
     generics = parseGenerics();
   }

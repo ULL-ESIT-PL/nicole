@@ -31,8 +31,9 @@ private:
 
   void popScope() const noexcept;
 
-  [[nodiscard]] std::expected<std::unordered_set<GenericParameter>, Error>
-  mergeGenericList(const std::vector<GenericParameter> &list) const noexcept;
+  [[nodiscard]] std::expected<std::vector<GenericParameter>, Error>
+  mergeGenericLists(const std::vector<GenericParameter> &list1,
+                    const std::vector<GenericParameter> &list2) const noexcept;
 
   [[nodiscard]] bool hasDuplicatedGenerics(
       const std::vector<GenericParameter> &list) const noexcept;

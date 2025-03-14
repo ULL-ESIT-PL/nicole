@@ -5,15 +5,19 @@ def foo<T, Q>(y: T, o:Q) : Q* {
 
 foo<int, int>(x);
 
-struct B {
-    x: int
-     constructor() {}
+struct B<T> {
+    pp: int
+    constructor() {}
     destructor {}
+    virtual poo(aa: T): T {}
 }
 
-struct A<T, Q> extends T {
+struct A<T, Q> extends B {
     constructor(): super() {}
     destructor {}
+    method poof(): int {
+        pp;
+    }
 }
 
 /*
