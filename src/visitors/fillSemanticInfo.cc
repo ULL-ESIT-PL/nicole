@@ -833,6 +833,12 @@ FillSemanticInfo::visit(const AST_DESTRUCTOR_DECL *node) const noexcept {
   }
   pushScope();
   node->body()->setScope(currentScope_);
+
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+
   popScope();
 
   return {};
