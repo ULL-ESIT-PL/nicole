@@ -9,14 +9,17 @@
 
 namespace nicole {
 
+class AST_BODY;
+
 class Destructor final : public Symbol {
 private:
   std::vector<GenericParameter> generics_;
   std::shared_ptr<Type> returnType_;
+  std::shared_ptr<AST_BODY> body_;
 
 public:
-  explicit Destructor(const std::string &id) noexcept
-      : Symbol{id}, returnType_{std::make_shared<VoidType>()} {}
+  explicit Destructor(const std::string &id, const std::shared_ptr<AST_BODY> &body) noexcept
+      : Symbol{id}, returnType_{std::make_shared<VoidType>()}, body_{body} {}
 
   [[nodiscard]] const std::vector<GenericParameter> &generics() const noexcept {
     return generics_;
@@ -24,6 +27,10 @@ public:
 
   [[nodiscard]] const std::shared_ptr<Type> &returnType() const noexcept {
     return returnType_;
+  }
+
+  [[nodiscard]] const std::shared_ptr<AST_BODY> &body() const noexcept {
+    return body_;
   }
 };
 

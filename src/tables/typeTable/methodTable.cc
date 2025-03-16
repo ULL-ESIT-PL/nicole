@@ -22,7 +22,7 @@ MethodTable::getMethod(const std::string &id,
     return createError(ERROR_TYPE::METHOD,
                        "the method with id: " + id + " does not exist");
   }
-  const Method aux{id, {}, params, nullptr, false};
+  const Method aux{id, {}, params, nullptr, nullptr, false};
   for (const auto &func : table_.at(id)) {
     if (func == aux) { // Se asume que Parameters tiene operator==
       return func;

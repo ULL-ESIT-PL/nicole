@@ -22,7 +22,7 @@ FunctionTable::getFunction(const std::string &id,
     return createError(ERROR_TYPE::FUNCTION,
                        "the function with id: " + id + " does not exist");
   }
-  const Function aux{id, {}, params, nullptr};
+  const Function aux{id, {}, params, nullptr, nullptr};
   for (const auto &func : table_.at(id)) {
     if (func == aux) { // Se asume que Parameters tiene operator==
       return func;

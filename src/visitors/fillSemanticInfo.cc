@@ -556,8 +556,9 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
   }
 
-  const auto insert{functionTable_->insert(Function{
-      node->id(), node->generics(), node->parameters(), node->returnType()})};
+  const auto insert{functionTable_->insert(
+      Function{node->id(), node->generics(), node->parameters(),
+               node->returnType(), node->body()})};
   if (!insert) {
     return createError(insert.error());
   }
@@ -760,7 +761,7 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
 
   const auto insertMethod{currentUserType_->insertMethod(
       Method{node->id(), node->generics(), node->parameters(),
-             node->returnType(), node->isVirtual()})};
+             node->returnType(), node->body(), node->isVirtual()})};
   if (!insertMethod) {
     return createError(insertMethod.error());
   }
@@ -822,7 +823,8 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   }
 
   currentUserType_->setConstructor(std::make_shared<Constructor>(
-      node->id(), node->generics(), node->parameters(), node->returnType()));
+      node->id(), node->generics(), node->parameters(), node->returnType(),
+      node->body()));
 
   pushScope();
   node->body()->setScope(currentScope_);
@@ -893,7 +895,8 @@ FillSemanticInfo::visit(const AST_DESTRUCTOR_DECL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_DESTRUCTOR_DECL");
   }
 
-  currentUserType_->setDestructor(std::make_shared<Destructor>(node->id()));
+  currentUserType_->setDestructor(
+      std::make_shared<Destructor>(node->id(), node->body()));
 
   pushScope();
   node->body()->setScope(currentScope_);
@@ -912,6 +915,9 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_THIS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_THIS");
+  }
+  if (analyzingInsideClass) {
+    node->setUserType(currentUserType_);
   }
   return {};
 }

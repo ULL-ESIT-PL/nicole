@@ -41,7 +41,7 @@ UserType::getAttribute(const std::string &id) const noexcept {
 const std::expected<Method, Error>
 UserType::getMethod(const std::string &id,
                     const Parameters &params) const noexcept {
-  if (methodTable_.has(Method{id, {}, params, nullptr, false})) {
+  if (methodTable_.has(Method{id, {}, params, nullptr, nullptr, false})) {
     return methodTable_.getMethod(id, params);
   }
   if (baseType_) {
