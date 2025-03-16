@@ -1,7 +1,6 @@
 #ifndef DESTRUCTOR_H
 #define DESTRUCTOR_H
 
-#include "../../../../parsingAnalysis/ast/functions/parameters.h"
 #include "../../../symbol.h"
 #include "../specialTypes/voidType.h"
 #include "genericParameter.h"
