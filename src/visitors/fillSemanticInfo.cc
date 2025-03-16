@@ -758,8 +758,9 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
     return createError(genrics.error());
   }
 
-  const auto insertMethod{currentUserType_->insertMethod(Method{
-      node->id(), node->generics(), node->parameters(), node->returnType()})};
+  const auto insertMethod{currentUserType_->insertMethod(
+      Method{node->id(), node->generics(), node->parameters(),
+             node->returnType(), node->isVirtual()})};
   if (!insertMethod) {
     return createError(insertMethod.error());
   }
@@ -811,9 +812,63 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_DECL");
   }
+
+  currentGenericList_ = node->generics();
+
+  const auto genrics{
+      mergeGenericLists(currentStructGenericList_, currentGenericList_)};
+  if (!genrics) {
+    return createError(genrics.error());
+  }
+
+  currentUserType_->setConstructor(std::make_shared<Constructor>(
+      node->id(), node->generics(), node->parameters(), node->returnType()));
+
   pushScope();
   node->body()->setScope(currentScope_);
+
+  for (const auto &param : node->parameters()) {
+    if (currentUserType_->hasAttribute(param.first)) {
+      return createError(ERROR_TYPE::ATTR, " the variable " + param.first +
+                                               " is shadowing the atribute");
+    }
+
+    if (!typeTable_->isPossibleType(param.second) and
+        !typeTable_->isGenericType(param.second, *genrics)) {
+      return createError(ERROR_TYPE::TYPE,
+                         param.second->toString() +
+                             " is not a posibble type or generic");
+    }
+
+    const auto insert{
+        currentScope_->insert(Variable{param.first, param.second, nullptr})};
+    if (!insert) {
+      return createError(insert.error());
+    }
+  }
+
+  if (node->super()) {
+    const auto result{node->super()->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
+
+  if (!typeTable_->isPossibleType(node->returnType()) and
+      !typeTable_->isGenericType(node->returnType(), *genrics)) {
+    return createError(ERROR_TYPE::TYPE,
+                       node->returnType()->toString() +
+                           " is not a posibble type or generic");
+  }
+
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+
   popScope();
+
+  currentGenericList_.clear();
 
   return {};
 }
@@ -823,6 +878,12 @@ FillSemanticInfo::visit(const AST_SUPER *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SUPER");
   }
+  for (const auto &arg : node->arguments()) {
+    const auto result{arg->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
   return {};
 }
 
@@ -831,6 +892,9 @@ FillSemanticInfo::visit(const AST_DESTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_DESTRUCTOR_DECL");
   }
+
+  currentUserType_->setDestructor(std::make_shared<Destructor>(node->id()));
+
   pushScope();
   node->body()->setScope(currentScope_);
 

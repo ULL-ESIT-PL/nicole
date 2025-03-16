@@ -15,7 +15,7 @@ struct B<T> {
 struct A<T, Q> extends B {
     constructor(): super() {}
     destructor {}
-    method poof(): int {
+    method poo(aa: T): int {
         pp;
     }
 }

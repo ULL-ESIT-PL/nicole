@@ -41,7 +41,7 @@ UserType::getAttribute(const std::string &id) const noexcept {
 const std::expected<Method, Error>
 UserType::getMethod(const std::string &id,
                     const Parameters &params) const noexcept {
-  if (methodTable_.has(Method{id, {}, params, nullptr})) {
+  if (methodTable_.has(Method{id, {}, params, nullptr, false})) {
     return methodTable_.getMethod(id, params);
   }
   if (baseType_) {
@@ -88,7 +88,7 @@ UserType::insertAttr(const Attribute &attr) const noexcept {
 
 std::expected<std::monostate, Error>
 UserType::insertMethod(const Method &method) const noexcept {
-  if (hasMethod(method)) {
+  if (hasMethod(method) and !(getMethod(method.id(), method.params())->isVirtual())) {
     return createError(ERROR_TYPE::METHOD,
                        "the method: " + method.id() + " already exists");
   }
