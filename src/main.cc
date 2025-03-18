@@ -4,6 +4,9 @@
 #include "../inc/visitors/printTree.h"
 #include "../inc/visitors/validateTree.h"
 #include "../inc/visitors/fillSemanticInfo.h"
+#include "../inc/visitors/monomorphize.h"
+#include "../inc/visitors/typeAnalysis.h"
+#include "../inc/visitors/codeGeneration.h"
 #include <iostream>
 #include <memory>
 

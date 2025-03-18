@@ -7,7 +7,6 @@
 #include "../tables/typeTable/typeTable.h"
 #include "visitor.h"
 #include <memory>
-#include <unordered_set>
 #include <variant>
 #include <vector>
 
