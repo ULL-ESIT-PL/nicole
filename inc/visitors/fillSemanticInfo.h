@@ -9,6 +9,7 @@
 #include <memory>
 #include <variant>
 #include <vector>
+#include <unordered_set>
 
 namespace nicole {
 
