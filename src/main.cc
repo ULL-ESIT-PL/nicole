@@ -1,4 +1,4 @@
-#include "../inc/compiler/compiler.h"
+#include "../inc/compiler/nicole.h"
 
 
 // Just creates a main function for our program like a wrapper
@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
 
   const std::shared_ptr<nicole::Sintax> sintax{
       std::make_shared<nicole::NicoleSintax>()};
-  const nicole::Compiler compiler{sintax};
+  const nicole::Nicole compiler{sintax};
   const auto compiled{compiler.compile(*options)};
   if (!compiled) {
     std::cerr << compiled.error() << "\n" << std::flush;

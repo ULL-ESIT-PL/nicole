@@ -1,9 +1,9 @@
-#include "../../inc/compiler/compiler.h"
+#include "../../inc/compiler/nicole.h"
 
 namespace nicole {
 
 std::expected<std::monostate, Error>
-Compiler::compile(const Options &options) const noexcept {
+Nicole::compile(const Options &options) const noexcept {
   const nicole::TopDown topDown{sintax_};
 
   const std::expected<std::shared_ptr<nicole::Tree>, nicole::Error> tree{

@@ -141,7 +141,7 @@ add_executable(tests
     src/visitors/fillSemanticInfo.cc
 
     # compiler
-    src/compiler/compiler.cc
+    src/compiler/nicole.cc
 )
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 target_compile_options(tests PRIVATE
@@ -249,7 +249,7 @@ set(SRC_FILES
     src/visitors/validateTree.cc
     src/visitors/fillSemanticInfo.cc
 
-    src/compiler/compiler.cc
+    src/compiler/nicole.cc
 )
 
 # Include directories para el ejecutable principal

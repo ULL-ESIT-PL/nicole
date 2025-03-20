@@ -17,20 +17,22 @@
 
 namespace nicole {
 
-class Compiler final {
-private:
+class Compiler {
+protected:
   std::shared_ptr<Sintax> sintax_;
 
 public:
   explicit Compiler(const std::shared_ptr<Sintax> &sintax) noexcept
       : sintax_{sintax} {}
 
+  virtual ~Compiler() = default;
+
   [[nodiscard]] const std::shared_ptr<Sintax> &sintax() const noexcept {
     return sintax_;
   }
 
-  [[nodiscard]] std::expected<std::monostate, Error>
-  compile(const Options &options) const noexcept;
+  [[nodiscard]] virtual std::expected<std::monostate, Error>
+  compile(const Options &options) const noexcept = 0;
 };
 
 } // namespace nicole
