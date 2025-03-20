@@ -11,6 +11,7 @@
 #include "types/type.h"
 #include "types/userTypes/genericInstanceType.h"
 #include "types/userTypes/genericParameter.h"
+#include "types/userTypes/enumType.h"
 #include "types/userTypes/userType.h"
 #include <memory>
 #include <string>

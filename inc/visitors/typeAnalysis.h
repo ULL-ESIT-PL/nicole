@@ -1,7 +1,6 @@
 #ifndef TYPE_ANALYSIS_H
 #define TYPE_ANALYSIS_H
 
-#include "../tables/enumTable/eumTable.h"
 #include "../tables/functionTable/functionTable.h"
 #include "../tables/scope/scope.h"
 #include "../tables/typeTable/typeTable.h"
@@ -14,16 +13,13 @@ namespace nicole {
 
 class TypeAnalysis final : public Visitor<std::shared_ptr<Type>> {
 private:
-  mutable std::shared_ptr<EnumTable> enumTable_;
   mutable std::shared_ptr<FunctionTable> functionTable_;
   mutable std::shared_ptr<TypeTable> typeTable_;
 
 public:
-  TypeAnalysis(const std::shared_ptr<EnumTable> &enumTable,
-               const std::shared_ptr<FunctionTable> &functionTable,
+  TypeAnalysis(const std::shared_ptr<FunctionTable> &functionTable,
                std::shared_ptr<TypeTable> &typeTable) noexcept
-      : enumTable_{enumTable}, functionTable_{functionTable},
-        typeTable_{typeTable} {}
+      : functionTable_{functionTable}, typeTable_{typeTable} {}
 
   [[nodiscard]] std::expected<std::shared_ptr<Type>, Error>
   visit(const AST_BOOL *node) const noexcept override;
@@ -181,6 +177,6 @@ public:
   }
 };
 
-}
+} // namespace nicole
 
 #endif

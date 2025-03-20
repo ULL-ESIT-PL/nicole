@@ -24,6 +24,12 @@ public:
     return values_;
   }
 
+  [[nodiscard]] bool
+  hasIdentifier(const std::string &identifier) const noexcept {
+    return std::find(values_.begin(), values_.end(), identifier) !=
+           values_.end();
+  }
+
   [[nodiscard]] std::string toString() const noexcept override {
     std::ostringstream oss;
     oss << "enum " << name_ << " { ";

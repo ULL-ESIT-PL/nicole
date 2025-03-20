@@ -1,7 +1,6 @@
 #ifndef CODE_GENERATION_H
 #define CODE_GENERATION_H
 
-#include "../tables/enumTable/eumTable.h"
 #include "../tables/functionTable/functionTable.h"
 #include "../tables/scope/scope.h"
 #include "../tables/typeTable/typeTable.h"
@@ -14,16 +13,13 @@ namespace nicole {
 
 class CodeGeneration final : public Visitor<std::shared_ptr<llvm::Value>> {
 private:
-  std::shared_ptr<EnumTable> enumTable_;
   std::shared_ptr<FunctionTable> functionTable_;
   std::shared_ptr<TypeTable> typeTable_;
 
 public:
-  CodeGeneration(const std::shared_ptr<EnumTable> &enumTable,
-               const std::shared_ptr<FunctionTable> &functionTable,
-               std::shared_ptr<TypeTable> &typeTable) noexcept
-      : enumTable_{enumTable}, functionTable_{functionTable},
-        typeTable_{typeTable} {}
+  CodeGeneration(const std::shared_ptr<FunctionTable> &functionTable,
+                 std::shared_ptr<TypeTable> &typeTable) noexcept
+      : functionTable_{functionTable}, typeTable_{typeTable} {}
 
   [[nodiscard]] std::expected<std::shared_ptr<llvm::Value>, Error>
   visit(const AST_BOOL *node) const noexcept override;
@@ -181,6 +177,6 @@ public:
   }
 };
 
-}
+} // namespace nicole
 
 #endif

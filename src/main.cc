@@ -94,13 +94,12 @@ int main(int argc, char *argv[]) {
     std::cout << *toStr << "\n";
   }
 
-  std::shared_ptr<nicole::EnumTable> enumTable{std::make_shared<nicole::EnumTable>()};
   std::shared_ptr<nicole::FunctionTable> functionTable{std::make_shared<nicole::FunctionTable>()};
   std::shared_ptr<nicole::TypeTable> typeTable{std::make_shared<nicole::TypeTable>()};
-  const nicole::FillSemanticInfo semanticFiller{enumTable, functionTable, typeTable, options->validateTree()};
-  const auto isTableFilled{semanticFiller.fill((*tree).get())};
-  if (!isTableFilled) {
-    std::cout << isTableFilled.error() << "\n" << std::flush;
+  const nicole::FillSemanticInfo semanticFiller{functionTable, typeTable, options->validateTree()};
+  const auto isTablesFilled{semanticFiller.fill((*tree).get())};
+  if (!isTablesFilled) {
+    std::cout << isTablesFilled.error() << "\n" << std::flush;
     return 5;
   }
   return EXIT_SUCCESS;

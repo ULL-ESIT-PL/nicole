@@ -21,6 +21,10 @@ TypeTable::insert(const std::shared_ptr<Type> &type) noexcept {
     return createError(ERROR_TYPE::TYPE,
                        "the type: " + type->toString() + " already exists");
   }
+  if (const auto &enumType = std::dynamic_pointer_cast<EnumType>(type)) {
+    table_[enumType->name()] = type;
+    return {};
+  }
   const auto &userType = std::dynamic_pointer_cast<UserType>(type);
   table_[userType->name()] = type;
   return {};
@@ -42,6 +46,11 @@ bool TypeTable::isPossibleType(
                  std::dynamic_pointer_cast<ConstType>(type)) {
     return isPossibleType(constType->baseType());
   } else if (const auto &nullType = std::dynamic_pointer_cast<NullType>(type)) {
+    return true;
+  } else if (const auto &enumType = std::dynamic_pointer_cast<EnumType>(type)) {
+    if (!has(enumType->name())) {
+      return false;
+    }
     return true;
   } else if (const auto &userType = std::dynamic_pointer_cast<UserType>(type)) {
     if (!has(userType->name())) {
@@ -66,8 +75,7 @@ bool TypeTable::isPossibleType(
 bool TypeTable::isGenericType(
     const std::shared_ptr<Type> &type,
     const std::vector<GenericParameter> &generics) const noexcept {
-  if (const auto &vectorType =
-                 std::dynamic_pointer_cast<VectorType>(type)) {
+  if (const auto &vectorType = std::dynamic_pointer_cast<VectorType>(type)) {
     return isGenericType(vectorType->elementType(), generics);
   } else if (const auto &pointerType =
                  std::dynamic_pointer_cast<PointerType>(type)) {
@@ -75,8 +83,15 @@ bool TypeTable::isGenericType(
   } else if (const auto &constType =
                  std::dynamic_pointer_cast<ConstType>(type)) {
     return isGenericType(constType->baseType(), generics);
+  } else if (const auto &enumType = std::dynamic_pointer_cast<EnumType>(type)) {
+    for (const auto &generic : generics) {
+      if (generic.name() == enumType->name()) {
+        return true;
+      }
+    }
+    return false;
   } else if (const auto &userType = std::dynamic_pointer_cast<UserType>(type)) {
-    for (const auto& generic : generics) {
+    for (const auto &generic : generics) {
       if (generic.name() == userType->name()) {
         return true;
       }

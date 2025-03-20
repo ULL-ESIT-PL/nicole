@@ -617,7 +617,8 @@ FillSemanticInfo::visit(const AST_ENUM *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM");
   }
-  const auto insert{enumTable_->insert(Enum{node->id(), node->identifiers()})};
+  const auto insert{typeTable_->insert(
+      std::make_shared<EnumType>(node->id(), node->identifiers()))};
   if (!insert) {
     return createError(insert.error());
   }
@@ -628,6 +629,21 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_ENUM_ACCESS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM_ACCESS");
+  }
+  const auto typeExists{typeTable_->getType(node->enumId())};
+  if (!typeExists) {
+    return createError(typeExists.error());
+  }
+  const auto enumType{std::dynamic_pointer_cast<EnumType>(*typeExists)};
+  if (!enumType) {
+    return createError(
+        ERROR_TYPE::TYPE,
+        "attempting to access a type as a enum but it isn't enum");
+  }
+  if (!enumType->hasIdentifier(node->identifier())) {
+    return createError(ERROR_TYPE::TYPE, "the enum " + enumType->name() +
+                                             " does not have the identifier " +
+                                             node->identifier());
   }
   return {};
 }
@@ -759,6 +775,8 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
     return createError(genrics.error());
   }
 
+  currentGenericList_ = *genrics;
+
   const auto insertMethod{currentUserType_->insertMethod(
       Method{node->id(), node->generics(), node->parameters(),
              node->returnType(), node->body(), node->isVirtual()})};
@@ -776,7 +794,7 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
     }
 
     if (!typeTable_->isPossibleType(param.second) and
-        !typeTable_->isGenericType(param.second, *genrics)) {
+        !typeTable_->isGenericType(param.second, currentGenericList_)) {
       return createError(ERROR_TYPE::TYPE,
                          param.second->toString() +
                              " is not a posibble type or generic");
@@ -790,7 +808,7 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
   }
 
   if (!typeTable_->isPossibleType(node->returnType()) and
-      !typeTable_->isGenericType(node->returnType(), *genrics)) {
+      !typeTable_->isGenericType(node->returnType(), currentGenericList_)) {
     return createError(ERROR_TYPE::TYPE,
                        node->returnType()->toString() +
                            " is not a posibble type or generic");
@@ -822,6 +840,8 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
     return createError(genrics.error());
   }
 
+  currentGenericList_ = *genrics;
+
   currentUserType_->setConstructor(std::make_shared<Constructor>(
       node->id(), node->generics(), node->parameters(), node->returnType(),
       node->body()));
@@ -836,7 +856,7 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
     }
 
     if (!typeTable_->isPossibleType(param.second) and
-        !typeTable_->isGenericType(param.second, *genrics)) {
+        !typeTable_->isGenericType(param.second, currentGenericList_)) {
       return createError(ERROR_TYPE::TYPE,
                          param.second->toString() +
                              " is not a posibble type or generic");
@@ -857,7 +877,7 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   }
 
   if (!typeTable_->isPossibleType(node->returnType()) and
-      !typeTable_->isGenericType(node->returnType(), *genrics)) {
+      !typeTable_->isGenericType(node->returnType(), currentGenericList_)) {
     return createError(ERROR_TYPE::TYPE,
                        node->returnType()->toString() +
                            " is not a posibble type or generic");
@@ -879,6 +899,14 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_SUPER *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SUPER");
+  }
+  for (const auto &replacement : node->replacements()) {
+    if (!typeTable_->isPossibleType(replacement) and
+        !typeTable_->isGenericType(replacement, currentGenericList_)) {
+      return createError(ERROR_TYPE::TYPE,
+                         replacement->toString() +
+                             " is not a posibble type or generic");
+    }
   }
   for (const auto &arg : node->arguments()) {
     const auto result{arg->accept(*this)};

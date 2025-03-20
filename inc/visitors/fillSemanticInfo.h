@@ -1,21 +1,19 @@
 #ifndef FILL_SEMANTIC_INFO_H
 #define FILL_SEMANTIC_INFO_H
 
-#include "../tables/enumTable/eumTable.h"
 #include "../tables/functionTable/functionTable.h"
 #include "../tables/scope/scope.h"
 #include "../tables/typeTable/typeTable.h"
 #include "visitor.h"
 #include <memory>
+#include <unordered_set>
 #include <variant>
 #include <vector>
-#include <unordered_set>
 
 namespace nicole {
 
 class FillSemanticInfo final : public Visitor<std::monostate> {
 private:
-  mutable std::shared_ptr<EnumTable> enumTable_;
   mutable std::shared_ptr<FunctionTable> functionTable_;
   mutable std::shared_ptr<TypeTable> typeTable_;
   bool validateMode_;
@@ -39,12 +37,11 @@ private:
       const std::vector<GenericParameter> &list) const noexcept;
 
 public:
-  FillSemanticInfo(const std::shared_ptr<EnumTable> &enumTable,
-                   const std::shared_ptr<FunctionTable> &functionTable,
+  FillSemanticInfo(const std::shared_ptr<FunctionTable> &functionTable,
                    std::shared_ptr<TypeTable> &typeTable,
                    const bool validateMode) noexcept
-      : enumTable_{enumTable}, functionTable_{functionTable},
-        typeTable_{typeTable}, validateMode_{validateMode} {}
+      : functionTable_{functionTable}, typeTable_{typeTable},
+        validateMode_{validateMode} {}
 
   [[nodiscard]] const std::shared_ptr<Scope> getGlobalScope() const noexcept {
     return firstScope_;

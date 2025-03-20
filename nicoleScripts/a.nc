@@ -5,6 +5,11 @@ def foo<T, Q>(y: T, o:Q) : Q* {
 
 foo<int, int>(x);
 
+struct T {
+    constructor() {}
+    destructor{}
+}
+
 struct B<T> {
     pp: int
     constructor() {}
@@ -13,10 +18,11 @@ struct B<T> {
 }
 
 struct A<T, Q> extends B {
-    constructor(): super() {}
+    constructor(): super<Q>() {}
     destructor {}
     method poo(aa: T): int {
         pp;
+        def foooooo(): int {}
     }
 }
 
@@ -88,3 +94,13 @@ enum Hola {
 ss::foo;
 
 */
+
+
+enum Hola {
+    hola,
+    adios
+}
+
+Hola::adios;
+
+let foooooo: vector<Hola> = [];
