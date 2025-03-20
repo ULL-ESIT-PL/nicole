@@ -1,49 +1,5 @@
-#include "../inc/lexicalAnalysis/nicoleSintax.h"
-#include "../inc/options/optionsParser.h"
-#include "../inc/parsingAnalysis/algorithm/topDown.h"
-#include "../inc/visitors/printTree.h"
-#include "../inc/visitors/validateTree.h"
-#include "../inc/visitors/fillSemanticInfo.h"
-#include "../inc/visitors/monomorphize.h"
-#include "../inc/visitors/typeAnalysis.h"
-#include "../inc/visitors/codeGeneration.h"
-#include <iostream>
-#include <memory>
+#include "../inc/compiler/compiler.h"
 
-void helper() noexcept {
-  std::cout
-      << "Usage \n"
-         "From the parent directory, run:\n"
-         "\t./nicole.sh [[options] input_file] | "
-         "-t Where input_file is the main program file with the "
-         ".nc extension(e.g., helloWorld.nc).\n\n"
-         "Options can appear in any position except -n, "
-         "which must be followed by the output file name.\n\n"
-         "\t-h | --help --> Displays a brief description of how to use the "
-         "compiler.\n\n"
-         "\t-v | --validate --> Forces the program to follow certain "
-         "validation "
-         "rules (recommended).\n\n"
-         "\t-o | --optimize --> Performs optimizations on the generated "
-         "code.\n\n"
-         "\t-n | --name output_file --> Allows specifying the name of the "
-         "output "
-         "file (default is a.out).\n\n"
-         "\t-p | --printTree --> Prints the Abstract Syntax Tree (AST) in a "
-         "directory-like structure.\n\n"
-         "\t-i | --printIR --> Prints the generated Intermediate "
-         "Representation "
-         "(IR) code.\n\n"
-         "\t-t --> Executes the tests of the compiler, also to run the tests "
-         "no "
-         "other argument but -t can be passed to the script.\n\n"
-         "Usage Examples:\n"
-         "\t- Compile a file with optimization and validation, specifying the "
-         "output executable name:\n"
-         "      ./nicole.sh -v -o -n program_out helloWorld.nc\n\n"
-         "\t- Generate the AST and intermediate code without optimization :\n"
-         "      ./nicole.sh -p -i helloWorld.nc\n";
-}
 
 // Just creates a main function for our program like a wrapper
 int main(int argc, char *argv[]) {
@@ -55,52 +11,17 @@ int main(int argc, char *argv[]) {
     std::cerr << options.error() << "\n";
     return 1;
   } else if (options->help()) {
-    helper();
+    options->helper();
     return EXIT_SUCCESS;
   }
 
   const std::shared_ptr<nicole::Sintax> sintax{
       std::make_shared<nicole::NicoleSintax>()};
-
-  const nicole::TopDown topDown{sintax};
-
-  const std::expected<std::shared_ptr<nicole::Tree>, nicole::Error> tree{
-      topDown.parse(options->entryFilePath())};
-
-  if (!tree) {
-    std::cerr << tree.error() << "\n" << std::flush;
+  const nicole::Compiler compiler{sintax};
+  const auto compiled{compiler.compile(*options)};
+  if (!compiled) {
+    std::cerr << compiled.error() << "\n" << std::flush;
     return 2;
-  }
-
-  if (options->validateTree()) {
-    const nicole::ValidateTree validateTree{};
-    const std::expected<bool, nicole::Error> validated{
-        validateTree.validate((*tree).get())};
-
-    if (!validated) {
-      std::cerr << validated.error() << "\n" << std::flush;
-      return 3;
-    }
-  }
-
-  if (options->printTree()) {
-    const nicole::PrintTree printTree{};
-    const std::expected<std::string, nicole::Error> toStr{
-        printTree.print((*tree).get())};
-    if (!toStr) {
-      std::cout << toStr.error();
-      return 4;
-    }
-    std::cout << *toStr << "\n";
-  }
-
-  std::shared_ptr<nicole::FunctionTable> functionTable{std::make_shared<nicole::FunctionTable>()};
-  std::shared_ptr<nicole::TypeTable> typeTable{std::make_shared<nicole::TypeTable>()};
-  const nicole::FillSemanticInfo semanticFiller{functionTable, typeTable, options->validateTree()};
-  const auto isTablesFilled{semanticFiller.fill((*tree).get())};
-  if (!isTablesFilled) {
-    std::cout << isTablesFilled.error() << "\n" << std::flush;
-    return 5;
   }
   return EXIT_SUCCESS;
 }
