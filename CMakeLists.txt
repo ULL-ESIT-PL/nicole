@@ -139,6 +139,9 @@ add_executable(tests
     src/visitors/printTree.cc
     src/visitors/validateTree.cc
     src/visitors/fillSemanticInfo.cc
+    src/visitors/monomorphize.cc
+    src/visitors/typeAnalysis.cc
+    src/visitors/codeGeneration.cc
 
     # compiler
     src/compiler/nicole.cc
@@ -248,6 +251,9 @@ set(SRC_FILES
     src/visitors/printTree.cc
     src/visitors/validateTree.cc
     src/visitors/fillSemanticInfo.cc
+    src/visitors/monomorphize.cc
+    src/visitors/typeAnalysis.cc
+    src/visitors/codeGeneration.cc
 
     src/compiler/nicole.cc
 )
