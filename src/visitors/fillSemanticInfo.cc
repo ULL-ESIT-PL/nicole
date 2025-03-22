@@ -111,6 +111,32 @@ bool FillSemanticInfo::hasDuplicatedGenerics(
   return set.size() != list.size();
 }
 
+bool FillSemanticInfo::areAmbiguousFunctions(
+    const Function &first, const Function &second) const noexcept {
+  if (first.id() != second.id()) {
+    return false;
+  }
+  if (first.generics().size() != second.generics().size()) {
+    return false;
+  }
+  if (first.params().size() != second.params().size()) {
+    return false;
+  }
+  const auto parameters = first.params().params();
+  const auto parametersOther = second.params().params();
+  for (size_t i = 0; i < parameters.size(); ++i) {
+    if (!typeTable_->areSameType(parameters[i].second,
+                                 parametersOther[i].second)) {
+      if (!(typeTable_->isGenericType(parameters[i].second, first.generics()) &&
+            typeTable_->isGenericType(parametersOther[i].second,
+                                      second.generics()))) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_BOOL *node) const noexcept {
   if (!node) {
@@ -527,9 +553,9 @@ FillSemanticInfo::visit(const AST_FUNC_CALL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_FUNC_CALL");
   }
 
-  const auto exists{functionTable_->getFunctions(node->id())};
-  if (!exists) {
-    return createError(exists.error());
+  if (functionTable_->getFunctions(node->id()).empty()) {
+    return createError(ERROR_TYPE::FUNCTION,
+                       "no function with id: " + node->id() + " exists");
   }
 
   for (const auto &replacement : node->replaceOfGenerics()) {
@@ -556,12 +582,17 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
   }
 
-  const auto insert{functionTable_->insert(
-      Function{node->id(), node->generics(), node->parameters(),
-               node->returnType(), node->body()})};
-  if (!insert) {
-    return createError(insert.error());
+  const Function newFunction{Function{node->id(), node->generics(),
+                                      node->parameters(), node->returnType(),
+                                      node->body()}};
+
+  const auto functions{functionTable_->getFunctions(newFunction.id())};
+  for (const auto &func : functions) {
+    if (areAmbiguousFunctions(newFunction, func)) {
+    }
   }
+
+  functionTable_->insert(newFunction);
 
   pushScope();
   node->body()->setScope(currentScope_);
@@ -1053,17 +1084,12 @@ FillSemanticInfo::visit(const Tree *tree) const noexcept {
   popScope();
   if (validateMode_) {
     const auto mainFunction{functionTable_->getFunctions("main")};
-    if (!mainFunction) {
-      return createError(ERROR_TYPE::FUNCTION,
-                         "if the validation is activated the user must "
-                         "specifiy a main function");
-    }
-    if (!mainFunction->size() or mainFunction->size() > 1) {
+    if (mainFunction.empty() or mainFunction.size() > 1) {
       return createError(ERROR_TYPE::FUNCTION,
                          "if the validation is activated the user must "
                          "specifiy a main function and only one instance");
     }
-    if ((*mainFunction)[0].returnType()->toString() !=
+    if (mainFunction[0].returnType()->toString() !=
         BasicType{BasicKind::Int}.toString()) {
       return createError(ERROR_TYPE::FUNCTION,
                          "if the validation is activated the user must "

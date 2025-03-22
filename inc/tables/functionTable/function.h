@@ -4,7 +4,6 @@
 #include "../../parsingAnalysis/ast/functions/parameters.h"
 #include "../symbol.h"
 #include "../typeTable/types/userTypes/genericParameter.h"
-#include "../typeTable/typeTable.h"
 #include <llvm/IR/Function.h>
 #include <memory>
 

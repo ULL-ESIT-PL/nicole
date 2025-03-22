@@ -43,8 +43,6 @@ public:
   }
 
   [[nodiscard]] bool isVirtual() const noexcept { return isVirtual_; }
-
-  [[nodiscard]] bool operator==(const Method &other) const noexcept;
 };
 
 } // namespace nicole

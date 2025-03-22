@@ -36,6 +36,11 @@ private:
   [[nodiscard]] bool hasDuplicatedGenerics(
       const std::vector<GenericParameter> &list) const noexcept;
 
+  [[nodiscard]] bool areAmbiguousFunctions(const Function &first,
+                                  const Function &second) const noexcept;
+
+  [[nodiscard]] bool areAmbiguousMethods() const noexcept;
+
 public:
   FillSemanticInfo(const std::shared_ptr<FunctionTable> &functionTable,
                    std::shared_ptr<TypeTable> &typeTable,

@@ -1,7 +1,7 @@
 #ifndef FUNCTION_TABLE_H
 #define FUNCTION_TABLE_H
 
-#include "../../errors.h"
+#include "../typeTable/typeTable.h"
 #include "function.h"
 #include <iostream>
 #include <memory>
@@ -20,19 +20,10 @@ public:
   explicit FunctionTable(const std::shared_ptr<TypeTable> &typeTable) noexcept
       : typeTable_{typeTable} {}
 
-  [[nodiscard]] bool has(const Function &function) const noexcept;
-
-  [[nodiscard]] const std::expected<Function, Error>
-  getFunction(const std::string &id, const Parameters &params) const noexcept;
-
-  [[nodiscard]] const std::expected<std::vector<Function>, Error>
+  [[nodiscard]] std::vector<Function>
   getFunctions(const std::string &id) const noexcept;
 
-  [[nodiscard]] std::expected<std::monostate, Error>
-  insert(const Function &function) noexcept;
-
-  [[nodiscard]] bool areAmbiguous(const Function &first,
-                                  const Function &second) const noexcept;
+  void insert(const Function &function) noexcept;
 
   void print() const noexcept;
 };
