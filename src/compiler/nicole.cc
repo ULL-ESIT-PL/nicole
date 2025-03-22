@@ -36,7 +36,7 @@ Nicole::compile(const Options &options) const noexcept {
   std::shared_ptr<nicole::TypeTable> typeTable{
       std::make_shared<nicole::TypeTable>()};
   std::shared_ptr<nicole::FunctionTable> functionTable{
-      std::make_shared<nicole::FunctionTable>(typeTable)};
+      std::make_shared<nicole::FunctionTable>()};
   const nicole::FillSemanticInfo semanticFiller{functionTable, typeTable,
                                                 options.validateTree()};
   const auto isTablesFilled{semanticFiller.fill((*tree).get())};

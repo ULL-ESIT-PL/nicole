@@ -30,9 +30,6 @@ public:
   [[nodiscard]] std::expected<std::monostate, Error>
   insert(const Method &method) noexcept;
 
-  [[nodiscard]] bool areAmbiguous(const Method &first,
-                                  const Method &second) const noexcept;
-
   void print() const noexcept;
 };
 

@@ -137,6 +137,32 @@ bool FillSemanticInfo::areAmbiguousFunctions(
   return true;
 }
 
+bool FillSemanticInfo::areAmbiguousMethods(
+    const Method &first, const Method &second) const noexcept {
+  if (first.id() != second.id()) {
+    return false;
+  }
+  if (first.generics().size() != second.generics().size()) {
+    return false;
+  }
+  if (first.params().size() != second.params().size()) {
+    return false;
+  }
+  const auto parameters = first.params().params();
+  const auto parametersOther = second.params().params();
+  for (size_t i = 0; i < parameters.size(); ++i) {
+    if (!typeTable_->areSameType(parameters[i].second,
+                                 parametersOther[i].second)) {
+      if (!(typeTable_->isGenericType(parameters[i].second, first.generics()) &&
+            typeTable_->isGenericType(parametersOther[i].second,
+                                      second.generics()))) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_BOOL *node) const noexcept {
   if (!node) {
@@ -589,6 +615,7 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
   const auto functions{functionTable_->getFunctions(newFunction.id())};
   for (const auto &func : functions) {
     if (areAmbiguousFunctions(newFunction, func)) {
+      return createError(ERROR_TYPE::FUNCTION, "redeclaration of function: " + newFunction.id());
     }
   }
 

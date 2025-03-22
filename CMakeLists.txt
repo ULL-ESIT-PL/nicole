@@ -130,7 +130,7 @@ add_executable(tests
     
     src/tables/typeTable/typeTable.cc
     src/tables/typeTable/userType.cc
-    
+    src/tables/typeTable/method.cc
     src/tables/typeTable/methodTable.cc
     src/tables/typeTable/attrTable.cc
     src/tables/scope/scope.cc
@@ -243,7 +243,7 @@ set(SRC_FILES
     
     src/tables/typeTable/typeTable.cc
     src/tables/typeTable/userType.cc
-    
+    src/tables/typeTable/method.cc
     src/tables/typeTable/methodTable.cc
     src/tables/typeTable/attrTable.cc
     src/tables/scope/scope.cc
