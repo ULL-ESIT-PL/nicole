@@ -77,7 +77,7 @@ TypeAnalysis::visit(const AST_BOOL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BOOL");
   }
-  return {};
+  return typeTable_->getType("bool");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -85,7 +85,7 @@ TypeAnalysis::visit(const AST_CHAR *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CHAR");
   }
-  return {};
+  return typeTable_->getType("char");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -93,7 +93,7 @@ TypeAnalysis::visit(const AST_DOUBLE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DOUBLE");
   }
-  return {};
+  return typeTable_->getType("double");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -101,7 +101,7 @@ TypeAnalysis::visit(const AST_FLOAT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FLOAT");
   }
-  return {};
+  return typeTable_->getType("float");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -109,7 +109,7 @@ TypeAnalysis::visit(const AST_INT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_INT");
   }
-  return {};
+  return typeTable_->getType("int");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -117,7 +117,7 @@ TypeAnalysis::visit(const AST_NULL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_NULL");
   }
-  return {};
+  return typeTable_->null();
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -125,13 +125,27 @@ TypeAnalysis::visit(const AST_STRING *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRING");
   }
-  return {};
+  return typeTable_->getType("str");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_VECTOR *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VECTOR");
+  }
+  if (node->values().empty()) {
+    return std::make_shared<VectorType>(typeTable_->null());
+  }
+  const auto values{node->values()};
+  const auto type{values[0]->accept(*this)};
+  if (!type) {
+    return createError(type.error());
+  }
+  for (const auto& value : values) {
+    const auto result{value->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
   }
   return {};
 }

@@ -38,6 +38,21 @@ public:
   accept(const FillSemanticInfo &visitor) const noexcept override {
     return visitor.visit(this);
   }
+
+  [[nodiscard]] std::expected<std::shared_ptr<Type>, Error>
+  accept(const TypeAnalysis &visitor) const noexcept override {
+    return visitor.visit(this);
+  }
+
+  [[nodiscard]] std::expected<std::monostate, Error>
+  accept(const Monomorphize &visitor) const noexcept override {
+    return visitor.visit(this);
+  }
+
+  [[nodiscard]] std::expected<std::shared_ptr<llvm::Value>, Error>
+  accept(const CodeGeneration &visitor) const noexcept override {
+    return visitor.visit(this);
+  }
 };
 
 } // namespace nicole

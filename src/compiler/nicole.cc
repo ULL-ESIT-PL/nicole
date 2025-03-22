@@ -43,6 +43,13 @@ Nicole::compile(const Options &options) const noexcept {
   if (!isTablesFilled) {
     return createError(isTablesFilled.error());
   }
+
+  const nicole::TypeAnalysis typeAnalysis{functionTable, typeTable};
+  const auto analyzed{typeAnalysis.analyze((*tree).get())};
+  if (!analyzed) {
+    return createError(analyzed.error());
+  }
+
   return {};
 }
 

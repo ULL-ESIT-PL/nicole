@@ -1,8 +1,11 @@
 #ifndef AST_H
 #define AST_H
 
+#include "../../visitors/codeGeneration.h"
 #include "../../visitors/fillSemanticInfo.h"
+#include "../../visitors/monomorphize.h"
 #include "../../visitors/printTree.h"
+#include "../../visitors/typeAnalysis.h"
 #include "../../visitors/validateTree.h"
 #include "astType.h"
 #include <memory>
@@ -38,6 +41,15 @@ public:
 
   [[nodiscard]] virtual std::expected<std::monostate, Error>
   accept(const FillSemanticInfo &visitor) const noexcept = 0;
+
+  [[nodiscard]] virtual std::expected<std::shared_ptr<Type>, Error>
+  accept(const TypeAnalysis &visitor) const noexcept = 0;
+
+  [[nodiscard]] virtual std::expected<std::monostate, Error>
+  accept(const Monomorphize &visitor) const noexcept = 0;
+
+  [[nodiscard]] virtual std::expected<std::shared_ptr<llvm::Value>, Error>
+  accept(const CodeGeneration &visitor) const noexcept = 0;
 };
 
 } // namespace nicole

@@ -104,3 +104,8 @@ enum Hola {
 Hola::adios;
 
 let foooooo: vector<Hola> = [];
+
+
+def bbb<Z>(KKKx: Z): int {}
+
+def bbb<W>(KKKx: W): int {}

@@ -9,9 +9,9 @@
 #include "types/specialTypes/vectorType.h"
 #include "types/specialTypes/voidType.h"
 #include "types/type.h"
+#include "types/userTypes/enumType.h"
 #include "types/userTypes/genericInstanceType.h"
 #include "types/userTypes/genericParameter.h"
-#include "types/userTypes/enumType.h"
 #include "types/userTypes/userType.h"
 #include <memory>
 #include <string>
@@ -31,7 +31,13 @@ private:
       {"void", std::make_shared<VoidType>()},
   };
 
+  std::shared_ptr<NullType> null_{std::make_shared<NullType>()};
+
 public:
+  [[nodiscard]] const std::shared_ptr<NullType> &null() const noexcept {
+    return null_;
+  }
+
   [[nodiscard]] bool has(const std::string &id) const noexcept;
 
   [[nodiscard]] const std::expected<std::shared_ptr<Type>, Error>
