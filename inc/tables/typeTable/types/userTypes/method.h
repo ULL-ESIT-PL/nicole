@@ -17,6 +17,7 @@ private:
   std::shared_ptr<Type> returnType_;
   std::shared_ptr<AST_BODY> body_;
   bool isVirtual_;
+  mutable bool isInherited_{false};
 
 public:
   explicit Method(const std::string &id,
@@ -44,7 +45,9 @@ public:
 
   [[nodiscard]] bool isVirtual() const noexcept { return isVirtual_; }
 
-  [[nodiscard]] bool operator==(const Method &other) const noexcept;
+  void setInherit(const bool inherit) const noexcept { isInherited_ = inherit; }
+
+  [[nodiscard]] bool isInherited() const noexcept { return isInherited_; }
 };
 
 } // namespace nicole

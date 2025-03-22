@@ -615,7 +615,8 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
   const auto functions{functionTable_->getFunctions(newFunction.id())};
   for (const auto &func : functions) {
     if (areAmbiguousFunctions(newFunction, func)) {
-      return createError(ERROR_TYPE::FUNCTION, "redeclaration of function: " + newFunction.id());
+      return createError(ERROR_TYPE::FUNCTION,
+                         "redeclaration of function: " + newFunction.id());
     }
   }
 
@@ -835,12 +836,26 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
 
   currentGenericList_ = *genrics;
 
-  const auto insertMethod{currentUserType_->insertMethod(
-      Method{node->id(), node->generics(), node->parameters(),
-             node->returnType(), node->body(), node->isVirtual()})};
-  if (!insertMethod) {
-    return createError(insertMethod.error());
+  Method newMethod{node->id(),         currentGenericList_, node->parameters(),
+                   node->returnType(), node->body(),        node->isVirtual()};
+
+  const auto combinedMethods{currentUserType_->getMethods(node->id())};
+  if (combinedMethods) {
+    for (const auto &existingMethod : *combinedMethods) {
+      if (areAmbiguousMethods(existingMethod, newMethod)) {
+        if (!existingMethod.isInherited()) {
+          return createError(ERROR_TYPE::METHOD,
+                             "Ambiguous method declaration for: " + node->id());
+        }
+        if (existingMethod.isInherited() && !existingMethod.isVirtual()) {
+          return createError(ERROR_TYPE::METHOD,
+                             "Ambiguous method declaration for: " + node->id());
+        }
+      }
+    }
   }
+
+  currentUserType_->insertMethod(newMethod);
 
   pushScope();
   node->body()->setScope(currentScope_);

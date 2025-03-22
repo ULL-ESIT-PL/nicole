@@ -8,6 +8,7 @@ foo<int, int>(x);
 struct T {
     constructor() {}
     destructor{}
+    virtual poo(aa: T): T {}
 }
 
 struct B<T> {
@@ -20,9 +21,16 @@ struct B<T> {
 struct A<T, Q> extends B {
     constructor(): super<Q>() {}
     destructor {}
-    method poo(aa: T): int {
+    virtual poo(aa: T): int {
         pp;
-        def foooooo(): int {}
+    }
+}
+
+struct SS<T, Q> extends A {
+    constructor(): super<Q>() {}
+    destructor {}
+    virtual poo(aa: T): int {
+        pp;
     }
 }
 
@@ -107,5 +115,3 @@ let foooooo: vector<Hola> = [];
 
 
 def bbb<Z, W>(KKKx: Z, poop: W): int {}
-
-def bbb<W, Z>(KKKx: W, poop: Z): int {}

@@ -50,9 +50,6 @@ public:
   [[nodiscard]] const std::expected<Attribute, Error>
   getAttribute(const std::string &id) const noexcept;
 
-  [[nodiscard]] const std::expected<Method, Error>
-  getMethod(const std::string &id, const Parameters &params) const noexcept;
-
   [[nodiscard]] const std::expected<std::vector<Method>, Error>
   getMethods(const std::string &id) const noexcept;
 
@@ -69,8 +66,7 @@ public:
   [[nodiscard]] std::expected<std::monostate, Error>
   insertAttr(const Attribute &attr) const noexcept;
 
-  [[nodiscard]] std::expected<std::monostate, Error>
-  insertMethod(const Method &method) const noexcept;
+  void insertMethod(const Method &method) const noexcept;
 
   [[nodiscard]] std::string toString() const noexcept override;
 };

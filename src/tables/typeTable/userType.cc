@@ -19,7 +19,7 @@ bool UserType::hasMethod(const Method &id) const noexcept {
     if (const auto userType = std::dynamic_pointer_cast<UserType>(baseType_))
       return userType->hasMethod(id);
   }
-  if (methodTable_.has(id)) {
+  if (methodTable_.getMethods(id.id()).size()) {
     return true;
   }
   return false;
@@ -38,33 +38,20 @@ UserType::getAttribute(const std::string &id) const noexcept {
                      "the attribute: " + id + " does not exist in " + name_);
 }
 
-const std::expected<Method, Error>
-UserType::getMethod(const std::string &id,
-                    const Parameters &params) const noexcept {
-  if (methodTable_.has(Method{id, {}, params, nullptr, nullptr, false})) {
-    return methodTable_.getMethod(id, params);
-  }
-  if (baseType_) {
-    if (const auto userType = std::dynamic_pointer_cast<UserType>(baseType_))
-      return userType->getMethod(id, params);
-  }
-  return createError(ERROR_TYPE::METHOD,
-                     "the method: " + id + " does not exist in " + name_ +
-                         " with the given parameters does not exist");
-}
-
 const std::expected<std::vector<Method>, Error>
 UserType::getMethods(const std::string &id) const noexcept {
   std::vector<Method> combinedMethods;
-  if (methodTable_.hasSymbol(id)) {
+  if (methodTable_.getMethods(id).size()) {
     auto childRes = methodTable_.getMethods(id);
-    if (childRes)
-      combinedMethods.insert(combinedMethods.end(), childRes.value().begin(),
-                             childRes.value().end());
+    combinedMethods.insert(combinedMethods.end(), childRes.begin(),
+                           childRes.end());
   }
   if (baseType_) {
     if (const auto userType = std::dynamic_pointer_cast<UserType>(baseType_)) {
       auto parentRes = userType->getMethods(id);
+      for (auto &method : parentRes.value()) {
+        method.setInherit(true);
+      }
       if (parentRes)
         combinedMethods.insert(combinedMethods.end(), parentRes.value().begin(),
                                parentRes.value().end());
@@ -86,13 +73,15 @@ UserType::insertAttr(const Attribute &attr) const noexcept {
   return attrTable_.insert(attr);
 }
 
-std::expected<std::monostate, Error>
-UserType::insertMethod(const Method &method) const noexcept {
-  if (hasMethod(method) and !(getMethod(method.id(), method.params())->isVirtual())) {
+void UserType::insertMethod(const Method &method) const noexcept {
+  /*
+  if (hasMethod(method) and
+      !(getMethod(method.id(), method.params())->isVirtual())) {
     return createError(ERROR_TYPE::METHOD,
                        "the method: " + method.id() + " already exists");
   }
-  return methodTable_.insert(method);
+  */
+  methodTable_.insert(method);
 }
 
 std::string UserType::toString() const noexcept {
