@@ -127,7 +127,7 @@ add_executable(tests
 
     # tables
     src/tables/functionTable/functionTable.cc
-    src/tables/functionTable/function.cc
+    
     src/tables/typeTable/typeTable.cc
     src/tables/typeTable/userType.cc
     src/tables/typeTable/method.cc
@@ -240,7 +240,7 @@ set(SRC_FILES
     src/parsingAnalysis/algorithm/productions/parseTypes.cc
 
     src/tables/functionTable/functionTable.cc
-    src/tables/functionTable/function.cc
+    
     src/tables/typeTable/typeTable.cc
     src/tables/typeTable/userType.cc
     src/tables/typeTable/method.cc

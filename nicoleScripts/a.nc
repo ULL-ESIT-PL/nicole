@@ -106,6 +106,6 @@ Hola::adios;
 let foooooo: vector<Hola> = [];
 
 
-def bbb<Z>(KKKx: Z): int {}
+def bbb<Z, W>(KKKx: Z, poop: W): int {}
 
-def bbb<W>(KKKx: W): int {}
+def bbb<W, Z>(KKKx: W, poop: Z): int {}

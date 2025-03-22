@@ -4,6 +4,7 @@
 #include "../../parsingAnalysis/ast/functions/parameters.h"
 #include "../symbol.h"
 #include "../typeTable/types/userTypes/genericParameter.h"
+#include "../typeTable/typeTable.h"
 #include <llvm/IR/Function.h>
 #include <memory>
 
@@ -51,8 +52,6 @@ public:
   setLlvmVersion(const std::shared_ptr<llvm::Function> &llvmVersion) noexcept {
     llvmVersion_ = llvmVersion;
   }
-
-  [[nodiscard]] bool operator==(const Function &other) const noexcept;
 };
 
 } // namespace nicole

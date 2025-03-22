@@ -52,6 +52,10 @@ public:
   [[nodiscard]] bool
   isGenericType(const std::shared_ptr<Type> &type,
                 const std::vector<GenericParameter> &generics) const noexcept;
+
+  [[nodiscard]] bool
+  areSameType(const std::shared_ptr<Type> &type1,
+              const std::shared_ptr<Type> &type2) const noexcept;
 };
 
 } // namespace nicole

@@ -112,4 +112,99 @@ bool TypeTable::isGenericType(
   return false;
 }
 
+bool TypeTable::areSameType(const std::shared_ptr<Type> &type1,
+                            const std::shared_ptr<Type> &type2) const noexcept {
+  // Si ambos apuntan al mismo objeto, son iguales.
+  if (type1 == type2) {
+    return true;
+  }
+  // Si alguno es nulo, no son iguales.
+  if (!type1 || !type2) {
+    return false;
+  }
+
+  // Caso BasicType
+  if (auto basic1 = std::dynamic_pointer_cast<BasicType>(type1)) {
+    if (auto basic2 = std::dynamic_pointer_cast<BasicType>(type2)) {
+      return basic1->baseKind() == basic2->baseKind();
+    }
+    return false;
+  }
+
+  // Caso VoidType
+  if (std::dynamic_pointer_cast<VoidType>(type1)) {
+    return std::dynamic_pointer_cast<VoidType>(type2) != nullptr;
+  }
+
+  // Caso NullType
+  if (std::dynamic_pointer_cast<NullType>(type1)) {
+    return std::dynamic_pointer_cast<NullType>(type2) != nullptr;
+  }
+
+  // Caso VectorType
+  if (auto vec1 = std::dynamic_pointer_cast<VectorType>(type1)) {
+    if (auto vec2 = std::dynamic_pointer_cast<VectorType>(type2)) {
+      return areSameType(vec1->elementType(), vec2->elementType());
+    }
+    return false;
+  }
+
+  // Caso PointerType
+  if (auto ptr1 = std::dynamic_pointer_cast<PointerType>(type1)) {
+    if (auto ptr2 = std::dynamic_pointer_cast<PointerType>(type2)) {
+      return areSameType(ptr1->baseType(), ptr2->baseType());
+    }
+    return false;
+  }
+
+  // Caso ConstType
+  if (auto const1 = std::dynamic_pointer_cast<ConstType>(type1)) {
+    if (auto const2 = std::dynamic_pointer_cast<ConstType>(type2)) {
+      return areSameType(const1->baseType(), const2->baseType());
+    }
+    return false;
+  }
+
+  // Caso EnumType
+  if (auto enum1 = std::dynamic_pointer_cast<EnumType>(type1)) {
+    if (auto enum2 = std::dynamic_pointer_cast<EnumType>(type2)) {
+      return enum1->name() == enum2->name();
+    }
+    return false;
+  }
+
+  // Caso UserType
+  if (auto user1 = std::dynamic_pointer_cast<UserType>(type1)) {
+    if (auto user2 = std::dynamic_pointer_cast<UserType>(type2)) {
+      return user1->name() == user2->name();
+    }
+    return false;
+  }
+
+  // Caso GenericInstanceType
+  if (auto genInst1 = std::dynamic_pointer_cast<GenericInstanceType>(type1)) {
+    if (auto genInst2 = std::dynamic_pointer_cast<GenericInstanceType>(type2)) {
+      // Se comparan primero los tipos genéricos base
+      if (!areSameType(genInst1->genericType(), genInst2->genericType())) {
+        return false;
+      }
+      const auto &args1 = genInst1->typeArgs();
+      const auto &args2 = genInst2->typeArgs();
+      if (args1.size() != args2.size()) {
+        return false;
+      }
+      for (size_t i = 0; i < args1.size(); ++i) {
+        if (!areSameType(args1[i], args2[i])) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  }
+
+  // Si no se reconoce el tipo, se compara mediante su representación canónica.
+  return type1->toString() == type2->toString();
+}
+
 } // namespace nicole
