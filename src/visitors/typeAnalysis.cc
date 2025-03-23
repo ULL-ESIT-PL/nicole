@@ -331,7 +331,7 @@ TypeAnalysis::visit(const AST_CONDITION *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CONDITION");
   }
-  return {};
+  return typeTable_->getType("bool");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -347,7 +347,7 @@ TypeAnalysis::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -363,7 +363,7 @@ TypeAnalysis::visit(const AST_ENUM *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -371,7 +371,7 @@ TypeAnalysis::visit(const AST_ENUM_ACCESS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM_ACCESS");
   }
-  return {};
+  return typeTable_->getType("int");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -379,7 +379,7 @@ TypeAnalysis::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -403,7 +403,7 @@ TypeAnalysis::visit(const AST_METHOD_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_DECL");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -411,7 +411,7 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_DECL");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -427,7 +427,7 @@ TypeAnalysis::visit(const AST_DESTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_DESTRUCTOR_DECL");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -451,7 +451,7 @@ TypeAnalysis::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -459,7 +459,7 @@ TypeAnalysis::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_TYPED_DECL");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
