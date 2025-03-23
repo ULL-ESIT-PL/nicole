@@ -1,12 +1,12 @@
 #ifndef AST_H
 #define AST_H
 
-#include "../../visitors/codeGeneration.h"
-#include "../../visitors/fillSemanticInfo.h"
-#include "../../visitors/monomorphize.h"
-#include "../../visitors/printTree.h"
-#include "../../visitors/typeAnalysis.h"
-#include "../../visitors/validateTree.h"
+#include "../../visitors/codeGeneration/codeGeneration.h"
+#include "../../visitors/fillSemanticInfo/fillSemanticInfo.h"
+#include "../../visitors/monomorphize/monomorphize.h"
+#include "../../visitors/printTree/printTree.h"
+#include "../../visitors/typeAnalysis/typeAnalysis.h"
+#include "../../visitors/validateTree/validateTree.h"
 #include "astType.h"
 #include <memory>
 #include <variant>

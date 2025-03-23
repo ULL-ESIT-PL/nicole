@@ -34,6 +34,17 @@ Scope::insert(const Variable &variable) noexcept {
                      "the variable: " + variable.id() + " already exists");
 }
 
+std::expected<std::monostate, Error>
+Scope::setVariableType(const std::string &id,
+                       const std::shared_ptr<Type> &type) const noexcept {
+  if (has(id)) {
+    table_.at(id).setType(type);
+    return {};
+  }
+  return createError(ERROR_TYPE::VARIABLE,
+                     "the variable: " + id + " already exists");
+}
+
 std::ostream &operator<<(std::ostream &os, const Scope &scope) noexcept {
   os << "Scope { ";
   for (auto it = scope.table_.cbegin(); it != scope.table_.cend(); ++it) {

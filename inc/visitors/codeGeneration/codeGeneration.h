@@ -1,10 +1,10 @@
 #ifndef CODE_GENERATION_H
 #define CODE_GENERATION_H
 
-#include "../tables/functionTable/functionTable.h"
-#include "../tables/scope/scope.h"
-#include "../tables/typeTable/typeTable.h"
-#include "visitor.h"
+#include "../../tables/functionTable/functionTable.h"
+#include "../../tables/scope/scope.h"
+#include "../../tables/typeTable/typeTable.h"
+#include "../visitor.h"
 #include <memory>
 #include <variant>
 #include <vector>

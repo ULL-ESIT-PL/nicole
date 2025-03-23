@@ -1,59 +1,59 @@
-#include "../../inc/visitors/typeAnalysis.h"
-#include "../../inc/parsingAnalysis/ast/literals/ast_bool.h"
-#include "../../inc/parsingAnalysis/ast/literals/ast_char.h"
-#include "../../inc/parsingAnalysis/ast/literals/ast_double.h"
-#include "../../inc/parsingAnalysis/ast/literals/ast_float.h"
-#include "../../inc/parsingAnalysis/ast/literals/ast_int.h"
-#include "../../inc/parsingAnalysis/ast/literals/ast_null.h"
-#include "../../inc/parsingAnalysis/ast/literals/ast_string.h"
+#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
+#include "../../../inc/parsingAnalysis/ast/literals/ast_bool.h"
+#include "../../../inc/parsingAnalysis/ast/literals/ast_char.h"
+#include "../../../inc/parsingAnalysis/ast/literals/ast_double.h"
+#include "../../../inc/parsingAnalysis/ast/literals/ast_float.h"
+#include "../../../inc/parsingAnalysis/ast/literals/ast_int.h"
+#include "../../../inc/parsingAnalysis/ast/literals/ast_null.h"
+#include "../../../inc/parsingAnalysis/ast/literals/ast_string.h"
 
-#include "../../inc/parsingAnalysis/ast/vector/ast_index.h"
-#include "../../inc/parsingAnalysis/ast/vector/ast_vector.h"
+#include "../../../inc/parsingAnalysis/ast/vector/ast_index.h"
+#include "../../../inc/parsingAnalysis/ast/vector/ast_vector.h"
 
-#include "../../inc/parsingAnalysis/ast/pointer/ast_delete.h"
-#include "../../inc/parsingAnalysis/ast/pointer/ast_deref.h"
-#include "../../inc/parsingAnalysis/ast/pointer/ast_new.h"
+#include "../../../inc/parsingAnalysis/ast/pointer/ast_delete.h"
+#include "../../../inc/parsingAnalysis/ast/pointer/ast_deref.h"
+#include "../../../inc/parsingAnalysis/ast/pointer/ast_new.h"
 
-#include "../../inc/parsingAnalysis/ast/operators/ast_binary.h"
-#include "../../inc/parsingAnalysis/ast/operators/ast_unary.h"
+#include "../../../inc/parsingAnalysis/ast/operators/ast_binary.h"
+#include "../../../inc/parsingAnalysis/ast/operators/ast_unary.h"
 
-#include "../../inc/parsingAnalysis/ast/assignments/ast_assignment.h"
+#include "../../../inc/parsingAnalysis/ast/assignments/ast_assignment.h"
 
-#include "../../inc/parsingAnalysis/ast/utils/ast_import.h"
-#include "../../inc/parsingAnalysis/ast/utils/ast_print.h"
+#include "../../../inc/parsingAnalysis/ast/utils/ast_import.h"
+#include "../../../inc/parsingAnalysis/ast/utils/ast_print.h"
 
-#include "../../inc/parsingAnalysis/ast/loops/ast_doWhile.h"
-#include "../../inc/parsingAnalysis/ast/loops/ast_for.h"
-#include "../../inc/parsingAnalysis/ast/loops/ast_pass.h"
-#include "../../inc/parsingAnalysis/ast/loops/ast_stop.h"
-#include "../../inc/parsingAnalysis/ast/loops/ast_while.h"
+#include "../../../inc/parsingAnalysis/ast/loops/ast_doWhile.h"
+#include "../../../inc/parsingAnalysis/ast/loops/ast_for.h"
+#include "../../../inc/parsingAnalysis/ast/loops/ast_pass.h"
+#include "../../../inc/parsingAnalysis/ast/loops/ast_stop.h"
+#include "../../../inc/parsingAnalysis/ast/loops/ast_while.h"
 
-#include "../../inc/parsingAnalysis/ast/conditionals/ast_case.h"
-#include "../../inc/parsingAnalysis/ast/conditionals/ast_default.h"
-#include "../../inc/parsingAnalysis/ast/conditionals/ast_elseIf.h"
-#include "../../inc/parsingAnalysis/ast/conditionals/ast_if.h"
-#include "../../inc/parsingAnalysis/ast/conditionals/ast_switch.h"
-#include "../../inc/parsingAnalysis/ast/conditionals/ast_ternary.h"
+#include "../../../inc/parsingAnalysis/ast/conditionals/ast_case.h"
+#include "../../../inc/parsingAnalysis/ast/conditionals/ast_default.h"
+#include "../../../inc/parsingAnalysis/ast/conditionals/ast_elseIf.h"
+#include "../../../inc/parsingAnalysis/ast/conditionals/ast_if.h"
+#include "../../../inc/parsingAnalysis/ast/conditionals/ast_switch.h"
+#include "../../../inc/parsingAnalysis/ast/conditionals/ast_ternary.h"
 
-#include "../../inc/parsingAnalysis/ast/functions/ast_funcCall.h"
-#include "../../inc/parsingAnalysis/ast/functions/ast_funcDecl.h"
-#include "../../inc/parsingAnalysis/ast/functions/ast_return.h"
+#include "../../../inc/parsingAnalysis/ast/functions/ast_funcCall.h"
+#include "../../../inc/parsingAnalysis/ast/functions/ast_funcDecl.h"
+#include "../../../inc/parsingAnalysis/ast/functions/ast_return.h"
 
-#include "../../inc/parsingAnalysis/ast/enum/ast_enum.h"
-#include "../../inc/parsingAnalysis/ast/enum/ast_enumAccess.h"
-#include "../../inc/parsingAnalysis/ast/userTypes/ast_attrAccess.h"
-#include "../../inc/parsingAnalysis/ast/userTypes/ast_constructorCall.h"
-#include "../../inc/parsingAnalysis/ast/userTypes/ast_methodCall.h"
-#include "../../inc/parsingAnalysis/ast/userTypes/ast_struct.h"
-#include "../../inc/parsingAnalysis/ast/userTypes/ast_this.h"
+#include "../../../inc/parsingAnalysis/ast/enum/ast_enum.h"
+#include "../../../inc/parsingAnalysis/ast/enum/ast_enumAccess.h"
+#include "../../../inc/parsingAnalysis/ast/userTypes/ast_attrAccess.h"
+#include "../../../inc/parsingAnalysis/ast/userTypes/ast_constructorCall.h"
+#include "../../../inc/parsingAnalysis/ast/userTypes/ast_methodCall.h"
+#include "../../../inc/parsingAnalysis/ast/userTypes/ast_struct.h"
+#include "../../../inc/parsingAnalysis/ast/userTypes/ast_this.h"
 
-#include "../../inc/parsingAnalysis/ast/variables/ast_autoDecl.h"
-#include "../../inc/parsingAnalysis/ast/variables/ast_typedDecl.h"
-#include "../../inc/parsingAnalysis/ast/variables/ast_varCall.h"
+#include "../../../inc/parsingAnalysis/ast/variables/ast_autoDecl.h"
+#include "../../../inc/parsingAnalysis/ast/variables/ast_typedDecl.h"
+#include "../../../inc/parsingAnalysis/ast/variables/ast_varCall.h"
 
-#include "../../inc/parsingAnalysis/ast/chained/ast_chained.h"
+#include "../../../inc/parsingAnalysis/ast/chained/ast_chained.h"
 
-#include "../../inc/parsingAnalysis/ast/tree.h"
+#include "../../../inc/parsingAnalysis/ast/tree.h"
 #include <cstddef>
 #include <memory>
 #include <variant>
@@ -141,10 +141,12 @@ TypeAnalysis::visit(const AST_VECTOR *node) const noexcept {
   if (!type) {
     return createError(type.error());
   }
-  for (const auto& value : values) {
+  for (const auto &value : values) {
     const auto result{value->accept(*this)};
     if (!result) {
       return createError(result.error());
+    }
+    if (!typeTable_->areSameType(*type, *result)) {
     }
   }
   return {};
@@ -163,7 +165,7 @@ TypeAnalysis::visit(const AST_DELETE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DELETE");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -171,7 +173,7 @@ TypeAnalysis::visit(const AST_NEW *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_NEW");
   }
-  return {};
+  return node->value()->accept(*this);
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -187,6 +189,14 @@ TypeAnalysis::visit(const AST_BINARY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BINARY");
   }
+  const auto left{node->left()->accept(*this)};
+  if (!left) {
+    return createError(left.error());
+  }
+  const auto right{node->right()->accept(*this)};
+  if (!right) {
+    return createError(right.error());
+  }
   return {};
 }
 
@@ -194,6 +204,10 @@ std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_UNARY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_UNARY");
+  }
+  const auto value{node->value()->accept(*this)};
+  if (!value) {
+    return createError(value.error());
   }
   return {};
 }
@@ -203,7 +217,7 @@ TypeAnalysis::visit(const AST_ASSIGNMENT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ASSIGNMENT");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -211,7 +225,7 @@ TypeAnalysis::visit(const AST_PRINT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PRINT");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -219,7 +233,7 @@ TypeAnalysis::visit(const AST_IMPORT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_IMPORT");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -227,7 +241,7 @@ TypeAnalysis::visit(const AST_STATEMENT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STATEMENT");
   }
-  return {};
+  return node->expression()->accept(*this);
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -235,7 +249,16 @@ TypeAnalysis::visit(const AST_BODY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BODY");
   }
-  return {};
+  for (const auto &stm : node->body()) {
+    const auto result{stm->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+    if (!typeTable_->areSameType(*result, *typeTable_->getType("void"))) {
+      return result;
+    }
+  }
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -243,7 +266,15 @@ TypeAnalysis::visit(const AST_WHILE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_WHILE");
   }
-  return {};
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -259,7 +290,15 @@ TypeAnalysis::visit(const AST_DO_WHILE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DO_WHILE");
   }
-  return {};
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -267,7 +306,7 @@ TypeAnalysis::visit(const AST_PASS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PASS");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -275,7 +314,7 @@ TypeAnalysis::visit(const AST_STOP *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STOP");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -283,7 +322,7 @@ TypeAnalysis::visit(const AST_IF *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_IF");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -291,7 +330,7 @@ TypeAnalysis::visit(const AST_ELSE_IF *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ELSE_IF");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -299,7 +338,7 @@ TypeAnalysis::visit(const AST_SWITCH *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SWITCH");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -307,7 +346,7 @@ TypeAnalysis::visit(const AST_CASE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CASE");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -315,7 +354,7 @@ TypeAnalysis::visit(const AST_DEFAULT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DEFAULT");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -323,7 +362,7 @@ TypeAnalysis::visit(const AST_TERNARY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_TERNARY");
   }
-  return {};
+  return typeTable_->getType("void");
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -435,7 +474,7 @@ TypeAnalysis::visit(const AST_THIS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_THIS");
   }
-  return {};
+  return node->userType();
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -451,6 +490,19 @@ TypeAnalysis::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
   }
+  const auto expression{node->value()->accept(*this)};
+  if (!expression) {
+    return createError(expression.error());
+  }
+  if (typeTable_->areSameType(*typeTable_->getType("void"), *expression)) {
+    return createError(
+        ERROR_TYPE::TYPE,
+        "an auto declaration cannot be assigned to a void expression");
+  }
+  const auto setType{currentScope_->setVariableType(node->id(), *expression)};
+  if (!setType) {
+    return createError(setType.error());
+  }
   return typeTable_->getType("void");
 }
 
@@ -458,6 +510,12 @@ std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_TYPED_DECL");
+  }
+  const auto expression{node->value()->accept(*this)};
+  if (!expression) {
+    return createError(expression.error());
+  }
+  if (typeTable_->areSameType(node->varType(), *expression)) {
   }
   return typeTable_->getType("void");
 }
@@ -467,7 +525,11 @@ TypeAnalysis::visit(const AST_VAR_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_CALL");
   }
-  return {};
+  const auto var{currentScope_->getVariable(node->id())};
+  if (!var) {
+    return createError(var.error());
+  }
+  return var->type();
 }
 
 std::expected<std::shared_ptr<Type>, Error>

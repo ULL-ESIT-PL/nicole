@@ -135,12 +135,12 @@ add_executable(tests
     src/tables/scope/scope.cc
 
     # visitors
-    src/visitors/printTree.cc
-    src/visitors/validateTree.cc
-    src/visitors/fillSemanticInfo.cc
-    src/visitors/monomorphize.cc
-    src/visitors/typeAnalysis.cc
-    src/visitors/codeGeneration.cc
+    src/visitors/printTree/printTree.cc
+    src/visitors/validateTree/validateTree.cc
+    src/visitors/fillSemanticInfo/fillSemanticInfo.cc
+    src/visitors/monomorphize/monomorphize.cc
+    src/visitors/typeAnalysis/typeAnalysis.cc
+    src/visitors/codeGeneration/codeGeneration.cc
 
     # compiler
     src/compiler/nicole.cc
@@ -245,12 +245,12 @@ set(SRC_FILES
     src/tables/typeTable/attrTable.cc
     src/tables/scope/scope.cc
 
-    src/visitors/printTree.cc
-    src/visitors/validateTree.cc
-    src/visitors/fillSemanticInfo.cc
-    src/visitors/monomorphize.cc
-    src/visitors/typeAnalysis.cc
-    src/visitors/codeGeneration.cc
+    src/visitors/printTree/printTree.cc
+    src/visitors/validateTree/validateTree.cc
+    src/visitors/fillSemanticInfo/fillSemanticInfo.cc
+    src/visitors/monomorphize/monomorphize.cc
+    src/visitors/typeAnalysis/typeAnalysis.cc
+    src/visitors/codeGeneration/codeGeneration.cc
 
     src/compiler/nicole.cc
 )

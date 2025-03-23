@@ -1,58 +1,27 @@
-#ifndef FILL_SEMANTIC_INFO_H
-#define FILL_SEMANTIC_INFO_H
+#ifndef MONOMORPHIZE_H
+#define MONOMORPHIZE_H
 
-#include "../tables/functionTable/functionTable.h"
-#include "../tables/scope/scope.h"
-#include "../tables/typeTable/typeTable.h"
-#include "visitor.h"
+#include "../../tables/functionTable/functionTable.h"
+#include "../../tables/scope/scope.h"
+#include "../../tables/typeTable/typeTable.h"
+#include "../visitor.h"
 #include <memory>
-#include <unordered_set>
 #include <variant>
 #include <vector>
 
 namespace nicole {
 
-class FillSemanticInfo final : public Visitor<std::monostate> {
+class Monomorphize final : public Visitor<std::monostate> {
 private:
   mutable std::shared_ptr<FunctionTable> functionTable_;
   mutable std::shared_ptr<TypeTable> typeTable_;
-  bool validateMode_;
-
-  mutable std::shared_ptr<Scope> currentScope_{nullptr};
-  mutable std::shared_ptr<Scope> firstScope_{nullptr};
-  mutable std::vector<GenericParameter> currentGenericList_{};
-  mutable std::vector<GenericParameter> currentStructGenericList_{};
-  mutable std::shared_ptr<UserType> currentUserType_{nullptr};
-  mutable bool analyzingInsideClass{false};
-
-  void pushScope() const noexcept;
-
-  void popScope() const noexcept;
-
-  [[nodiscard]] std::expected<std::vector<GenericParameter>, Error>
-  mergeGenericLists(const std::vector<GenericParameter> &list1,
-                    const std::vector<GenericParameter> &list2) const noexcept;
-
-  [[nodiscard]] bool hasDuplicatedGenerics(
-      const std::vector<GenericParameter> &list) const noexcept;
-
-  [[nodiscard]] bool
-  areAmbiguousFunctions(const Function &first,
-                        const Function &second) const noexcept;
-
-  [[nodiscard]] bool areAmbiguousMethods(const Method &first,
-                                         const Method &second) const noexcept;
 
 public:
-  FillSemanticInfo(const std::shared_ptr<FunctionTable> &functionTable,
-                   std::shared_ptr<TypeTable> &typeTable,
-                   const bool validateMode) noexcept
-      : functionTable_{functionTable}, typeTable_{typeTable},
-        validateMode_{validateMode} {}
-
-  [[nodiscard]] const std::shared_ptr<Scope> getGlobalScope() const noexcept {
-    return firstScope_;
-  }
+  Monomorphize(
+               const std::shared_ptr<FunctionTable> &functionTable,
+               std::shared_ptr<TypeTable> &typeTable) noexcept
+      :  functionTable_{functionTable},
+        typeTable_{typeTable} {}
 
   [[nodiscard]] std::expected<std::monostate, Error>
   visit(const AST_BOOL *node) const noexcept override;
@@ -205,7 +174,7 @@ public:
   visit(const Tree *tree) const noexcept override;
 
   [[nodiscard]] std::expected<std::monostate, Error>
-  fill(const Tree *tree) const noexcept {
+  transform(const Tree *tree) const noexcept {
     return visit(tree);
   }
 };

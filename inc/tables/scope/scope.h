@@ -14,7 +14,7 @@ namespace nicole {
 
 class Scope final {
 private:
-  std::unordered_map<std::string, Variable> table_;
+  mutable std::unordered_map<std::string, Variable> table_;
   std::shared_ptr<Scope> father_;
 
 public:
@@ -33,11 +33,15 @@ public:
   [[nodiscard]] std::expected<std::monostate, Error>
   insert(const Variable &variable) noexcept;
 
+  std::expected<std::monostate, Error>
+  setVariableType(const std::string &id,
+                  const std::shared_ptr<Type> &type) const noexcept;
+
   friend std::ostream &operator<<(std::ostream &os,
                                   const Scope &scope) noexcept;
 
 }; // namespace nicole
 
-}
+} // namespace nicole
 
 #endif

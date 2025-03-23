@@ -1,10 +1,10 @@
 #ifndef TYPE_ANALYSIS_H
 #define TYPE_ANALYSIS_H
 
-#include "../tables/functionTable/functionTable.h"
-#include "../tables/scope/scope.h"
-#include "../tables/typeTable/typeTable.h"
-#include "visitor.h"
+#include "../../tables/functionTable/functionTable.h"
+#include "../../tables/scope/scope.h"
+#include "../../tables/typeTable/typeTable.h"
+#include "../visitor.h"
 #include <memory>
 #include <variant>
 #include <vector>
@@ -15,6 +15,8 @@ class TypeAnalysis final : public Visitor<std::shared_ptr<Type>> {
 private:
   mutable std::shared_ptr<FunctionTable> functionTable_;
   mutable std::shared_ptr<TypeTable> typeTable_;
+  mutable std::shared_ptr<Type> currentType_{nullptr};
+  mutable std::shared_ptr<Scope> currentScope_{nullptr};
 
 public:
   TypeAnalysis(const std::shared_ptr<FunctionTable> &functionTable,

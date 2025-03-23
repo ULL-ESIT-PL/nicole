@@ -1,8 +1,8 @@
 #ifndef VARIABLE_H
 #define VARIABLE_H
 
-#include "../typeTable/types/type.h"
 #include "../symbol.h"
+#include "../typeTable/types/type.h"
 #include <expected>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Value.h>
@@ -33,6 +33,10 @@ public:
   [[nodiscard]] const std::shared_ptr<llvm::AllocaInst> &
   address() const noexcept {
     return address_;
+  }
+
+  void setType(const std::shared_ptr<Type> &type) const noexcept {
+    type_ = type;
   }
 };
 
