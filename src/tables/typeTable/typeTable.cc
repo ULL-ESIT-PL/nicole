@@ -52,20 +52,20 @@ bool TypeTable::isPossibleType(
       return false;
     }
     return true;
-  } else if (const auto &userType = std::dynamic_pointer_cast<UserType>(type)) {
-    if (!has(userType->name())) {
-      return false;
-    }
-    return true;
   } else if (const auto &genericInstanceType =
                  std::dynamic_pointer_cast<GenericInstanceType>(type)) {
-    if (!has(genericInstanceType->genericType()->name())) {
+    if (!has(genericInstanceType->name())) {
       return false;
     }
     for (const auto &arg : genericInstanceType->typeArgs()) {
       if (!isPossibleType(arg)) {
         return false;
       }
+    }
+    return true;
+  } else if (const auto &userType = std::dynamic_pointer_cast<UserType>(type)) {
+    if (!has(userType->name())) {
+      return false;
     }
     return true;
   }
@@ -90,16 +90,9 @@ bool TypeTable::isGenericType(
       }
     }
     return false;
-  } else if (const auto &userType = std::dynamic_pointer_cast<UserType>(type)) {
-    for (const auto &generic : generics) {
-      if (generic.name() == userType->name()) {
-        return true;
-      }
-    }
-    return false;
   } else if (const auto &genericInstanceType =
                  std::dynamic_pointer_cast<GenericInstanceType>(type)) {
-    if (!has(genericInstanceType->genericType()->name())) {
+    if (!has(genericInstanceType->name())) {
       return false;
     }
     for (const auto &arg : genericInstanceType->typeArgs()) {
@@ -108,6 +101,13 @@ bool TypeTable::isGenericType(
       }
     }
     return true;
+  } else if (const auto &userType = std::dynamic_pointer_cast<UserType>(type)) {
+    for (const auto &generic : generics) {
+      if (generic.name() == userType->name()) {
+        return true;
+      }
+    }
+    return false;
   }
   return false;
 }
@@ -173,19 +173,11 @@ bool TypeTable::areSameType(const std::shared_ptr<Type> &type1,
     return false;
   }
 
-  // Caso UserType
-  if (auto user1 = std::dynamic_pointer_cast<UserType>(type1)) {
-    if (auto user2 = std::dynamic_pointer_cast<UserType>(type2)) {
-      return user1->name() == user2->name();
-    }
-    return false;
-  }
-
   // Caso GenericInstanceType
   if (auto genInst1 = std::dynamic_pointer_cast<GenericInstanceType>(type1)) {
     if (auto genInst2 = std::dynamic_pointer_cast<GenericInstanceType>(type2)) {
       // Se comparan primero los tipos genéricos base
-      if (!areSameType(genInst1->genericType(), genInst2->genericType())) {
+      if (!areSameType(genInst1, genInst2)) {
         return false;
       }
       const auto &args1 = genInst1->typeArgs();
@@ -199,6 +191,14 @@ bool TypeTable::areSameType(const std::shared_ptr<Type> &type1,
         }
       }
       return true;
+    }
+    return false;
+  }
+
+  // Caso UserType
+  if (auto user1 = std::dynamic_pointer_cast<UserType>(type1)) {
+    if (auto user2 = std::dynamic_pointer_cast<UserType>(type2)) {
+      return user1->name() == user2->name();
     }
     return false;
   }

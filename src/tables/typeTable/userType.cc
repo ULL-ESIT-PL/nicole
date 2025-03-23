@@ -1,4 +1,5 @@
 #include "../../../inc/tables/typeTable/types/userTypes/userType.h"
+#include <memory>
 
 namespace nicole {
 
@@ -74,14 +75,19 @@ UserType::insertAttr(const Attribute &attr) const noexcept {
 }
 
 void UserType::insertMethod(const Method &method) const noexcept {
-  /*
-  if (hasMethod(method) and
-      !(getMethod(method.id(), method.params())->isVirtual())) {
-    return createError(ERROR_TYPE::METHOD,
-                       "the method: " + method.id() + " already exists");
-  }
-  */
   methodTable_.insert(method);
+}
+
+bool UserType::isAboveInHearchy(
+    const std::shared_ptr<UserType> &type) const noexcept {
+  auto aux{baseType_};
+  while (aux) {
+    if (aux->name_ == type->name_) {
+      return true;
+    }
+    aux = aux->baseType_;
+  }
+  return false;
 }
 
 std::string UserType::toString() const noexcept {

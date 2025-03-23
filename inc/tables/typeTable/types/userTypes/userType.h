@@ -16,10 +16,10 @@
 
 namespace nicole {
 
-class UserType final : public Type {
+class UserType : public Type {
 private:
   std::string name_;
-  std::shared_ptr<Type> baseType_; // Solo se permite una base
+  std::shared_ptr<UserType> baseType_; // Solo se permite una base
   std::vector<GenericParameter> genericParams_;
   mutable AttrTable attrTable_;
   mutable MethodTable methodTable_;
@@ -28,13 +28,13 @@ private:
 
 public:
   explicit UserType(const std::string &name,
-                    const std::shared_ptr<Type> &baseType,
+                    const std::shared_ptr<UserType> &baseType,
                     const std::vector<GenericParameter> &genericParams) noexcept
       : name_{name}, baseType_(baseType), genericParams_{genericParams} {}
 
   [[nodiscard]] const std::string &name() const noexcept { return name_; }
 
-  [[nodiscard]] const std::shared_ptr<Type> &baseType() const noexcept {
+  [[nodiscard]] const std::shared_ptr<UserType> &baseType() const noexcept {
     return baseType_;
   }
 
@@ -67,6 +67,9 @@ public:
   insertAttr(const Attribute &attr) const noexcept;
 
   void insertMethod(const Method &method) const noexcept;
+
+  [[nodiscard]] bool
+  isAboveInHearchy(const std::shared_ptr<UserType> &type) const noexcept;
 
   [[nodiscard]] std::string toString() const noexcept override;
 };

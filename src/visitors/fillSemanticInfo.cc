@@ -721,39 +721,47 @@ FillSemanticInfo::visit(const AST_STRUCT *node) const noexcept {
     return createError(ERROR_TYPE::TYPE, "has duplicated generics");
   }
 
-  std::shared_ptr<Type> father{nullptr};
+  std::shared_ptr<UserType> father{nullptr};
   if (node->fatherType()) {
-    const auto userType =
-        std::dynamic_pointer_cast<UserType>(node->fatherType());
     const auto instanceType =
         std::dynamic_pointer_cast<GenericInstanceType>(node->fatherType());
-    if (!userType && !instanceType) {
-      return createError(
-          ERROR_TYPE::TYPE,
-          "father type can only be a user type or generic instance");
-    }
-    if (!typeTable_->isPossibleType(node->fatherType()) and
-        !typeTable_->isGenericType(node->fatherType(),
-                                   currentStructGenericList_)) {
-      return createError(ERROR_TYPE::TYPE,
-                         node->fatherType()->toString() +
-                             " is not a posibble type or generic");
-    }
-    if (userType) {
+    if (instanceType) {
+      if (typeTable_->isGenericType(instanceType, currentStructGenericList_)) {
+        return createError(ERROR_TYPE::TYPE,
+                           instanceType->toString() +
+                               " is a generic so you cannot extend from it");
+      }
+      auto fatherExpected = typeTable_->getType(instanceType->name());
+      if (!fatherExpected) {
+        return createError(fatherExpected.error());
+      }
+      father = std::dynamic_pointer_cast<UserType>(fatherExpected.value());
+      if (!father) {
+        return createError(ERROR_TYPE::TYPE,
+                           "The father type is not a UserType");
+      }
+    } else {
+      const auto userType =
+          std::dynamic_pointer_cast<UserType>(node->fatherType());
+      if (!userType) {
+        return createError(
+            ERROR_TYPE::TYPE,
+            "father type can only be a user type or generic instance");
+      }
       if (typeTable_->isGenericType(userType, currentStructGenericList_)) {
         return createError(ERROR_TYPE::TYPE,
                            userType->toString() +
                                " is a generic so you cannot extend from it");
       }
-      father = *typeTable_->getType(userType->name());
-    } else if (instanceType) {
-      if (typeTable_->isGenericType(instanceType->genericType(),
-                                    currentStructGenericList_)) {
-        return createError(ERROR_TYPE::TYPE,
-                           instanceType->toString() +
-                               " is a generic so you cannot extend from it");
+      auto fatherExpected = typeTable_->getType(userType->name());
+      if (!fatherExpected) {
+        return createError(fatherExpected.error());
       }
-      father = *typeTable_->getType(instanceType->genericType()->name());
+      father = std::dynamic_pointer_cast<UserType>(fatherExpected.value());
+      if (!father) {
+        return createError(ERROR_TYPE::TYPE,
+                           "The father type is not a UserType");
+      }
     }
   }
 

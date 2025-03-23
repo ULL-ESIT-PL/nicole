@@ -3,24 +3,22 @@
 
 #include "userType.h"
 #include <memory>
+#include <sstream>
 #include <string>
 #include <vector>
 
 namespace nicole {
 
-class GenericInstanceType final : public Type {
+class GenericInstanceType final : public UserType {
 private:
-  std::shared_ptr<UserType> genericType_;
   std::vector<std::shared_ptr<Type>> typeArgs_;
 
 public:
-  GenericInstanceType(const std::shared_ptr<UserType> &genType,
+  GenericInstanceType(const std::shared_ptr<UserType> &genericType,
                       const std::vector<std::shared_ptr<Type>> &args) noexcept
-      : genericType_{genType}, typeArgs_{args} {}
-
-  [[nodiscard]] const std::shared_ptr<UserType> &genericType() const noexcept {
-    return genericType_;
-  }
+      : UserType(genericType->name(), genericType->baseType(),
+                 genericType->genericParams()),
+        typeArgs_{args} {}
 
   [[nodiscard]] const std::vector<std::shared_ptr<Type>> &
   typeArgs() const noexcept {
@@ -29,13 +27,13 @@ public:
 
   [[nodiscard]] std::string toString() const noexcept override {
     std::ostringstream oss;
-    oss << genericType_->toString() << "(";
+    oss << UserType::toString() << "<";
     for (size_t i = 0; i < typeArgs_.size(); ++i) {
       oss << typeArgs_[i]->toString();
       if (i != typeArgs_.size() - 1)
         oss << ", ";
     }
-    oss << ")";
+    oss << ">";
     return oss.str();
   }
 };
