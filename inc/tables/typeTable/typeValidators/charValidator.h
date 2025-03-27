@@ -1,11 +1,11 @@
-#ifndef VOID_VALIDATOR_H
-#define VOID_VALIDATOR_H
+#ifndef CHAR_VALIDATOR_H
+#define CHAR_VALIDATOR_H
 
 #include "baseTypeValidator.h"
 
 namespace nicole {
 
-class VoidValidator final : public BaseTypeValidator {
+class CharValidator final : public BaseTypeValidator {
 public:
   [[nodiscard]] std::shared_ptr<Type>
   isAssignable(const std::shared_ptr<Type> &) const noexcept override {

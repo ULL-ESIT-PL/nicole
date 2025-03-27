@@ -2,7 +2,21 @@
 #define TYPE_MANAGER_H
 
 #include "typeTable.h"
-#include "typeValidators/baseTypeValidator.h"
+#include "typeValidators/boolValidator.h"
+#include "typeValidators/boolValidator.h"
+#include "typeValidators/charValidator.h"
+#include "typeValidators/constValidator.h"
+#include "typeValidators/doubleValidator.h"
+#include "typeValidators/enumValidator.h"
+#include "typeValidators/floatValidator.h"
+#include "typeValidators/genericInstanceValidator.h"
+#include "typeValidators/intValidator.h"
+#include "typeValidators/nullValidator.h"
+#include "typeValidators/ptrValidator.h"
+#include "typeValidators/strValidator.h"
+#include "typeValidators/userTypeValidator.h"
+#include "typeValidators/vectorValidator.h"
+#include "typeValidators/voidValidator.h"
 #include <memory>
 
 namespace nicole {

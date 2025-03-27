@@ -4,6 +4,7 @@
 #include "../../tables/functionTable/functionTable.h"
 #include "../../tables/scope/scope.h"
 #include "../../tables/typeTable/typeTable.h"
+#include "../../tables/typeTable/typeMnager.h"
 #include "../visitor.h"
 #include <memory>
 #include <variant>
