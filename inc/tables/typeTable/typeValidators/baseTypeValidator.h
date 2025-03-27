@@ -17,8 +17,9 @@ public:
   [[nodiscard]] virtual std::shared_ptr<Type>
   isConvertible(const std::shared_ptr<Type> &type) const noexcept = 0;
 
-  [[nodiscard]] virtual std::shared_ptr<Type> isOperable(const std::shared_ptr<Type> &type,
-                                        const Token &tk) const noexcept = 0;
+  [[nodiscard]] virtual std::shared_ptr<Type>
+  isOperable(const std::shared_ptr<Type> &type,
+             const Token &tk) const noexcept = 0;
 };
 
 } // namespace nicole

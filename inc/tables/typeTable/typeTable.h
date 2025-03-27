@@ -3,7 +3,9 @@
 
 #include "../../errors.h"
 #include "types/basicTypes/basicTypes.h"
+#include "types/specialTypes/breakType.h"
 #include "types/specialTypes/constType.h"
+#include "types/specialTypes/noPropagateType.h"
 #include "types/specialTypes/nullType.h"
 #include "types/specialTypes/ptrType.h"
 #include "types/specialTypes/vectorType.h"
@@ -33,9 +35,23 @@ private:
 
   std::shared_ptr<NullType> null_{std::make_shared<NullType>()};
 
+  std::shared_ptr<NoPropagateType> noPropagate_{
+      std::make_shared<NoPropagateType>()};
+
+  std::shared_ptr<BreakType> breakType_{std::make_shared<BreakType>()};
+
 public:
   [[nodiscard]] const std::shared_ptr<NullType> &null() const noexcept {
     return null_;
+  }
+
+  [[nodiscard]] const std::shared_ptr<NoPropagateType> &
+  noPropagateType() const noexcept {
+    return noPropagate_;
+  }
+
+  [[nodiscard]] const std::shared_ptr<BreakType> &breakType() const noexcept {
+    return breakType_;
   }
 
   [[nodiscard]] bool has(const std::string &id) const noexcept;

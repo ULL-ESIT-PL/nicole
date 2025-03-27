@@ -164,7 +164,7 @@ TypeAnalysis::visit(const AST_DELETE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DELETE");
   }
-  return {};
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -227,7 +227,7 @@ TypeAnalysis::visit(const AST_ASSIGNMENT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ASSIGNMENT");
   }
-  return {};
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -240,7 +240,7 @@ TypeAnalysis::visit(const AST_PRINT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PRINT");
   }
-  return {};
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -251,7 +251,7 @@ TypeAnalysis::visit(const AST_IMPORT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_IMPORT");
   }
-  return {};
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -276,7 +276,7 @@ TypeAnalysis::visit(const AST_BODY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BODY");
   }
-  return {};
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -327,7 +327,7 @@ TypeAnalysis::visit(const AST_PASS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PASS");
   }
-  return {};
+  return typeTable_->breakType();
 }
 
 /*
@@ -338,7 +338,7 @@ TypeAnalysis::visit(const AST_STOP *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STOP");
   }
-  return {};
+  return typeTable_->breakType();
 }
 
 /*
@@ -450,7 +450,7 @@ TypeAnalysis::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
   }
-  return {};
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -473,7 +473,7 @@ TypeAnalysis::visit(const AST_ENUM *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM");
   }
-  return {};
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -499,7 +499,7 @@ TypeAnalysis::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
   }
-  return {};
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -535,7 +535,7 @@ TypeAnalysis::visit(const AST_METHOD_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_DECL");
   }
-  return {};
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -546,7 +546,7 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_DECL");
   }
-  return {};
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -570,7 +570,7 @@ TypeAnalysis::visit(const AST_DESTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_DESTRUCTOR_DECL");
   }
-  return {};
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -581,7 +581,7 @@ TypeAnalysis::visit(const AST_THIS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_THIS");
   }
-  return node->userType();
+  return {};
 }
 
 /*
@@ -607,7 +607,7 @@ TypeAnalysis::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
   }
-  return {};
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -620,7 +620,7 @@ TypeAnalysis::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_TYPED_DECL");
   }
-  return {};
+  return typeTable_->noPropagateType();
 }
 
 /*
