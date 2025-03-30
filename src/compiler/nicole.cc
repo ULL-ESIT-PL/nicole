@@ -1,4 +1,5 @@
 #include "../../inc/compiler/nicole.h"
+#include <memory>
 
 namespace nicole {
 

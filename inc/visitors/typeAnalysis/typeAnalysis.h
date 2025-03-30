@@ -4,7 +4,7 @@
 #include "../../tables/functionTable/functionTable.h"
 #include "../../tables/scope/scope.h"
 #include "../../tables/typeTable/typeTable.h"
-#include "../../tables/typeTable/typeMnager.h"
+#include "../../tables/typeTable/typeManager.h"
 #include "../visitor.h"
 #include <memory>
 #include <variant>
@@ -18,11 +18,12 @@ private:
   mutable std::shared_ptr<TypeTable> typeTable_;
   mutable std::shared_ptr<Type> currentType_{nullptr};
   mutable std::shared_ptr<Scope> currentScope_{nullptr};
+  TypeManager typeManager_;
 
 public:
   TypeAnalysis(const std::shared_ptr<FunctionTable> &functionTable,
                std::shared_ptr<TypeTable> &typeTable) noexcept
-      : functionTable_{functionTable}, typeTable_{typeTable} {}
+      : functionTable_{functionTable}, typeTable_{typeTable}, typeManager_{typeTable} {}
 
   [[nodiscard]] std::expected<std::shared_ptr<Type>, Error>
   visit(const AST_BOOL *node) const noexcept override;

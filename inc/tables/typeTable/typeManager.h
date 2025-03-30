@@ -23,18 +23,9 @@ namespace nicole {
 
 class TypeManager final {
 private:
-  std::shared_ptr<TypeTable> typeTable_{std::make_shared<TypeTable>()};
-
-  TypeManager() = default;
-
+  std::shared_ptr<TypeTable> typeTable_;
 public:
-  TypeManager(const TypeManager &) = delete;
-  TypeManager &operator=(const TypeManager &) = delete;
-
-  static TypeManager &getInstance() {
-    static TypeManager instance;
-    return instance;
-  }
+  explicit TypeManager(const std::shared_ptr<TypeTable>& typeTable) noexcept : typeTable_{typeTable} {}
 
   [[nodiscard]] const std::shared_ptr<TypeTable> &
   getTypeTable() const noexcept {
