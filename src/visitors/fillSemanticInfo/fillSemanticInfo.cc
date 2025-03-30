@@ -668,6 +668,9 @@ FillSemanticInfo::visit(const AST_RETURN *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_RETURN");
   }
+  if (!node->expression()) {
+    return {};
+  }
   return node->expression()->accept(*this);
 }
 
@@ -1036,7 +1039,26 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL");
   }
+  if (!typeTable_->getType(node->id())) {
+    return createError(ERROR_TYPE::FUNCTION,
+                       "no type with id: " + node->id() + " exists");
+  }
 
+  for (const auto &replacement : node->replaceOfGenerics()) {
+    if (!typeTable_->isPossibleType(replacement) and
+        !typeTable_->isGenericType(replacement, currentGenericList_)) {
+      return createError(ERROR_TYPE::TYPE,
+                         replacement->toString() +
+                             " is not a posibble type or generic");
+    }
+  }
+
+  for (const auto &expr : node->parameters()) {
+    const auto resul{expr->accept(*this)};
+    if (!resul) {
+      return createError(resul.error());
+    }
+  }
   return {};
 }
 
@@ -1044,6 +1066,11 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
+  }
+
+  const auto value{node->value()->accept(*this)};
+  if (!value) {
+    return createError(value.error());
   }
 
   if (analyzingInsideClass and currentUserType_->hasAttribute(node->id())) {
@@ -1064,6 +1091,11 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_TYPED_DECL");
+  }
+
+  const auto value{node->value()->accept(*this)};
+  if (!value) {
+    return createError(value.error());
   }
 
   if (analyzingInsideClass and currentUserType_->hasAttribute(node->id())) {

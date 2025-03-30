@@ -18,12 +18,16 @@ private:
   mutable std::shared_ptr<TypeTable> typeTable_;
   mutable std::shared_ptr<Type> currentType_{nullptr};
   mutable std::shared_ptr<Scope> currentScope_{nullptr};
-  TypeManager typeManager_;
+  mutable std::vector<GenericParameter> currentGenericList_{};
+  mutable std::vector<GenericParameter> currentStructGenericList_{};
+  mutable std::shared_ptr<UserType> currentUserType_{nullptr};
+  mutable bool analyzingInsideClass{false};
+  mutable bool returnedGeneric{false};
 
 public:
   TypeAnalysis(const std::shared_ptr<FunctionTable> &functionTable,
                std::shared_ptr<TypeTable> &typeTable) noexcept
-      : functionTable_{functionTable}, typeTable_{typeTable}, typeManager_{typeTable} {}
+      : functionTable_{functionTable}, typeTable_{typeTable} {}
 
   [[nodiscard]] std::expected<std::shared_ptr<Type>, Error>
   visit(const AST_BOOL *node) const noexcept override;

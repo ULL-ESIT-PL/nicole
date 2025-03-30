@@ -152,7 +152,23 @@ TypeAnalysis::visit(const AST_INDEX *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_INDEX");
   }
-  return {};
+  const auto result{node->index()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
+  }
+  if (analyzingInsideClass and
+      typeTable_->isGenericType(*result, currentGenericList_)) {
+    returnedGeneric = true;
+    return nullptr;
+  }
+  if (!typeTable_->areSameType(*result, *typeTable_->getType("int"))) {
+    return createError(ERROR_TYPE::TYPE, "index must be type int");
+  }
+  const auto vectorType{std::dynamic_pointer_cast<VectorType>(currentType_)};
+  if (!vectorType) {
+    return createError(ERROR_TYPE::TYPE, "can only access to vectors");
+  }
+  return vectorType->elementType();
 }
 
 /*
@@ -164,18 +180,38 @@ TypeAnalysis::visit(const AST_DELETE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DELETE");
   }
+  const auto result{node->value()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
+  }
+  const auto ptrType{std::dynamic_pointer_cast<PointerType>(currentType_)};
+  if (!ptrType) {
+    return createError(ERROR_TYPE::TYPE,
+                       "can only delete the memory stored in a pointer");
+  }
   return typeTable_->noPropagateType();
 }
 
 /*
-- envuelve en un puntero la expression y lo retorna
+- envuelve en un puntero la expression y lo retorna, debe ser constructor o
+primitiva
  */
 std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_NEW *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_NEW");
   }
-  return {};
+  const auto result{node->value()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
+  }
+  const auto basicType{std::dynamic_pointer_cast<BasicType>(*result)};
+  const auto userType{std::dynamic_pointer_cast<UserType>(*result)};
+  if (!basicType or !userType) {
+    return createError(ERROR_TYPE::TYPE,
+                       "can only use new with primtiives or user types");
+  }
+  return std::make_shared<PointerType>(*result);
 }
 
 /*
@@ -186,7 +222,15 @@ TypeAnalysis::visit(const AST_DEREF *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DEREF");
   }
-  return {};
+  const auto result{node->value()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
+  }
+  const auto ptrType{std::dynamic_pointer_cast<PointerType>(*result)};
+  if (!ptrType) {
+    return createError(ERROR_TYPE::TYPE, "can only deref a pointer");
+  }
+  return ptrType->baseType();
 }
 
 /*
@@ -200,6 +244,14 @@ TypeAnalysis::visit(const AST_BINARY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BINARY");
   }
+  const auto left{node->left()->accept(*this)};
+  if (!left) {
+    return createError(left.error());
+  }
+  const auto right{node->right()->accept(*this)};
+  if (!right) {
+    return createError(right.error());
+  }
   return {};
 }
 
@@ -212,6 +264,10 @@ std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_UNARY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_UNARY");
+  }
+  const auto value{node->value()->accept(*this)};
+  if (!value) {
+    return createError(value.error());
   }
   return {};
 }
@@ -227,11 +283,20 @@ TypeAnalysis::visit(const AST_ASSIGNMENT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ASSIGNMENT");
   }
+  const auto left{node->left()->accept(*this)};
+  if (!left) {
+    return createError(left.error());
+  }
+  const auto right{node->value()->accept(*this)};
+  if (!right) {
+    return createError(right.error());
+  }
   return typeTable_->noPropagateType();
 }
 
 /*
-- comprueba que los tipos de los argumentos no sean void ni NoPropagate, BreakType
+- comprueba que los tipos de los argumentos no sean void ni NoPropagate,
+BreakType
 - si es un userType comprueba que exista el metodo toStr()
 - retorna NoPropagate
  */
@@ -239,6 +304,12 @@ std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_PRINT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PRINT");
+  }
+  for (const auto &expr : node->values()) {
+    const auto result{expr->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
   }
   return typeTable_->noPropagateType();
 }
@@ -276,6 +347,13 @@ TypeAnalysis::visit(const AST_BODY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BODY");
   }
+  currentScope_ = node->scope();
+  for (const auto &expr : node->body()) {
+    const auto result{expr->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
   return typeTable_->noPropagateType();
 }
 
@@ -288,6 +366,14 @@ std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_WHILE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_WHILE");
+  }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
   }
   return {};
 }
@@ -303,6 +389,26 @@ TypeAnalysis::visit(const AST_FOR *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FOR");
   }
+  for (const auto &expr : node->init()) {
+    const auto result{expr->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  for (const auto &expr : node->update()) {
+    const auto result{expr->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
   return {};
 }
 
@@ -315,6 +421,14 @@ std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_DO_WHILE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DO_WHILE");
+  }
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
   }
   return {};
 }
@@ -352,6 +466,26 @@ TypeAnalysis::visit(const AST_IF *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_IF");
   }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
+  for (const auto &elseIf : node->elseIf()) {
+    const auto result{elseIf->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
+  if (node->elseBody()) {
+    const auto elseBody{node->elseBody()->accept(*this)};
+    if (!elseBody) {
+      return createError(elseBody.error());
+    }
+  }
   return {};
 }
 
@@ -362,6 +496,14 @@ std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_ELSE_IF *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ELSE_IF");
+  }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
   }
   return {};
 }
@@ -375,6 +517,22 @@ TypeAnalysis::visit(const AST_SWITCH *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SWITCH");
   }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  for (const auto &case_ : node->cases()) {
+    const auto result{case_->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
+  if (node->defaultCase()) {
+    const auto defaultCase{node->defaultCase()->accept(*this)};
+    if (!defaultCase) {
+      return createError(defaultCase.error());
+    }
+  }
   return {};
 }
 
@@ -387,6 +545,14 @@ TypeAnalysis::visit(const AST_CASE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CASE");
   }
+  const auto match{node->match()->accept(*this)};
+  if (!match) {
+    return createError(match.error());
+  }
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
   return {};
 }
 
@@ -397,6 +563,10 @@ std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_DEFAULT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DEFAULT");
+  }
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
   }
   return {};
 }
@@ -410,6 +580,18 @@ TypeAnalysis::visit(const AST_TERNARY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_TERNARY");
   }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  const auto first{node->first()->accept(*this)};
+  if (!first) {
+    return createError(first.error());
+  }
+  const auto second{node->second()->accept(*this)};
+  if (!second) {
+    return createError(second.error());
+  }
   return {};
 }
 
@@ -421,7 +603,11 @@ TypeAnalysis::visit(const AST_CONDITION *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CONDITION");
   }
-  return typeTable_->getType("bool");
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  return {};
 }
 
 /*
@@ -435,6 +621,12 @@ std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_FUNC_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_FUNC_CALL");
+  }
+  for (const auto &expr : node->parameters()) {
+    const auto resul{expr->accept(*this)};
+    if (!resul) {
+      return createError(resul.error());
+    }
   }
   return {};
 }
@@ -450,6 +642,10 @@ TypeAnalysis::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
   }
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
   return typeTable_->noPropagateType();
 }
 
@@ -462,7 +658,10 @@ TypeAnalysis::visit(const AST_RETURN *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_RETURN");
   }
-  return {};
+  if (!node->expression()) {
+    return *typeTable_->getType("void");
+  }
+  return node->expression()->accept(*this);
 }
 
 /*
@@ -499,6 +698,9 @@ TypeAnalysis::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
   }
+  analyzingInsideClass = true;
+
+  analyzingInsideClass = false;
   return typeTable_->noPropagateType();
 }
 
@@ -524,6 +726,12 @@ TypeAnalysis::visit(const AST_METHOD_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL");
   }
+  for (const auto &expr : node->parameters()) {
+    const auto resul{expr->accept(*this)};
+    if (!resul) {
+      return createError(resul.error());
+    }
+  }
   return {};
 }
 
@@ -535,6 +743,10 @@ TypeAnalysis::visit(const AST_METHOD_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_DECL");
   }
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
+  }
   return typeTable_->noPropagateType();
 }
 
@@ -545,6 +757,10 @@ std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_DECL");
+  }
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
   }
   return typeTable_->noPropagateType();
 }
@@ -558,6 +774,12 @@ TypeAnalysis::visit(const AST_SUPER *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SUPER");
   }
+  for (const auto &arg : node->arguments()) {
+    const auto result{arg->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
   return typeTable_->getType(node->fatherType()->toString());
 }
 
@@ -569,6 +791,10 @@ std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_DESTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_DESTRUCTOR_DECL");
+  }
+  const auto body{node->body()->accept(*this)};
+  if (!body) {
+    return createError(body.error());
   }
   return typeTable_->noPropagateType();
 }
@@ -594,6 +820,12 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL");
   }
+  for (const auto &expr : node->parameters()) {
+    const auto resul{expr->accept(*this)};
+    if (!resul) {
+      return createError(resul.error());
+    }
+  }
   return typeTable_->getType(node->id());
 }
 
@@ -606,6 +838,10 @@ std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
+  }
+  const auto value{node->value()->accept(*this)};
+  if (!value) {
+    return createError(value.error());
   }
   return typeTable_->noPropagateType();
 }
@@ -620,11 +856,15 @@ TypeAnalysis::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_TYPED_DECL");
   }
+  const auto value{node->value()->accept(*this)};
+  if (!value) {
+    return createError(value.error());
+  }
   return typeTable_->noPropagateType();
 }
 
 /*
-- se apoya en currentScope
+- se apoya en currentScope y en en currenStruct para saber si es un atributo
 */
 std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_VAR_CALL *node) const noexcept {
@@ -642,6 +882,16 @@ std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_CHAINED *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CHAINED");
+  }
+  const auto base{node->base()->accept(*this)};
+  if (!base) {
+    return createError(base.error());
+  }
+  for (const auto &operations : node->operations()) {
+    const auto result{operations->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
   }
   return {};
 }

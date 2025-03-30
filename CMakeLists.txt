@@ -127,28 +127,13 @@ add_executable(tests
 
     # tables
     src/tables/functionTable/functionTable.cc
-    
+
     src/tables/typeTable/typeTable.cc
+    src/tables/typeTable/typeManager.cc
     src/tables/typeTable/userType.cc
     src/tables/typeTable/methodTable.cc
     src/tables/typeTable/attrTable.cc
     src/tables/scope/scope.cc
-
-    # validators
-    src/tables/typeTable/typeValidators/boolValidator.cc
-    src/tables/typeTable/typeValidators/charValidator.cc
-    src/tables/typeTable/typeValidators/constValidator.cc
-    src/tables/typeTable/typeValidators/doubleValidator.cc
-    src/tables/typeTable/typeValidators/enumValidator.cc
-    src/tables/typeTable/typeValidators/floatValidator.cc
-    src/tables/typeTable/typeValidators/genericInstanceValidator.cc
-    src/tables/typeTable/typeValidators/intValidator.cc
-    src/tables/typeTable/typeValidators/nullValidator.cc
-    src/tables/typeTable/typeValidators/ptrValidator.cc
-    src/tables/typeTable/typeValidators/strValidator.cc
-    src/tables/typeTable/typeValidators/userTypeValidator.cc
-    src/tables/typeTable/typeValidators/vectorValidator.cc
-    src/tables/typeTable/typeValidators/voidValidator.cc
 
     # visitors
     src/visitors/printTree/printTree.cc
@@ -256,25 +241,11 @@ set(SRC_FILES
 
     src/tables/functionTable/functionTable.cc
     src/tables/typeTable/typeTable.cc
+    src/tables/typeTable/typeManager.cc
     src/tables/typeTable/userType.cc
     src/tables/typeTable/methodTable.cc
     src/tables/typeTable/attrTable.cc
     src/tables/scope/scope.cc
-
-    src/tables/typeTable/typeValidators/boolValidator.cc
-    src/tables/typeTable/typeValidators/charValidator.cc
-    src/tables/typeTable/typeValidators/constValidator.cc
-    src/tables/typeTable/typeValidators/doubleValidator.cc
-    src/tables/typeTable/typeValidators/enumValidator.cc
-    src/tables/typeTable/typeValidators/floatValidator.cc
-    src/tables/typeTable/typeValidators/genericInstanceValidator.cc
-    src/tables/typeTable/typeValidators/intValidator.cc
-    src/tables/typeTable/typeValidators/nullValidator.cc
-    src/tables/typeTable/typeValidators/ptrValidator.cc
-    src/tables/typeTable/typeValidators/strValidator.cc
-    src/tables/typeTable/typeValidators/userTypeValidator.cc
-    src/tables/typeTable/typeValidators/vectorValidator.cc
-    src/tables/typeTable/typeValidators/voidValidator.cc
 
     src/visitors/printTree/printTree.cc
     src/visitors/validateTree/validateTree.cc
