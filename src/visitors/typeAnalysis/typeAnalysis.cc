@@ -140,6 +140,12 @@ TypeAnalysis::visit(const AST_VECTOR *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VECTOR");
   }
+  for (const auto &expr : node->values()) {
+    const auto result{expr->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
   return {};
 }
 
