@@ -15,6 +15,7 @@
 #include "types/userTypes/genericInstanceType.h"
 #include "types/userTypes/genericParameter.h"
 #include "types/userTypes/userType.h"
+#include "types/userTypes/placeHolder.h"
 #include <memory>
 #include <string>
 #include <unordered_map>

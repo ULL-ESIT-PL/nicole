@@ -164,8 +164,7 @@ TypeAnalysis::visit(const AST_INDEX *node) const noexcept {
   }
   if (analyzingInsideClass and
       typeTable_->isGenericType(*result, currentGenericList_)) {
-    returnedGeneric = true;
-    return nullptr;
+    return std::make_shared<PlaceHolder>(GenericParameter{result.value()->toString()});
   }
   if (!typeTable_->areSameType(*result, *typeTable_->getType("int"))) {
     return createError(ERROR_TYPE::TYPE, "index must be type int");
