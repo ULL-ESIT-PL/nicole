@@ -2,26 +2,26 @@
 #define PLACE_HOLDER_H
 
 #include "../type.h"
-#include "genericParameter.h" // Incluir el header de GenericParameter
+#include <memory>
 #include <string>
 
 namespace nicole {
 
 class PlaceHolder final : public Type {
 private:
-  GenericParameter genericParam_; // Almacena el parámetro genérico asociado
+  std::shared_ptr<Type> genericCompound_;
 
 public:
-  explicit PlaceHolder(const GenericParameter &genericParam) noexcept
-      : genericParam_(genericParam) {}
+  explicit PlaceHolder(const std::shared_ptr<Type> &genericCompound) noexcept
+      : genericCompound_(genericCompound) {}
 
   [[nodiscard]] std::string toString() const noexcept override {
-    return "PlaceHolder: " + genericParam_.name();
+    return "PlaceHolder: " + genericCompound_->toString();
   }
 
-  // Se puede añadir un getter si se requiere acceder al GenericParameter
-  [[nodiscard]] const GenericParameter &getGenericParameter() const noexcept {
-    return genericParam_;
+  [[nodiscard]] const std::shared_ptr<Type> &
+  getGenericCompound() const noexcept {
+    return genericCompound_;
   }
 };
 

@@ -207,4 +207,105 @@ bool TypeTable::areSameType(const std::shared_ptr<Type> &type1,
   return type1->toString() == type2->toString();
 }
 
+bool TypeTable::canAssign(const std::shared_ptr<Type> &target,
+                          const std::shared_ptr<Type> &source) const noexcept {
+  // Si son exactamente iguales, se puede asignar.
+  if (areSameType(target, source))
+    return true;
+
+  // Permitir asignar null a cualquier puntero.
+  if (std::dynamic_pointer_cast<NullType>(source)) {
+    if (std::dynamic_pointer_cast<PointerType>(target))
+      return true;
+  }
+
+  // Desempaquetar ConstType para comparar los tipos subyacentes.
+  std::shared_ptr<Type> tTarget = target;
+  std::shared_ptr<Type> tSource = source;
+  if (auto constTarget = std::dynamic_pointer_cast<ConstType>(target))
+    tTarget = constTarget->baseType();
+  if (auto constSource = std::dynamic_pointer_cast<ConstType>(source))
+    tSource = constSource->baseType();
+
+  // Si ambos son punteros, se verifica la asignabilidad de sus tipos base.
+  if (auto targetPtr = std::dynamic_pointer_cast<PointerType>(tTarget)) {
+    if (auto sourcePtr = std::dynamic_pointer_cast<PointerType>(tSource))
+      return canAssign(targetPtr->baseType(), sourcePtr->baseType());
+  }
+
+  // Si ambos son GenericInstanceType, se compara tanto el tipo base (UserType)
+  // como la lista de argumentos, de forma recursiva.
+  auto targetGenInst = std::dynamic_pointer_cast<GenericInstanceType>(tTarget);
+  auto sourceGenInst = std::dynamic_pointer_cast<GenericInstanceType>(tSource);
+  if (targetGenInst && sourceGenInst) {
+    if (targetGenInst->name() != sourceGenInst->name())
+      return false;
+    const auto &argsTarget = targetGenInst->typeArgs();
+    const auto &argsSource = sourceGenInst->typeArgs();
+    if (argsTarget.size() != argsSource.size())
+      return false;
+    for (size_t i = 0; i < argsTarget.size(); ++i) {
+      if (!canAssign(argsTarget[i], argsSource[i]))
+        return false;
+    }
+    return true;
+  }
+
+  // Si uno de ellos es GenericInstanceType pero ambos son tipos de usuario,
+  // se permite la asignación si el tipo fuente es el mismo o hereda
+  // (polimorfismo) del destino. Se recorre la cadena de herencia (baseType).
+  if (auto targetUser = std::dynamic_pointer_cast<UserType>(tTarget)) {
+    if (auto sourceUser = std::dynamic_pointer_cast<UserType>(tSource)) {
+      for (auto current = sourceUser; current; current = current->baseType()) {
+        if (current->name() == targetUser->name())
+          return true;
+      }
+    }
+  }
+
+  // Para BasicType, se verifica que ambos tengan el mismo "baseKind".
+  if (auto targetBasic = std::dynamic_pointer_cast<BasicType>(tTarget)) {
+    if (auto sourceBasic = std::dynamic_pointer_cast<BasicType>(tSource))
+      return targetBasic->baseKind() == sourceBasic->baseKind();
+  }
+
+  // Para EnumType, se permite la asignación si tienen el mismo nombre.
+  if (auto targetEnum = std::dynamic_pointer_cast<EnumType>(tTarget)) {
+    if (auto sourceEnum = std::dynamic_pointer_cast<EnumType>(tSource))
+      return targetEnum->name() == sourceEnum->name();
+  }
+
+  // Para VectorType, se verifica que sus tipos de elementos sean asignables.
+  if (auto targetVec = std::dynamic_pointer_cast<VectorType>(tTarget)) {
+    if (auto sourceVec = std::dynamic_pointer_cast<VectorType>(tSource))
+      return canAssign(targetVec->elementType(), sourceVec->elementType());
+  }
+
+  return false;
+}
+
+bool TypeTable::haveCommonAncestor(
+    const std::shared_ptr<Type> &type1,
+    const std::shared_ptr<Type> &type2) const noexcept {
+  // Solo tiene sentido para tipos de usuario (incluyendo GenericInstanceType,
+  // que se tratan como UserType)
+  auto user1 = std::dynamic_pointer_cast<UserType>(type1);
+  auto user2 = std::dynamic_pointer_cast<UserType>(type2);
+  if (user1 && user2) {
+    // Comprobar si user1 es ancestro de user2
+    for (auto current = user2; current; current = current->baseType()) {
+      if (current->name() == user1->name()) {
+        return true;
+      }
+    }
+    // O si user2 es ancestro de user1
+    for (auto current = user1; current; current = current->baseType()) {
+      if (current->name() == user2->name()) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 } // namespace nicole

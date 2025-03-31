@@ -22,7 +22,7 @@ private:
   mutable std::vector<GenericParameter> currentStructGenericList_{};
   mutable std::shared_ptr<UserType> currentUserType_{nullptr};
   mutable bool analyzingInsideClass{false};
-  mutable bool returnedGeneric{false};
+  mutable bool insideDeclWithGenerics{false};
 
 public:
   TypeAnalysis(const std::shared_ptr<FunctionTable> &functionTable,

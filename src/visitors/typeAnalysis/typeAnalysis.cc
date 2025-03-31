@@ -140,6 +140,13 @@ TypeAnalysis::visit(const AST_VECTOR *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VECTOR");
   }
+  if (node->values().empty()) {
+    return std::make_shared<VectorType>(typeTable_->null());
+  }
+  const auto first{node->values()[0]->accept(*this)};
+  if (!first) {
+    return createError(first.error());
+  }
   for (const auto &expr : node->values()) {
     const auto result{expr->accept(*this)};
     if (!result) {
@@ -162,9 +169,9 @@ TypeAnalysis::visit(const AST_INDEX *node) const noexcept {
   if (!result) {
     return createError(result.error());
   }
-  if (analyzingInsideClass and
+  if (insideDeclWithGenerics and
       typeTable_->isGenericType(*result, currentGenericList_)) {
-    return std::make_shared<PlaceHolder>(GenericParameter{result.value()->toString()});
+    return std::make_shared<PlaceHolder>(*result);
   }
   if (!typeTable_->areSameType(*result, *typeTable_->getType("int"))) {
     return createError(ERROR_TYPE::TYPE, "index must be type int");
@@ -185,16 +192,39 @@ TypeAnalysis::visit(const AST_DELETE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DELETE");
   }
-  const auto result{node->value()->accept(*this)};
+
+  auto result = node->value()->accept(*this);
   if (!result) {
     return createError(result.error());
   }
-  const auto ptrType{std::dynamic_pointer_cast<PointerType>(currentType_)};
-  if (!ptrType) {
-    return createError(ERROR_TYPE::TYPE,
-                       "can only delete the memory stored in a pointer");
+
+  auto type = result.value();
+
+  // Manejo del caso PlaceHolder
+  if (insideDeclWithGenerics) {
+    if (auto placeholder = std::dynamic_pointer_cast<PlaceHolder>(type)) {
+      auto genericCompound = placeholder->getGenericCompound();
+      if (std::dynamic_pointer_cast<PointerType>(genericCompound)) {
+        return placeholder;
+      }
+      return createError(ERROR_TYPE::TYPE, "can only delete pointers");
+    }
   }
-  return typeTable_->noPropagateType();
+
+  // Manejo del caso ConstType que envuelve un PointerType
+  if (auto constType = std::dynamic_pointer_cast<ConstType>(type)) {
+    if (std::dynamic_pointer_cast<PointerType>(constType->baseType())) {
+      return type;
+    }
+    return createError(ERROR_TYPE::TYPE, "can only delete pointers");
+  }
+
+  // Manejo del caso PointerType directo
+  if (std::dynamic_pointer_cast<PointerType>(type)) {
+    return typeTable_->noPropagateType();
+  }
+
+  return createError(ERROR_TYPE::TYPE, "can only delete pointers");
 }
 
 /*
@@ -206,17 +236,28 @@ TypeAnalysis::visit(const AST_NEW *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_NEW");
   }
-  const auto result{node->value()->accept(*this)};
-  if (!result) {
+
+  auto result = node->value()->accept(*this);
+  if (!result)
     return createError(result.error());
-  }
-  const auto basicType{std::dynamic_pointer_cast<BasicType>(*result)};
-  const auto userType{std::dynamic_pointer_cast<UserType>(*result)};
-  if (!basicType or !userType) {
-    return createError(ERROR_TYPE::TYPE,
-                       "can only use new with primtiives or user types");
-  }
-  return std::make_shared<PointerType>(*result);
+
+  auto exprType = result.value();
+
+  // Si el tipo es generic, lo permitimos.
+  if (insideDeclWithGenerics and
+      typeTable_->isGenericType(exprType, currentGenericList_))
+    return std::make_shared<PointerType>(exprType);
+
+  // Se permite solo si es un tipo primitivo o un tipo de usuario.
+  auto basicType = std::dynamic_pointer_cast<BasicType>(exprType);
+  auto userType = std::dynamic_pointer_cast<UserType>(exprType);
+  if (!basicType && !userType)
+    return createError(
+        ERROR_TYPE::TYPE,
+        "can only use new with primitives, user types or generics");
+
+  // Envolver en un puntero y retornarlo.
+  return std::make_shared<PointerType>(exprType);
 }
 
 /*
@@ -227,15 +268,28 @@ TypeAnalysis::visit(const AST_DEREF *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DEREF");
   }
-  const auto result{node->value()->accept(*this)};
-  if (!result) {
+
+  auto result = node->value()->accept(*this);
+  if (!result)
     return createError(result.error());
-  }
-  const auto ptrType{std::dynamic_pointer_cast<PointerType>(*result)};
-  if (!ptrType) {
+
+  auto type = result.value();
+
+  std::shared_ptr<Type> unwrappedType = type;
+  if (auto constType = std::dynamic_pointer_cast<ConstType>(type))
+    unwrappedType = constType->baseType();
+
+  if (insideDeclWithGenerics &&
+      typeTable_->isGenericType(unwrappedType, currentGenericList_)) {
+    if (auto ptrType = std::dynamic_pointer_cast<PointerType>(unwrappedType))
+      return std::make_shared<PlaceHolder>(ptrType->baseType());
     return createError(ERROR_TYPE::TYPE, "can only deref a pointer");
   }
-  return ptrType->baseType();
+
+  if (auto ptrType = std::dynamic_pointer_cast<PointerType>(unwrappedType))
+    return ptrType->baseType();
+
+  return createError(ERROR_TYPE::TYPE, "can only deref a pointer");
 }
 
 /*
@@ -296,6 +350,8 @@ TypeAnalysis::visit(const AST_ASSIGNMENT *node) const noexcept {
   if (!right) {
     return createError(right.error());
   }
+  if (!typeTable_->canAssign(left.value(), right.value()))
+    return createError(ERROR_TYPE::TYPE, "incompatible types in assignment");
   return typeTable_->noPropagateType();
 }
 
@@ -314,6 +370,21 @@ TypeAnalysis::visit(const AST_PRINT *node) const noexcept {
     const auto result{expr->accept(*this)};
     if (!result) {
       return createError(result.error());
+    }
+
+    auto exprType = result.value();
+
+    if (insideDeclWithGenerics &&
+        typeTable_->isGenericType(exprType, currentGenericList_))
+      continue;
+
+    if (auto userType = std::dynamic_pointer_cast<UserType>(exprType)) {
+      auto methodsExp = userType->getMethods("toString");
+      if (!methodsExp)
+        return createError(methodsExp.error());
+      if (methodsExp.value().empty())
+        return createError(ERROR_TYPE::TYPE, "User type " + userType->name() +
+                                                 " must implement toString()");
     }
   }
   return typeTable_->noPropagateType();
@@ -353,12 +424,47 @@ TypeAnalysis::visit(const AST_BODY *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BODY");
   }
   currentScope_ = node->scope();
+  std::vector<std::shared_ptr<Type>> returnTypes;
+  bool foundBreak = false;
+
   for (const auto &expr : node->body()) {
-    const auto result{expr->accept(*this)};
-    if (!result) {
+    auto result = expr->accept(*this);
+    if (!result)
       return createError(result.error());
+
+    auto type = result.value();
+    if (typeTable_->areSameType(type, typeTable_->noPropagateType()))
+      continue;
+
+    if (typeTable_->areSameType(type, typeTable_->breakType())) {
+      foundBreak = true;
+      continue;
     }
+
+    returnTypes.push_back(type);
   }
+
+  if (!returnTypes.empty() && foundBreak)
+    return createError(ERROR_TYPE::TYPE,
+                       "inconsistent return types: cannot mix return and "
+                       "break/continue in the same body");
+
+  if (!returnTypes.empty()) {
+    auto commonType = returnTypes.front();
+    for (size_t i = 1; i < returnTypes.size(); ++i) {
+      if (!typeTable_->areSameType(commonType, returnTypes[i])) {
+        if (!typeTable_->haveCommonAncestor(commonType, returnTypes[i])) {
+          return createError(ERROR_TYPE::TYPE,
+                             "inconsistent return types in body");
+        }
+        // Opcional: se podría definir commonType como el ancestro común.
+      }
+    }
+    return commonType;
+  }
+  if (foundBreak)
+    return typeTable_->breakType();
+
   return typeTable_->noPropagateType();
 }
 

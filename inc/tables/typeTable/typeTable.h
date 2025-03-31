@@ -73,6 +73,13 @@ public:
   [[nodiscard]] bool
   areSameType(const std::shared_ptr<Type> &type1,
               const std::shared_ptr<Type> &type2) const noexcept;
+
+  [[nodiscard]] bool canAssign(const std::shared_ptr<Type>& target,
+                          const std::shared_ptr<Type>& source) const noexcept;
+
+  [[nodiscard]] bool haveCommonAncestor(
+    const std::shared_ptr<Type> &type1,
+    const std::shared_ptr<Type> &type2) const noexcept;
 };
 
 } // namespace nicole
