@@ -80,6 +80,7 @@ sudo systemctl stop docker.socket
 - A few examples of the languaje can be found at `nicoleScripts/`
 
 ## Requirements
+These versions were used during the development phase but they might not be needed specifically and other versions could work
 - `clang 19 or g++ 14` for compilation
 - `Catch2 3.7` for test
 - `LLVM 19` for code generation
