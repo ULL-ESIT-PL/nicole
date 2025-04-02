@@ -1,0 +1,34 @@
+# Dockerfile for Fedora
+
+# How to run the Docker is found at the readme file section: Install using docker
+
+FROM fedora:latest
+ENV LANG C.UTF-8
+
+# Install dependencies
+RUN dnf update -y && dnf install -y \
+    git \
+    wget \
+    ninja-build \
+    ccache \
+    cppcheck \
+    lcov \
+    clang \
+    clang-tools-extra \
+    gcc-c++ \
+    make \
+    llvm-devel && \
+    dnf clean all
+
+# Install CMake 3.30.5
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.30.5/cmake-3.30.5-linux-x86_64.tar.gz && \
+    tar -xzvf cmake-3.30.5-linux-x86_64.tar.gz --strip-components=1 -C /usr/local && \
+    rm cmake-3.30.5-linux-x86_64.tar.gz
+
+# Clone repo
+ARG GITHUB_TOKEN
+RUN git clone --branch parser https://${GITHUB_TOKEN}@github.com/EV2872/nicole.git /app
+WORKDIR /app
+
+# Give permissions and compile
+RUN chmod +x nicole.sh && ./nicole.sh

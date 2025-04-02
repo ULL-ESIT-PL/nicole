@@ -41,6 +41,38 @@ Generate the AST and intermediate code without optimization:
 ./nicole.sh -p -i helloWorld.nc
 ```
 
+## Install using docker
+Start the server if needed
+```sh
+sudo systemctl stop/start docker
+```
+
+Move to the docker file folder
+```sh
+cd dockerInstall
+```
+
+Create image, since it is a personal token it won't be shown, replace with yours so you can clone the private repo, this will be possible if you are a collaborator
+```sh
+sudo docker build --build-arg GITHUB_TOKEN=******* -t mi_proyecto .
+```
+
+Create a container and execute an example program, remember that --rm will remove the container once the process is finished
+```sh
+sudo docker run --rm --name mi_contenedor mi_proyecto ./nicole.sh nicoleScripts/a.nc -p
+```
+
+Remove image
+```sh
+sudo docker rmi mi_proyecto
+```
+
+Stop server and socket(if needed)
+```sh
+sudo systemctl stop docker
+sudo systemctl stop docker.socket
+```
+
 ## Notes
 - Only the file containing the `main` function needs to be specified.
 - If changes are made to the code (project), only the modified files will be recompiled.
@@ -57,6 +89,7 @@ Generate the AST and intermediate code without optimization:
 - `clang-tidy 19` (optional) static analyzer
 - `cppcheck 2.7` (optional) static analyzer
 - `lcov 2.0.1` for coverage analysis
+- `Docker 28.0.4` (optional) in case that the used operating system is not Linux (Fedora)
 - `The project only has been tested in Linux`
 
 ## Features Implemented
