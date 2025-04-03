@@ -21,6 +21,7 @@ private:
   mutable std::vector<GenericParameter> currentGenericList_{};
   mutable std::vector<GenericParameter> currentStructGenericList_{};
   mutable std::shared_ptr<UserType> currentUserType_{nullptr};
+  mutable std::shared_ptr<Type> switchTypeCondition_{nullptr};
   mutable bool analyzingInsideClass{false};
   mutable bool insideDeclWithGenerics{false};
 

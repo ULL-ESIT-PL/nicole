@@ -200,7 +200,6 @@ TypeAnalysis::visit(const AST_DELETE *node) const noexcept {
 
   auto type = result.value();
 
-  // Manejo del caso PlaceHolder
   if (insideDeclWithGenerics) {
     if (auto placeholder = std::dynamic_pointer_cast<PlaceHolder>(type)) {
       auto genericCompound = placeholder->getGenericCompound();
@@ -211,7 +210,6 @@ TypeAnalysis::visit(const AST_DELETE *node) const noexcept {
     }
   }
 
-  // Manejo del caso ConstType que envuelve un PointerType
   if (auto constType = std::dynamic_pointer_cast<ConstType>(type)) {
     if (std::dynamic_pointer_cast<PointerType>(constType->baseType())) {
       return type;
@@ -219,7 +217,6 @@ TypeAnalysis::visit(const AST_DELETE *node) const noexcept {
     return createError(ERROR_TYPE::TYPE, "can only delete pointers");
   }
 
-  // Manejo del caso PointerType directo
   if (std::dynamic_pointer_cast<PointerType>(type)) {
     return typeTable_->noPropagateType();
   }
@@ -243,12 +240,10 @@ TypeAnalysis::visit(const AST_NEW *node) const noexcept {
 
   auto exprType = result.value();
 
-  // Si el tipo es generic, lo permitimos.
   if (insideDeclWithGenerics and
       typeTable_->isGenericType(exprType, currentGenericList_))
     return std::make_shared<PointerType>(exprType);
 
-  // Se permite solo si es un tipo primitivo o un tipo de usuario.
   auto basicType = std::dynamic_pointer_cast<BasicType>(exprType);
   auto userType = std::dynamic_pointer_cast<UserType>(exprType);
   if (!basicType && !userType)
@@ -256,7 +251,6 @@ TypeAnalysis::visit(const AST_NEW *node) const noexcept {
         ERROR_TYPE::TYPE,
         "can only use new with primitives, user types or generics");
 
-  // Envolver en un puntero y retornarlo.
   return std::make_shared<PointerType>(exprType);
 }
 
@@ -457,7 +451,7 @@ TypeAnalysis::visit(const AST_BODY *node) const noexcept {
           return createError(ERROR_TYPE::TYPE,
                              "inconsistent return types in body");
         }
-        // Opcional: se podría definir commonType como el ancestro común.
+        // se podría definir commonType como el ancestro común ????????
       }
     }
     return commonType;
@@ -478,15 +472,33 @@ TypeAnalysis::visit(const AST_WHILE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_WHILE");
   }
-  const auto condition{node->condition()->accept(*this)};
-  if (!condition) {
+  auto condition = node->condition()->accept(*this);
+  if (!condition)
     return createError(condition.error());
-  }
-  const auto body{node->body()->accept(*this)};
-  if (!body) {
+  auto condType = condition.value();
+
+  if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
+    condType = constCond->baseType();
+
+  if (insideDeclWithGenerics &&
+      typeTable_->isGenericType(condType, currentGenericList_))
+    return std::make_shared<PlaceHolder>(condType);
+
+  auto boolType = typeTable_->getType("bool");
+  if (!typeTable_->areSameType(condType, *boolType))
+    return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+
+  auto body = node->body()->accept(*this);
+  if (!body)
     return createError(body.error());
+  auto bodyType = body.value();
+
+  if (!typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) &&
+      !typeTable_->areSameType(bodyType, typeTable_->breakType())) {
+    return bodyType;
   }
-  return {};
+
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -500,27 +512,49 @@ TypeAnalysis::visit(const AST_FOR *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FOR");
   }
-  for (const auto &expr : node->init()) {
-    const auto result{expr->accept(*this)};
-    if (!result) {
-      return createError(result.error());
+  if (!node->init().empty()) {
+    for (const auto &expr : node->init()) {
+      auto initResult = expr->accept(*this);
+      if (!initResult)
+        return createError(initResult.error());
     }
   }
-  const auto condition{node->condition()->accept(*this)};
-  if (!condition) {
+
+  auto condition = node->condition()->accept(*this);
+  if (!condition)
     return createError(condition.error());
-  }
-  for (const auto &expr : node->update()) {
-    const auto result{expr->accept(*this)};
-    if (!result) {
-      return createError(result.error());
+  auto condType = condition.value();
+
+  if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
+    condType = constCond->baseType();
+
+  if (insideDeclWithGenerics &&
+      typeTable_->isGenericType(condType, currentGenericList_))
+    return std::make_shared<PlaceHolder>(condType);
+
+  auto boolType = typeTable_->getType("bool");
+  if (!typeTable_->areSameType(condType, *boolType))
+    return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+
+  if (!node->update().empty()) {
+    for (const auto &expr : node->update()) {
+      auto updateResult = expr->accept(*this);
+      if (!updateResult)
+        return createError(updateResult.error());
     }
   }
-  const auto body{node->body()->accept(*this)};
-  if (!body) {
+
+  auto body = node->body()->accept(*this);
+  if (!body)
     return createError(body.error());
+  auto bodyType = body.value();
+
+  if (!typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) &&
+      !typeTable_->areSameType(bodyType, typeTable_->breakType())) {
+    return bodyType;
   }
-  return {};
+
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -533,15 +567,33 @@ TypeAnalysis::visit(const AST_DO_WHILE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DO_WHILE");
   }
-  const auto body{node->body()->accept(*this)};
-  if (!body) {
+  auto body = node->body()->accept(*this);
+  if (!body)
     return createError(body.error());
-  }
-  const auto condition{node->condition()->accept(*this)};
-  if (!condition) {
+  auto bodyType = body.value();
+
+  auto condition = node->condition()->accept(*this);
+  if (!condition)
     return createError(condition.error());
+  auto condType = condition.value();
+
+  if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
+    condType = constCond->baseType();
+
+  if (insideDeclWithGenerics &&
+      typeTable_->isGenericType(condType, currentGenericList_))
+    return std::make_shared<PlaceHolder>(condType);
+
+  auto boolType = typeTable_->getType("bool");
+  if (!typeTable_->areSameType(condType, *boolType))
+    return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+
+  if (!typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) &&
+      !typeTable_->areSameType(bodyType, typeTable_->breakType())) {
+    return bodyType;
   }
-  return {};
+
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -577,27 +629,71 @@ TypeAnalysis::visit(const AST_IF *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_IF");
   }
-  const auto condition{node->condition()->accept(*this)};
-  if (!condition) {
+  auto condition = node->condition()->accept(*this);
+  if (!condition)
     return createError(condition.error());
+  auto condType = condition.value();
+
+  if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
+    condType = constCond->baseType();
+
+  if (insideDeclWithGenerics &&
+      typeTable_->isGenericType(condType, currentGenericList_))
+    return std::make_shared<PlaceHolder>(condType);
+
+  auto boolType = typeTable_->getType("bool");
+  if (!typeTable_->areSameType(condType, *boolType))
+    return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+
+  auto mainBody = node->body()->accept(*this);
+  if (!mainBody)
+    return createError(mainBody.error());
+
+  std::vector<std::shared_ptr<Type>> branchTypes;
+
+  if (!typeTable_->areSameType(mainBody.value(),
+                               typeTable_->noPropagateType()) &&
+      !typeTable_->areSameType(mainBody.value(), typeTable_->breakType())) {
+    branchTypes.push_back(mainBody.value());
   }
-  const auto body{node->body()->accept(*this)};
-  if (!body) {
-    return createError(body.error());
-  }
+
   for (const auto &elseIf : node->elseIf()) {
-    const auto result{elseIf->accept(*this)};
-    if (!result) {
-      return createError(result.error());
+    auto elseIfResult = elseIf->accept(*this);
+    if (!elseIfResult)
+      return createError(elseIfResult.error());
+    if (!typeTable_->areSameType(elseIfResult.value(),
+                                 typeTable_->noPropagateType()) &&
+        !typeTable_->areSameType(elseIfResult.value(),
+                                 typeTable_->breakType())) {
+      branchTypes.push_back(elseIfResult.value());
     }
   }
+
   if (node->elseBody()) {
-    const auto elseBody{node->elseBody()->accept(*this)};
-    if (!elseBody) {
+    auto elseBody = node->elseBody()->accept(*this);
+    if (!elseBody)
       return createError(elseBody.error());
+    if (!typeTable_->areSameType(elseBody.value(),
+                                 typeTable_->noPropagateType()) &&
+        !typeTable_->areSameType(elseBody.value(), typeTable_->breakType())) {
+      branchTypes.push_back(elseBody.value());
     }
   }
-  return {};
+
+  if (!branchTypes.empty()) {
+    auto commonType = branchTypes.front();
+    for (size_t i = 1; i < branchTypes.size(); ++i) {
+      if (!typeTable_->areSameType(commonType, branchTypes[i])) {
+        if (!typeTable_->haveCommonAncestor(commonType, branchTypes[i])) {
+          return createError(ERROR_TYPE::TYPE,
+                             "inconsistent return types in if branches");
+        }
+      }
+    }
+    return commonType;
+  }
+
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -608,15 +704,32 @@ TypeAnalysis::visit(const AST_ELSE_IF *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ELSE_IF");
   }
-  const auto condition{node->condition()->accept(*this)};
-  if (!condition) {
+  auto condition = node->condition()->accept(*this);
+  if (!condition)
     return createError(condition.error());
-  }
-  const auto body{node->body()->accept(*this)};
-  if (!body) {
+  auto condType = condition.value();
+
+  if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
+    condType = constCond->baseType();
+
+  if (insideDeclWithGenerics &&
+      typeTable_->isGenericType(condType, currentGenericList_))
+    return std::make_shared<PlaceHolder>(condType);
+
+  auto boolType = typeTable_->getType("bool");
+  if (!typeTable_->areSameType(condType, *boolType))
+    return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+
+  auto body = node->body()->accept(*this);
+  if (!body)
     return createError(body.error());
+  auto bodyType = body.value();
+
+  if (!typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) &&
+      !typeTable_->areSameType(bodyType, typeTable_->breakType())) {
+    return bodyType;
   }
-  return {};
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -628,23 +741,68 @@ TypeAnalysis::visit(const AST_SWITCH *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SWITCH");
   }
-  const auto condition{node->condition()->accept(*this)};
-  if (!condition) {
+  auto condition = node->condition()->accept(*this);
+  if (!condition)
     return createError(condition.error());
+  auto condType = condition.value();
+
+  if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
+    condType = constCond->baseType();
+
+  if (insideDeclWithGenerics &&
+      typeTable_->isGenericType(condType, currentGenericList_))
+    return std::make_shared<PlaceHolder>(condType);
+
+  auto boolType = typeTable_->getType("bool");
+  auto intType = typeTable_->getType("int");
+  auto charType = typeTable_->getType("char");
+  if (!(typeTable_->areSameType(condType, *boolType) ||
+        typeTable_->areSameType(condType, *intType) ||
+        typeTable_->areSameType(condType, *charType))) {
+    return createError(ERROR_TYPE::TYPE,
+                       "switch condition must be bool, int, or char");
   }
-  for (const auto &case_ : node->cases()) {
-    const auto result{case_->accept(*this)};
-    if (!result) {
-      return createError(result.error());
+
+  switchTypeCondition_ = condType;
+
+  std::vector<std::shared_ptr<Type>> branchTypes;
+
+  for (const auto &caseNode : node->cases()) {
+    auto caseResult = caseNode->accept(*this);
+    if (!caseResult)
+      return createError(caseResult.error());
+    auto caseType = caseResult.value();
+    if (!typeTable_->areSameType(caseType, typeTable_->noPropagateType()) &&
+        !typeTable_->areSameType(caseType, typeTable_->breakType())) {
+      branchTypes.push_back(caseType);
     }
   }
+
   if (node->defaultCase()) {
-    const auto defaultCase{node->defaultCase()->accept(*this)};
-    if (!defaultCase) {
-      return createError(defaultCase.error());
+    auto defaultResult = node->defaultCase()->accept(*this);
+    if (!defaultResult)
+      return createError(defaultResult.error());
+    auto defaultType = defaultResult.value();
+    if (!typeTable_->areSameType(defaultType, typeTable_->noPropagateType()) &&
+        !typeTable_->areSameType(defaultType, typeTable_->breakType())) {
+      branchTypes.push_back(defaultType);
     }
   }
-  return {};
+
+  if (!branchTypes.empty()) {
+    auto commonType = branchTypes.front();
+    for (size_t i = 1; i < branchTypes.size(); ++i) {
+      if (!typeTable_->areSameType(commonType, branchTypes[i])) {
+        if (!typeTable_->haveCommonAncestor(commonType, branchTypes[i])) {
+          return createError(ERROR_TYPE::TYPE,
+                             "inconsistent return types in switch branches");
+        }
+      }
+    }
+    return commonType;
+  }
+
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -656,15 +814,33 @@ TypeAnalysis::visit(const AST_CASE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CASE");
   }
-  const auto match{node->match()->accept(*this)};
-  if (!match) {
-    return createError(match.error());
+  auto matchResult = node->match()->accept(*this);
+  if (!matchResult)
+    return createError(matchResult.error());
+  auto matchType = matchResult.value();
+
+  if (auto constMatch = std::dynamic_pointer_cast<ConstType>(matchType))
+    matchType = constMatch->baseType();
+
+  if (insideDeclWithGenerics &&
+      typeTable_->isGenericType(matchType, currentGenericList_))
+    return std::make_shared<PlaceHolder>(matchType);
+
+  if (!typeTable_->areSameType(matchType, switchTypeCondition_))
+    return createError(ERROR_TYPE::TYPE,
+                       "case match type does not match switch condition type");
+
+  auto bodyResult = node->body()->accept(*this);
+  if (!bodyResult)
+    return createError(bodyResult.error());
+  auto bodyType = bodyResult.value();
+
+  if (!typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) &&
+      !typeTable_->areSameType(bodyType, typeTable_->breakType())) {
+    return bodyType;
   }
-  const auto body{node->body()->accept(*this)};
-  if (!body) {
-    return createError(body.error());
-  }
-  return {};
+
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -753,10 +929,16 @@ TypeAnalysis::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
   }
+  if (node->generics().size()) {
+    insideDeclWithGenerics = true;
+  }
+
   const auto body{node->body()->accept(*this)};
   if (!body) {
     return createError(body.error());
   }
+
+  insideDeclWithGenerics = false;
   return typeTable_->noPropagateType();
 }
 
@@ -809,7 +991,9 @@ TypeAnalysis::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
   }
-  analyzingInsideClass = true;
+  if (node->generics().size()) {
+    insideDeclWithGenerics = true;
+  }
 
   analyzingInsideClass = false;
   return typeTable_->noPropagateType();
@@ -854,10 +1038,14 @@ TypeAnalysis::visit(const AST_METHOD_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_DECL");
   }
+  if (node->generics().size()) {
+    insideDeclWithGenerics = true;
+  }
   const auto body{node->body()->accept(*this)};
   if (!body) {
     return createError(body.error());
   }
+  insideDeclWithGenerics = false;
   return typeTable_->noPropagateType();
 }
 
@@ -869,10 +1057,14 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_DECL");
   }
+  if (node->generics().size()) {
+    insideDeclWithGenerics = true;
+  }
   const auto body{node->body()->accept(*this)};
   if (!body) {
     return createError(body.error());
   }
+  insideDeclWithGenerics = false;
   return typeTable_->noPropagateType();
 }
 
@@ -918,7 +1110,7 @@ TypeAnalysis::visit(const AST_THIS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_THIS");
   }
-  return {};
+  return std::make_shared<PointerType>(node->userType());
 }
 
 /*
