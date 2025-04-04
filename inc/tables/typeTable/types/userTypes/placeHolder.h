@@ -5,6 +5,8 @@
 #include <memory>
 #include <string>
 
+// car<T, Q>
+// car<int, str> --> car_int_str
 namespace nicole {
 
 class PlaceHolder final : public Type {

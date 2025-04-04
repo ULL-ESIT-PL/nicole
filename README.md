@@ -44,7 +44,7 @@ Generate the AST and intermediate code without optimization:
 ## Install using docker
 Start the server if needed
 ```sh
-sudo systemctl stop/start docker
+sudo systemctl start docker
 ```
 
 Move to the docker file folder
