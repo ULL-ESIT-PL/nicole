@@ -2,6 +2,7 @@
 #define TYPE_TABLE_H
 
 #include "../../errors.h"
+#include "../../lexicalAnalysis/type.h"
 #include "types/basicTypes/basicTypes.h"
 #include "types/specialTypes/breakType.h"
 #include "types/specialTypes/constType.h"
@@ -14,8 +15,8 @@
 #include "types/userTypes/enumType.h"
 #include "types/userTypes/genericInstanceType.h"
 #include "types/userTypes/genericParameter.h"
-#include "types/userTypes/userType.h"
 #include "types/userTypes/placeHolder.h"
+#include "types/userTypes/userType.h"
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -74,12 +75,22 @@ public:
   areSameType(const std::shared_ptr<Type> &type1,
               const std::shared_ptr<Type> &type2) const noexcept;
 
-  [[nodiscard]] bool canAssign(const std::shared_ptr<Type>& target,
-                          const std::shared_ptr<Type>& source) const noexcept;
+  [[nodiscard]] bool
+  canAssign(const std::shared_ptr<Type> &target,
+            const std::shared_ptr<Type> &source) const noexcept;
 
-  [[nodiscard]] bool haveCommonAncestor(
-    const std::shared_ptr<Type> &type1,
-    const std::shared_ptr<Type> &type2) const noexcept;
+  [[nodiscard]] bool
+  haveCommonAncestor(const std::shared_ptr<Type> &type1,
+                     const std::shared_ptr<Type> &type2) const noexcept;
+
+  std::expected<std::shared_ptr<Type>, Error>
+  applyUnaryOperator(const std::shared_ptr<Type> &operand,
+                     const TokenType op) const noexcept;
+
+  std::expected<std::shared_ptr<Type>, Error>
+  applyBinaryOperator(const std::shared_ptr<Type> &left,
+                      const std::shared_ptr<Type> &right,
+                      TokenType op) const noexcept;
 };
 
 } // namespace nicole

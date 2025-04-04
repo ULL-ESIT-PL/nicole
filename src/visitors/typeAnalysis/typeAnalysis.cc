@@ -317,15 +317,23 @@ TypeAnalysis::visit(const AST_BINARY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BINARY");
   }
-  const auto left{node->left()->accept(*this)};
-  if (!left) {
-    return createError(left.error());
-  }
-  const auto right{node->right()->accept(*this)};
-  if (!right) {
-    return createError(right.error());
-  }
-  return {};
+  auto leftRes = node->left()->accept(*this);
+  if (!leftRes)
+    return createError(leftRes.error());
+  auto leftType = leftRes.value();
+
+  auto rightRes = node->right()->accept(*this);
+  if (!rightRes)
+    return createError(rightRes.error());
+  auto rightType = rightRes.value();
+
+  TokenType op =
+      node->op().type(); // Assumes AST_BINARY::op() returns a TokenType
+
+  auto resultExp = typeTable_->applyBinaryOperator(leftType, rightType, op);
+  if (!resultExp)
+    return createError(resultExp.error());
+  return resultExp.value();
 }
 
 /*
@@ -338,11 +346,18 @@ TypeAnalysis::visit(const AST_UNARY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_UNARY");
   }
-  const auto value{node->value()->accept(*this)};
-  if (!value) {
-    return createError(value.error());
-  }
-  return {};
+
+  auto operandRes = node->value()->accept(*this);
+  if (!operandRes)
+    return createError(operandRes.error());
+  auto operandType = operandRes.value();
+  TokenType op =
+      node->op().type(); // Se asume que node->op() retorna un TokenType
+
+  auto resultTypeExp = typeTable_->applyUnaryOperator(operandType, op);
+  if (!resultTypeExp)
+    return createError(resultTypeExp.error());
+  return resultTypeExp.value();
 }
 
 /*
@@ -1584,6 +1599,9 @@ TypeAnalysis::visit(const Tree *tree) const noexcept {
     return createError(result.error());
 
   auto bodyType = result.value();
+  if (auto constBody = std::dynamic_pointer_cast<ConstType>(bodyType))
+    bodyType = constBody->baseType();
+
   auto intTypeExp = typeTable_->getType("int");
   auto voidTypeExp = typeTable_->getType("void");
   if (!intTypeExp || !voidTypeExp)
@@ -1591,10 +1609,14 @@ TypeAnalysis::visit(const Tree *tree) const noexcept {
 
   auto intType = intTypeExp.value();
   auto voidType = voidTypeExp.value();
+  auto npType = typeTable_->noPropagateType();
+
   if (!(typeTable_->areSameType(bodyType, intType) ||
-        typeTable_->areSameType(bodyType, voidType)))
-    return createError(ERROR_TYPE::TYPE, "body must return int or void, got " +
-                                             bodyType->toString());
+        typeTable_->areSameType(bodyType, voidType) ||
+        typeTable_->areSameType(bodyType, npType)))
+    return createError(ERROR_TYPE::TYPE,
+                       "body must return int, void, or noPropagate, got " +
+                           bodyType->toString());
 
   return result;
 }

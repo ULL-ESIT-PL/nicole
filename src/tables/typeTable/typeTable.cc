@@ -307,4 +307,154 @@ bool TypeTable::haveCommonAncestor(
   return false;
 }
 
+// these two methods are still unfinished
+std::expected<std::shared_ptr<Type>, Error>
+TypeTable::applyUnaryOperator(const std::shared_ptr<Type> &operand,
+                              const TokenType op) const noexcept {
+  if (!operand)
+    return createError(ERROR_TYPE::TYPE, "operand is null");
+
+  std::shared_ptr<Type> t = operand;
+  if (auto constType = std::dynamic_pointer_cast<ConstType>(t))
+    t = constType->baseType();
+
+  if (std::dynamic_pointer_cast<PlaceHolder>(t))
+    return createError(
+        ERROR_TYPE::TYPE,
+        "cannot apply unary operator to unresolved generic type");
+
+  // Si el operando es un tipo definido por el usuario, se busca el método
+  // correspondiente sin parámetros.
+  if (auto userType = std::dynamic_pointer_cast<UserType>(t)) {
+    std::string methodName;
+    switch (op) {
+    case TokenType::OPERATOR_NOT:
+      methodName = "notable";
+      break;
+    case TokenType::INCREMENT:
+      methodName = "incrementable";
+      break;
+    case TokenType::DECREMENT:
+      methodName = "decrementable";
+      break;
+    case TokenType::OPERATOR_SUB:
+      methodName = "negable";
+      break;
+    default:
+      return createError(ERROR_TYPE::TYPE,
+                         "unsupported unary operator for user-defined type");
+    }
+    auto methodsExp = userType->getMethods(methodName);
+    if (!methodsExp)
+      return createError(methodsExp.error());
+    auto methods = methodsExp.value();
+    for (const auto &m : methods) {
+      if (m.params().size() == 0) {
+        // Para operator_not, el resultado debe ser bool.
+        if (op == TokenType::OPERATOR_NOT) {
+          auto boolTypeExp = getType("bool");
+          if (!boolTypeExp)
+            return createError(ERROR_TYPE::TYPE, "bool type not found");
+          if (!areSameType(m.returnType(), *boolTypeExp))
+            return createError(ERROR_TYPE::TYPE, "operator ! must return bool");
+          return boolTypeExp.value();
+        }
+        // Para los otros operadores, se retorna el tipo que devuelve el método.
+        return m.returnType();
+      }
+    }
+    return createError(ERROR_TYPE::TYPE, "user type " + userType->name() +
+                                             " does not support operator " +
+                                             tokenTypeToString(op));
+  }
+
+  // Si es un PointerType.
+  if (auto ptrType = std::dynamic_pointer_cast<PointerType>(t)) {
+    switch (op) {
+    case TokenType::INCREMENT:
+    case TokenType::DECREMENT:
+      return t; // Se retorna el mismo tipo puntero.
+    case TokenType::OPERATOR_NOT: {
+      auto boolTypeExp = getType("bool");
+      if (!boolTypeExp)
+        return createError(ERROR_TYPE::TYPE, "bool type not found");
+      return boolTypeExp.value();
+    }
+    default:
+      return createError(ERROR_TYPE::TYPE,
+                         "unsupported unary operator for pointer type");
+    }
+  }
+
+  // Si es un BasicType.
+  if (auto basic = std::dynamic_pointer_cast<BasicType>(t)) {
+    switch (op) {
+    case TokenType::OPERATOR_NOT: {
+      // El resultado de ! siempre es bool.
+      auto boolTypeExp = getType("bool");
+      if (!boolTypeExp)
+        return createError(ERROR_TYPE::TYPE, "bool type not found");
+      return boolTypeExp.value();
+    }
+    case TokenType::INCREMENT:
+    case TokenType::DECREMENT:
+    case TokenType::OPERATOR_SUB:
+      // Verificar que sea numérico (o char, asumido como numérico).
+      switch (basic->baseKind()) {
+      case BasicKind::Int:
+      case BasicKind::Float:
+      case BasicKind::Double:
+      case BasicKind::Char:
+        return t;
+      default:
+        return createError(ERROR_TYPE::TYPE,
+                           "operator " + tokenTypeToString(op) +
+                               " cannot be applied to type " + t->toString());
+      }
+    default:
+      return createError(ERROR_TYPE::TYPE, "unsupported unary operator");
+    }
+  }
+
+  return createError(ERROR_TYPE::TYPE,
+                     "unary operator cannot be applied to type " +
+                         t->toString());
+}
+
+std::expected<std::shared_ptr<Type>, Error>
+TypeTable::applyBinaryOperator(const std::shared_ptr<Type> &left,
+                               const std::shared_ptr<Type> &right,
+                               TokenType op) const noexcept {
+  std::shared_ptr<Type> l = left;
+  std::shared_ptr<Type> r = right;
+
+  if (auto lConst = std::dynamic_pointer_cast<ConstType>(l))
+    l = lConst->baseType();
+  if (auto rConst = std::dynamic_pointer_cast<ConstType>(r))
+    r = rConst->baseType();
+
+  switch (op) {
+  case TokenType::OPERATOR_ADD: {
+    auto leftBasic = std::dynamic_pointer_cast<BasicType>(l);
+    auto rightBasic = std::dynamic_pointer_cast<BasicType>(r);
+    if (leftBasic && rightBasic) {
+      if (areSameType(l, r))
+        return l;
+      else
+        return createError(ERROR_TYPE::TYPE,
+                           "incompatible types for operator +");
+    }
+    // Extend here for string concatenation, pointer arithmetic, etc.
+    return createError(ERROR_TYPE::TYPE,
+                       "operator + not applicable for given types");
+  }
+  // Cases for other operators (OR, AND, SMALLEREQUAL, BIGGEREQUAL, NOTEQUAL,
+  // EQUAL, OPERATOR_SUB, OPERATOR_MULT, OPERATOR_DIV, OPERATOR_SMALLER,
+  // OPERATOR_GREATER, OPERATOR_MODULE)
+  default:
+    return createError(ERROR_TYPE::TYPE,
+                       "operator not implemented: " + tokenTypeToString(op));
+  }
+}
+
 } // namespace nicole
