@@ -9,7 +9,7 @@ TEST_CASE("The lexer works", "[Lexer]") {
   // Verificar que las categorías del Lexer no estén vacías
   REQUIRE_FALSE(lexer.categories().empty());
   // Ruta al archivo fuente de prueba
-  std::filesystem::path testFile{"../nicoleScripts/literals/literals.nc"};
+  std::filesystem::path testFile{"../examples/literals/literals.nc"};
   // Analizar el archivo fuente
   std::expected<nicole::TokenStream, nicole::Error> result{
       lexer.analyze(testFile)};
@@ -19,7 +19,7 @@ TEST_CASE("The lexer works", "[Lexer]") {
   REQUIRE(result->size() == 99);
 
   // Ruta al archivo fuente de prueba
-  testFile = std::filesystem::path{"../nicoleScripts/loops/matrix.nc"};
+  testFile = std::filesystem::path{"../examples/loops/matrix.nc"};
   // Analizar el archivo fuente
   result = lexer.analyze(testFile);
   // Verificar que el análisis fue exitoso
@@ -28,7 +28,7 @@ TEST_CASE("The lexer works", "[Lexer]") {
   REQUIRE(result->size() == 84);
 
   // Ruta al archivo fuente de prueba
-  testFile = std::filesystem::path{"../nicoleScripts/conditionals/conditionals.nc"};
+  testFile = std::filesystem::path{"../examples/conditionals/conditionals.nc"};
   // Analizar el archivo fuente
   result = lexer.analyze(testFile);
   // Verificar que el análisis fue exitoso
@@ -37,7 +37,7 @@ TEST_CASE("The lexer works", "[Lexer]") {
   REQUIRE(result->size() == 147);
 
   // Ruta al archivo fuente de prueba
-  testFile = std::filesystem::path{"../nicoleScripts/conditionals/switch.nc"};
+  testFile = std::filesystem::path{"../examples/conditionals/switch.nc"};
   // Analizar el archivo fuente
   result = lexer.analyze(testFile);
   // Verificar que el análisis fue exitoso
@@ -46,7 +46,7 @@ TEST_CASE("The lexer works", "[Lexer]") {
   REQUIRE(result->size() == 78);
 
   // Ruta al archivo fuente de prueba
-  testFile = std::filesystem::path{"../nicoleScripts/functions/functions.nc"};
+  testFile = std::filesystem::path{"../examples/functions/functions.nc"};
   // Analizar el archivo fuente
   result = lexer.analyze(testFile);
   // Verificar que el análisis fue exitoso
@@ -55,7 +55,7 @@ TEST_CASE("The lexer works", "[Lexer]") {
   REQUIRE(result->size() == 172);
 
   // Ruta al archivo fuente de prueba
-  testFile = std::filesystem::path{"../nicoleScripts/imports/import1.nc"};
+  testFile = std::filesystem::path{"../examples/imports/import1.nc"};
   // Analizar el archivo fuente
   result = lexer.analyze(testFile);
   // Verificar que el análisis fue exitoso
@@ -64,7 +64,7 @@ TEST_CASE("The lexer works", "[Lexer]") {
   REQUIRE(result->size() == 25);
 
   // Ruta al archivo fuente de prueba
-  testFile = std::filesystem::path{"../nicoleScripts/operations/opWithVariables.nc"};
+  testFile = std::filesystem::path{"../examples/operations/opWithVariables.nc"};
   // Analizar el archivo fuente
   result = lexer.analyze(testFile);
   // Verificar que el análisis fue exitoso
@@ -73,7 +73,7 @@ TEST_CASE("The lexer works", "[Lexer]") {
   REQUIRE(result->size() == 202);
 
   // Ruta al archivo fuente de prueba
-  testFile = std::filesystem::path{"../nicoleScripts/userTypes/classes.nc"};
+  testFile = std::filesystem::path{"../examples/userTypes/classes.nc"};
   // Analizar el archivo fuente
   result = lexer.analyze(testFile);
   // Verificar que el análisis fue exitoso
@@ -82,21 +82,21 @@ TEST_CASE("The lexer works", "[Lexer]") {
   REQUIRE(result->size() == 60);
 
   // Ruta al archivo fuente de prueba
-  testFile = std::filesystem::path{"../nicoleScripts/hsufhuhdf"};
+  testFile = std::filesystem::path{"../examples/hsufhuhdf"};
   // Analizar el archivo fuente
   result = lexer.analyze(testFile);
   // Verificar que el análisis fue exitoso
   REQUIRE(result.error().type() == nicole::ERROR_TYPE::FILE_EXTENSION);
 
   // Ruta al archivo fuente de prueba
-  testFile = std::filesystem::path{"../nicoleScripts/unmatched/unmatched"};
+  testFile = std::filesystem::path{"../examples/unmatched/unmatched"};
   // Analizar el archivo fuente
   result = lexer.analyze(testFile);
   // Verificar que el análisis fue exitoso
   REQUIRE(result.error().type() == nicole::ERROR_TYPE::FILE_EXTENSION);
 
   // Ruta al archivo fuente de prueba
-  testFile = std::filesystem::path{"../nicoleScripts/unmatched/unmatched.nc"};
+  testFile = std::filesystem::path{"../examples/unmatched/unmatched.nc"};
   // Analizar el archivo fuente
   result = lexer.analyze(testFile);
   // Verificar que el análisis fue exitoso

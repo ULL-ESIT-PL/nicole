@@ -31,17 +31,17 @@
             <td class="headerValue">coverage.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntryLo">10.0&nbsp;%</td>
-            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntryLo">5.3&nbsp;%</td>
+            <td class="headerCovTableEntry">19</td>
             <td class="headerCovTableEntry">1</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-03-20 01:47:24</td>
+            <td class="headerValue">2025-04-04 23:29:35</td>
             <td></td>
             <td class="headerItem">Functions:</td>
-            <td class="headerCovTableEntryLo">25.0&nbsp;%</td>
-            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryLo">14.3&nbsp;%</td>
+            <td class="headerCovTableEntry">7</td>
             <td class="headerCovTableEntry">1</td>
           </tr>
                   <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
@@ -69,7 +69,7 @@
 <span id="L7"><span class="lineNum">       7</span>              : </span>
 <span id="L8"><span class="lineNum">       8</span>              : class AST_NULL final : public AST {</span>
 <span id="L9"><span class="lineNum">       9</span>              : public:</span>
-<span id="L10"><span class="lineNum">      10</span> <span class="tlaGNC tlaBgGNC">          11 :   explicit AST_NULL() noexcept : AST{AST_TYPE::NULLPTR} {}</span></span>
+<span id="L10"><span class="lineNum">      10</span> <span class="tlaGNC tlaBgGNC">          15 :   explicit AST_NULL() noexcept : AST{AST_TYPE::NULLPTR} {}</span></span>
 <span id="L11"><span class="lineNum">      11</span>              : </span>
 <span id="L12"><span class="lineNum">      12</span>              :   ~AST_NULL() noexcept = default;</span>
 <span id="L13"><span class="lineNum">      13</span>              : </span>
@@ -87,11 +87,26 @@
 <span id="L25"><span class="lineNum">      25</span> <span class="tlaUNC">           0 :   accept(const FillSemanticInfo &amp;visitor) const noexcept override {</span></span>
 <span id="L26"><span class="lineNum">      26</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
 <span id="L27"><span class="lineNum">      27</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L28"><span class="lineNum">      28</span>              : };</span>
-<span id="L29"><span class="lineNum">      29</span>              : </span>
-<span id="L30"><span class="lineNum">      30</span>              : } // namespace nicole</span>
-<span id="L31"><span class="lineNum">      31</span>              : </span>
-<span id="L32"><span class="lineNum">      32</span>              : #endif // AST_H</span>
+<span id="L28"><span class="lineNum">      28</span>              : </span>
+<span id="L29"><span class="lineNum">      29</span>              :   [[nodiscard]] std::expected&lt;std::shared_ptr&lt;Type&gt;, Error&gt;</span>
+<span id="L30"><span class="lineNum">      30</span> <span class="tlaUNC">           0 :   accept(const TypeAnalysis &amp;visitor) const noexcept override {</span></span>
+<span id="L31"><span class="lineNum">      31</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
+<span id="L32"><span class="lineNum">      32</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L33"><span class="lineNum">      33</span>              : </span>
+<span id="L34"><span class="lineNum">      34</span>              :   [[nodiscard]] std::expected&lt;std::monostate, Error&gt;</span>
+<span id="L35"><span class="lineNum">      35</span> <span class="tlaUNC">           0 :   accept(const Monomorphize &amp;visitor) const noexcept override {</span></span>
+<span id="L36"><span class="lineNum">      36</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
+<span id="L37"><span class="lineNum">      37</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L38"><span class="lineNum">      38</span>              : </span>
+<span id="L39"><span class="lineNum">      39</span>              :   [[nodiscard]] std::expected&lt;std::shared_ptr&lt;llvm::Value&gt;, Error&gt;</span>
+<span id="L40"><span class="lineNum">      40</span> <span class="tlaUNC">           0 :   accept(const CodeGeneration &amp;visitor) const noexcept override {</span></span>
+<span id="L41"><span class="lineNum">      41</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
+<span id="L42"><span class="lineNum">      42</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L43"><span class="lineNum">      43</span>              : };</span>
+<span id="L44"><span class="lineNum">      44</span>              : </span>
+<span id="L45"><span class="lineNum">      45</span>              : } // namespace nicole</span>
+<span id="L46"><span class="lineNum">      46</span>              : </span>
+<span id="L47"><span class="lineNum">      47</span>              : #endif // AST_H</span>
         </pre>
               </td>
             </tr>

@@ -32,16 +32,16 @@
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
-            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntry">13</td>
             <td class="headerCovTableEntry">0</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-03-20 01:47:24</td>
+            <td class="headerValue">2025-04-04 23:29:35</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
-            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">5</td>
             <td class="headerCovTableEntry">0</td>
           </tr>
                   <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
@@ -63,8 +63,8 @@
 <span id="L1"><span class="lineNum">       1</span>              : #ifndef VARIABLE_H</span>
 <span id="L2"><span class="lineNum">       2</span>              : #define VARIABLE_H</span>
 <span id="L3"><span class="lineNum">       3</span>              : </span>
-<span id="L4"><span class="lineNum">       4</span>              : #include &quot;../typeTable/types/type.h&quot;</span>
-<span id="L5"><span class="lineNum">       5</span>              : #include &quot;../symbol.h&quot;</span>
+<span id="L4"><span class="lineNum">       4</span>              : #include &quot;../symbol.h&quot;</span>
+<span id="L5"><span class="lineNum">       5</span>              : #include &quot;../typeTable/types/type.h&quot;</span>
 <span id="L6"><span class="lineNum">       6</span>              : #include &lt;expected&gt;</span>
 <span id="L7"><span class="lineNum">       7</span>              : #include &lt;llvm/IR/Instructions.h&gt;</span>
 <span id="L8"><span class="lineNum">       8</span>              : #include &lt;llvm/IR/Value.h&gt;</span>
@@ -96,11 +96,15 @@
 <span id="L34"><span class="lineNum">      34</span> <span class="tlaUNC">           0 :   address() const noexcept {</span></span>
 <span id="L35"><span class="lineNum">      35</span> <span class="tlaUNC">           0 :     return address_;</span></span>
 <span id="L36"><span class="lineNum">      36</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L37"><span class="lineNum">      37</span>              : };</span>
-<span id="L38"><span class="lineNum">      38</span>              : </span>
-<span id="L39"><span class="lineNum">      39</span>              : } // namespace nicole</span>
-<span id="L40"><span class="lineNum">      40</span>              : </span>
-<span id="L41"><span class="lineNum">      41</span>              : #endif</span>
+<span id="L37"><span class="lineNum">      37</span>              : </span>
+<span id="L38"><span class="lineNum">      38</span> <span class="tlaUNC">           0 :   void setType(const std::shared_ptr&lt;Type&gt; &amp;type) const noexcept {</span></span>
+<span id="L39"><span class="lineNum">      39</span> <span class="tlaUNC">           0 :     type_ = type;</span></span>
+<span id="L40"><span class="lineNum">      40</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L41"><span class="lineNum">      41</span>              : };</span>
+<span id="L42"><span class="lineNum">      42</span>              : </span>
+<span id="L43"><span class="lineNum">      43</span>              : } // namespace nicole</span>
+<span id="L44"><span class="lineNum">      44</span>              : </span>
+<span id="L45"><span class="lineNum">      45</span>              : #endif</span>
         </pre>
               </td>
             </tr>
