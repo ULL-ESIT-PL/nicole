@@ -1040,7 +1040,7 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL");
   }
   if (!typeTable_->getType(node->id())) {
-    return createError(ERROR_TYPE::FUNCTION,
+    return createError(ERROR_TYPE::TYPE,
                        "no type with id: " + node->id() + " exists");
   }
 

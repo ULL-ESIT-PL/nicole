@@ -38,6 +38,14 @@ public:
     return baseType_;
   }
 
+  [[nodiscard]] const std::shared_ptr<Constructor> &constructor() const noexcept {
+    return constructor_;
+  }
+
+  [[nodiscard]] const std::shared_ptr<Destructor> &destructor() const noexcept {
+    return destructor_;
+  }
+
   [[nodiscard]] const std::vector<GenericParameter> &
   genericParams() const noexcept {
     return genericParams_;

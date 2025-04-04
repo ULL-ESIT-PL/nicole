@@ -1116,10 +1116,33 @@ TypeAnalysis::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
   }
-  if (node->generics().size()) {
+  if (!node->generics().empty()) {
     insideDeclWithGenerics = true;
+    currentGenericList_ = node->generics();
   }
 
+  analyzingInsideClass = true;
+
+  if (node->constructor()) {
+    auto consRes = node->constructor()->accept(*this);
+    if (!consRes)
+      return createError(consRes.error());
+  }
+
+  if (node->destructor()) {
+    auto destrRes = node->destructor()->accept(*this);
+    if (!destrRes)
+      return createError(destrRes.error());
+  }
+
+  for (const auto &method : node->methods()) {
+    auto methodRes = method->accept(*this);
+    if (!methodRes)
+      return createError(methodRes.error());
+  }
+
+  insideDeclWithGenerics = false;
+  currentGenericList_.clear();
   analyzingInsideClass = false;
   return typeTable_->noPropagateType();
 }
@@ -1170,13 +1193,72 @@ TypeAnalysis::visit(const AST_METHOD_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL");
   }
+
+  std::vector<std::shared_ptr<Type>> argTypes;
   for (const auto &expr : node->parameters()) {
-    const auto resul{expr->accept(*this)};
-    if (!resul) {
-      return createError(resul.error());
-    }
+    auto res = expr->accept(*this);
+    if (!res)
+      return createError(res.error());
+    argTypes.push_back(res.value());
   }
-  return {};
+
+  if (!currentType_)
+    return createError(ERROR_TYPE::TYPE,
+                       "current type not set for method call");
+
+  auto userType = std::dynamic_pointer_cast<UserType>(currentType_);
+  if (!userType)
+    return createError(ERROR_TYPE::TYPE,
+                       "method call requires a user-defined type");
+
+  auto methodsExp = userType->getMethods(node->id());
+  if (!methodsExp)
+    return createError(methodsExp.error());
+  auto methods = methodsExp.value();
+  if (methods.empty())
+    return createError(ERROR_TYPE::METHOD,
+                       "no method with id: " + node->id() + " exists");
+
+  std::vector<Method> viableMethods;
+  const auto &explicitGenerics = node->replaceOfGenerics();
+
+  for (const auto &method : methods) {
+    // Check if method generics match the explicit generics, if provided.
+    if (!explicitGenerics.empty() &&
+        method.generics().size() != explicitGenerics.size())
+      continue;
+    // Check parameter count.
+    if (method.params().size() != argTypes.size())
+      continue;
+    bool candidateMatches = true;
+    const auto &params = method.params().params();
+    for (size_t i = 0; i < params.size(); ++i) {
+      auto paramType = params[i].second;
+      auto argType = argTypes[i];
+      // For generics, if either the parameter or argument type is still
+      // generic, we skip the strict check here.
+      if (insideDeclWithGenerics &&
+          (typeTable_->isGenericType(paramType, currentGenericList_) ||
+           typeTable_->isGenericType(argType, currentGenericList_))) {
+        continue;
+      }
+      if (!typeTable_->canAssign(paramType, argType)) {
+        candidateMatches = false;
+        break;
+      }
+    }
+    if (candidateMatches)
+      viableMethods.push_back(method);
+  }
+
+  if (viableMethods.empty())
+    return createError(ERROR_TYPE::METHOD,
+                       "no matching method found for call: " + node->id());
+  if (viableMethods.size() > 1)
+    return createError(ERROR_TYPE::METHOD,
+                       "ambiguous method call for: " + node->id());
+
+  return viableMethods.front().returnType();
 }
 
 /*
@@ -1187,14 +1269,26 @@ TypeAnalysis::visit(const AST_METHOD_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_DECL");
   }
-  if (node->generics().size()) {
+  if (!node->generics().empty()) {
     insideDeclWithGenerics = true;
+    currentGenericList_ = node->generics();
   }
-  const auto body{node->body()->accept(*this)};
-  if (!body) {
-    return createError(body.error());
+
+  auto bodyRes = node->body()->accept(*this);
+  if (!bodyRes)
+    return createError(bodyRes.error());
+  auto bodyType = bodyRes.value();
+
+  if (!typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) &&
+      !typeTable_->areSameType(bodyType, typeTable_->breakType())) {
+    if (!typeTable_->canAssign(node->returnType(), bodyType))
+      return createError(
+          ERROR_TYPE::TYPE,
+          "method body return type does not match declared return type");
   }
+
   insideDeclWithGenerics = false;
+  currentGenericList_.clear();
   return typeTable_->noPropagateType();
 }
 
@@ -1206,14 +1300,24 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_DECL");
   }
-  if (node->generics().size()) {
+
+  if (!node->generics().empty()) {
     insideDeclWithGenerics = true;
+    currentGenericList_ = node->generics();
   }
-  const auto body{node->body()->accept(*this)};
-  if (!body) {
-    return createError(body.error());
-  }
+
+  auto bodyRes = node->body()->accept(*this);
+  if (!bodyRes)
+    return createError(bodyRes.error());
+  auto bodyType = bodyRes.value();
+
+  if (!typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) &&
+      !typeTable_->areSameType(bodyType, typeTable_->breakType()))
+    return createError(ERROR_TYPE::TYPE,
+                       "constructor body must not return a value");
+
   insideDeclWithGenerics = false;
+  currentGenericList_.clear();
   return typeTable_->noPropagateType();
 }
 
@@ -1227,12 +1331,36 @@ TypeAnalysis::visit(const AST_SUPER *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SUPER");
   }
   for (const auto &arg : node->arguments()) {
-    const auto result{arg->accept(*this)};
-    if (!result) {
-      return createError(result.error());
-    }
+    auto res = arg->accept(*this);
+    if (!res)
+      return createError(res.error());
   }
-  return typeTable_->getType(node->fatherType()->toString());
+
+  std::vector<std::shared_ptr<Type>> processedReplacements;
+  for (const auto &rep : node->replacements()) {
+    std::shared_ptr<Type> proc = rep;
+    if (insideDeclWithGenerics &&
+        typeTable_->isGenericType(rep, currentGenericList_))
+      proc = std::make_shared<PlaceHolder>(rep);
+    processedReplacements.push_back(proc);
+  }
+
+  auto fatherType = node->fatherType();
+  if (!fatherType)
+    return createError(ERROR_TYPE::TYPE,
+                       "father type not specified in super call");
+
+  if (!processedReplacements.empty()) {
+    auto userType = std::dynamic_pointer_cast<UserType>(fatherType);
+    if (!userType)
+      return createError(
+          ERROR_TYPE::TYPE,
+          "father type in super call must be a user-defined type");
+    return std::make_shared<GenericInstanceType>(userType,
+                                                 processedReplacements);
+  }
+
+  return typeTable_->getType(fatherType->toString());
 }
 
 /*
@@ -1284,13 +1412,58 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL");
   }
+  std::vector<std::shared_ptr<Type>> argTypes;
   for (const auto &expr : node->parameters()) {
-    const auto resul{expr->accept(*this)};
-    if (!resul) {
-      return createError(resul.error());
-    }
+    auto res = expr->accept(*this);
+    if (!res)
+      return createError(res.error());
+    argTypes.push_back(res.value());
   }
-  return typeTable_->getType(node->id());
+
+  auto baseTypeExp = typeTable_->getType(node->id());
+  if (!baseTypeExp)
+    return createError(baseTypeExp.error());
+  auto baseType = baseTypeExp.value();
+
+  auto userType = std::dynamic_pointer_cast<UserType>(baseType);
+  if (!userType)
+    return createError(ERROR_TYPE::TYPE,
+                       "constructor call id must refer to a user-defined type");
+
+  auto cons = userType->constructor();
+  if (!cons)
+    return createError(ERROR_TYPE::FUNCTION,
+                       "no constructor defined for type: " + userType->name());
+
+  if (cons->params().size() != argTypes.size())
+    return createError(ERROR_TYPE::FUNCTION,
+                       "constructor parameter count mismatch for type: " +
+                           userType->name());
+
+  const auto &consParams = cons->params().params();
+  for (size_t i = 0; i < consParams.size(); ++i) {
+    auto paramType = consParams[i].second;
+    auto argType = argTypes[i];
+    if (!typeTable_->canAssign(paramType, argType))
+      return createError(ERROR_TYPE::TYPE,
+                         "argument " + std::to_string(i) +
+                             " type mismatch in constructor call for type: " +
+                             userType->name());
+  }
+
+  if (!node->replaceOfGenerics().empty()) {
+    std::vector<std::shared_ptr<Type>> genericArgs;
+    for (const auto &gen : node->replaceOfGenerics()) {
+      if (insideDeclWithGenerics &&
+          typeTable_->isGenericType(gen, currentGenericList_))
+        genericArgs.push_back(std::make_shared<PlaceHolder>(gen));
+      else
+        genericArgs.push_back(gen);
+    }
+    return std::make_shared<GenericInstanceType>(userType, genericArgs);
+  }
+
+  return baseType;
 }
 
 /*
@@ -1383,17 +1556,18 @@ TypeAnalysis::visit(const AST_CHAINED *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CHAINED");
   }
-  const auto base{node->base()->accept(*this)};
-  if (!base) {
-    return createError(base.error());
+  auto baseRes = node->base()->accept(*this);
+  if (!baseRes)
+    return createError(baseRes.error());
+  currentType_ = baseRes.value();
+
+  for (const auto &op : node->operations()) {
+    auto opRes = op->accept(*this);
+    if (!opRes)
+      return createError(opRes.error());
   }
-  for (const auto &operations : node->operations()) {
-    const auto result{operations->accept(*this)};
-    if (!result) {
-      return createError(result.error());
-    }
-  }
-  return {};
+
+  return currentType_;
 }
 
 /*
@@ -1405,7 +1579,24 @@ TypeAnalysis::visit(const Tree *tree) const noexcept {
   if (!tree) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid Tree");
   }
-  return {};
+  auto result = tree->root()->accept(*this);
+  if (!result)
+    return createError(result.error());
+
+  auto bodyType = result.value();
+  auto intTypeExp = typeTable_->getType("int");
+  auto voidTypeExp = typeTable_->getType("void");
+  if (!intTypeExp || !voidTypeExp)
+    return createError(ERROR_TYPE::TYPE, "failed to retrieve int or void type");
+
+  auto intType = intTypeExp.value();
+  auto voidType = voidTypeExp.value();
+  if (!(typeTable_->areSameType(bodyType, intType) ||
+        typeTable_->areSameType(bodyType, voidType)))
+    return createError(ERROR_TYPE::TYPE, "body must return int or void, got " +
+                                             bodyType->toString());
+
+  return result;
 }
 
 } // namespace nicole
