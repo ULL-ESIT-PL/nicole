@@ -59,7 +59,7 @@ sudo docker build --build-arg GITHUB_TOKEN=******* -t mi_proyecto .
 
 Create a container and execute an example program, remember that --rm will remove the container once the process is finished
 ```sh
-sudo docker run --rm --name mi_contenedor mi_proyecto ./nicole.sh nicoleScripts/a.nc -p
+sudo docker run --rm --name mi_contenedor mi_proyecto ./nicole.sh examples/a.nc -p
 ```
 
 Remove image
@@ -77,7 +77,7 @@ sudo systemctl stop docker.socket
 - Only the file containing the `main` function needs to be specified.
 - If changes are made to the code (project), only the modified files will be recompiled.
 - `-n` must be followed by the output file name.
-- A few examples of the languaje can be found at `nicoleScripts/`
+- A few examples of the languaje can be found at `examples/`
 
 ## Requirements
 These versions were used during the development phase but they might not be needed specifically and other versions could work
