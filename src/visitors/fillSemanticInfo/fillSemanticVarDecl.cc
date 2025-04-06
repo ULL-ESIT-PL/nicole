@@ -48,6 +48,7 @@ FillSemanticInfo::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
                                              " is shadowing the atribute");
   }
 
+  auto varType{node->varType()};
   if (!typeTable_->isPossibleType(node->varType()) and
       !typeTable_->isGenericType(node->varType(), currentGenericList_)) {
     return createError(ERROR_TYPE::TYPE,
@@ -55,8 +56,14 @@ FillSemanticInfo::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
                            " is not a posibble type or generic");
   }
 
+  const auto checkIfMaskedEnum{typeTable_->isCompundEnumType(node->varType())};
+  if (checkIfMaskedEnum) {
+    varType = *checkIfMaskedEnum;
+    node->setVarType(varType);
+  }
+
   const auto insert{
-      currentScope_->insert(Variable{node->id(), node->varType(), nullptr})};
+      currentScope_->insert(Variable{node->id(), varType, nullptr})};
   if (!insert) {
     return createError(insert.error());
   }

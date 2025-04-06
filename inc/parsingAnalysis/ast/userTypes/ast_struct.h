@@ -13,7 +13,7 @@ namespace nicole {
 class AST_STRUCT final : public AST {
 private:
   std::string id_;
-  std::vector<GenericParameter> generics_;
+  mutable std::vector<GenericParameter> generics_;
   std::shared_ptr<Type> fatherType_;
   Attributes attributes_;
   std::vector<std::shared_ptr<AST_METHOD_DECL>> methods_;
@@ -35,6 +35,11 @@ public:
 
   [[nodiscard]] const std::vector<GenericParameter> &generics() const noexcept {
     return generics_;
+  }
+
+  void
+  setGenerics(const std::vector<GenericParameter> &generics) const noexcept {
+    generics_ = generics;
   }
 
   [[nodiscard]] const std::shared_ptr<Type> &

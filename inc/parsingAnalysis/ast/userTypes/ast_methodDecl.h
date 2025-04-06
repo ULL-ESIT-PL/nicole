@@ -9,7 +9,7 @@ namespace nicole {
 
 class AST_METHOD_DECL final : public AST_PARAMETRIZED_SUBRUTINE_DECL {
 private:
-  std::vector<GenericParameter> generics_;
+  mutable std::vector<GenericParameter> generics_;
   bool isVirtual_;
 
 public:
@@ -25,6 +25,11 @@ public:
 
   [[nodiscard]] const std::vector<GenericParameter> &generics() const noexcept {
     return generics_;
+  }
+
+  void
+  setGenerics(const std::vector<GenericParameter> &generics) const noexcept {
+    generics_ = generics;
   }
 
   [[nodiscard]] bool isVirtual() const noexcept { return isVirtual_; }

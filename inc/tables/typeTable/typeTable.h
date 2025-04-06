@@ -43,8 +43,8 @@ private:
   std::shared_ptr<BreakType> breakType_{std::make_shared<BreakType>()};
 
   bool canAssignImpl(const std::shared_ptr<Type> &target,
-                              const std::shared_ptr<Type> &source,
-                              bool pointerContext) const noexcept;
+                     const std::shared_ptr<Type> &source,
+                     bool pointerContext) const noexcept;
 
 public:
   [[nodiscard]] const std::shared_ptr<NullType> &null() const noexcept {
@@ -74,6 +74,9 @@ public:
   [[nodiscard]] bool
   isGenericType(const std::shared_ptr<Type> &type,
                 const std::vector<GenericParameter> &generics) const noexcept;
+
+  [[nodiscard]] std::expected<std::shared_ptr<Type>, Error>
+  isCompundEnumType(const std::shared_ptr<Type> &type) const noexcept;
 
   [[nodiscard]] bool
   areSameType(const std::shared_ptr<Type> &type1,

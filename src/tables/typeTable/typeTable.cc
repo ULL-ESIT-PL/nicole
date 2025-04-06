@@ -112,6 +112,33 @@ bool TypeTable::isGenericType(
   return false;
 }
 
+std::expected<std::shared_ptr<Type>, Error>
+TypeTable::isCompundEnumType(const std::shared_ptr<Type> &type) const noexcept {
+  if (auto constType = std::dynamic_pointer_cast<ConstType>(type)) {
+    auto baseRes = isCompundEnumType(constType->baseType());
+    if (!baseRes)
+      return createError(baseRes.error());
+    return std::make_shared<ConstType>(baseRes.value());
+  }
+  if (auto pointerType = std::dynamic_pointer_cast<PointerType>(type)) {
+    auto baseRes = isCompundEnumType(pointerType->baseType());
+    if (!baseRes)
+      return createError(baseRes.error());
+    return std::make_shared<PointerType>(baseRes.value());
+  }
+  if (auto userType = std::dynamic_pointer_cast<UserType>(type)) {
+    auto exists = getType(userType->name());
+    if (!exists)
+      return createError(exists.error());
+    if (auto enumType = std::dynamic_pointer_cast<EnumType>(exists.value()))
+      return enumType;
+    else
+      return createError(ERROR_TYPE::TYPE,
+                         "El tipo encontrado no es un EnumType");
+  }
+  return createError(ERROR_TYPE::TYPE, "El tipo no es un Enum compuesto");
+}
+
 bool TypeTable::areSameType(const std::shared_ptr<Type> &type1,
                             const std::shared_ptr<Type> &type2) const noexcept {
   // Si ambos apuntan al mismo objeto, son iguales.
@@ -277,7 +304,7 @@ bool TypeTable::canAssignImpl(const std::shared_ptr<Type> &target,
     if (auto sourceBasic = std::dynamic_pointer_cast<BasicType>(tSource))
       return targetBasic->baseKind() == sourceBasic->baseKind();
   }
-  
+
   if (auto targetEnum = std::dynamic_pointer_cast<EnumType>(tTarget)) {
     if (auto sourceEnum = std::dynamic_pointer_cast<EnumType>(tSource))
       return targetEnum->name() == sourceEnum->name();
