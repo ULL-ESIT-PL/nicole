@@ -24,7 +24,7 @@ TypeAnalysis::visit(const AST_ENUM_ACCESS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM_ACCESS");
   }
-  return typeTable_->getType("int");
+  return typeTable_->getType(node->enumId());
 }
 
 }

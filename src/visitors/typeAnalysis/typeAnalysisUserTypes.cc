@@ -1,11 +1,12 @@
-#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_attrAccess.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_constructorCall.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_methodCall.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_struct.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_this.h"
+#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
 #include <cstddef>
 #include <memory>
+#include <vector>
 
 namespace nicole {
 
@@ -314,9 +315,29 @@ TypeAnalysis::visit(const AST_THIS *node) const noexcept {
 */
 std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
-  if (!node) {
+  if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL");
+
+  // Primero, comprobar si el id del constructor se considera un tipo genérico.
+  auto tempUserType = std::make_shared<UserType>(node->id(), nullptr, std::vector<GenericParameter>{});
+  if (insideDeclWithGenerics && typeTable_->isGenericType(tempUserType, currentGenericList_)) {
+    if (!node->replaceOfGenerics().empty()) {
+      std::vector<std::shared_ptr<Type>> genericArgs;
+      for (const auto &gen : node->replaceOfGenerics()) {
+        if (insideDeclWithGenerics && typeTable_->isGenericType(gen, currentGenericList_))
+          genericArgs.push_back(std::make_shared<PlaceHolder>(gen));
+        else
+          genericArgs.push_back(gen);
+      }
+      return std::make_shared<GenericInstanceType>(tempUserType, genericArgs);
+    }
+    else {
+      // No se proporcionaron reemplazos; devolvemos un PlaceHolder para el tipo genérico.
+      return std::make_shared<PlaceHolder>(tempUserType);
+    }
   }
+
+  // Procesamiento normal cuando el id no es considerado genérico.
   std::vector<std::shared_ptr<Type>> argTypes;
   for (const auto &expr : node->parameters()) {
     auto res = expr->accept(*this);
@@ -332,35 +353,28 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
 
   auto userType = std::dynamic_pointer_cast<UserType>(baseType);
   if (!userType)
-    return createError(ERROR_TYPE::TYPE,
-                       "constructor call id must refer to a user-defined type");
+    return createError(ERROR_TYPE::TYPE, "constructor call id must refer to a user-defined type");
 
   auto cons = userType->constructor();
   if (!cons)
-    return createError(ERROR_TYPE::FUNCTION,
-                       "no constructor defined for type: " + userType->name());
+    return createError(ERROR_TYPE::FUNCTION, "no constructor defined for type: " + userType->name());
 
   if (cons->params().size() != argTypes.size())
-    return createError(ERROR_TYPE::FUNCTION,
-                       "constructor parameter count mismatch for type: " +
-                           userType->name());
+    return createError(ERROR_TYPE::FUNCTION, "constructor parameter count mismatch for type: " + userType->name());
 
   const auto &consParams = cons->params().params();
   for (size_t i = 0; i < consParams.size(); ++i) {
     auto paramType = consParams[i].second;
     auto argType = argTypes[i];
     if (!typeTable_->canAssign(paramType, argType))
-      return createError(ERROR_TYPE::TYPE,
-                         "argument " + std::to_string(i) +
-                             " type mismatch in constructor call for type: " +
-                             userType->name());
+      return createError(ERROR_TYPE::TYPE, "argument " + std::to_string(i) +
+                             " type mismatch in constructor call for type: " + userType->name());
   }
 
   if (!node->replaceOfGenerics().empty()) {
     std::vector<std::shared_ptr<Type>> genericArgs;
     for (const auto &gen : node->replaceOfGenerics()) {
-      if (insideDeclWithGenerics &&
-          typeTable_->isGenericType(gen, currentGenericList_))
+      if (insideDeclWithGenerics && typeTable_->isGenericType(gen, currentGenericList_))
         genericArgs.push_back(std::make_shared<PlaceHolder>(gen));
       else
         genericArgs.push_back(gen);
@@ -371,4 +385,5 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   return baseType;
 }
 
-}
+
+} // namespace nicole

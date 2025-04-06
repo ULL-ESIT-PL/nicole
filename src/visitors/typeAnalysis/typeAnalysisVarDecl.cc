@@ -1,7 +1,7 @@
-#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
 #include "../../../inc/parsingAnalysis/ast/variables/ast_autoDecl.h"
 #include "../../../inc/parsingAnalysis/ast/variables/ast_typedDecl.h"
 #include "../../../inc/parsingAnalysis/ast/variables/ast_varCall.h"
+#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
 #include <memory>
 
 namespace nicole {
@@ -25,8 +25,7 @@ TypeAnalysis::visit(const AST_AUTO_DECL *node) const noexcept {
       typeTable_->isGenericType(deducedType, currentGenericList_))
     deducedType = std::make_shared<PlaceHolder>(deducedType);
 
-  auto insertRes =
-      currentScope_->insert(Variable{node->id(), deducedType, nullptr});
+  auto insertRes = currentScope_->setVariableType(node->id(), deducedType);
   if (!insertRes)
     return createError(insertRes.error());
 
@@ -56,7 +55,8 @@ TypeAnalysis::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   if (!typeTable_->canAssign(declaredType, valueType))
     return createError(
         ERROR_TYPE::TYPE,
-        "assigned value type does not match declared variable type");
+        "assigned value type does not match declared variable type -> " +
+            declaredType->toString() + " | " + valueType->toString());
 
   return typeTable_->noPropagateType();
 }
@@ -87,4 +87,4 @@ TypeAnalysis::visit(const AST_VAR_CALL *node) const noexcept {
   return varExp.value().type();
 }
 
-}
+} // namespace nicole

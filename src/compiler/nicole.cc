@@ -14,6 +14,8 @@ Nicole::compile(const Options &options) const noexcept {
     return createError(tree.error());
   }
 
+  std::cout << "Finished parsing\n";
+
   if (options.validateTree()) {
     const nicole::ValidateTree validateTree{};
     const std::expected<bool, nicole::Error> validated{
@@ -22,6 +24,7 @@ Nicole::compile(const Options &options) const noexcept {
     if (!validated) {
       return createError(validated.error());
     }
+    std::cout << "Finished validate\n";
   }
 
   if (options.printTree()) {
@@ -32,6 +35,7 @@ Nicole::compile(const Options &options) const noexcept {
       return createError(toStr.error());
     }
     std::cout << *toStr << "\n";
+    std::cout << "Finished print tree\n";
   }
 
   std::shared_ptr<nicole::TypeTable> typeTable{
@@ -39,17 +43,21 @@ Nicole::compile(const Options &options) const noexcept {
   std::shared_ptr<nicole::FunctionTable> functionTable{
       std::make_shared<nicole::FunctionTable>()};
   const nicole::FillSemanticInfo semanticFiller{functionTable, typeTable,
-                                                options.validateTree()};
+                                                options};
   const auto isTablesFilled{semanticFiller.fill((*tree).get())};
   if (!isTablesFilled) {
     return createError(isTablesFilled.error());
   }
+
+  std::cout << "Finished semantic analysis\n";
 
   const nicole::TypeAnalysis typeAnalysis{functionTable, typeTable};
   const auto analyzed{typeAnalysis.analyze((*tree).get())};
   if (!analyzed) {
     return createError(analyzed.error());
   }
+
+  std::cout << "Finished type analysis\n";
 
   return {};
 }

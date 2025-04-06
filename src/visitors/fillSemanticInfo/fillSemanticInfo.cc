@@ -143,7 +143,7 @@ FillSemanticInfo::visit(const Tree *tree) const noexcept {
     return createError(result.error());
   }
   popScope();
-  if (validateMode_) {
+  if (options_.validateTree()) {
     const auto mainFunction{functionTable_->getFunctions("main")};
     if (mainFunction.empty() or mainFunction.size() > 1) {
       return createError(ERROR_TYPE::FUNCTION,

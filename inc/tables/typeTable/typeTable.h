@@ -42,6 +42,10 @@ private:
 
   std::shared_ptr<BreakType> breakType_{std::make_shared<BreakType>()};
 
+  bool canAssignImpl(const std::shared_ptr<Type> &target,
+                              const std::shared_ptr<Type> &source,
+                              bool pointerContext) const noexcept;
+
 public:
   [[nodiscard]] const std::shared_ptr<NullType> &null() const noexcept {
     return null_;

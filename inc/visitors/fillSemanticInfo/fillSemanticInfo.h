@@ -7,6 +7,7 @@
 #include "../visitor.h"
 #include <memory>
 #include <unordered_set>
+#include "../../options/options.h"
 #include <variant>
 #include <vector>
 
@@ -16,7 +17,7 @@ class FillSemanticInfo final : public Visitor<std::monostate> {
 private:
   mutable std::shared_ptr<FunctionTable> functionTable_;
   mutable std::shared_ptr<TypeTable> typeTable_;
-  bool validateMode_;
+  Options options_;
 
   mutable std::shared_ptr<Scope> currentScope_{nullptr};
   mutable std::shared_ptr<Scope> firstScope_{nullptr};
@@ -46,9 +47,9 @@ private:
 public:
   FillSemanticInfo(const std::shared_ptr<FunctionTable> &functionTable,
                    std::shared_ptr<TypeTable> &typeTable,
-                   const bool validateMode) noexcept
+                   const Options& options) noexcept
       : functionTable_{functionTable}, typeTable_{typeTable},
-        validateMode_{validateMode} {}
+        options_{options} {}
 
   [[nodiscard]] const std::shared_ptr<Scope> getGlobalScope() const noexcept {
     return firstScope_;

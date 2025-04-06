@@ -1,9 +1,9 @@
-#include "../../../inc/visitors/fillSemanticInfo/fillSemanticInfo.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_attrAccess.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_constructorCall.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_methodCall.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_struct.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_this.h"
+#include "../../../inc/visitors/fillSemanticInfo/fillSemanticInfo.h"
 #include <cstddef>
 #include <memory>
 #include <variant>
@@ -339,6 +339,12 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL");
   }
+  if (typeTable_->isGenericType(
+          std::make_shared<UserType>(node->id(), nullptr,
+                                     std::vector<GenericParameter>{}),
+          currentGenericList_)) {
+    return {};
+  }
   if (!typeTable_->getType(node->id())) {
     return createError(ERROR_TYPE::TYPE,
                        "no type with id: " + node->id() + " exists");
@@ -362,4 +368,4 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   return {};
 }
 
-}
+} // namespace nicole
