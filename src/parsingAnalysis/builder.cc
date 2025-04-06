@@ -56,7 +56,10 @@ std::expected<std::shared_ptr<AST_NULL>, Error> Builder::createNull() noexcept {
 
 std::expected<std::shared_ptr<AST_STRING>, Error>
 Builder::createString(const std::string value) noexcept {
-  std::string result;
+  std::string result{""};
+  if (value.empty()) {
+    return std::make_shared<AST_STRING>(result);
+  }
   const std::string strNoQuotes{value.substr(1, value.size() - 2)};
   for (size_t i = 0; i < value.length(); ++i) {
     if (strNoQuotes[i] == '\\' && i + 1 < value.length()) {
