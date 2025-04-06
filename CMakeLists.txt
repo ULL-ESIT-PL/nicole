@@ -137,9 +137,35 @@ add_executable(tests
 
     # visitors
     src/visitors/printTree/printTree.cc
+    src/visitors/printTree/printTreeAssignment.cc
+    src/visitors/printTree/printTreeChained.cc
+    src/visitors/printTree/printTreeConditionals.cc
+    src/visitors/printTree/printTreeEnum.cc
+    src/visitors/printTree/printTreeFactor.cc
+    src/visitors/printTree/printTreeFunctions.cc
+    src/visitors/printTree/printTreeLoops.cc
+    src/visitors/printTree/printTreeOperations.cc
+    src/visitors/printTree/printTreePointers.cc
+    src/visitors/printTree/printTreeUserTypes.cc
+    src/visitors/printTree/printTreeUtils.cc
+    src/visitors/printTree/printTreeVarDecl.cc
+    src/visitors/printTree/printTreeVector.cc
 
     ######
     src/visitors/validateTree/validateTree.cc
+    src/visitors/validateTree/validateAssignment.cc
+    src/visitors/validateTree/validateChained.cc
+    src/visitors/validateTree/validateConditionals.cc
+    src/visitors/validateTree/validateEnum.cc
+    src/visitors/validateTree/validateFactor.cc
+    src/visitors/validateTree/validateFunctions.cc
+    src/visitors/validateTree/validateLoops.cc
+    src/visitors/validateTree/validateOperations.cc
+    src/visitors/validateTree/validatePointers.cc
+    src/visitors/validateTree/validateUserTypes.cc
+    src/visitors/validateTree/validateUtils.cc
+    src/visitors/validateTree/validateVarDecl.cc
+    src/visitors/validateTree/validateVector.cc
     
     #####
     src/visitors/fillSemanticInfo/fillSemanticInfo.cc
@@ -159,9 +185,35 @@ add_executable(tests
 
     #####
     src/visitors/monomorphize/monomorphize.cc
+    src/visitors/monomorphize/monomorphizeAssignment.cc
+    src/visitors/monomorphize/monomorphizeChained.cc
+    src/visitors/monomorphize/monomorphizeConditionals.cc
+    src/visitors/monomorphize/monomorphizeEnum.cc
+    src/visitors/monomorphize/monomorphizeFactor.cc
+    src/visitors/monomorphize/monomorphizeFunctions.cc
+    src/visitors/monomorphize/monomorphizeLoops.cc
+    src/visitors/monomorphize/monomorphizeOperations.cc
+    src/visitors/monomorphize/monomorphizePointers.cc
+    src/visitors/monomorphize/monomorphizeUserTypes.cc
+    src/visitors/monomorphize/monomorphizeUtils.cc
+    src/visitors/monomorphize/monomorphizeVarDecl.cc
+    src/visitors/monomorphize/monomorphizeVector.cc
     
     #####
     src/visitors/typeAnalysis/typeAnalysis.cc
+    src/visitors/typeAnalysis/typeAnalysisAssignment.cc
+    src/visitors/typeAnalysis/typeAnalysisChained.cc
+    src/visitors/typeAnalysis/typeAnalysisConditionals.cc
+    src/visitors/typeAnalysis/typeAnalysisEnum.cc
+    src/visitors/typeAnalysis/typeAnalysisFactor.cc
+    src/visitors/typeAnalysis/typeAnalysisFunctions.cc
+    src/visitors/typeAnalysis/typeAnalysisLoops.cc
+    src/visitors/typeAnalysis/typeAnalysisOperations.cc
+    src/visitors/typeAnalysis/typeAnalysisPointers.cc
+    src/visitors/typeAnalysis/typeAnalysisUserTypes.cc
+    src/visitors/typeAnalysis/typeAnalysisUtils.cc
+    src/visitors/typeAnalysis/typeAnalysisVarDecl.cc
+    src/visitors/typeAnalysis/typeAnalysisVector.cc
     
     #####
     src/visitors/codeGeneration/codeGeneration.cc
@@ -285,9 +337,35 @@ set(SRC_FILES
 
     # visitors
     src/visitors/printTree/printTree.cc
+    src/visitors/printTree/printTreeAssignment.cc
+    src/visitors/printTree/printTreeChained.cc
+    src/visitors/printTree/printTreeConditionals.cc
+    src/visitors/printTree/printTreeEnum.cc
+    src/visitors/printTree/printTreeFactor.cc
+    src/visitors/printTree/printTreeFunctions.cc
+    src/visitors/printTree/printTreeLoops.cc
+    src/visitors/printTree/printTreeOperations.cc
+    src/visitors/printTree/printTreePointers.cc
+    src/visitors/printTree/printTreeUserTypes.cc
+    src/visitors/printTree/printTreeUtils.cc
+    src/visitors/printTree/printTreeVarDecl.cc
+    src/visitors/printTree/printTreeVector.cc
 
     ######
     src/visitors/validateTree/validateTree.cc
+    src/visitors/validateTree/validateAssignment.cc
+    src/visitors/validateTree/validateChained.cc
+    src/visitors/validateTree/validateConditionals.cc
+    src/visitors/validateTree/validateEnum.cc
+    src/visitors/validateTree/validateFactor.cc
+    src/visitors/validateTree/validateFunctions.cc
+    src/visitors/validateTree/validateLoops.cc
+    src/visitors/validateTree/validateOperations.cc
+    src/visitors/validateTree/validatePointers.cc
+    src/visitors/validateTree/validateUserTypes.cc
+    src/visitors/validateTree/validateUtils.cc
+    src/visitors/validateTree/validateVarDecl.cc
+    src/visitors/validateTree/validateVector.cc
     
     #####
     src/visitors/fillSemanticInfo/fillSemanticInfo.cc
@@ -307,9 +385,35 @@ set(SRC_FILES
 
     #####
     src/visitors/monomorphize/monomorphize.cc
+    src/visitors/monomorphize/monomorphizeAssignment.cc
+    src/visitors/monomorphize/monomorphizeChained.cc
+    src/visitors/monomorphize/monomorphizeConditionals.cc
+    src/visitors/monomorphize/monomorphizeEnum.cc
+    src/visitors/monomorphize/monomorphizeFactor.cc
+    src/visitors/monomorphize/monomorphizeFunctions.cc
+    src/visitors/monomorphize/monomorphizeLoops.cc
+    src/visitors/monomorphize/monomorphizeOperations.cc
+    src/visitors/monomorphize/monomorphizePointers.cc
+    src/visitors/monomorphize/monomorphizeUserTypes.cc
+    src/visitors/monomorphize/monomorphizeUtils.cc
+    src/visitors/monomorphize/monomorphizeVarDecl.cc
+    src/visitors/monomorphize/monomorphizeVector.cc
     
     #####
     src/visitors/typeAnalysis/typeAnalysis.cc
+    src/visitors/typeAnalysis/typeAnalysisAssignment.cc
+    src/visitors/typeAnalysis/typeAnalysisChained.cc
+    src/visitors/typeAnalysis/typeAnalysisConditionals.cc
+    src/visitors/typeAnalysis/typeAnalysisEnum.cc
+    src/visitors/typeAnalysis/typeAnalysisFactor.cc
+    src/visitors/typeAnalysis/typeAnalysisFunctions.cc
+    src/visitors/typeAnalysis/typeAnalysisLoops.cc
+    src/visitors/typeAnalysis/typeAnalysisOperations.cc
+    src/visitors/typeAnalysis/typeAnalysisPointers.cc
+    src/visitors/typeAnalysis/typeAnalysisUserTypes.cc
+    src/visitors/typeAnalysis/typeAnalysisUtils.cc
+    src/visitors/typeAnalysis/typeAnalysisVarDecl.cc
+    src/visitors/typeAnalysis/typeAnalysisVector.cc
     
     #####
     src/visitors/codeGeneration/codeGeneration.cc
