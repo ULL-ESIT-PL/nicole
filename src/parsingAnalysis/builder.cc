@@ -56,37 +56,38 @@ std::expected<std::shared_ptr<AST_NULL>, Error> Builder::createNull() noexcept {
 
 std::expected<std::shared_ptr<AST_STRING>, Error>
 Builder::createString(const std::string value) noexcept {
-  std::string result{""};
-  if (value.empty()) {
-    return std::make_shared<AST_STRING>(result);
+  std::string result;
+  if (value.size() < 2) {
+    return createError(ERROR_TYPE::SINTAX, "ill formed string");
   }
-  const std::string strNoQuotes{value.substr(1, value.size() - 2)};
-  for (size_t i = 0; i < value.length(); ++i) {
-    if (strNoQuotes[i] == '\\' && i + 1 < value.length()) {
+  const std::string strNoQuotes = value.substr(1, value.size() - 2);
+  for (size_t i = 0; i < strNoQuotes.length(); ++i) {
+    if (strNoQuotes[i] == '\\' && i + 1 < strNoQuotes.length()) {
       switch (strNoQuotes[i + 1]) {
-      case 'n':
-        result += '\n';
-        break;
-      case 't':
-        result += '\t';
-        break;
-      case '\\':
-        result += '\\';
-        break;
-      case '\"':
-        result += '\"';
-        break;
-      default:
-        result += strNoQuotes[i + 1];
-        break;
+        case 'n':
+          result.push_back('\n');
+          break;
+        case 't':
+          result.push_back('\t');
+          break;
+        case '\\':
+          result.push_back('\\');
+          break;
+        case '\"':
+          result.push_back('\"');
+          break;
+        default:
+          result.push_back(strNoQuotes[i + 1]);
+          break;
       }
-      i++;
+      i++; // Saltar el carácter escapado
     } else {
-      result += strNoQuotes[i]; // Agregar el carácter actual
+      result.push_back(strNoQuotes[i]);
     }
   }
   return std::make_shared<AST_STRING>(result);
 }
+
 
 std::expected<std::shared_ptr<AST_VECTOR>, Error>
 Builder::createVector(const std::vector<std::shared_ptr<AST>> values) noexcept {

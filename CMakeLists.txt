@@ -137,11 +137,47 @@ add_executable(tests
 
     # visitors
     src/visitors/printTree/printTree.cc
+
+    ######
     src/visitors/validateTree/validateTree.cc
+    
+    #####
     src/visitors/fillSemanticInfo/fillSemanticInfo.cc
+    src/visitors/fillSemanticInfo/fillSemanticAssignment.cc
+    src/visitors/fillSemanticInfo/fillSemanticChained.cc
+    src/visitors/fillSemanticInfo/fillSemanticConditionals.cc
+    src/visitors/fillSemanticInfo/fillSemanticEnum.cc
+    src/visitors/fillSemanticInfo/fillSemanticFactor.cc
+    src/visitors/fillSemanticInfo/fillSemanticFunctions.cc
+    src/visitors/fillSemanticInfo/fillSemanticLoops.cc
+    src/visitors/fillSemanticInfo/fillSemanticOperations.cc
+    src/visitors/fillSemanticInfo/fillSemanticPointers.cc
+    src/visitors/fillSemanticInfo/fillSemanticUserTypes.cc
+    src/visitors/fillSemanticInfo/fillSemanticUtils.cc
+    src/visitors/fillSemanticInfo/fillSemanticVarDecl.cc
+    src/visitors/fillSemanticInfo/fillSemanticVector.cc
+
+    #####
     src/visitors/monomorphize/monomorphize.cc
+    
+    #####
     src/visitors/typeAnalysis/typeAnalysis.cc
+    
+    #####
     src/visitors/codeGeneration/codeGeneration.cc
+    src/visitors/codeGeneration/codeGenAssignment.cc
+    src/visitors/codeGeneration/codeGenChained.cc
+    src/visitors/codeGeneration/codeGenConditionals.cc
+    src/visitors/codeGeneration/codeGenEnum.cc
+    src/visitors/codeGeneration/codeGenFactor.cc
+    src/visitors/codeGeneration/codeGenFunctions.cc
+    src/visitors/codeGeneration/codeGenLoops.cc
+    src/visitors/codeGeneration/codeGenOperations.cc
+    src/visitors/codeGeneration/codeGenPointers.cc
+    src/visitors/codeGeneration/codeGenUserTypes.cc
+    src/visitors/codeGeneration/codeGenUtils.cc
+    src/visitors/codeGeneration/codeGenVarDecl.cc
+    src/visitors/codeGeneration/codeGenVector.cc
 
     # compiler
     src/compiler/nicole.cc
@@ -247,12 +283,49 @@ set(SRC_FILES
     src/tables/typeTable/attrTable.cc
     src/tables/scope/scope.cc
 
+    # visitors
     src/visitors/printTree/printTree.cc
+
+    ######
     src/visitors/validateTree/validateTree.cc
+    
+    #####
     src/visitors/fillSemanticInfo/fillSemanticInfo.cc
+    src/visitors/fillSemanticInfo/fillSemanticAssignment.cc
+    src/visitors/fillSemanticInfo/fillSemanticChained.cc
+    src/visitors/fillSemanticInfo/fillSemanticConditionals.cc
+    src/visitors/fillSemanticInfo/fillSemanticEnum.cc
+    src/visitors/fillSemanticInfo/fillSemanticFactor.cc
+    src/visitors/fillSemanticInfo/fillSemanticFunctions.cc
+    src/visitors/fillSemanticInfo/fillSemanticLoops.cc
+    src/visitors/fillSemanticInfo/fillSemanticOperations.cc
+    src/visitors/fillSemanticInfo/fillSemanticPointers.cc
+    src/visitors/fillSemanticInfo/fillSemanticUserTypes.cc
+    src/visitors/fillSemanticInfo/fillSemanticUtils.cc
+    src/visitors/fillSemanticInfo/fillSemanticVarDecl.cc
+    src/visitors/fillSemanticInfo/fillSemanticVector.cc
+
+    #####
     src/visitors/monomorphize/monomorphize.cc
+    
+    #####
     src/visitors/typeAnalysis/typeAnalysis.cc
+    
+    #####
     src/visitors/codeGeneration/codeGeneration.cc
+    src/visitors/codeGeneration/codeGenAssignment.cc
+    src/visitors/codeGeneration/codeGenChained.cc
+    src/visitors/codeGeneration/codeGenConditionals.cc
+    src/visitors/codeGeneration/codeGenEnum.cc
+    src/visitors/codeGeneration/codeGenFactor.cc
+    src/visitors/codeGeneration/codeGenFunctions.cc
+    src/visitors/codeGeneration/codeGenLoops.cc
+    src/visitors/codeGeneration/codeGenOperations.cc
+    src/visitors/codeGeneration/codeGenPointers.cc
+    src/visitors/codeGeneration/codeGenUserTypes.cc
+    src/visitors/codeGeneration/codeGenUtils.cc
+    src/visitors/codeGeneration/codeGenVarDecl.cc
+    src/visitors/codeGeneration/codeGenVector.cc
 
     src/compiler/nicole.cc
 )

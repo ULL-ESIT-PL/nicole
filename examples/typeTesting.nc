@@ -1,3 +1,3 @@
-let x: int = "";
+let x: int = "a";
 
 def foo(): int {}
