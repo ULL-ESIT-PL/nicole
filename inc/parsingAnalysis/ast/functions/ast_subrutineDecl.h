@@ -1,8 +1,8 @@
 #ifndef AST_SUBRUTINE_DECL_H
 #define AST_SUBRUTINE_DECL_H
 
-#include "../statements/ast_body.h"
 #include "../../../tables/typeTable/types/type.h"
+#include "../statements/ast_body.h"
 #include <memory>
 #include <string>
 
@@ -11,8 +11,8 @@ namespace nicole {
 class AST_SUBRUTINE_DECL : public AST {
 private:
   std::string id_;
-  std::shared_ptr<Type> returnType_;
-  std::shared_ptr<AST_BODY> body_;
+  mutable std::shared_ptr<Type> returnType_;
+  mutable std::shared_ptr<AST_BODY> body_;
 
 public:
   explicit AST_SUBRUTINE_DECL(const AST_TYPE type, const std::string &id,
@@ -28,6 +28,10 @@ public:
 
   [[nodiscard]] const std::shared_ptr<AST_BODY> &body() const noexcept {
     return body_;
+  }
+
+  void setReturnType(const std::shared_ptr<Type> &type) const noexcept {
+    returnType_ = type;
   }
 };
 
