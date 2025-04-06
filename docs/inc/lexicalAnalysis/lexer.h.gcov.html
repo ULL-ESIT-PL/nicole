@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-04-04 23:29:35</td>
+            <td class="headerValue">2025-04-06 11:21:21</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
@@ -76,31 +76,34 @@
 <span id="L14"><span class="lineNum">      14</span>              : private:</span>
 <span id="L15"><span class="lineNum">      15</span>              :   std::vector&lt;Category&gt; categories_;</span>
 <span id="L16"><span class="lineNum">      16</span>              : </span>
-<span id="L17"><span class="lineNum">      17</span>              :   // makes a category that matches with every token of our sintax</span>
-<span id="L18"><span class="lineNum">      18</span>              :   [[nodiscard]] const Category concatCategories() const noexcept;</span>
-<span id="L19"><span class="lineNum">      19</span>              : </span>
-<span id="L20"><span class="lineNum">      20</span>              :   [[nodiscard]] const std::expected&lt;std::string, Error&gt;</span>
-<span id="L21"><span class="lineNum">      21</span>              :   readFile(const std::filesystem::path &amp;fileName) const noexcept;</span>
-<span id="L22"><span class="lineNum">      22</span>              : </span>
-<span id="L23"><span class="lineNum">      23</span>              :   [[nodiscard]] const std::expected&lt;void, Error&gt;</span>
-<span id="L24"><span class="lineNum">      24</span>              :   checkUnmatched(const std::vector&lt;Token&gt; &amp;tokens) const noexcept;</span>
-<span id="L25"><span class="lineNum">      25</span>              : </span>
-<span id="L26"><span class="lineNum">      26</span>              : public:</span>
-<span id="L27"><span class="lineNum">      27</span>              :   explicit Lexer(const std::vector&lt;Category&gt; &amp;categories) noexcept</span>
-<span id="L28"><span class="lineNum">      28</span> <span class="tlaGNC tlaBgGNC">          30 :       : categories_{categories} {};</span></span>
-<span id="L29"><span class="lineNum">      29</span>              : </span>
-<span id="L30"><span class="lineNum">      30</span> <span class="tlaGNC">          30 :   [[nodiscard]] const std::vector&lt;Category&gt; &amp;categories() const noexcept {</span></span>
-<span id="L31"><span class="lineNum">      31</span> <span class="tlaGNC">          30 :     return categories_;</span></span>
-<span id="L32"><span class="lineNum">      32</span> <span class="tlaGNC">          30 :   }</span></span>
-<span id="L33"><span class="lineNum">      33</span>              : </span>
-<span id="L34"><span class="lineNum">      34</span>              :   [[nodiscard]] const std::expected&lt;TokenStream, Error&gt;</span>
-<span id="L35"><span class="lineNum">      35</span>              :   analyze(const std::filesystem::path &amp;fileName,</span>
-<span id="L36"><span class="lineNum">      36</span>              :           bool verbose = false) const noexcept;</span>
-<span id="L37"><span class="lineNum">      37</span>              : };</span>
-<span id="L38"><span class="lineNum">      38</span>              : </span>
-<span id="L39"><span class="lineNum">      39</span>              : } // namespace nicole</span>
-<span id="L40"><span class="lineNum">      40</span>              : </span>
-<span id="L41"><span class="lineNum">      41</span>              : #endif</span>
+<span id="L17"><span class="lineNum">      17</span>              :   std::string extension_;</span>
+<span id="L18"><span class="lineNum">      18</span>              : </span>
+<span id="L19"><span class="lineNum">      19</span>              :   // makes a category that matches with every token of our sintax</span>
+<span id="L20"><span class="lineNum">      20</span>              :   [[nodiscard]] const Category concatCategories() const noexcept;</span>
+<span id="L21"><span class="lineNum">      21</span>              : </span>
+<span id="L22"><span class="lineNum">      22</span>              :   [[nodiscard]] const std::expected&lt;std::string, Error&gt;</span>
+<span id="L23"><span class="lineNum">      23</span>              :   readFile(const std::filesystem::path &amp;fileName) const noexcept;</span>
+<span id="L24"><span class="lineNum">      24</span>              : </span>
+<span id="L25"><span class="lineNum">      25</span>              :   [[nodiscard]] const std::expected&lt;void, Error&gt;</span>
+<span id="L26"><span class="lineNum">      26</span>              :   checkUnmatched(const std::vector&lt;Token&gt; &amp;tokens) const noexcept;</span>
+<span id="L27"><span class="lineNum">      27</span>              : </span>
+<span id="L28"><span class="lineNum">      28</span>              : public:</span>
+<span id="L29"><span class="lineNum">      29</span>              :   explicit Lexer(const std::vector&lt;Category&gt; &amp;categories,</span>
+<span id="L30"><span class="lineNum">      30</span>              :                  const std::string &amp;extension) noexcept</span>
+<span id="L31"><span class="lineNum">      31</span> <span class="tlaGNC tlaBgGNC">           2 :       : categories_{categories}, extension_{extension} {};</span></span>
+<span id="L32"><span class="lineNum">      32</span>              : </span>
+<span id="L33"><span class="lineNum">      33</span> <span class="tlaGNC">          32 :   [[nodiscard]] const std::vector&lt;Category&gt; &amp;categories() const noexcept {</span></span>
+<span id="L34"><span class="lineNum">      34</span> <span class="tlaGNC">          32 :     return categories_;</span></span>
+<span id="L35"><span class="lineNum">      35</span> <span class="tlaGNC">          32 :   }</span></span>
+<span id="L36"><span class="lineNum">      36</span>              : </span>
+<span id="L37"><span class="lineNum">      37</span>              :   [[nodiscard]] const std::expected&lt;TokenStream, Error&gt;</span>
+<span id="L38"><span class="lineNum">      38</span>              :   analyze(const std::filesystem::path &amp;fileName,</span>
+<span id="L39"><span class="lineNum">      39</span>              :           bool verbose = false) const noexcept;</span>
+<span id="L40"><span class="lineNum">      40</span>              : };</span>
+<span id="L41"><span class="lineNum">      41</span>              : </span>
+<span id="L42"><span class="lineNum">      42</span>              : } // namespace nicole</span>
+<span id="L43"><span class="lineNum">      43</span>              : </span>
+<span id="L44"><span class="lineNum">      44</span>              : #endif</span>
         </pre>
               </td>
             </tr>

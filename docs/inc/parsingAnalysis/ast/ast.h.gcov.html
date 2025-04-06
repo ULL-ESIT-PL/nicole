@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-04-04 23:29:35</td>
+            <td class="headerValue">2025-04-06 11:21:21</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
@@ -81,19 +81,19 @@
 <span id="L19"><span class="lineNum">      19</span>              :   std::weak_ptr&lt;AST&gt; father_;</span>
 <span id="L20"><span class="lineNum">      20</span>              : </span>
 <span id="L21"><span class="lineNum">      21</span>              : public:</span>
-<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC tlaBgGNC">        1950 :   explicit AST(const AST_TYPE type) noexcept : type_{type} {}</span></span>
+<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC tlaBgGNC">        2080 :   explicit AST(const AST_TYPE type) noexcept : type_{type} {}</span></span>
 <span id="L23"><span class="lineNum">      23</span>              : </span>
-<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">        1950 :   virtual ~AST() noexcept = default;</span></span>
+<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">        2080 :   virtual ~AST() noexcept = default;</span></span>
 <span id="L25"><span class="lineNum">      25</span>              : </span>
-<span id="L26"><span class="lineNum">      26</span> <span class="tlaGNC">         120 :   [[nodiscard]] AST_TYPE type() const noexcept { return type_; }</span></span>
+<span id="L26"><span class="lineNum">      26</span> <span class="tlaGNC">         128 :   [[nodiscard]] AST_TYPE type() const noexcept { return type_; }</span></span>
 <span id="L27"><span class="lineNum">      27</span>              : </span>
-<span id="L28"><span class="lineNum">      28</span> <span class="tlaGNC">          15 :   [[nodiscard]] const std::shared_ptr&lt;AST&gt; father() const noexcept {</span></span>
-<span id="L29"><span class="lineNum">      29</span> <span class="tlaGNC">          15 :     return father_.lock();</span></span>
-<span id="L30"><span class="lineNum">      30</span> <span class="tlaGNC">          15 :   }</span></span>
+<span id="L28"><span class="lineNum">      28</span> <span class="tlaGNC">          16 :   [[nodiscard]] const std::shared_ptr&lt;AST&gt; father() const noexcept {</span></span>
+<span id="L29"><span class="lineNum">      29</span> <span class="tlaGNC">          16 :     return father_.lock();</span></span>
+<span id="L30"><span class="lineNum">      30</span> <span class="tlaGNC">          16 :   }</span></span>
 <span id="L31"><span class="lineNum">      31</span>              : </span>
-<span id="L32"><span class="lineNum">      32</span> <span class="tlaGNC">         855 :   void setFather(const std::shared_ptr&lt;AST&gt; &amp;father) noexcept {</span></span>
-<span id="L33"><span class="lineNum">      33</span> <span class="tlaGNC">         855 :     father_ = father;</span></span>
-<span id="L34"><span class="lineNum">      34</span> <span class="tlaGNC">         855 :   }</span></span>
+<span id="L32"><span class="lineNum">      32</span> <span class="tlaGNC">         912 :   void setFather(const std::shared_ptr&lt;AST&gt; &amp;father) noexcept {</span></span>
+<span id="L33"><span class="lineNum">      33</span> <span class="tlaGNC">         912 :     father_ = father;</span></span>
+<span id="L34"><span class="lineNum">      34</span> <span class="tlaGNC">         912 :   }</span></span>
 <span id="L35"><span class="lineNum">      35</span>              : </span>
 <span id="L36"><span class="lineNum">      36</span>              :   [[nodiscard]] virtual std::expected&lt;std::string, Error&gt;</span>
 <span id="L37"><span class="lineNum">      37</span>              :   accept(const PrintTree &amp;visitor) const noexcept = 0;</span>

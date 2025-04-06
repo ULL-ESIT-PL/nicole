@@ -14,6 +14,8 @@ class Lexer final {
 private:
   std::vector<Category> categories_;
 
+  std::string extension_;
+
   // makes a category that matches with every token of our sintax
   [[nodiscard]] const Category concatCategories() const noexcept;
 
@@ -24,8 +26,9 @@ private:
   checkUnmatched(const std::vector<Token> &tokens) const noexcept;
 
 public:
-  explicit Lexer(const std::vector<Category> &categories) noexcept
-      : categories_{categories} {};
+  explicit Lexer(const std::vector<Category> &categories,
+                 const std::string &extension) noexcept
+      : categories_{categories}, extension_{extension} {};
 
   [[nodiscard]] const std::vector<Category> &categories() const noexcept {
     return categories_;

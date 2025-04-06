@@ -32,13 +32,13 @@ Lexer::checkUnmatched(const std::vector<Token> &tokens) const noexcept {
 
 const std::expected<std::string, Error>
 Lexer::readFile(const std::filesystem::path &fileName) const noexcept {
-  const std::regex fileNameFormat{"[a-zA-Z]+[a-zA-Z0-9]*\\.nc",
+  const std::regex fileNameFormat{"[a-zA-Z]+[a-zA-Z0-9]*\\." + extension_,
                                   std::regex_constants::optimize};
   // method fileName returns just the file
   if (!std::regex_match(fileName.filename().string(), fileNameFormat)) {
     return createError(ERROR_TYPE::FILE_EXTENSION,
                        "The file " + fileName.string() +
-                           " does not have extension: nc");
+                           " does not have extension: " + extension_);
   }
   std::fstream file{fileName};
   if (!file.is_open()) {

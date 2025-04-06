@@ -118,7 +118,7 @@ const Lexer NicoleSintax::createLexer() const noexcept {
       Category{TokenType::OPERATOR_SMALLER, "[<]", false},
       Category{TokenType::OPERATOR_GREATER, "[>]", false},
       Category{TokenType::OPERATOR_NOT, "[!]", false},
-      Category{TokenType::OPERATOR_MODULE, "[%]", false}}};
+      Category{TokenType::OPERATOR_MODULE, "[%]", false}}, extension()};
 };
 
 } // namespace nicole
