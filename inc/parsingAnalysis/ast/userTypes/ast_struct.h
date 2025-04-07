@@ -22,12 +22,13 @@ private:
 
 public:
   explicit AST_STRUCT(
-      const std::string &id, const std::vector<GenericParameter> &generics,
+      const long long unsigned nodeId, const std::string &id,
+      const std::vector<GenericParameter> &generics,
       const std::shared_ptr<Type> &fatherType, const Attributes &attributes,
       const std::vector<std::shared_ptr<AST_METHOD_DECL>> &methods,
       const std::shared_ptr<AST_CONSTRUCTOR_DECL> &constructor,
       const std::shared_ptr<AST_DESTRUCTOR_DECL> &destructor) noexcept
-      : AST(AST_TYPE::STRUCT_DECL), id_{id}, generics_{generics},
+      : AST(nodeId, AST_TYPE::STRUCT_DECL), id_{id}, generics_{generics},
         fatherType_{fatherType}, attributes_{attributes}, methods_{methods},
         constructor_{constructor}, destructor_{destructor} {}
 

@@ -13,12 +13,13 @@ private:
   std::vector<std::shared_ptr<AST>> update_;
 
 public:
-  explicit AST_FOR(const std::vector<std::shared_ptr<AST>> &init,
+  explicit AST_FOR(const long long unsigned nodeId,
+                   const std::vector<std::shared_ptr<AST>> &init,
                    const std::shared_ptr<AST_CONDITION> &condition,
                    const std::vector<std::shared_ptr<AST>> &update,
                    const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST_LOOP(AST_TYPE::FOR, condition, body), init_{init}, update_{update} {
-  }
+      : AST_LOOP(nodeId, AST_TYPE::FOR, condition, body), init_{init},
+        update_{update} {}
 
   [[nodiscard]] const std::vector<std::shared_ptr<AST>> &init() const noexcept {
     return init_;

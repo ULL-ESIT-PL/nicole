@@ -10,8 +10,9 @@ private:
   std::string id_;
 
 public:
-  explicit AST_ATTR_ACCESS(const std::string id) noexcept
-      : AST{AST_TYPE::ATTR_ACCESS}, id_{id} {}
+  explicit AST_ATTR_ACCESS(const long long unsigned nodeId,
+                           const std::string id) noexcept
+      : AST{nodeId, AST_TYPE::ATTR_ACCESS}, id_{id} {}
 
   ~AST_ATTR_ACCESS() noexcept = default;
 

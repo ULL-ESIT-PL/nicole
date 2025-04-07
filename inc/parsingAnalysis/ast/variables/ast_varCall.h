@@ -11,8 +11,9 @@ private:
   std::string id_;
 
 public:
-  explicit AST_VAR_CALL(const std::string &id) noexcept
-      : AST(AST_TYPE::VAR_CALL), id_{id} {}
+  explicit AST_VAR_CALL(const long long unsigned nodeId,
+                        const std::string &id) noexcept
+      : AST(nodeId, AST_TYPE::VAR_CALL), id_{id} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 

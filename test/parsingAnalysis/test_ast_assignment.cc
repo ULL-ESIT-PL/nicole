@@ -8,7 +8,7 @@ TEST_CASE("AST_ASSIGNMENT class methods", "[AST_ASSIGNMENT]") {
   const Token op{TokenType::SELF_ADD, "+=", Location{"archivo.cpp", 10, 5}};
   auto astBool = *Builder::createBool(true);
   auto left = *Builder::createBool(true);
-  AST_ASSIGNMENT astSelfAdd{op, left, astBool};
+  AST_ASSIGNMENT astSelfAdd{0,op, left, astBool};
 
   REQUIRE(astSelfAdd.op().raw() == "+=");
   REQUIRE(astSelfAdd.left() == left);

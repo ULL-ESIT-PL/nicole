@@ -17,6 +17,16 @@ metodos / llamadas a atributos / variables auto
 
 namespace nicole {
 
+std::vector<GenericParameter>
+TypeAnalysis::mergeGenericLists(
+    const std::vector<GenericParameter> &list,
+    const std::vector<GenericParameter> &list1) const noexcept {
+  std::vector<GenericParameter> result{};
+  result.insert(result.end(), list.begin(), list.end());
+  result.insert(result.end(), list1.begin(), list1.end());
+  return result;
+}
+
 /*
 - retorna el tipo de la expresion
 */

@@ -5,7 +5,7 @@ namespace nicole {
 
 std::expected<std::shared_ptr<AST_BOOL>, Error>
 Builder::createBool(const bool value) noexcept {
-  return std::make_shared<AST_BOOL>(value);
+  return std::make_shared<AST_BOOL>(generateNextId(), value);
 }
 
 std::expected<std::shared_ptr<AST_CHAR>, Error>
@@ -32,26 +32,26 @@ Builder::createChar(const std::string &value) noexcept {
       result = strNoQuotes[1];
     }
   }
-  return std::make_shared<AST_CHAR>(result);
+  return std::make_shared<AST_CHAR>(generateNextId(), result);
 }
 
 std::expected<std::shared_ptr<AST_DOUBLE>, Error>
 Builder::createDouble(const double value) noexcept {
-  return std::make_shared<AST_DOUBLE>(value);
+  return std::make_shared<AST_DOUBLE>(generateNextId(), value);
 }
 
 std::expected<std::shared_ptr<AST_FLOAT>, Error>
 Builder::createFloat(const float value) noexcept {
-  return std::make_shared<AST_FLOAT>(value);
+  return std::make_shared<AST_FLOAT>(generateNextId(), value);
 }
 
 std::expected<std::shared_ptr<AST_INT>, Error>
 Builder::createInt(const int value) noexcept {
-  return std::make_shared<AST_INT>(value);
+  return std::make_shared<AST_INT>(generateNextId(), value);
 }
 
 std::expected<std::shared_ptr<AST_NULL>, Error> Builder::createNull() noexcept {
-  return std::make_shared<AST_NULL>();
+  return std::make_shared<AST_NULL>(generateNextId());
 }
 
 std::expected<std::shared_ptr<AST_STRING>, Error>
@@ -64,34 +64,33 @@ Builder::createString(const std::string value) noexcept {
   for (size_t i = 0; i < strNoQuotes.length(); ++i) {
     if (strNoQuotes[i] == '\\' && i + 1 < strNoQuotes.length()) {
       switch (strNoQuotes[i + 1]) {
-        case 'n':
-          result.push_back('\n');
-          break;
-        case 't':
-          result.push_back('\t');
-          break;
-        case '\\':
-          result.push_back('\\');
-          break;
-        case '\"':
-          result.push_back('\"');
-          break;
-        default:
-          result.push_back(strNoQuotes[i + 1]);
-          break;
+      case 'n':
+        result.push_back('\n');
+        break;
+      case 't':
+        result.push_back('\t');
+        break;
+      case '\\':
+        result.push_back('\\');
+        break;
+      case '\"':
+        result.push_back('\"');
+        break;
+      default:
+        result.push_back(strNoQuotes[i + 1]);
+        break;
       }
       i++; // Saltar el carácter escapado
     } else {
       result.push_back(strNoQuotes[i]);
     }
   }
-  return std::make_shared<AST_STRING>(result);
+  return std::make_shared<AST_STRING>(generateNextId(), result);
 }
-
 
 std::expected<std::shared_ptr<AST_VECTOR>, Error>
 Builder::createVector(const std::vector<std::shared_ptr<AST>> values) noexcept {
-  const auto astVector{std::make_shared<AST_VECTOR>(values)};
+  const auto astVector{std::make_shared<AST_VECTOR>(generateNextId(), values)};
   const std::vector<std::shared_ptr<AST>> &expressions{astVector->values()};
   for (const auto &expression : expressions) {
     if (expression) {
@@ -103,7 +102,7 @@ Builder::createVector(const std::vector<std::shared_ptr<AST>> values) noexcept {
 
 std::expected<std::shared_ptr<AST_INDEX>, Error>
 Builder::createIndex(const std::shared_ptr<AST> value) noexcept {
-  const auto astIndex{std::make_shared<AST_INDEX>(value)};
+  const auto astIndex{std::make_shared<AST_INDEX>(generateNextId(), value)};
   if (value) {
     value->setFather(astIndex);
   }
@@ -112,7 +111,7 @@ Builder::createIndex(const std::shared_ptr<AST> value) noexcept {
 
 std::expected<std::shared_ptr<AST_DELETE>, Error>
 Builder::createDelete(const std::shared_ptr<AST> &value) noexcept {
-  const auto astDelete{std::make_shared<AST_DELETE>(value)};
+  const auto astDelete{std::make_shared<AST_DELETE>(generateNextId(), value)};
   if (value) {
     value->setFather(astDelete);
   }
@@ -121,7 +120,7 @@ Builder::createDelete(const std::shared_ptr<AST> &value) noexcept {
 
 std::expected<std::shared_ptr<AST_NEW>, Error>
 Builder::createNew(const std::shared_ptr<AST> &value) noexcept {
-  const auto astNew{std::make_shared<AST_NEW>(value)};
+  const auto astNew{std::make_shared<AST_NEW>(generateNextId(), value)};
   if (value) {
     value->setFather(astNew);
   }
@@ -130,7 +129,7 @@ Builder::createNew(const std::shared_ptr<AST> &value) noexcept {
 
 std::expected<std::shared_ptr<AST_DEREF>, Error>
 Builder::createDeref(const std::shared_ptr<AST> &value) noexcept {
-  const auto astDeref{std::make_shared<AST_DEREF>(value)};
+  const auto astDeref{std::make_shared<AST_DEREF>(generateNextId(), value)};
   if (value) {
     value->setFather(astDeref);
   }
@@ -140,7 +139,8 @@ Builder::createDeref(const std::shared_ptr<AST> &value) noexcept {
 std::expected<std::shared_ptr<AST_BINARY>, Error>
 Builder::createBinary(const Token &op, const std::shared_ptr<AST> &left,
                       const std::shared_ptr<AST> &right) noexcept {
-  const auto astBinary{std::make_shared<AST_BINARY>(op, left, right)};
+  const auto astBinary{
+      std::make_shared<AST_BINARY>(generateNextId(), op, left, right)};
   if (left) {
     left->setFather(astBinary);
   }
@@ -153,7 +153,7 @@ Builder::createBinary(const Token &op, const std::shared_ptr<AST> &left,
 std::expected<std::shared_ptr<AST_UNARY>, Error>
 Builder::createUnary(const Token &op,
                      const std::shared_ptr<AST> &value) noexcept {
-  const auto astUnary{std::make_shared<AST_UNARY>(op, value)};
+  const auto astUnary{std::make_shared<AST_UNARY>(generateNextId(), op, value)};
   if (value) {
     value->setFather(astUnary);
   }
@@ -164,7 +164,7 @@ std::expected<std::shared_ptr<AST_ASSIGNMENT>, Error>
 Builder::createAssignment(const Token &op, const std::shared_ptr<AST> &left,
                           const std::shared_ptr<AST> &value) noexcept {
   const auto astSelfAssignment{
-      std::make_shared<AST_ASSIGNMENT>(op, left, value)};
+      std::make_shared<AST_ASSIGNMENT>(generateNextId(), op, left, value)};
   if (left) {
     left->setFather(astSelfAssignment);
   }
@@ -176,7 +176,7 @@ Builder::createAssignment(const Token &op, const std::shared_ptr<AST> &left,
 
 std::expected<std::shared_ptr<AST_PRINT>, Error>
 Builder::createPrint(const std::vector<std::shared_ptr<AST>> &values) noexcept {
-  const auto astPrint{std::make_shared<AST_PRINT>(values)};
+  const auto astPrint{std::make_shared<AST_PRINT>(generateNextId(), values)};
   const std::vector<std::shared_ptr<AST>> &values__{astPrint->values()};
   for (const auto &values_ : values__) {
     if (values_) {
@@ -188,13 +188,14 @@ Builder::createPrint(const std::vector<std::shared_ptr<AST>> &values) noexcept {
 
 std::expected<std::shared_ptr<AST_IMPORT>, Error>
 Builder::createImport(const std::filesystem::path &path) noexcept {
-  const auto astImport{std::make_shared<AST_IMPORT>(path)};
+  const auto astImport{std::make_shared<AST_IMPORT>(generateNextId(), path)};
   return astImport;
 }
 
 std::expected<std::shared_ptr<AST_STATEMENT>, Error>
 Builder::createStatement(const std::shared_ptr<AST> &expression) noexcept {
-  const auto astStatement{std::make_shared<AST_STATEMENT>(expression)};
+  const auto astStatement{
+      std::make_shared<AST_STATEMENT>(generateNextId(), expression)};
   if (expression) {
     expression->setFather(astStatement);
   }
@@ -203,7 +204,7 @@ Builder::createStatement(const std::shared_ptr<AST> &expression) noexcept {
 
 std::expected<std::shared_ptr<AST_BODY>, Error> Builder::createBody(
     const std::vector<std::shared_ptr<AST_STATEMENT>> &body) noexcept {
-  const auto astBody{std::make_shared<AST_BODY>(body)};
+  const auto astBody{std::make_shared<AST_BODY>(generateNextId(), body)};
   const std::vector<std::shared_ptr<AST_STATEMENT>> &statements{
       astBody->body()};
   for (const auto &statement : statements) {
@@ -217,7 +218,8 @@ std::expected<std::shared_ptr<AST_BODY>, Error> Builder::createBody(
 std::expected<std::shared_ptr<AST_WHILE>, Error>
 Builder::createWhile(const std::shared_ptr<AST_CONDITION> &condition,
                      const std::shared_ptr<AST_BODY> &body) noexcept {
-  const auto astWhile{std::make_shared<AST_WHILE>(condition, body)};
+  const auto astWhile{
+      std::make_shared<AST_WHILE>(generateNextId(), condition, body)};
   if (condition) {
     condition->setFather(astWhile);
   }
@@ -232,7 +234,8 @@ Builder::createFor(const std::vector<std::shared_ptr<AST>> &init,
                    const std::shared_ptr<AST_CONDITION> &condition,
                    const std::vector<std::shared_ptr<AST>> &update,
                    const std::shared_ptr<AST_BODY> &body) noexcept {
-  const auto astFor{std::make_shared<AST_FOR>(init, condition, update, body)};
+  const auto astFor{std::make_shared<AST_FOR>(generateNextId(), init, condition,
+                                              update, body)};
   const std::vector<std::shared_ptr<AST>> &init__{astFor->init()};
   for (const auto &init_ : init__) {
     if (init_) {
@@ -257,7 +260,8 @@ Builder::createFor(const std::vector<std::shared_ptr<AST>> &init,
 std::expected<std::shared_ptr<AST_DO_WHILE>, Error> Builder::createDoWhile(
     const std::shared_ptr<AST_BODY> &body,
     const std::shared_ptr<AST_CONDITION> &condition) noexcept {
-  const auto astDoWhile{std::make_shared<AST_DO_WHILE>(body, condition)};
+  const auto astDoWhile{
+      std::make_shared<AST_DO_WHILE>(generateNextId(), body, condition)};
   if (condition) {
     condition->setFather(astDoWhile);
   }
@@ -269,13 +273,13 @@ std::expected<std::shared_ptr<AST_DO_WHILE>, Error> Builder::createDoWhile(
 
 std::expected<std::shared_ptr<AST_PASS>, Error>
 Builder::createPass(const std::shared_ptr<AST> &fatherLoop) noexcept {
-  const auto astPass{std::make_shared<AST_PASS>(fatherLoop)};
+  const auto astPass{std::make_shared<AST_PASS>(generateNextId(), fatherLoop)};
   return astPass;
 }
 
 std::expected<std::shared_ptr<AST_STOP>, Error>
 Builder::createStop(const std::shared_ptr<AST> &fatherLoop) noexcept {
-  const auto astStop{std::make_shared<AST_STOP>(fatherLoop)};
+  const auto astStop{std::make_shared<AST_STOP>(generateNextId(), fatherLoop)};
   return astStop;
 }
 
@@ -284,7 +288,8 @@ Builder::createIf(const std::shared_ptr<AST_CONDITION> &condition,
                   const std::shared_ptr<AST_BODY> &body,
                   const std::vector<std::shared_ptr<AST_ELSE_IF>> &elseIf,
                   const std::shared_ptr<AST_BODY> &elseBody) noexcept {
-  const auto astIf{std::make_shared<AST_IF>(condition, body, elseIf, elseBody)};
+  const auto astIf{std::make_shared<AST_IF>(generateNextId(), condition, body,
+                                            elseIf, elseBody)};
   if (condition) {
     condition->setFather(astIf);
   }
@@ -306,7 +311,8 @@ Builder::createIf(const std::shared_ptr<AST_CONDITION> &condition,
 std::expected<std::shared_ptr<AST_ELSE_IF>, Error>
 Builder::createElseIf(const std::shared_ptr<AST_CONDITION> &condition,
                       const std::shared_ptr<AST_BODY> &body) noexcept {
-  const auto astIf{std::make_shared<AST_ELSE_IF>(condition, body)};
+  const auto astIf{
+      std::make_shared<AST_ELSE_IF>(generateNextId(), condition, body)};
   if (condition) {
     condition->setFather(astIf);
   }
@@ -320,8 +326,8 @@ std::expected<std::shared_ptr<AST_SWITCH>, Error>
 Builder::createSwitch(const std::shared_ptr<AST_CONDITION> &condition,
                       const std::vector<std::shared_ptr<AST_CASE>> &cases,
                       const std::shared_ptr<AST_DEFAULT> &default_) noexcept {
-  const auto astSwitch{
-      std::make_shared<AST_SWITCH>(condition, cases, default_)};
+  const auto astSwitch{std::make_shared<AST_SWITCH>(generateNextId(), condition,
+                                                    cases, default_)};
   if (condition) {
     condition->setFather(astSwitch);
   }
@@ -340,7 +346,7 @@ Builder::createSwitch(const std::shared_ptr<AST_CONDITION> &condition,
 std::expected<std::shared_ptr<AST_CASE>, Error>
 Builder::createCase(const std::shared_ptr<AST> &match,
                     const std::shared_ptr<AST_BODY> &body) noexcept {
-  const auto astCase{std::make_shared<AST_CASE>(match, body)};
+  const auto astCase{std::make_shared<AST_CASE>(generateNextId(), match, body)};
   if (match) {
     match->setFather(astCase);
   }
@@ -352,7 +358,7 @@ Builder::createCase(const std::shared_ptr<AST> &match,
 
 std::expected<std::shared_ptr<AST_DEFAULT>, Error>
 Builder::createDefault(const std::shared_ptr<AST_BODY> &body) noexcept {
-  const auto astDefault{std::make_shared<AST_DEFAULT>(body)};
+  const auto astDefault{std::make_shared<AST_DEFAULT>(generateNextId(), body)};
   if (body) {
     body->setFather(astDefault);
   }
@@ -363,8 +369,8 @@ std::expected<std::shared_ptr<AST_TERNARY>, Error>
 Builder::createTernary(const std::shared_ptr<AST_CONDITION> &condition,
                        const std::shared_ptr<AST> &first,
                        const std::shared_ptr<AST> &second) noexcept {
-  const auto astTernanry{
-      std::make_shared<AST_TERNARY>(condition, first, second)};
+  const auto astTernanry{std::make_shared<AST_TERNARY>(
+      generateNextId(), condition, first, second)};
   if (condition) {
     condition->setFather(astTernanry);
   }
@@ -379,7 +385,8 @@ Builder::createTernary(const std::shared_ptr<AST_CONDITION> &condition,
 
 std::expected<std::shared_ptr<AST_CONDITION>, Error>
 Builder::createCondition(const std::shared_ptr<AST> &expression) noexcept {
-  const auto astCondition{std::make_shared<AST_CONDITION>(expression)};
+  const auto astCondition{
+      std::make_shared<AST_CONDITION>(generateNextId(), expression)};
   if (expression) {
     expression->setFather(astCondition);
   }
@@ -390,8 +397,8 @@ std::expected<std::shared_ptr<AST_FUNC_CALL>, Error> Builder::createFunCall(
     const std::string &id,
     const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
     const std::vector<std::shared_ptr<AST>> &parameters) noexcept {
-  const auto astFuncCall{
-      std::make_shared<AST_FUNC_CALL>(id, replaceOfGenerics, parameters)};
+  const auto astFuncCall{std::make_shared<AST_FUNC_CALL>(
+      generateNextId(), id, replaceOfGenerics, parameters)};
   const std::vector<std::shared_ptr<AST>> &parameters__{
       astFuncCall->parameters()};
   for (const auto &parameters_ : parameters__) {
@@ -406,8 +413,8 @@ std::expected<std::shared_ptr<AST_FUNC_DECL>, Error> Builder::createFuncDecl(
     const std::string &id, const std::vector<GenericParameter> &generics,
     const Parameters &params, const std::shared_ptr<Type> &returnType,
     const std::shared_ptr<AST_BODY> &body) noexcept {
-  const auto astFuncDecl{
-      std::make_shared<AST_FUNC_DECL>(id, generics, params, returnType, body)};
+  const auto astFuncDecl{std::make_shared<AST_FUNC_DECL>(
+      generateNextId(), id, generics, params, returnType, body)};
   if (body) {
     body->setFather(astFuncDecl);
   }
@@ -416,7 +423,7 @@ std::expected<std::shared_ptr<AST_FUNC_DECL>, Error> Builder::createFuncDecl(
 
 std::expected<std::shared_ptr<AST_RETURN>, Error>
 Builder::createReturn(const std::shared_ptr<AST> &value) noexcept {
-  const auto astReturn{std::make_shared<AST_RETURN>(value)};
+  const auto astReturn{std::make_shared<AST_RETURN>(generateNextId(), value)};
   if (value) {
     value->setFather(astReturn);
   }
@@ -426,13 +433,13 @@ Builder::createReturn(const std::shared_ptr<AST> &value) noexcept {
 std::expected<std::shared_ptr<AST_ENUM>, Error>
 Builder::createEnum(const std::string &id,
                     const std::vector<std::string> &enumIdentifiers) noexcept {
-  return std::make_shared<AST_ENUM>(id, enumIdentifiers);
+  return std::make_shared<AST_ENUM>(generateNextId(), id, enumIdentifiers);
 }
 
 std::expected<std::shared_ptr<AST_ENUM_ACCESS>, Error>
 Builder::createEnumAccess(const std::string &id,
                           const std::string &identifiers) noexcept {
-  return std::make_shared<AST_ENUM_ACCESS>(id, identifiers);
+  return std::make_shared<AST_ENUM_ACCESS>(generateNextId(), id, identifiers);
 }
 
 std::expected<std::shared_ptr<AST_STRUCT>, Error> Builder::createStruct(
@@ -442,7 +449,8 @@ std::expected<std::shared_ptr<AST_STRUCT>, Error> Builder::createStruct(
     const std::shared_ptr<AST_CONSTRUCTOR_DECL> &constructor,
     const std::shared_ptr<AST_DESTRUCTOR_DECL> &destructor) noexcept {
   const auto astStruct{std::make_shared<AST_STRUCT>(
-      id, generics, fatherType, attributes, methods, constructor, destructor)};
+      generateNextId(), id, generics, fatherType, attributes, methods,
+      constructor, destructor)};
   const std::vector<std::shared_ptr<AST_METHOD_DECL>> &methods__{
       astStruct->methods()};
   for (const auto &methods_ : methods__) {
@@ -461,7 +469,7 @@ std::expected<std::shared_ptr<AST_STRUCT>, Error> Builder::createStruct(
 
 std::expected<std::shared_ptr<AST_ATTR_ACCESS>, Error>
 Builder::createAttrAccess(const std::string &id) noexcept {
-  return std::make_shared<AST_ATTR_ACCESS>(id);
+  return std::make_shared<AST_ATTR_ACCESS>(generateNextId(), id);
 }
 
 std::expected<std::shared_ptr<AST_METHOD_CALL>, Error>
@@ -469,8 +477,8 @@ Builder::createMethodCall(
     const std::string &id,
     const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
     const std::vector<std::shared_ptr<AST>> &parameters) noexcept {
-  const auto astMethodCall{
-      std::make_shared<AST_METHOD_CALL>(id, replaceOfGenerics, parameters)};
+  const auto astMethodCall{std::make_shared<AST_METHOD_CALL>(
+      generateNextId(), id, replaceOfGenerics, parameters)};
   const std::vector<std::shared_ptr<AST>> &parameters__{
       astMethodCall->parameters()};
   for (const auto &parameters_ : parameters__) {
@@ -490,7 +498,7 @@ Builder::createMethodDecl(const std::string &id,
                           const std::shared_ptr<AST_BODY> &body,
                           const bool isVirtual) noexcept {
   const auto astMethodDecl{std::make_shared<AST_METHOD_DECL>(
-      id, generics, params, returnType, body, isVirtual)};
+      generateNextId(), id, generics, params, returnType, body, isVirtual)};
   if (body) {
     body->setFather(astMethodDecl);
   }
@@ -503,7 +511,7 @@ Builder::createConstructorCall(
     const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
     const std::vector<std::shared_ptr<AST>> &parameters) noexcept {
   const auto astConstructorall{std::make_shared<AST_CONSTRUCTOR_CALL>(
-      id, replaceOfGenerics, parameters)};
+      generateNextId(), id, replaceOfGenerics, parameters)};
   const std::vector<std::shared_ptr<AST>> &parameters__{
       astConstructorall->parameters()};
   for (const auto &parameters_ : parameters__) {
@@ -522,7 +530,7 @@ Builder::createConstructorDecl(const std::string &id,
                                const std::shared_ptr<Type> &returnType,
                                const std::shared_ptr<AST_BODY> &body) noexcept {
   const auto astConstructor{std::make_shared<AST_CONSTRUCTOR_DECL>(
-      id, generics, params, super, returnType, body)};
+      generateNextId(), id, generics, params, super, returnType, body)};
   if (super) {
     super->setFather(astConstructor);
   }
@@ -536,8 +544,8 @@ std::expected<std::shared_ptr<AST_SUPER>, Error> Builder::createSuper(
     const std::shared_ptr<Type> &fatherType,
     const std::vector<std::shared_ptr<Type>> &replacements,
     const std::vector<std::shared_ptr<AST>> &arguments) noexcept {
-  const auto astSuper{
-      std::make_shared<AST_SUPER>(fatherType, replacements, arguments)};
+  const auto astSuper{std::make_shared<AST_SUPER>(generateNextId(), fatherType,
+                                                  replacements, arguments)};
   const std::vector<std::shared_ptr<AST>> &values__{astSuper->arguments()};
   for (const auto &values_ : values__) {
     if (values_) {
@@ -550,7 +558,8 @@ std::expected<std::shared_ptr<AST_SUPER>, Error> Builder::createSuper(
 std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>, Error>
 Builder::createDestructorDecl(const std::string &id,
                               const std::shared_ptr<AST_BODY> &body) noexcept {
-  const auto astConstructor{std::make_shared<AST_DESTRUCTOR_DECL>(id, body)};
+  const auto astConstructor{
+      std::make_shared<AST_DESTRUCTOR_DECL>(generateNextId(), id, body)};
   if (body) {
     body->setFather(astConstructor);
   }
@@ -558,7 +567,7 @@ Builder::createDestructorDecl(const std::string &id,
 }
 
 std::expected<std::shared_ptr<AST_THIS>, Error> Builder::createThis() noexcept {
-  const auto astThis{std::make_shared<AST_THIS>()};
+  const auto astThis{std::make_shared<AST_THIS>(generateNextId())};
   return astThis;
 }
 
@@ -566,7 +575,8 @@ std::expected<std::shared_ptr<AST_AUTO_DECL>, Error>
 Builder::createAutoDecl(const std::string &id,
                         const std::shared_ptr<AST> &value,
                         const bool isConst) noexcept {
-  const auto astAutoDecl{std::make_shared<AST_AUTO_DECL>(id, value, isConst)};
+  const auto astAutoDecl{
+      std::make_shared<AST_AUTO_DECL>(generateNextId(), id, value, isConst)};
   if (value) {
     value->setFather(astAutoDecl);
   }
@@ -577,7 +587,8 @@ std::expected<std::shared_ptr<AST_VAR_TYPED_DECL>, Error>
 Builder::createVarTypedtDecl(const std::string &id,
                              const std::shared_ptr<Type> &type,
                              const std::shared_ptr<AST> &value) noexcept {
-  const auto astLetDecl{std::make_shared<AST_VAR_TYPED_DECL>(id, type, value)};
+  const auto astLetDecl{
+      std::make_shared<AST_VAR_TYPED_DECL>(generateNextId(), id, type, value)};
   if (value) {
     value->setFather(astLetDecl);
   }
@@ -586,13 +597,14 @@ Builder::createVarTypedtDecl(const std::string &id,
 
 std::expected<std::shared_ptr<AST_VAR_CALL>, Error>
 Builder::createVarCall(const std::string &id) noexcept {
-  return std::make_shared<AST_VAR_CALL>(id);
+  return std::make_shared<AST_VAR_CALL>(generateNextId(), id);
 }
 
 std::expected<std::shared_ptr<AST_CHAINED>, Error> Builder::createChained(
     const std::shared_ptr<AST> &base,
     const std::vector<std::shared_ptr<AST>> &operations) noexcept {
-  const auto astChained{std::make_shared<AST_CHAINED>(base, operations)};
+  const auto astChained{
+      std::make_shared<AST_CHAINED>(generateNextId(), base, operations)};
   if (base) {
     base->setFather(astChained);
 

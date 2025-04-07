@@ -10,8 +10,9 @@ private:
   std::vector<std::shared_ptr<AST>> values_;
 
 public:
-  explicit AST_PRINT(const std::vector<std::shared_ptr<AST>> &values) noexcept
-      : AST(AST_TYPE::PRINT), values_{values} {}
+  explicit AST_PRINT(const long long unsigned nodeId,
+                     const std::vector<std::shared_ptr<AST>> &values) noexcept
+      : AST(nodeId, AST_TYPE::PRINT), values_{values} {}
 
   [[nodiscard]] const std::vector<std::shared_ptr<AST>> &
   values() const noexcept {

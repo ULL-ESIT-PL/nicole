@@ -13,11 +13,13 @@ private:
   std::shared_ptr<AST_BODY> body_;
 
 public:
-  explicit AST_ELSE_IF(const std::shared_ptr<AST_CONDITION> &condition,
+  explicit AST_ELSE_IF(const long long unsigned nodeId,
+                       const std::shared_ptr<AST_CONDITION> &condition,
                        const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST(AST_TYPE::ELSE_IF), condition_{condition}, body_{body} {}
+      : AST(nodeId, AST_TYPE::ELSE_IF), condition_{condition}, body_{body} {}
 
-  [[nodiscard]] const std::shared_ptr<AST_CONDITION> &condition() const noexcept {
+  [[nodiscard]] const std::shared_ptr<AST_CONDITION> &
+  condition() const noexcept {
     return condition_;
   }
 

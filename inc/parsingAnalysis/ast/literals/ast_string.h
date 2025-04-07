@@ -10,8 +10,9 @@ private:
   std::string value_;
 
 public:
-  explicit AST_STRING(const std::string value) noexcept
-      : AST{AST_TYPE::STRING}, value_{value} {}
+  explicit AST_STRING(const long long unsigned nodeId,
+                      const std::string value) noexcept
+      : AST{nodeId, AST_TYPE::STRING}, value_{value} {}
 
   ~AST_STRING() noexcept = default;
 

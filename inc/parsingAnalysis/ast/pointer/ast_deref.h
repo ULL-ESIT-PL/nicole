@@ -11,8 +11,9 @@ private:
   std::shared_ptr<AST> value_;
 
 public:
-  explicit AST_DEREF(const std::shared_ptr<AST> &value) noexcept
-      : AST(AST_TYPE::PTR_DEREFENCE), value_{value} {}
+  explicit AST_DEREF(const long long unsigned nodeId,
+                     const std::shared_ptr<AST> &value) noexcept
+      : AST(nodeId, AST_TYPE::PTR_DEREFENCE), value_{value} {}
 
   [[nodiscard]] const std::shared_ptr<AST> &value() const noexcept {
     return value_;

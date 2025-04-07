@@ -11,8 +11,9 @@ private:
   std::shared_ptr<AST> fatherLoop_;
 
 public:
-  explicit AST_PASS(const std::shared_ptr<AST> &fatherLoop) noexcept
-      : AST(AST_TYPE::PASS), fatherLoop_{fatherLoop} {}
+  explicit AST_PASS(const long long unsigned nodeId,
+                    const std::shared_ptr<AST> &fatherLoop) noexcept
+      : AST(nodeId, AST_TYPE::PASS), fatherLoop_{fatherLoop} {}
 
   [[nodiscard]] const std::shared_ptr<AST> &fatherLoop() const noexcept {
     return fatherLoop_;

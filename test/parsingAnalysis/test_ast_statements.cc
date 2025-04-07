@@ -12,7 +12,7 @@ TEST_CASE("AST_BODY class methods", "[AST_BODY]") {
       *Builder::createStatement(*Builder::createBool(false));
   std::vector<std::shared_ptr<AST_STATEMENT>> body{astBool1, astBool2};
 
-  AST_BODY astBody{body};
+  AST_BODY astBody{0,body};
 
   REQUIRE(astBody.body().size() == 2);
   REQUIRE(astBody.body()[0] == astBool1);
@@ -22,7 +22,7 @@ TEST_CASE("AST_BODY class methods", "[AST_BODY]") {
 TEST_CASE("AST_STATEMENT class methods", "[AST_STATEMENT]") {
   auto astBool = *Builder::createBool(true);
 
-  AST_STATEMENT astStatement{astBool};
+  AST_STATEMENT astStatement{0,astBool};
 
   REQUIRE(astStatement.expression() == astBool);
   REQUIRE(

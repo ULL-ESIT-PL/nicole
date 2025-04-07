@@ -11,8 +11,9 @@ private:
   std::shared_ptr<AST> condition_;
 
 public:
-  explicit AST_CONDITION(const std::shared_ptr<AST> &condition) noexcept
-      : AST(AST_TYPE::CONDITION), condition_{condition} {}
+  explicit AST_CONDITION(const long long unsigned nodeId,
+                         const std::shared_ptr<AST> &condition) noexcept
+      : AST(nodeId, AST_TYPE::CONDITION), condition_{condition} {}
 
   [[nodiscard]] const std::shared_ptr<AST> &condition() const noexcept {
     return condition_;

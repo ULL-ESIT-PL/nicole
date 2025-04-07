@@ -12,9 +12,10 @@ private:
   std::shared_ptr<AST_BODY> body_;
 
 public:
-  explicit AST_CASE(const std::shared_ptr<AST> &match,
+  explicit AST_CASE(const long long unsigned nodeId,
+                    const std::shared_ptr<AST> &match,
                     const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST(AST_TYPE::CASE), match_{match}, body_{body} {}
+      : AST(nodeId, AST_TYPE::CASE), match_{match}, body_{body} {}
 
   [[nodiscard]] const std::shared_ptr<AST> &match() const noexcept {
     return match_;

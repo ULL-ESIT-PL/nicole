@@ -10,8 +10,9 @@ private:
   double value_;
 
 public:
-  explicit AST_DOUBLE(const double value) noexcept
-      : AST{AST_TYPE::DOUBLE}, value_{value} {}
+  explicit AST_DOUBLE(const long long unsigned nodeId,
+                      const double value) noexcept
+      : AST{nodeId, AST_TYPE::DOUBLE}, value_{value} {}
 
   ~AST_DOUBLE() noexcept = default;
 

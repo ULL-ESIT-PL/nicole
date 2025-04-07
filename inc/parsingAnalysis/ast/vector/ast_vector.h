@@ -13,8 +13,9 @@ private:
   std::vector<std::shared_ptr<AST>> values_;
 
 public:
-  explicit AST_VECTOR(const std::vector<std::shared_ptr<AST>> &values) noexcept
-      : AST(AST_TYPE::VECTOR), values_{values} {}
+  explicit AST_VECTOR(const long long unsigned nodeId,
+                      const std::vector<std::shared_ptr<AST>> &values) noexcept
+      : AST(nodeId, AST_TYPE::VECTOR), values_{values} {}
 
   [[nodiscard]] const std::vector<std::shared_ptr<AST>> &
   values() const noexcept {

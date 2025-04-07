@@ -11,12 +11,12 @@ private:
   mutable std::vector<GenericParameter> generics_;
 
 public:
-  explicit AST_FUNC_DECL(const std::string &id,
+  explicit AST_FUNC_DECL(const long long unsigned nodeId, const std::string &id,
                          const std::vector<GenericParameter> &generics,
                          const Parameters &params,
                          const std::shared_ptr<Type> &returnType,
                          const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST_PARAMETRIZED_SUBRUTINE_DECL(AST_TYPE::FUNC_DECL, id, params,
+      : AST_PARAMETRIZED_SUBRUTINE_DECL(nodeId, AST_TYPE::FUNC_DECL, id, params,
                                         returnType, body),
         generics_{generics} {}
 

@@ -8,7 +8,7 @@ TEST_CASE("AST_UNARY class methods", "[AST_UNARY]") {
   Location loc{"file", 0, 0};
   Token token{TokenType::DECREMENT, "--", loc};
   auto astInt = *Builder::createInt(42);
-  AST_UNARY astDecrement{token, astInt};
+  AST_UNARY astDecrement{0,token, astInt};
 
   REQUIRE(astDecrement.op().raw() == "--");
   REQUIRE(astDecrement.value() == astInt);

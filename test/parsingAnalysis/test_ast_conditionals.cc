@@ -9,7 +9,7 @@ TEST_CASE("AST_CASE class methods", "[AST_CASE]") {
   auto statement = *Builder::createStatement(*Builder::createBool(true));
   auto body = *Builder::createBody(
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
-  AST_CASE astCase{condition, body};
+  AST_CASE astCase{0,condition, body};
 
   REQUIRE(astCase.match() == condition);
   REQUIRE(astCase.body() == body);
@@ -19,7 +19,7 @@ TEST_CASE("AST_DEFAULT class methods", "[AST_DEFAULT]") {
   auto statement = *Builder::createStatement(*Builder::createBool(false));
   auto body = *Builder::createBody(
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
-  AST_DEFAULT astDefault{body};
+  AST_DEFAULT astDefault{0,body};
 
   REQUIRE(astDefault.body() == body);
 }
@@ -29,7 +29,7 @@ TEST_CASE("AST_ELSE_IF class methods", "[AST_ELSE_IF]") {
   auto statement = *Builder::createStatement(*Builder::createBool(true));
   auto body = *Builder::createBody(
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
-  AST_ELSE_IF astElseIf{condition, body};
+  AST_ELSE_IF astElseIf{0,condition, body};
 
   REQUIRE(astElseIf.condition() == condition);
   REQUIRE(astElseIf.body() == body);
@@ -50,7 +50,7 @@ TEST_CASE("AST_IF class methods", "[AST_IF]") {
   auto elseBody = *Builder::createBody(
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
 
-  AST_IF astIf{condition, body, {elseIf}, elseBody};
+  AST_IF astIf{0,condition, body, {elseIf}, elseBody};
 
   REQUIRE(astIf.condition() == condition);
   REQUIRE(astIf.body() == body);
@@ -64,13 +64,13 @@ TEST_CASE("AST_SWITCH class methods", "[AST_SWITCH]") {
   auto statement = *Builder::createStatement(*Builder::createBool(true));
   auto body = *Builder::createBody(
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
-  auto case1 = std::make_shared<AST_CASE>(condition, body);
+  auto case1 = std::make_shared<AST_CASE>(0,condition, body);
 
   auto defaultBody = *Builder::createBody(
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
   auto defaultCase = *Builder::createDefault(defaultBody);
 
-  AST_SWITCH astSwitch{condition, {case1}, defaultCase};
+  AST_SWITCH astSwitch{0,condition, {case1}, defaultCase};
 
   REQUIRE(astSwitch.condition() == condition);
   REQUIRE(astSwitch.cases().size() == 1);
@@ -83,7 +83,7 @@ TEST_CASE("AST_TERNARY class methods", "[AST_TERNARY]") {
   auto first = *Builder::createBool(false);
   auto second = *Builder::createBool(true);
 
-  AST_TERNARY astTernary{condition, first, second};
+  AST_TERNARY astTernary{0,condition, first, second};
 
   REQUIRE(astTernary.condition() == condition);
   REQUIRE(astTernary.first() == first);

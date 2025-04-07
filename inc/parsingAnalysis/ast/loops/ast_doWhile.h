@@ -13,9 +13,9 @@ private:
 
 public:
   explicit AST_DO_WHILE(
-      const std::shared_ptr<AST_BODY> &body,
+      const long long unsigned nodeId, const std::shared_ptr<AST_BODY> &body,
       const std::shared_ptr<AST_CONDITION> &condition) noexcept
-      : AST_LOOP{AST_TYPE::DO_WHILE, condition, body} {}
+      : AST_LOOP{nodeId, AST_TYPE::DO_WHILE, condition, body} {}
 
   [[nodiscard]] std::expected<std::string, Error>
   accept(const PrintTree &visitor) const noexcept override {

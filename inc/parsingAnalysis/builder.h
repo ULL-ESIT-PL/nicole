@@ -74,6 +74,11 @@ namespace nicole {
 
 class Builder final {
 private:
+  [[nodiscard]] static long long unsigned generateNextId() noexcept {
+    static long long unsigned id{0};
+    return ++id;
+  }
+
   Builder() noexcept = delete;
 
 public:
@@ -252,12 +257,12 @@ public:
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>,
                                      Error>
-  createConstructorDecl(
-      const std::string &id, const std::vector<GenericParameter> &generics,
-      const Parameters &params,
-      const std::shared_ptr<AST_SUPER> &super,
-      const std::shared_ptr<Type> &returnType,
-      const std::shared_ptr<AST_BODY> &body) noexcept;
+  createConstructorDecl(const std::string &id,
+                        const std::vector<GenericParameter> &generics,
+                        const Parameters &params,
+                        const std::shared_ptr<AST_SUPER> &super,
+                        const std::shared_ptr<Type> &returnType,
+                        const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>,
                                      Error>

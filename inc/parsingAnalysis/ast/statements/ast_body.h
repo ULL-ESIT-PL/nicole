@@ -1,8 +1,8 @@
 #ifndef AST_BODY_H
 #define AST_BODY_H
 
-#include "ast_statement.h"
 #include "../../../tables/scope/scope.h"
+#include "ast_statement.h"
 #include <memory>
 #include <vector>
 
@@ -15,8 +15,9 @@ private:
 
 public:
   explicit AST_BODY(
+      const long long unsigned nodeId,
       const std::vector<std::shared_ptr<AST_STATEMENT>> &body) noexcept
-      : AST(AST_TYPE::BODY), body_{body} {}
+      : AST(nodeId, AST_TYPE::BODY), body_{body} {}
 
   [[nodiscard]] const std::vector<std::shared_ptr<AST_STATEMENT>> &
   body() const noexcept {

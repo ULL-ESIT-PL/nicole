@@ -177,7 +177,7 @@ TypeAnalysis::visit(const AST_METHOD_DECL *node) const noexcept {
   }
   if (!node->generics().empty()) {
     insideDeclWithGenerics = true;
-    currentGenericList_ = node->generics();
+    currentGenericList_ = mergeGenericLists(currentStructGenericList_, node->generics());
   }
 
   auto bodyRes = node->body()->accept(*this);
@@ -209,7 +209,7 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
 
   if (!node->generics().empty()) {
     insideDeclWithGenerics = true;
-    currentGenericList_ = node->generics();
+    currentGenericList_ = mergeGenericLists(currentStructGenericList_, node->generics());
   }
 
   auto bodyRes = node->body()->accept(*this);

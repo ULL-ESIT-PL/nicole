@@ -34,8 +34,10 @@ Nicole::compile(const Options &options) const noexcept {
     if (!toStr) {
       return createError(toStr.error());
     }
+    std::cout << "|--------------------------------|\n";
     std::cout << *toStr << "\n";
     std::cout << "Finished print tree\n";
+    std::cout << "|--------------------------------|\n";
   }
 
   std::shared_ptr<nicole::TypeTable> typeTable{
@@ -51,6 +53,20 @@ Nicole::compile(const Options &options) const noexcept {
 
   std::cout << "Finished semantic analysis\n";
 
+  if (options.printTree()) {
+    const nicole::PrintTree printTree{};
+    const std::expected<std::string, nicole::Error> toStr{
+        printTree.print((*tree).get())};
+    if (!toStr) {
+      return createError(toStr.error());
+    }
+    std::cout << "|--------------------------------|\n";
+    std::cout << *toStr << "\n";
+    std::cout << "Finished print tree\n";
+    std::cout << "|--------------------------------|\n";
+  }
+
+  /*
   const nicole::TypeAnalysis typeAnalysis{functionTable, typeTable};
   const auto analyzed{typeAnalysis.analyze((*tree).get())};
   if (!analyzed) {
@@ -58,6 +74,7 @@ Nicole::compile(const Options &options) const noexcept {
   }
 
   std::cout << "Finished type analysis\n";
+  */
 
   return {};
 }

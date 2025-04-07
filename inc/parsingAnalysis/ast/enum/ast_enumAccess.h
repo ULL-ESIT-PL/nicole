@@ -12,9 +12,11 @@ private:
   std::string identifier_;
 
 public:
-  explicit AST_ENUM_ACCESS(const std::string &enumId,
+  explicit AST_ENUM_ACCESS(const long long unsigned nodeId,
+                           const std::string &enumId,
                            const std::string &identifier) noexcept
-      : AST{AST_TYPE::ENUM_ACCESS}, enumId_{enumId}, identifier_{identifier} {}
+      : AST{nodeId, AST_TYPE::ENUM_ACCESS}, enumId_{enumId},
+        identifier_{identifier} {}
 
   [[nodiscard]] const std::string &enumId() const noexcept { return enumId_; }
 

@@ -10,8 +10,8 @@ private:
   int value_;
 
 public:
-  explicit AST_INT(const int value) noexcept
-      : AST{AST_TYPE::INT}, value_{value} {}
+  explicit AST_INT(const long long unsigned nodeId, const int value) noexcept
+      : AST{nodeId, AST_TYPE::INT}, value_{value} {}
 
   ~AST_INT() noexcept = default;
 

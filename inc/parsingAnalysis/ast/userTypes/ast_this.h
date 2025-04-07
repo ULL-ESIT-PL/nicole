@@ -12,7 +12,8 @@ private:
   mutable std::shared_ptr<UserType> userType_{nullptr};
 
 public:
-  explicit AST_THIS() noexcept : AST{AST_TYPE::THIS} {}
+  explicit AST_THIS(const long long unsigned nodeId) noexcept
+      : AST{nodeId, AST_TYPE::THIS} {}
 
   ~AST_THIS() noexcept = default;
 

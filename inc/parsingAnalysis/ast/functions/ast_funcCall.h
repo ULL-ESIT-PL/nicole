@@ -16,11 +16,11 @@ private:
 
 public:
   explicit AST_FUNC_CALL(
-      const std::string &id,
+      const long long unsigned nodeId, const std::string &id,
       const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
       const std::vector<std::shared_ptr<AST>> &parameters) noexcept
-      : AST(AST_TYPE::FUN_CALL), id_{id}, replaceOfGenerics_{replaceOfGenerics},
-        parameters_{parameters} {}
+      : AST(nodeId, AST_TYPE::FUN_CALL), id_{id},
+        replaceOfGenerics_{replaceOfGenerics}, parameters_{parameters} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 

@@ -11,8 +11,8 @@ private:
   char value_;
 
 public:
-  explicit AST_CHAR(const char value) noexcept
-      : AST{AST_TYPE::CHAR}, value_{value} {}
+  explicit AST_CHAR(const long long unsigned nodeId, const char value) noexcept
+      : AST{nodeId, AST_TYPE::CHAR}, value_{value} {}
 
   ~AST_CHAR() noexcept = default;
 

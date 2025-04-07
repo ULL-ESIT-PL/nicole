@@ -15,13 +15,17 @@ namespace nicole {
 
 class AST {
 private:
+  long long unsigned nodeId_;
   AST_TYPE type_;
   std::weak_ptr<AST> father_;
 
 public:
-  explicit AST(const AST_TYPE type) noexcept : type_{type} {}
+  explicit AST(const long long unsigned nodeId, const AST_TYPE type) noexcept
+      : nodeId_{nodeId}, type_{type} {}
 
   virtual ~AST() noexcept = default;
+
+  [[nodiscard]] long long unsigned nodeId() const noexcept { return nodeId_; }
 
   [[nodiscard]] AST_TYPE type() const noexcept { return type_; }
 

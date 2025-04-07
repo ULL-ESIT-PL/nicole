@@ -15,9 +15,10 @@ private:
   mutable std::shared_ptr<Scope> scope_;
 
 public:
-  explicit AST_VAR_DECL(const AST_TYPE astType, const std::string &id,
+  explicit AST_VAR_DECL(const long long unsigned nodeId, const AST_TYPE astType,
+                        const std::string &id,
                         const std::shared_ptr<AST> &value) noexcept
-      : AST(astType), id_{id}, value_{value} {}
+      : AST(nodeId, astType), id_{id}, value_{value} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 

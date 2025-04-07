@@ -5,7 +5,7 @@
 using namespace nicole;
 
 TEST_CASE("AST_IMPORT class methods", "[AST_IMPORT]") {
-  AST_IMPORT astImport{"/path/to/file"};
+  AST_IMPORT astImport{0, "/path/to/file"};
 
   REQUIRE(astImport.path() == std::filesystem::path{"/path/to/file"});
 }
@@ -39,7 +39,7 @@ TEST_CASE("AST_PRINT class methods", "[AST_PRINT]") {
   auto astComma =
       std::vector<std::shared_ptr<AST>>{astBool1, astBool2};
 
-  AST_PRINT astPrint{astComma};
+  AST_PRINT astPrint{0,astComma};
 
   REQUIRE(astPrint.values() == astComma);
   REQUIRE(astPrint.values()[0] == astBool1);

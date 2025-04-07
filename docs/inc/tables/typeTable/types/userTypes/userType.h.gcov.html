@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-04-06 13:26:43</td>
+            <td class="headerValue">2025-04-08 00:27:25</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
@@ -70,83 +70,88 @@
 <span id="L8"><span class="lineNum">       8</span>              : #include &quot;genericParameter.h&quot;</span>
 <span id="L9"><span class="lineNum">       9</span>              : #include &quot;method.h&quot;</span>
 <span id="L10"><span class="lineNum">      10</span>              : #include &quot;methodTable.h&quot;</span>
-<span id="L11"><span class="lineNum">      11</span>              : #include &lt;memory&gt;</span>
-<span id="L12"><span class="lineNum">      12</span>              : #include &lt;sstream&gt;</span>
-<span id="L13"><span class="lineNum">      13</span>              : #include &lt;string&gt;</span>
-<span id="L14"><span class="lineNum">      14</span>              : #include &lt;variant&gt;</span>
-<span id="L15"><span class="lineNum">      15</span>              : #include &lt;vector&gt;</span>
-<span id="L16"><span class="lineNum">      16</span>              : </span>
-<span id="L17"><span class="lineNum">      17</span>              : namespace nicole {</span>
-<span id="L18"><span class="lineNum">      18</span>              : </span>
-<span id="L19"><span class="lineNum">      19</span>              : class UserType : public Type {</span>
-<span id="L20"><span class="lineNum">      20</span>              : private:</span>
-<span id="L21"><span class="lineNum">      21</span>              :   std::string name_;</span>
-<span id="L22"><span class="lineNum">      22</span>              :   std::shared_ptr&lt;UserType&gt; baseType_; // Solo se permite una base</span>
-<span id="L23"><span class="lineNum">      23</span>              :   std::vector&lt;GenericParameter&gt; genericParams_;</span>
-<span id="L24"><span class="lineNum">      24</span>              :   mutable AttrTable attrTable_;</span>
-<span id="L25"><span class="lineNum">      25</span>              :   mutable MethodTable methodTable_;</span>
-<span id="L26"><span class="lineNum">      26</span>              :   mutable std::shared_ptr&lt;Constructor&gt; constructor_;</span>
-<span id="L27"><span class="lineNum">      27</span>              :   mutable std::shared_ptr&lt;Destructor&gt; destructor_;</span>
-<span id="L28"><span class="lineNum">      28</span>              : </span>
-<span id="L29"><span class="lineNum">      29</span>              : public:</span>
-<span id="L30"><span class="lineNum">      30</span>              :   explicit UserType(const std::string &amp;name,</span>
-<span id="L31"><span class="lineNum">      31</span>              :                     const std::shared_ptr&lt;UserType&gt; &amp;baseType,</span>
-<span id="L32"><span class="lineNum">      32</span>              :                     const std::vector&lt;GenericParameter&gt; &amp;genericParams) noexcept</span>
-<span id="L33"><span class="lineNum">      33</span> <span class="tlaUNC tlaBgUNC">           0 :       : name_{name}, baseType_(baseType), genericParams_{genericParams} {}</span></span>
-<span id="L34"><span class="lineNum">      34</span>              : </span>
-<span id="L35"><span class="lineNum">      35</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::string &amp;name() const noexcept { return name_; }</span></span>
-<span id="L36"><span class="lineNum">      36</span>              : </span>
-<span id="L37"><span class="lineNum">      37</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::shared_ptr&lt;UserType&gt; &amp;baseType() const noexcept {</span></span>
-<span id="L38"><span class="lineNum">      38</span> <span class="tlaUNC">           0 :     return baseType_;</span></span>
-<span id="L39"><span class="lineNum">      39</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L40"><span class="lineNum">      40</span>              : </span>
-<span id="L41"><span class="lineNum">      41</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::shared_ptr&lt;Constructor&gt; &amp;constructor() const noexcept {</span></span>
-<span id="L42"><span class="lineNum">      42</span> <span class="tlaUNC">           0 :     return constructor_;</span></span>
-<span id="L43"><span class="lineNum">      43</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L44"><span class="lineNum">      44</span>              : </span>
-<span id="L45"><span class="lineNum">      45</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::shared_ptr&lt;Destructor&gt; &amp;destructor() const noexcept {</span></span>
-<span id="L46"><span class="lineNum">      46</span> <span class="tlaUNC">           0 :     return destructor_;</span></span>
-<span id="L47"><span class="lineNum">      47</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L48"><span class="lineNum">      48</span>              : </span>
-<span id="L49"><span class="lineNum">      49</span>              :   [[nodiscard]] const std::vector&lt;GenericParameter&gt; &amp;</span>
-<span id="L50"><span class="lineNum">      50</span> <span class="tlaUNC">           0 :   genericParams() const noexcept {</span></span>
-<span id="L51"><span class="lineNum">      51</span> <span class="tlaUNC">           0 :     return genericParams_;</span></span>
-<span id="L52"><span class="lineNum">      52</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L53"><span class="lineNum">      53</span>              : </span>
-<span id="L54"><span class="lineNum">      54</span>              :   [[nodiscard]] bool hasAttribute(const std::string &amp;id) const noexcept;</span>
+<span id="L11"><span class="lineNum">      11</span>              : #include &lt;expected&gt;</span>
+<span id="L12"><span class="lineNum">      12</span>              : #include &lt;memory&gt;</span>
+<span id="L13"><span class="lineNum">      13</span>              : #include &lt;sstream&gt;</span>
+<span id="L14"><span class="lineNum">      14</span>              : #include &lt;string&gt;</span>
+<span id="L15"><span class="lineNum">      15</span>              : #include &lt;variant&gt;</span>
+<span id="L16"><span class="lineNum">      16</span>              : #include &lt;vector&gt;</span>
+<span id="L17"><span class="lineNum">      17</span>              : </span>
+<span id="L18"><span class="lineNum">      18</span>              : namespace nicole {</span>
+<span id="L19"><span class="lineNum">      19</span>              : </span>
+<span id="L20"><span class="lineNum">      20</span>              : class UserType : public Type {</span>
+<span id="L21"><span class="lineNum">      21</span>              : private:</span>
+<span id="L22"><span class="lineNum">      22</span>              :   std::string name_;</span>
+<span id="L23"><span class="lineNum">      23</span>              :   std::shared_ptr&lt;UserType&gt; baseType_; // Solo se permite una base</span>
+<span id="L24"><span class="lineNum">      24</span>              :   std::vector&lt;GenericParameter&gt; genericParams_;</span>
+<span id="L25"><span class="lineNum">      25</span>              :   mutable AttrTable attrTable_;</span>
+<span id="L26"><span class="lineNum">      26</span>              :   mutable MethodTable methodTable_;</span>
+<span id="L27"><span class="lineNum">      27</span>              :   mutable std::shared_ptr&lt;Constructor&gt; constructor_;</span>
+<span id="L28"><span class="lineNum">      28</span>              :   mutable std::shared_ptr&lt;Destructor&gt; destructor_;</span>
+<span id="L29"><span class="lineNum">      29</span>              : </span>
+<span id="L30"><span class="lineNum">      30</span>              : public:</span>
+<span id="L31"><span class="lineNum">      31</span>              :   explicit UserType(const std::string &amp;name,</span>
+<span id="L32"><span class="lineNum">      32</span>              :                     const std::shared_ptr&lt;UserType&gt; &amp;baseType,</span>
+<span id="L33"><span class="lineNum">      33</span>              :                     const std::vector&lt;GenericParameter&gt; &amp;genericParams) noexcept</span>
+<span id="L34"><span class="lineNum">      34</span> <span class="tlaUNC tlaBgUNC">           0 :       : name_{name}, baseType_(baseType), genericParams_{genericParams} {}</span></span>
+<span id="L35"><span class="lineNum">      35</span>              : </span>
+<span id="L36"><span class="lineNum">      36</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::string &amp;name() const noexcept { return name_; }</span></span>
+<span id="L37"><span class="lineNum">      37</span>              : </span>
+<span id="L38"><span class="lineNum">      38</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::shared_ptr&lt;UserType&gt; &amp;baseType() const noexcept {</span></span>
+<span id="L39"><span class="lineNum">      39</span> <span class="tlaUNC">           0 :     return baseType_;</span></span>
+<span id="L40"><span class="lineNum">      40</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L41"><span class="lineNum">      41</span>              : </span>
+<span id="L42"><span class="lineNum">      42</span>              :   [[nodiscard]] const std::shared_ptr&lt;Constructor&gt; &amp;</span>
+<span id="L43"><span class="lineNum">      43</span> <span class="tlaUNC">           0 :   constructor() const noexcept {</span></span>
+<span id="L44"><span class="lineNum">      44</span> <span class="tlaUNC">           0 :     return constructor_;</span></span>
+<span id="L45"><span class="lineNum">      45</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L46"><span class="lineNum">      46</span>              : </span>
+<span id="L47"><span class="lineNum">      47</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::shared_ptr&lt;Destructor&gt; &amp;destructor() const noexcept {</span></span>
+<span id="L48"><span class="lineNum">      48</span> <span class="tlaUNC">           0 :     return destructor_;</span></span>
+<span id="L49"><span class="lineNum">      49</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L50"><span class="lineNum">      50</span>              : </span>
+<span id="L51"><span class="lineNum">      51</span>              :   [[nodiscard]] const std::vector&lt;GenericParameter&gt; &amp;</span>
+<span id="L52"><span class="lineNum">      52</span> <span class="tlaUNC">           0 :   genericParams() const noexcept {</span></span>
+<span id="L53"><span class="lineNum">      53</span> <span class="tlaUNC">           0 :     return genericParams_;</span></span>
+<span id="L54"><span class="lineNum">      54</span> <span class="tlaUNC">           0 :   }</span></span>
 <span id="L55"><span class="lineNum">      55</span>              : </span>
-<span id="L56"><span class="lineNum">      56</span>              :   [[nodiscard]] bool hasMethod(const Method &amp;id) const noexcept;</span>
+<span id="L56"><span class="lineNum">      56</span>              :   [[nodiscard]] bool hasAttribute(const std::string &amp;id) const noexcept;</span>
 <span id="L57"><span class="lineNum">      57</span>              : </span>
-<span id="L58"><span class="lineNum">      58</span>              :   [[nodiscard]] const std::expected&lt;Attribute, Error&gt;</span>
-<span id="L59"><span class="lineNum">      59</span>              :   getAttribute(const std::string &amp;id) const noexcept;</span>
-<span id="L60"><span class="lineNum">      60</span>              : </span>
-<span id="L61"><span class="lineNum">      61</span>              :   [[nodiscard]] const std::expected&lt;std::vector&lt;Method&gt;, Error&gt;</span>
-<span id="L62"><span class="lineNum">      62</span>              :   getMethods(const std::string &amp;id) const noexcept;</span>
-<span id="L63"><span class="lineNum">      63</span>              : </span>
-<span id="L64"><span class="lineNum">      64</span>              :   void</span>
-<span id="L65"><span class="lineNum">      65</span> <span class="tlaUNC">           0 :   setDestructor(const std::shared_ptr&lt;Destructor&gt; &amp;destructor) const noexcept {</span></span>
-<span id="L66"><span class="lineNum">      66</span> <span class="tlaUNC">           0 :     destructor_ = destructor;</span></span>
-<span id="L67"><span class="lineNum">      67</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L68"><span class="lineNum">      68</span>              : </span>
-<span id="L69"><span class="lineNum">      69</span>              :   void setConstructor(</span>
-<span id="L70"><span class="lineNum">      70</span> <span class="tlaUNC">           0 :       const std::shared_ptr&lt;Constructor&gt; &amp;constructor) const noexcept {</span></span>
-<span id="L71"><span class="lineNum">      71</span> <span class="tlaUNC">           0 :     constructor_ = constructor;</span></span>
-<span id="L72"><span class="lineNum">      72</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L73"><span class="lineNum">      73</span>              : </span>
-<span id="L74"><span class="lineNum">      74</span>              :   [[nodiscard]] std::expected&lt;std::monostate, Error&gt;</span>
-<span id="L75"><span class="lineNum">      75</span>              :   insertAttr(const Attribute &amp;attr) const noexcept;</span>
-<span id="L76"><span class="lineNum">      76</span>              : </span>
-<span id="L77"><span class="lineNum">      77</span>              :   void insertMethod(const Method &amp;method) const noexcept;</span>
+<span id="L58"><span class="lineNum">      58</span>              :   [[nodiscard]] bool hasMethod(const Method &amp;id) const noexcept;</span>
+<span id="L59"><span class="lineNum">      59</span>              : </span>
+<span id="L60"><span class="lineNum">      60</span>              :   [[nodiscard]] const std::expected&lt;Attribute, Error&gt;</span>
+<span id="L61"><span class="lineNum">      61</span>              :   getAttribute(const std::string &amp;id) const noexcept;</span>
+<span id="L62"><span class="lineNum">      62</span>              : </span>
+<span id="L63"><span class="lineNum">      63</span>              :   [[nodiscard]] const std::expected&lt;std::vector&lt;Method&gt;, Error&gt;</span>
+<span id="L64"><span class="lineNum">      64</span>              :   getMethods(const std::string &amp;id) const noexcept;</span>
+<span id="L65"><span class="lineNum">      65</span>              : </span>
+<span id="L66"><span class="lineNum">      66</span>              :   void</span>
+<span id="L67"><span class="lineNum">      67</span> <span class="tlaUNC">           0 :   setDestructor(const std::shared_ptr&lt;Destructor&gt; &amp;destructor) const noexcept {</span></span>
+<span id="L68"><span class="lineNum">      68</span> <span class="tlaUNC">           0 :     destructor_ = destructor;</span></span>
+<span id="L69"><span class="lineNum">      69</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L70"><span class="lineNum">      70</span>              : </span>
+<span id="L71"><span class="lineNum">      71</span>              :   void setConstructor(</span>
+<span id="L72"><span class="lineNum">      72</span> <span class="tlaUNC">           0 :       const std::shared_ptr&lt;Constructor&gt; &amp;constructor) const noexcept {</span></span>
+<span id="L73"><span class="lineNum">      73</span> <span class="tlaUNC">           0 :     constructor_ = constructor;</span></span>
+<span id="L74"><span class="lineNum">      74</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L75"><span class="lineNum">      75</span>              : </span>
+<span id="L76"><span class="lineNum">      76</span>              :   [[nodiscard]] std::expected&lt;std::monostate, Error&gt;</span>
+<span id="L77"><span class="lineNum">      77</span>              :   insertAttr(const Attribute &amp;attr) const noexcept;</span>
 <span id="L78"><span class="lineNum">      78</span>              : </span>
-<span id="L79"><span class="lineNum">      79</span>              :   [[nodiscard]] bool</span>
-<span id="L80"><span class="lineNum">      80</span>              :   isAboveInHearchy(const std::shared_ptr&lt;UserType&gt; &amp;type) const noexcept;</span>
-<span id="L81"><span class="lineNum">      81</span>              : </span>
-<span id="L82"><span class="lineNum">      82</span>              :   [[nodiscard]] std::string toString() const noexcept override;</span>
-<span id="L83"><span class="lineNum">      83</span>              : };</span>
-<span id="L84"><span class="lineNum">      84</span>              : </span>
-<span id="L85"><span class="lineNum">      85</span>              : } // namespace nicole</span>
+<span id="L79"><span class="lineNum">      79</span>              :   void insertMethod(const Method &amp;method) const noexcept;</span>
+<span id="L80"><span class="lineNum">      80</span>              : </span>
+<span id="L81"><span class="lineNum">      81</span>              :   [[nodiscard]] std::expected&lt;std::monostate, Error&gt;</span>
+<span id="L82"><span class="lineNum">      82</span>              :   setAttribute(const Attribute &amp;attr) const noexcept;</span>
+<span id="L83"><span class="lineNum">      83</span>              : </span>
+<span id="L84"><span class="lineNum">      84</span>              :   [[nodiscard]] bool</span>
+<span id="L85"><span class="lineNum">      85</span>              :   isAboveInHearchy(const std::shared_ptr&lt;UserType&gt; &amp;type) const noexcept;</span>
 <span id="L86"><span class="lineNum">      86</span>              : </span>
-<span id="L87"><span class="lineNum">      87</span>              : #endif</span>
+<span id="L87"><span class="lineNum">      87</span>              :   [[nodiscard]] std::string toString() const noexcept override;</span>
+<span id="L88"><span class="lineNum">      88</span>              : };</span>
+<span id="L89"><span class="lineNum">      89</span>              : </span>
+<span id="L90"><span class="lineNum">      90</span>              : } // namespace nicole</span>
+<span id="L91"><span class="lineNum">      91</span>              : </span>
+<span id="L92"><span class="lineNum">      92</span>              : #endif</span>
         </pre>
               </td>
             </tr>

@@ -15,11 +15,11 @@ private:
   std::vector<std::shared_ptr<AST>> parameters_;
 
 public:
-  explicit AST_METHOD_CALL(
+  explicit AST_METHOD_CALL(const long long unsigned nodeId,
       const std::string &id,
       const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
       const std::vector<std::shared_ptr<AST>> &parameters) noexcept
-      : AST(AST_TYPE::METHOD_CALL), id_{id},
+      : AST(nodeId, AST_TYPE::METHOD_CALL), id_{id},
         replaceOfGenerics_{replaceOfGenerics}, parameters_{parameters} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }

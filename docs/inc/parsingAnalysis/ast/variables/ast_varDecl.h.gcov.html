@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-04-06 13:26:43</td>
+            <td class="headerValue">2025-04-08 00:27:25</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
@@ -77,28 +77,29 @@
 <span id="L15"><span class="lineNum">      15</span>              :   mutable std::shared_ptr&lt;Scope&gt; scope_;</span>
 <span id="L16"><span class="lineNum">      16</span>              : </span>
 <span id="L17"><span class="lineNum">      17</span>              : public:</span>
-<span id="L18"><span class="lineNum">      18</span>              :   explicit AST_VAR_DECL(const AST_TYPE astType, const std::string &amp;id,</span>
-<span id="L19"><span class="lineNum">      19</span>              :                         const std::shared_ptr&lt;AST&gt; &amp;value) noexcept</span>
-<span id="L20"><span class="lineNum">      20</span> <span class="tlaUNC tlaBgUNC">           0 :       : AST(astType), id_{id}, value_{value} {}</span></span>
-<span id="L21"><span class="lineNum">      21</span>              : </span>
-<span id="L22"><span class="lineNum">      22</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::string &amp;id() const noexcept { return id_; }</span></span>
-<span id="L23"><span class="lineNum">      23</span>              : </span>
-<span id="L24"><span class="lineNum">      24</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::shared_ptr&lt;AST&gt; &amp;value() const noexcept {</span></span>
-<span id="L25"><span class="lineNum">      25</span> <span class="tlaUNC">           0 :     return value_;</span></span>
-<span id="L26"><span class="lineNum">      26</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L27"><span class="lineNum">      27</span>              : </span>
-<span id="L28"><span class="lineNum">      28</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::shared_ptr&lt;Scope&gt; &amp;scope() const noexcept {</span></span>
-<span id="L29"><span class="lineNum">      29</span> <span class="tlaUNC">           0 :     return scope_;</span></span>
-<span id="L30"><span class="lineNum">      30</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L31"><span class="lineNum">      31</span>              : </span>
-<span id="L32"><span class="lineNum">      32</span> <span class="tlaUNC">           0 :   void setScope(const std::shared_ptr&lt;Scope&gt; &amp;scope) const noexcept {</span></span>
-<span id="L33"><span class="lineNum">      33</span> <span class="tlaUNC">           0 :     scope_ = scope;</span></span>
-<span id="L34"><span class="lineNum">      34</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L35"><span class="lineNum">      35</span>              : };</span>
-<span id="L36"><span class="lineNum">      36</span>              : </span>
-<span id="L37"><span class="lineNum">      37</span>              : } // namespace nicole</span>
-<span id="L38"><span class="lineNum">      38</span>              : </span>
-<span id="L39"><span class="lineNum">      39</span>              : #endif</span>
+<span id="L18"><span class="lineNum">      18</span>              :   explicit AST_VAR_DECL(const long long unsigned nodeId, const AST_TYPE astType,</span>
+<span id="L19"><span class="lineNum">      19</span>              :                         const std::string &amp;id,</span>
+<span id="L20"><span class="lineNum">      20</span>              :                         const std::shared_ptr&lt;AST&gt; &amp;value) noexcept</span>
+<span id="L21"><span class="lineNum">      21</span> <span class="tlaUNC tlaBgUNC">           0 :       : AST(nodeId, astType), id_{id}, value_{value} {}</span></span>
+<span id="L22"><span class="lineNum">      22</span>              : </span>
+<span id="L23"><span class="lineNum">      23</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::string &amp;id() const noexcept { return id_; }</span></span>
+<span id="L24"><span class="lineNum">      24</span>              : </span>
+<span id="L25"><span class="lineNum">      25</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::shared_ptr&lt;AST&gt; &amp;value() const noexcept {</span></span>
+<span id="L26"><span class="lineNum">      26</span> <span class="tlaUNC">           0 :     return value_;</span></span>
+<span id="L27"><span class="lineNum">      27</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L28"><span class="lineNum">      28</span>              : </span>
+<span id="L29"><span class="lineNum">      29</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::shared_ptr&lt;Scope&gt; &amp;scope() const noexcept {</span></span>
+<span id="L30"><span class="lineNum">      30</span> <span class="tlaUNC">           0 :     return scope_;</span></span>
+<span id="L31"><span class="lineNum">      31</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L32"><span class="lineNum">      32</span>              : </span>
+<span id="L33"><span class="lineNum">      33</span> <span class="tlaUNC">           0 :   void setScope(const std::shared_ptr&lt;Scope&gt; &amp;scope) const noexcept {</span></span>
+<span id="L34"><span class="lineNum">      34</span> <span class="tlaUNC">           0 :     scope_ = scope;</span></span>
+<span id="L35"><span class="lineNum">      35</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L36"><span class="lineNum">      36</span>              : };</span>
+<span id="L37"><span class="lineNum">      37</span>              : </span>
+<span id="L38"><span class="lineNum">      38</span>              : } // namespace nicole</span>
+<span id="L39"><span class="lineNum">      39</span>              : </span>
+<span id="L40"><span class="lineNum">      40</span>              : #endif</span>
         </pre>
               </td>
             </tr>

@@ -11,8 +11,9 @@ private:
   std::shared_ptr<AST_BODY> body_;
 
 public:
-  explicit AST_DEFAULT(const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST(AST_TYPE::DEFAULT), body_{body} {}
+  explicit AST_DEFAULT(const long long unsigned nodeId,
+                       const std::shared_ptr<AST_BODY> &body) noexcept
+      : AST(nodeId, AST_TYPE::DEFAULT), body_{body} {}
 
   [[nodiscard]] const std::shared_ptr<AST_BODY> &body() const noexcept {
     return body_;

@@ -14,9 +14,10 @@ private:
   std::shared_ptr<AST> right_;
 
 public:
-  explicit AST_BINARY(const Token &op, const std::shared_ptr<AST> &left,
-                   const std::shared_ptr<AST> &right) noexcept
-      : AST(AST_TYPE::BINARY), op_{op}, left_{left}, right_{right} {}
+  explicit AST_BINARY(const long long unsigned nodeId, const Token &op,
+                      const std::shared_ptr<AST> &left,
+                      const std::shared_ptr<AST> &right) noexcept
+      : AST(nodeId, AST_TYPE::BINARY), op_{op}, left_{left}, right_{right} {}
 
   [[nodiscard]] const Token &op() const noexcept { return op_; }
 

@@ -14,10 +14,12 @@ private:
 
 public:
   explicit AST_PARAMETRIZED_SUBRUTINE_DECL(
-      const AST_TYPE type, const std::string &id, const Parameters &params,
+      const long long unsigned nodeId, const AST_TYPE type,
+      const std::string &id, const Parameters &params,
       const std::shared_ptr<Type> &returnType,
       const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST_SUBRUTINE_DECL(type, id, returnType, body), params_{params} {}
+      : AST_SUBRUTINE_DECL(nodeId, type, id, returnType, body),
+        params_{params} {}
 
   [[nodiscard]] const Parameters &parameters() const noexcept {
     return params_;

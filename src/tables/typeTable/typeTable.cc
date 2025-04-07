@@ -1,5 +1,6 @@
 #include "../../../inc/tables/typeTable/typeTable.h"
 #include <memory>
+#include <vector>
 
 namespace nicole {
 
@@ -114,6 +115,35 @@ bool TypeTable::isGenericType(
 
 std::expected<std::shared_ptr<Type>, Error>
 TypeTable::isCompundEnumType(const std::shared_ptr<Type> &type) const noexcept {
+  if (auto constType = std::dynamic_pointer_cast<ConstType>(type)) {
+    auto baseRes = isCompundEnumType(constType->baseType());
+    if (!baseRes)
+      return createError(baseRes.error());
+    return std::make_shared<ConstType>(baseRes.value());
+  }
+  if (auto pointerType = std::dynamic_pointer_cast<PointerType>(type)) {
+    auto baseRes = isCompundEnumType(pointerType->baseType());
+    if (!baseRes)
+      return createError(baseRes.error());
+    return std::make_shared<PointerType>(baseRes.value());
+  }
+  if (auto userType = std::dynamic_pointer_cast<UserType>(type)) {
+    auto exists = getType(userType->name());
+    if (!exists)
+      return createError(exists.error());
+    if (auto enumType = std::dynamic_pointer_cast<EnumType>(exists.value()))
+      return enumType;
+    else
+      return createError(ERROR_TYPE::TYPE,
+                         "El tipo encontrado no es un EnumType");
+  }
+  return createError(ERROR_TYPE::TYPE, "El tipo no es un Enum compuesto");
+}
+
+std::expected<std::shared_ptr<Type>, Error> TypeTable::isCompundGenericType(
+    const std::shared_ptr<Type> &type,
+    const std::vector<GenericParameter> &list) const noexcept {
+  if (list.size()) {}
   if (auto constType = std::dynamic_pointer_cast<ConstType>(type)) {
     auto baseRes = isCompundEnumType(constType->baseType());
     if (!baseRes)

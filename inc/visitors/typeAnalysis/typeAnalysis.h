@@ -3,8 +3,8 @@
 
 #include "../../tables/functionTable/functionTable.h"
 #include "../../tables/scope/scope.h"
-#include "../../tables/typeTable/typeTable.h"
 #include "../../tables/typeTable/typeManager.h"
+#include "../../tables/typeTable/typeTable.h"
 #include "../visitor.h"
 #include <memory>
 #include <variant>
@@ -24,6 +24,10 @@ private:
   mutable std::shared_ptr<Type> switchTypeCondition_{nullptr};
   mutable bool analyzingInsideClass{false};
   mutable bool insideDeclWithGenerics{false};
+
+  [[nodiscard]] std::vector<GenericParameter>
+  mergeGenericLists(const std::vector<GenericParameter> &list1,
+                    const std::vector<GenericParameter> &list2) const noexcept;
 
 public:
   TypeAnalysis(const std::shared_ptr<FunctionTable> &functionTable,

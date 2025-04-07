@@ -9,7 +9,7 @@ TEST_CASE("AST_BINARY class methods", "[AST_BINARY]") {
   Token token{TokenType::OPERATOR_ADD, "+", loc};
   auto leftOperand = *Builder::createInt(21);
   auto rightOperand = *Builder::createInt(21);
-  AST_BINARY astAdd{token, leftOperand, rightOperand};
+  AST_BINARY astAdd{0,token, leftOperand, rightOperand};
 
   REQUIRE(astAdd.op().raw() == "+");
   REQUIRE(astAdd.left() == leftOperand);

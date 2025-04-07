@@ -11,8 +11,9 @@ private:
   std::shared_ptr<AST> value_;
 
 public:
-  explicit AST_NEW(const std::shared_ptr<AST> &value) noexcept
-      : AST(AST_TYPE::NEW), value_{value} {}
+  explicit AST_NEW(const long long unsigned nodeId,
+                   const std::shared_ptr<AST> &value) noexcept
+      : AST(nodeId, AST_TYPE::NEW), value_{value} {}
 
   [[nodiscard]] const std::shared_ptr<AST> &value() const noexcept {
     return value_;

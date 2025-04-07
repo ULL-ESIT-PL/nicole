@@ -10,8 +10,9 @@ private:
   std::shared_ptr<AST> index_;
 
 public:
-  explicit AST_INDEX(const std::shared_ptr<AST> &index) noexcept
-      : AST{AST_TYPE::INDEX}, index_{index} {}
+  explicit AST_INDEX(const long long unsigned nodeId,
+                     const std::shared_ptr<AST> &index) noexcept
+      : AST{nodeId, AST_TYPE::INDEX}, index_{index} {}
 
   ~AST_INDEX() noexcept = default;
 

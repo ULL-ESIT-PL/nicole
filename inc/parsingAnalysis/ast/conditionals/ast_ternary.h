@@ -13,13 +13,15 @@ private:
   std::shared_ptr<AST> second_;
 
 public:
-  explicit AST_TERNARY(const std::shared_ptr<AST_CONDITION> &condition,
+  explicit AST_TERNARY(const long long unsigned nodeId,
+                       const std::shared_ptr<AST_CONDITION> &condition,
                        const std::shared_ptr<AST> &first,
                        const std::shared_ptr<AST> &second) noexcept
-      : AST(AST_TYPE::TERNARY), condition_{condition}, first_{first},
+      : AST(nodeId, AST_TYPE::TERNARY), condition_{condition}, first_{first},
         second_{second} {}
 
-  [[nodiscard]] const std::shared_ptr<AST_CONDITION> &condition() const noexcept {
+  [[nodiscard]] const std::shared_ptr<AST_CONDITION> &
+  condition() const noexcept {
     return condition_;
   }
 

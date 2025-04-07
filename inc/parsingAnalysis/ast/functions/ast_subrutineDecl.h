@@ -15,10 +15,11 @@ private:
   mutable std::shared_ptr<AST_BODY> body_;
 
 public:
-  explicit AST_SUBRUTINE_DECL(const AST_TYPE type, const std::string &id,
+  explicit AST_SUBRUTINE_DECL(const long long unsigned nodeId,
+                              const AST_TYPE type, const std::string &id,
                               const std::shared_ptr<Type> &returnType,
                               const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST(type), id_{id}, returnType_{returnType}, body_{body} {}
+      : AST(nodeId, type), id_{id}, returnType_{returnType}, body_{body} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 

@@ -14,10 +14,10 @@ private:
 
 public:
   explicit AST_SUPER(
-      const std::shared_ptr<Type> &fatherType,
+      const long long unsigned nodeId, const std::shared_ptr<Type> &fatherType,
       const std::vector<std::shared_ptr<Type>> &replacements,
       const std::vector<std::shared_ptr<AST>> &arguments) noexcept
-      : AST{AST_TYPE::SUPER}, fatherType_{fatherType},
+      : AST{nodeId, AST_TYPE::SUPER}, fatherType_{fatherType},
         replacements_{replacements}, arguments_{arguments} {}
 
   [[nodiscard]] const std::shared_ptr<Type> fatherType() const noexcept {
