@@ -143,93 +143,78 @@ FillSemanticInfo::visit(const AST_METHOD_CALL *node) const noexcept {
 
 std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
-  if (!node) {
+  if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_DECL");
-  }
 
   currentGenericList_ = node->generics();
+  auto mergedGenerics =
+      mergeGenericLists(currentStructGenericList_, currentGenericList_);
+  if (!mergedGenerics)
+    return createError(mergedGenerics.error());
+  currentGenericList_ = *mergedGenerics;
+  node->setGenerics(currentGenericList_);
 
-  const auto genrics{
-      mergeGenericLists(currentStructGenericList_, currentGenericList_)};
-  if (!genrics) {
-    return createError(genrics.error());
+  pushScope();
+  node->body()->setScope(currentScope_);
+
+  std::vector<std::pair<std::string, std::shared_ptr<Type>>> updatedParams;
+  for (const auto &param : node->parameters()) {
+    if (currentUserType_->hasAttribute(param.first))
+      return createError(ERROR_TYPE::ATTR, "Variable " + param.first +
+                                               " is shadowing an attribute");
+    if (!typeTable_->isPossibleType(param.second) &&
+        !typeTable_->isGenericType(param.second, currentGenericList_))
+      return createError(ERROR_TYPE::TYPE,
+                         param.second->toString() +
+                             " is not a possible type or generic");
+
+    auto newType = param.second;
+    const auto maskedEnum = typeTable_->isCompundEnumType(newType);
+    if (maskedEnum)
+      newType = *maskedEnum;
+
+    updatedParams.push_back({param.first, newType});
+
+    const auto insertVar =
+        currentScope_->insert(Variable{param.first, newType, nullptr});
+    if (!insertVar)
+      return createError(insertVar.error());
   }
+  Parameters params{updatedParams};
+  node->setParameters(params);
 
-  currentGenericList_ = *genrics;
+  if (!typeTable_->isPossibleType(node->returnType()) &&
+      !typeTable_->isGenericType(node->returnType(), currentGenericList_))
+    return createError(ERROR_TYPE::TYPE,
+                       node->returnType()->toString() +
+                           " is not a possible type or generic");
 
-  Method newMethod{node->id(),         currentGenericList_, node->parameters(),
+  const auto maskedReturn = typeTable_->isCompundEnumType(node->returnType());
+  if (maskedReturn)
+    node->setReturnType(*maskedReturn);
+
+  Method newMethod{node->id(),         currentGenericList_, params,
                    node->returnType(), node->body(),        node->isVirtual()};
 
-  const auto combinedMethods{currentUserType_->getMethods(node->id())};
+  const auto combinedMethods = currentUserType_->getMethods(node->id());
   if (combinedMethods) {
     for (const auto &existingMethod : *combinedMethods) {
       if (areAmbiguousMethods(existingMethod, newMethod)) {
-        if (!existingMethod.isInherited()) {
+        if (!existingMethod.isInherited() ||
+            (existingMethod.isInherited() && !existingMethod.isVirtual()))
           return createError(ERROR_TYPE::METHOD,
                              "Ambiguous method declaration for: " + node->id());
-        }
-        if (existingMethod.isInherited() && !existingMethod.isVirtual()) {
-          return createError(ERROR_TYPE::METHOD,
-                             "Ambiguous method declaration for: " + node->id());
-        }
       }
     }
   }
 
   currentUserType_->insertMethod(newMethod);
 
-  pushScope();
-  node->body()->setScope(currentScope_);
-
-  std::vector<std::pair<std::string, std::shared_ptr<nicole::Type>>>
-      newParameters;
-  for (const auto &param : node->parameters()) {
-    if (currentUserType_->hasAttribute(param.first)) {
-      return createError(ERROR_TYPE::ATTR, " the variable " + param.first +
-                                               " is shadowing the atribute");
-    }
-
-    if (!typeTable_->isPossibleType(param.second) and
-        !typeTable_->isGenericType(param.second, currentGenericList_)) {
-      return createError(ERROR_TYPE::TYPE,
-                         param.second->toString() +
-                             " is not a posibble type or generic");
-    }
-    auto newType = param.second;
-    const auto checkIfMaskedEnum = typeTable_->isCompundEnumType(newType);
-    if (checkIfMaskedEnum) {
-      newType = *checkIfMaskedEnum;
-    }
-    newParameters.push_back({param.first, newType});
-    const auto insert{
-        currentScope_->insert(Variable{param.first, newType, nullptr})};
-    if (!insert) {
-      return createError(insert.error());
-    }
-  }
-  Parameters params{newParameters};
-  node->setParameters(params);
-
-  if (!typeTable_->isPossibleType(node->returnType()) and
-      !typeTable_->isGenericType(node->returnType(), currentGenericList_)) {
-    return createError(ERROR_TYPE::TYPE,
-                       node->returnType()->toString() +
-                           " is not a posibble type or generic");
-  }
-
-  const auto checkReturnEnum =
-      typeTable_->isCompundEnumType(node->returnType());
-  if (checkReturnEnum) {
-    node->setReturnType(*checkReturnEnum);
-  }
-
-  const auto body{node->body()->accept(*this)};
-  if (!body) {
-    return createError(body.error());
-  }
+  const auto bodyResult = node->body()->accept(*this);
+  if (!bodyResult)
+    return createError(bodyResult.error());
 
   popScope();
-
   currentGenericList_.clear();
 
   return {};
@@ -237,80 +222,60 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
 
 std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
-  if (!node) {
+  if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_DECL");
-  }
 
   currentGenericList_ = node->generics();
-
-  const auto genrics{
-      mergeGenericLists(currentStructGenericList_, currentGenericList_)};
-  if (!genrics) {
-    return createError(genrics.error());
-  }
-
-  currentGenericList_ = *genrics;
+  auto mergedGenerics = mergeGenericLists(currentStructGenericList_, currentGenericList_);
+  if (!mergedGenerics)
+    return createError(mergedGenerics.error());
+  currentGenericList_ = *mergedGenerics;
   node->setGenerics(currentGenericList_);
 
   pushScope();
   node->body()->setScope(currentScope_);
 
-  std::vector<std::pair<std::string, std::shared_ptr<nicole::Type>>>
-      newParameters;
+  std::vector<std::pair<std::string, std::shared_ptr<nicole::Type>>> updatedParams;
   for (const auto &param : node->parameters()) {
-    if (currentUserType_->hasAttribute(param.first)) {
-      return createError(ERROR_TYPE::ATTR, " the variable " + param.first +
-                                               " is shadowing the atribute");
-    }
+    if (currentUserType_->hasAttribute(param.first))
+      return createError(ERROR_TYPE::ATTR, "Variable " + param.first +
+                                               " is shadowing an attribute");
 
-    if (!typeTable_->isPossibleType(param.second) and
-        !typeTable_->isGenericType(param.second, currentGenericList_)) {
-      return createError(ERROR_TYPE::TYPE,
-                         param.second->toString() +
-                             " is not a posibble type or generic");
-    }
+    if (!typeTable_->isPossibleType(param.second) &&
+        !typeTable_->isGenericType(param.second, currentGenericList_))
+      return createError(ERROR_TYPE::TYPE, param.second->toString() +
+                                               " is not a possible type or generic");
+
     auto newType = param.second;
-    const auto checkIfMaskedEnum = typeTable_->isCompundEnumType(newType);
-    if (checkIfMaskedEnum) {
-      newType = *checkIfMaskedEnum;
-    }
-    newParameters.push_back({param.first, newType});
-    const auto insert{
-        currentScope_->insert(Variable{param.first, newType, nullptr})};
-    if (!insert) {
-      return createError(insert.error());
-    }
+    if (auto masked = typeTable_->isCompundEnumType(newType))
+      newType = *masked;
+    updatedParams.push_back({param.first, newType});
+
+    if (auto insertResult = currentScope_->insert(Variable{param.first, newType, nullptr});
+        !insertResult)
+      return createError(insertResult.error());
   }
-  Parameters params{newParameters};
+  Parameters params{updatedParams};
   node->setParameters(params);
 
   currentUserType_->setConstructor(std::make_shared<Constructor>(
-      node->id(), node->generics(), params, node->returnType(),
-      node->body()));
+      node->id(), node->generics(), params, node->returnType(), node->body()));
 
   if (node->super()) {
-    const auto result{node->super()->accept(*this)};
-    if (!result) {
-      return createError(result.error());
-    }
+    if (auto superResult = node->super()->accept(*this); !superResult)
+      return createError(superResult.error());
   }
 
-  if (!typeTable_->isPossibleType(node->returnType()) and
-      !typeTable_->isGenericType(node->returnType(), currentGenericList_)) {
-    return createError(ERROR_TYPE::TYPE,
-                       node->returnType()->toString() +
-                           " is not a posibble type or generic");
-  }
+  if (!typeTable_->isPossibleType(node->returnType()) &&
+      !typeTable_->isGenericType(node->returnType(), currentGenericList_))
+    return createError(ERROR_TYPE::TYPE, node->returnType()->toString() +
+                                             " is not a possible type or generic");
 
-  const auto body{node->body()->accept(*this)};
-  if (!body) {
-    return createError(body.error());
-  }
+  if (auto bodyResult = node->body()->accept(*this); !bodyResult)
+    return createError(bodyResult.error());
 
   popScope();
-
   currentGenericList_.clear();
-
   return {};
 }
 
