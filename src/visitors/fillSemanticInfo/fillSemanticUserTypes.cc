@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 #include <variant>
+#include <vector>
 
 namespace nicole {
 
@@ -79,14 +80,23 @@ FillSemanticInfo::visit(const AST_STRUCT *node) const noexcept {
   pushScope();
 
   size_t pos{0};
+  std::vector<std::pair<std::string, std::shared_ptr<nicole::Type>>>
+      atributes{};
   for (const auto &attr : node->attributes()) {
+    auto attrType{attr.second};
+    const auto checkMaskedEnum{typeTable_->isCompundEnumType(attrType)};
+    if (checkMaskedEnum) {
+      attrType = *checkMaskedEnum;
+    }
+    atributes.push_back({attr.first, attrType});
     const auto insert{
-        currentUserType_->insertAttr(Attribute{attr.first, attr.second, pos})};
+        currentUserType_->insertAttr(Attribute{attr.first, attrType, pos})};
     if (!insert) {
       return createError(insert.error());
     }
     ++pos;
   }
+  node->setAttributes(Attributes{atributes});
 
   for (const auto &method : node->methods()) {
     const auto result{method->accept(*this)};
@@ -171,6 +181,8 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
   pushScope();
   node->body()->setScope(currentScope_);
 
+  std::vector<std::pair<std::string, std::shared_ptr<nicole::Type>>>
+      newParameters;
   for (const auto &param : node->parameters()) {
     if (currentUserType_->hasAttribute(param.first)) {
       return createError(ERROR_TYPE::ATTR, " the variable " + param.first +
@@ -183,19 +195,32 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
                          param.second->toString() +
                              " is not a posibble type or generic");
     }
-
+    auto newType = param.second;
+    const auto checkIfMaskedEnum = typeTable_->isCompundEnumType(newType);
+    if (checkIfMaskedEnum) {
+      newType = *checkIfMaskedEnum;
+    }
+    newParameters.push_back({param.first, newType});
     const auto insert{
-        currentScope_->insert(Variable{param.first, param.second, nullptr})};
+        currentScope_->insert(Variable{param.first, newType, nullptr})};
     if (!insert) {
       return createError(insert.error());
     }
   }
+  Parameters params{newParameters};
+  node->setParameters(params);
 
   if (!typeTable_->isPossibleType(node->returnType()) and
       !typeTable_->isGenericType(node->returnType(), currentGenericList_)) {
     return createError(ERROR_TYPE::TYPE,
                        node->returnType()->toString() +
                            " is not a posibble type or generic");
+  }
+
+  const auto checkReturnEnum =
+      typeTable_->isCompundEnumType(node->returnType());
+  if (checkReturnEnum) {
+    node->setReturnType(*checkReturnEnum);
   }
 
   const auto body{node->body()->accept(*this)};
@@ -225,14 +250,13 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   }
 
   currentGenericList_ = *genrics;
-
-  currentUserType_->setConstructor(std::make_shared<Constructor>(
-      node->id(), node->generics(), node->parameters(), node->returnType(),
-      node->body()));
+  node->setGenerics(currentGenericList_);
 
   pushScope();
   node->body()->setScope(currentScope_);
 
+  std::vector<std::pair<std::string, std::shared_ptr<nicole::Type>>>
+      newParameters;
   for (const auto &param : node->parameters()) {
     if (currentUserType_->hasAttribute(param.first)) {
       return createError(ERROR_TYPE::ATTR, " the variable " + param.first +
@@ -245,13 +269,24 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
                          param.second->toString() +
                              " is not a posibble type or generic");
     }
-
+    auto newType = param.second;
+    const auto checkIfMaskedEnum = typeTable_->isCompundEnumType(newType);
+    if (checkIfMaskedEnum) {
+      newType = *checkIfMaskedEnum;
+    }
+    newParameters.push_back({param.first, newType});
     const auto insert{
-        currentScope_->insert(Variable{param.first, param.second, nullptr})};
+        currentScope_->insert(Variable{param.first, newType, nullptr})};
     if (!insert) {
       return createError(insert.error());
     }
   }
+  Parameters params{newParameters};
+  node->setParameters(params);
+
+  currentUserType_->setConstructor(std::make_shared<Constructor>(
+      node->id(), node->generics(), params, node->returnType(),
+      node->body()));
 
   if (node->super()) {
     const auto result{node->super()->accept(*this)};

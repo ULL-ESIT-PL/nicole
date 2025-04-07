@@ -1,7 +1,7 @@
-#include "../../../inc/visitors/fillSemanticInfo/fillSemanticInfo.h"
 #include "../../../inc/parsingAnalysis/ast/functions/ast_funcCall.h"
 #include "../../../inc/parsingAnalysis/ast/functions/ast_funcDecl.h"
 #include "../../../inc/parsingAnalysis/ast/functions/ast_return.h"
+#include "../../../inc/visitors/fillSemanticInfo/fillSemanticInfo.h"
 #include <memory>
 #include <variant>
 
@@ -53,7 +53,6 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
                          "redeclaration of function: " + newFunction.id());
     }
   }
-
   functionTable_->insert(newFunction);
 
   pushScope();
@@ -64,25 +63,51 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
     return createError(ERROR_TYPE::FUNCTION, "has duplicated generics");
   }
 
+  // Crear un nuevo vector para los parámetros actualizados.
+  std::vector<std::pair<std::string, std::shared_ptr<nicole::Type>>>
+      newParameters;
   for (const auto &param : node->parameters()) {
-    if (!typeTable_->isPossibleType(param.second) and
+    if (!typeTable_->isPossibleType(param.second) &&
         !typeTable_->isGenericType(param.second, currentGenericList_)) {
       return createError(ERROR_TYPE::TYPE,
                          param.second->toString() +
-                             " is not a posibble type or generic");
+                             " is not a possible type or generic");
     }
+    auto newType = param.second;
+    const auto checkIfMaskedEnum = typeTable_->isCompundEnumType(newType);
+    if (checkIfMaskedEnum) {
+      newType = *checkIfMaskedEnum;
+    }
+    newParameters.push_back({param.first, newType});
     const auto insertVariable{
-        currentScope_->insert(Variable{param.first, param.second, nullptr})};
+        currentScope_->insert(Variable{param.first, newType, nullptr})};
     if (!insertVariable) {
       return createError(insertVariable.error());
     }
   }
+  // Actualizar los parámetros del AST con el nuevo vector.
+  Parameters params{newParameters};
+  node->setParameters(params);
+  const auto setted{functionTable_->setFuncParameters(node->id(), params)};
+  if (!setted) {
+    return createError(setted.error());
+  }
 
-  if (!typeTable_->isPossibleType(node->returnType()) and
+  // Procesar el tipo de retorno: verificar y actualizar si es compound enum.
+  if (!typeTable_->isPossibleType(node->returnType()) &&
       !typeTable_->isGenericType(node->returnType(), currentGenericList_)) {
     return createError(ERROR_TYPE::TYPE,
                        node->returnType()->toString() +
-                           " is not a posibble type or generic");
+                           " is not a possible type or generic");
+  }
+  const auto checkReturnEnum =
+      typeTable_->isCompundEnumType(node->returnType());
+  if (checkReturnEnum) {
+    node->setReturnType(*checkReturnEnum);
+    const auto settedReturnType{functionTable_->setFuncReturnType(node->id(), *checkReturnEnum)};
+    if (!settedReturnType) {
+      return createError(settedReturnType.error());
+    }
   }
 
   const auto body{node->body()->accept(*this)};
@@ -91,7 +116,6 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
   }
 
   popScope();
-
   currentGenericList_.clear();
 
   return {};
@@ -108,4 +132,4 @@ FillSemanticInfo::visit(const AST_RETURN *node) const noexcept {
   return node->expression()->accept(*this);
 }
 
-}
+} // namespace nicole

@@ -24,4 +24,15 @@ AttrTable::insert(const Attribute &attribute) noexcept {
                      "the attribute: " + attribute.id() + " already exists");
 }
 
+std::expected<std::monostate, Error>
+AttrTable::setAttribute(const Attribute &attribute) noexcept {
+  if (!has(attribute.id())) {
+    return createError(ERROR_TYPE::ATTR,
+                       "Attribute: " + attribute.id() + " does not exist");
+  }
+  table_.at(attribute.id()) = attribute;
+  return {};
+}
+
+
 } // namespace nicole

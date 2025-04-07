@@ -14,8 +14,8 @@ class AST_BODY;
 class Function final : public Symbol {
 private:
   std::vector<GenericParameter> generics_;
-  Parameters params_;
-  std::shared_ptr<Type> returnType_;
+  mutable Parameters params_;
+  mutable std::shared_ptr<Type> returnType_;
   std::shared_ptr<AST_BODY> body_;
   mutable std::shared_ptr<llvm::Function> llvmVersion_;
 
@@ -50,6 +50,14 @@ public:
   void
   setLlvmVersion(const std::shared_ptr<llvm::Function> &llvmVersion) noexcept {
     llvmVersion_ = llvmVersion;
+  }
+
+  void setReturnType(const std::shared_ptr<Type> &type) const noexcept {
+    returnType_ = type;
+  }
+
+  void setParameters(const Parameters &params) const noexcept {
+    params_ = params;
   }
 };
 

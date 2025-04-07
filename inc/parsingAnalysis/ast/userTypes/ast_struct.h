@@ -15,21 +15,21 @@ private:
   std::string id_;
   mutable std::vector<GenericParameter> generics_;
   std::shared_ptr<Type> fatherType_;
-  Attributes attributes_;
-  std::vector<std::shared_ptr<AST_METHOD_DECL>> methods_;
-  std::shared_ptr<AST_CONSTRUCTOR_DECL> constructor_;
-  std::shared_ptr<AST_DESTRUCTOR_DECL> destructor_;
+  mutable Attributes attributes_;
+  mutable std::vector<std::shared_ptr<AST_METHOD_DECL>> methods_;
+  mutable std::shared_ptr<AST_CONSTRUCTOR_DECL> constructor_;
+  mutable std::shared_ptr<AST_DESTRUCTOR_DECL> destructor_;
 
 public:
   explicit AST_STRUCT(
       const std::string &id, const std::vector<GenericParameter> &generics,
-      const std::shared_ptr<Type>& fatherType, const Attributes &attributes,
+      const std::shared_ptr<Type> &fatherType, const Attributes &attributes,
       const std::vector<std::shared_ptr<AST_METHOD_DECL>> &methods,
       const std::shared_ptr<AST_CONSTRUCTOR_DECL> &constructor,
       const std::shared_ptr<AST_DESTRUCTOR_DECL> &destructor) noexcept
       : AST(AST_TYPE::STRUCT_DECL), id_{id}, generics_{generics},
-        fatherType_{fatherType}, attributes_{attributes},
-        methods_{methods}, constructor_{constructor}, destructor_{destructor} {}
+        fatherType_{fatherType}, attributes_{attributes}, methods_{methods},
+        constructor_{constructor}, destructor_{destructor} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 
@@ -42,8 +42,7 @@ public:
     generics_ = generics;
   }
 
-  [[nodiscard]] const std::shared_ptr<Type> &
-  fatherType() const noexcept {
+  [[nodiscard]] const std::shared_ptr<Type> &fatherType() const noexcept {
     return fatherType_;
   }
 
@@ -51,9 +50,18 @@ public:
     return attributes_;
   }
 
+  void setAttributes(const Attributes &attributes) const noexcept {
+    attributes_ = attributes;
+  }
+
   [[nodiscard]] const std::vector<std::shared_ptr<AST_METHOD_DECL>> &
   methods() const noexcept {
     return methods_;
+  }
+
+  void setMethods(const std::vector<std::shared_ptr<AST_METHOD_DECL>> &methods)
+      const noexcept {
+    methods_ = methods;
   }
 
   [[nodiscard]] const std::shared_ptr<AST_CONSTRUCTOR_DECL> &
@@ -61,11 +69,22 @@ public:
     return constructor_;
   }
 
+  void setConstructor(
+      const std::shared_ptr<AST_CONSTRUCTOR_DECL> &constructor) const noexcept {
+    constructor_ = constructor;
+  }
+
   [[nodiscard]] const std::shared_ptr<AST_DESTRUCTOR_DECL> &
   destructor() const noexcept {
     return destructor_;
   }
 
+  void setDestructor(
+      const std::shared_ptr<AST_DESTRUCTOR_DECL> &destructor) const noexcept {
+    destructor_ = destructor;
+  }
+
+  // Métodos accept existentes...
   [[nodiscard]] std::expected<std::string, Error>
   accept(const PrintTree &visitor) const noexcept override {
     return visitor.visit(this);

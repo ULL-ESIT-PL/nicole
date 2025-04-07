@@ -8,6 +8,7 @@
 #include "genericParameter.h"
 #include "method.h"
 #include "methodTable.h"
+#include <expected>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -38,7 +39,8 @@ public:
     return baseType_;
   }
 
-  [[nodiscard]] const std::shared_ptr<Constructor> &constructor() const noexcept {
+  [[nodiscard]] const std::shared_ptr<Constructor> &
+  constructor() const noexcept {
     return constructor_;
   }
 
@@ -75,6 +77,9 @@ public:
   insertAttr(const Attribute &attr) const noexcept;
 
   void insertMethod(const Method &method) const noexcept;
+
+  [[nodiscard]] std::expected<std::monostate, Error>
+  setAttribute(const Attribute &attr) const noexcept;
 
   [[nodiscard]] bool
   isAboveInHearchy(const std::shared_ptr<UserType> &type) const noexcept;

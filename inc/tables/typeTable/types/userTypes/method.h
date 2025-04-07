@@ -12,9 +12,9 @@ class AST_BODY;
 
 class Method final : public Symbol {
 private:
-  std::vector<GenericParameter> generics_;
-  Parameters params_;
-  std::shared_ptr<Type> returnType_;
+  mutable std::vector<GenericParameter> generics_;
+  mutable Parameters params_;
+  mutable std::shared_ptr<Type> returnType_;
   std::shared_ptr<AST_BODY> body_;
   bool isVirtual_;
   mutable bool isInherited_{false};
@@ -48,6 +48,19 @@ public:
   void setInherit(const bool inherit) const noexcept { isInherited_ = inherit; }
 
   [[nodiscard]] bool isInherited() const noexcept { return isInherited_; }
+
+  void setReturnType(const std::shared_ptr<Type> &type) const noexcept {
+    returnType_ = type;
+  }
+
+  void setParameters(const Parameters &params) const noexcept {
+    params_ = params;
+  }
+
+  void
+  setGenerics(const std::vector<GenericParameter> &generics) const noexcept {
+    generics_ = generics;
+  }
 };
 
 } // namespace nicole

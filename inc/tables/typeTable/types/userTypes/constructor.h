@@ -13,8 +13,8 @@ class AST_BODY;
 class Constructor final : public Symbol {
 private:
   std::vector<GenericParameter> generics_;
-  Parameters params_;
-  std::shared_ptr<Type> returnType_;
+  mutable Parameters params_;
+  mutable std::shared_ptr<Type> returnType_;
   std::shared_ptr<AST_BODY> body_;
 
 public:
@@ -38,6 +38,15 @@ public:
 
   [[nodiscard]] const std::shared_ptr<AST_BODY> &body() const noexcept {
     return body_;
+  }
+
+  void setParams(const Parameters &newParams) const noexcept {
+    params_ = newParams;
+  }
+
+  void
+  setReturnType(const std::shared_ptr<Type> &newReturnType) const noexcept {
+    returnType_ = newReturnType;
   }
 };
 

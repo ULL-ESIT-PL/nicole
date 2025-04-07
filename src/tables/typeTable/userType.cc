@@ -78,6 +78,17 @@ void UserType::insertMethod(const Method &method) const noexcept {
   methodTable_.insert(method);
 }
 
+std::expected<std::monostate, Error>
+UserType::setAttribute(const Attribute &attr) const noexcept {
+  // Comprobar que el atributo existe en el UserType o en sus bases.
+  if (!attrTable_.has(attr.id())) {
+    return createError(ERROR_TYPE::ATTR, "Attribute: " + attr.id() +
+                                             " does not exist in " + name_);
+  }
+  // Delegar la actualización al AttrTable.
+  return attrTable_.setAttribute(attr);
+}
+
 bool UserType::isAboveInHearchy(
     const std::shared_ptr<UserType> &type) const noexcept {
   auto aux{baseType_};

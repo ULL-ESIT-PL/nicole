@@ -14,7 +14,7 @@ namespace nicole {
 
 class AttrTable final {
 private:
-  std::unordered_map<std::string, Attribute> table_;
+  mutable std::unordered_map<std::string, Attribute> table_;
 
 public:
   [[nodiscard]] bool has(const std::string &id) const noexcept;
@@ -24,6 +24,10 @@ public:
 
   [[nodiscard]] std::expected<std::monostate, Error>
   insert(const Attribute &variable) noexcept;
+
+  [[nodiscard]] std::expected<std::monostate, Error>
+  setAttribute(const Attribute &variable) noexcept;
+
 }; // namespace nicole
 
 }
