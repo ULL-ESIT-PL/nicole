@@ -356,7 +356,10 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
                        "no type with id: " + node->id() + " exists");
   }
   if (const auto enumType{std::dynamic_pointer_cast<EnumType>(*type)}) {
-    return createError(ERROR_TYPE::TYPE, "a enum cannot use a constructor");
+    if (node->replaceOfGenerics().size()) {
+      return createError(ERROR_TYPE::TYPE, "a enum cannot use generics in it's constructor");
+    }
+    return {};
   }
   for (const auto &replacement : node->replaceOfGenerics()) {
     if (!typeTable_->isPossibleType(replacement) and
