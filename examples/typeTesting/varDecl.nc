@@ -27,3 +27,10 @@ enum Enu {
 }
 
 let s: Enu = Enu::a;
+
+struct Prueba<T> {
+    constructor<Q>() {}
+    destructor {}
+}
+
+Prueba<Enu***>{};

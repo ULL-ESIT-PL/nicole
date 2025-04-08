@@ -2,16 +2,18 @@
 #define GENERIC_INSTANCE_TYPE_TYPE_H
 
 #include "userType.h"
+#include <expected>
 #include <memory>
 #include <sstream>
 #include <string>
+#include <variant>
 #include <vector>
 
 namespace nicole {
 
 class GenericInstanceType final : public UserType {
 private:
-  std::vector<std::shared_ptr<Type>> typeArgs_;
+  mutable std::vector<std::shared_ptr<Type>> typeArgs_;
 
 public:
   GenericInstanceType(const std::shared_ptr<UserType> &genericType,
@@ -23,6 +25,18 @@ public:
   [[nodiscard]] const std::vector<std::shared_ptr<Type>> &
   typeArgs() const noexcept {
     return typeArgs_;
+  }
+
+  [[nodiscard]] std::expected<std::monostate, Error>
+  setGenericReplacement(const std::size_t pos,
+                        const std::shared_ptr<Type> &type) const noexcept {
+    if (pos >= typeArgs_.size()) {
+      return createError(
+          ERROR_TYPE::TYPE,
+          "trying to access a invalid position in a replacement list");
+    }
+    typeArgs_[pos] = type;
+    return {};
   }
 
   [[nodiscard]] std::string toString() const noexcept override {

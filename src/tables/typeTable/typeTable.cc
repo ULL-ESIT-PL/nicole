@@ -127,6 +127,30 @@ TypeTable::isCompundEnumType(const std::shared_ptr<Type> &type) const noexcept {
       return createError(baseRes.error());
     return std::make_shared<PointerType>(baseRes.value());
   }
+  if (auto vectorType = std::dynamic_pointer_cast<VectorType>(type)) {
+    auto baseRes = isCompundEnumType(vectorType->elementType());
+    if (!baseRes)
+      return createError(baseRes.error());
+    return std::make_shared<VectorType>(baseRes.value());
+  }
+  if (auto genericInstanceType =
+          std::dynamic_pointer_cast<GenericInstanceType>(type)) {
+    auto exists = getType(genericInstanceType->name());
+    if (!exists)
+      return createError(exists.error());
+    const auto generciList{genericInstanceType->typeArgs()};
+    for (std::size_t i{0}; i < generciList.size(); ++i) {
+      auto maskedEnum = isCompundEnumType(generciList[i]);
+      if (maskedEnum) {
+        const auto replaced{
+            genericInstanceType->setGenericReplacement(i, *maskedEnum)};
+        if (!replaced) {
+          return createError(replaced.error());
+        }
+      }
+    }
+    return genericInstanceType;
+  }
   if (auto userType = std::dynamic_pointer_cast<UserType>(type)) {
     auto exists = getType(userType->name());
     if (!exists)
@@ -143,15 +167,16 @@ TypeTable::isCompundEnumType(const std::shared_ptr<Type> &type) const noexcept {
 std::expected<std::shared_ptr<Type>, Error> TypeTable::isCompundGenericType(
     const std::shared_ptr<Type> &type,
     const std::vector<GenericParameter> &list) const noexcept {
-  if (list.size()) {}
+  if (list.size()) {
+  }
   if (auto constType = std::dynamic_pointer_cast<ConstType>(type)) {
-    auto baseRes = isCompundEnumType(constType->baseType());
+    auto baseRes = isCompundGenericType(constType->baseType(), list);
     if (!baseRes)
       return createError(baseRes.error());
     return std::make_shared<ConstType>(baseRes.value());
   }
   if (auto pointerType = std::dynamic_pointer_cast<PointerType>(type)) {
-    auto baseRes = isCompundEnumType(pointerType->baseType());
+    auto baseRes = isCompundGenericType(pointerType->baseType(), list);
     if (!baseRes)
       return createError(baseRes.error());
     return std::make_shared<PointerType>(baseRes.value());
