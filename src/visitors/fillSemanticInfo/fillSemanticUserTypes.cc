@@ -226,7 +226,8 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_DECL");
 
   currentGenericList_ = node->generics();
-  auto mergedGenerics = mergeGenericLists(currentStructGenericList_, currentGenericList_);
+  auto mergedGenerics =
+      mergeGenericLists(currentStructGenericList_, currentGenericList_);
   if (!mergedGenerics)
     return createError(mergedGenerics.error());
   currentGenericList_ = *mergedGenerics;
@@ -235,7 +236,8 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   pushScope();
   node->body()->setScope(currentScope_);
 
-  std::vector<std::pair<std::string, std::shared_ptr<nicole::Type>>> updatedParams;
+  std::vector<std::pair<std::string, std::shared_ptr<nicole::Type>>>
+      updatedParams;
   for (const auto &param : node->parameters()) {
     if (currentUserType_->hasAttribute(param.first))
       return createError(ERROR_TYPE::ATTR, "Variable " + param.first +
@@ -243,15 +245,17 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
 
     if (!typeTable_->isPossibleType(param.second) &&
         !typeTable_->isGenericType(param.second, currentGenericList_))
-      return createError(ERROR_TYPE::TYPE, param.second->toString() +
-                                               " is not a possible type or generic");
+      return createError(ERROR_TYPE::TYPE,
+                         param.second->toString() +
+                             " is not a possible type or generic");
 
     auto newType = param.second;
     if (auto masked = typeTable_->isCompundEnumType(newType))
       newType = *masked;
     updatedParams.push_back({param.first, newType});
 
-    if (auto insertResult = currentScope_->insert(Variable{param.first, newType, nullptr});
+    if (auto insertResult =
+            currentScope_->insert(Variable{param.first, newType, nullptr});
         !insertResult)
       return createError(insertResult.error());
   }
@@ -268,8 +272,9 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
 
   if (!typeTable_->isPossibleType(node->returnType()) &&
       !typeTable_->isGenericType(node->returnType(), currentGenericList_))
-    return createError(ERROR_TYPE::TYPE, node->returnType()->toString() +
-                                             " is not a possible type or generic");
+    return createError(ERROR_TYPE::TYPE,
+                       node->returnType()->toString() +
+                           " is not a possible type or generic");
 
   if (auto bodyResult = node->body()->accept(*this); !bodyResult)
     return createError(bodyResult.error());
@@ -345,11 +350,14 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
           currentGenericList_)) {
     return {};
   }
-  if (!typeTable_->getType(node->id())) {
+  auto type{typeTable_->getType(node->id())};
+  if (!type) {
     return createError(ERROR_TYPE::TYPE,
                        "no type with id: " + node->id() + " exists");
   }
-
+  if (const auto enumType{std::dynamic_pointer_cast<EnumType>(*type)}) {
+    return createError(ERROR_TYPE::TYPE, "a enum cannot use a constructor");
+  }
   for (const auto &replacement : node->replaceOfGenerics()) {
     if (!typeTable_->isPossibleType(replacement) and
         !typeTable_->isGenericType(replacement, currentGenericList_)) {

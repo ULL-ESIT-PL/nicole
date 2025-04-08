@@ -11,8 +11,8 @@ namespace nicole {
 class AST_CONSTRUCTOR_CALL final : public AST {
 private:
   std::string id_;
-  std::vector<std::shared_ptr<Type>> replaceOfGenerics_;
-  std::vector<std::shared_ptr<AST>> parameters_;
+  mutable std::vector<std::shared_ptr<Type>> replaceOfGenerics_;
+  mutable std::vector<std::shared_ptr<AST>> parameters_;
 
 public:
   explicit AST_CONSTRUCTOR_CALL(
@@ -27,6 +27,11 @@ public:
   [[nodiscard]] const std::vector<std::shared_ptr<Type>> &
   replaceOfGenerics() const noexcept {
     return replaceOfGenerics_;
+  }
+
+  void setReplacesOfGenerics(
+      const std::vector<std::shared_ptr<Type>> &replaces) const noexcept {
+    replaceOfGenerics_ = replaces;
   }
 
   [[nodiscard]] const std::vector<std::shared_ptr<AST>> &

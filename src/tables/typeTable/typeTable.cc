@@ -142,6 +142,7 @@ TypeTable::isCompundEnumType(const std::shared_ptr<Type> &type) const noexcept {
     for (std::size_t i{0}; i < generciList.size(); ++i) {
       auto maskedEnum = isCompundEnumType(generciList[i]);
       if (maskedEnum) {
+        std::cout << i << " " << maskedEnum.value()->toString();
         const auto replaced{
             genericInstanceType->setGenericReplacement(i, *maskedEnum)};
         if (!replaced) {
