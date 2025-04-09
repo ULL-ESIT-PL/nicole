@@ -9,7 +9,7 @@ namespace nicole {
 class AST_SUPER final : public AST {
 private:
   std::shared_ptr<Type> fatherType_;
-  std::vector<std::shared_ptr<Type>> replacements_;
+  mutable std::vector<std::shared_ptr<Type>> replacements_;
   std::vector<std::shared_ptr<AST>> arguments_;
 
 public:
@@ -32,6 +32,18 @@ public:
   [[nodiscard]] const std::vector<std::shared_ptr<Type>>
   replacements() const noexcept {
     return replacements_;
+  }
+
+  [[nodiscard]] std::expected<std::monostate, Error>
+  setGenericReplacement(const std::size_t pos,
+                        const std::shared_ptr<Type> &type) const noexcept {
+    if (pos >= replacements_.size()) {
+      return createError(
+          ERROR_TYPE::TYPE,
+          "trying to access a invalid position in a replacement list");
+    }
+    replacements_[pos] = type;
+    return {};
   }
 
   [[nodiscard]] std::expected<std::string, Error>

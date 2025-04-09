@@ -11,7 +11,7 @@ namespace nicole {
 class AST_FUNC_CALL : public AST {
 private:
   std::string id_;
-  std::vector<std::shared_ptr<Type>> replaceOfGenerics_;
+  mutable std::vector<std::shared_ptr<Type>> replaceOfGenerics_;
   std::vector<std::shared_ptr<AST>> parameters_;
 
 public:
@@ -27,6 +27,18 @@ public:
   [[nodiscard]] const std::vector<std::shared_ptr<Type>> &
   replaceOfGenerics() const noexcept {
     return replaceOfGenerics_;
+  }
+
+  [[nodiscard]] std::expected<std::monostate, Error>
+  setGenericReplacement(const std::size_t pos,
+                        const std::shared_ptr<Type> &type) const noexcept {
+    if (pos >= replaceOfGenerics_.size()) {
+      return createError(
+          ERROR_TYPE::TYPE,
+          "trying to access a invalid position in a replacement list");
+    }
+    replaceOfGenerics_[pos] = type;
+    return {};
   }
 
   [[nodiscard]] const std::vector<std::shared_ptr<AST>> &

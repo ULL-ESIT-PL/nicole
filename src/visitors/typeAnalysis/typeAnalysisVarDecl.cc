@@ -20,11 +20,11 @@ TypeAnalysis::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!exprTypeRes)
     return createError(exprTypeRes.error());
   auto deducedType = exprTypeRes.value();
-
+  /*
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(deducedType, currentGenericList_))
     deducedType = std::make_shared<PlaceHolder>(deducedType);
-
+  */
   auto insertRes = currentScope_->setVariableType(node->id(), deducedType);
   if (!insertRes)
     return createError(insertRes.error());
@@ -43,10 +43,11 @@ TypeAnalysis::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_TYPED_DECL");
   }
   auto declaredType = node->varType();
+  /*
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(declaredType, currentGenericList_))
     declaredType = std::make_shared<PlaceHolder>(declaredType);
-
+  */
   auto valueRes = node->value()->accept(*this);
   if (!valueRes)
     return createError(valueRes.error());

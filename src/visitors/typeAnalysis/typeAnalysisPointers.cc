@@ -24,6 +24,7 @@ TypeAnalysis::visit(const AST_DELETE *node) const noexcept {
   auto type = result.value();
 
   if (insideDeclWithGenerics) {
+    /*
     if (auto placeholder = std::dynamic_pointer_cast<PlaceHolder>(type)) {
       auto genericCompound = placeholder->getGenericCompound();
       if (std::dynamic_pointer_cast<PointerType>(genericCompound)) {
@@ -31,6 +32,7 @@ TypeAnalysis::visit(const AST_DELETE *node) const noexcept {
       }
       return createError(ERROR_TYPE::TYPE, "can only delete pointers");
     }
+    */
   }
 
   if (auto constType = std::dynamic_pointer_cast<ConstType>(type)) {
@@ -98,9 +100,11 @@ TypeAnalysis::visit(const AST_DEREF *node) const noexcept {
 
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(unwrappedType, currentGenericList_)) {
+    /*
     if (auto ptrType = std::dynamic_pointer_cast<PointerType>(unwrappedType))
       return std::make_shared<PlaceHolder>(ptrType->baseType());
     return createError(ERROR_TYPE::TYPE, "can only deref a pointer");
+    */
   }
 
   if (auto ptrType = std::dynamic_pointer_cast<PointerType>(unwrappedType))

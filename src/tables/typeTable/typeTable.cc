@@ -167,32 +167,57 @@ TypeTable::isCompundEnumType(const std::shared_ptr<Type> &type) const noexcept {
 
 std::expected<std::shared_ptr<Type>, Error> TypeTable::isCompundGenericType(
     const std::shared_ptr<Type> &type,
-    const std::vector<GenericParameter> &list) const noexcept {
-  if (list.size()) {
-  }
+    const std::vector<GenericParameter> &genericList) const noexcept {
   if (auto constType = std::dynamic_pointer_cast<ConstType>(type)) {
-    auto baseRes = isCompundGenericType(constType->baseType(), list);
+    auto baseRes = isCompundGenericType(constType->baseType(), genericList);
     if (!baseRes)
       return createError(baseRes.error());
     return std::make_shared<ConstType>(baseRes.value());
   }
+
   if (auto pointerType = std::dynamic_pointer_cast<PointerType>(type)) {
-    auto baseRes = isCompundGenericType(pointerType->baseType(), list);
+    auto baseRes = isCompundGenericType(pointerType->baseType(), genericList);
     if (!baseRes)
       return createError(baseRes.error());
     return std::make_shared<PointerType>(baseRes.value());
   }
-  if (auto userType = std::dynamic_pointer_cast<UserType>(type)) {
-    auto exists = getType(userType->name());
-    if (!exists)
-      return createError(exists.error());
-    if (auto enumType = std::dynamic_pointer_cast<EnumType>(exists.value()))
-      return enumType;
-    else
-      return createError(ERROR_TYPE::TYPE,
-                         "El tipo encontrado no es un EnumType");
+
+  if (auto vectorType = std::dynamic_pointer_cast<VectorType>(type)) {
+    auto baseRes = isCompundGenericType(vectorType->elementType(), genericList);
+    if (!baseRes)
+      return createError(baseRes.error());
+    return std::make_shared<VectorType>(baseRes.value());
   }
-  return createError(ERROR_TYPE::TYPE, "El tipo no es un Enum compuesto");
+
+  if (auto genericInstanceType =
+          std::dynamic_pointer_cast<GenericInstanceType>(type)) {
+    for (const auto &gp : genericList) {
+      if (gp.name() == genericInstanceType->name()) {
+        return std::make_shared<PlaceHolder>(gp);
+      }
+    }
+    const auto typeArgs = genericInstanceType->typeArgs();
+    for (std::size_t i = 0; i < typeArgs.size(); ++i) {
+      auto masked = isCompundGenericType(typeArgs[i], genericList);
+      if (!masked)
+        return createError(masked.error());
+      auto replaced = genericInstanceType->setGenericReplacement(i, *masked);
+      if (!replaced)
+        return createError(replaced.error());
+    }
+    return genericInstanceType;
+  }
+
+  if (auto userType = std::dynamic_pointer_cast<UserType>(type)) {
+    for (const auto &gp : genericList) {
+      if (gp.name() == userType->name()) {
+        return std::make_shared<PlaceHolder>(gp);
+      }
+    }
+    return type;
+  }
+  return createError(ERROR_TYPE::TYPE,
+                     "El tipo no es un tipo compuesto genérico");
 }
 
 bool TypeTable::areSameType(const std::shared_ptr<Type> &type1,

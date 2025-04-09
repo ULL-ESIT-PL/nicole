@@ -80,23 +80,23 @@ FillSemanticInfo::visit(const AST_STRUCT *node) const noexcept {
   pushScope();
 
   size_t pos{0};
-  std::vector<std::pair<std::string, std::shared_ptr<nicole::Type>>>
-      atributes{};
+  std::vector<std::pair<std::string, std::shared_ptr<nicole::Type>>> attributes;
   for (const auto &attr : node->attributes()) {
-    auto attrType{attr.second};
-    const auto checkMaskedEnum{typeTable_->isCompundEnumType(attrType)};
-    if (checkMaskedEnum) {
-      attrType = *checkMaskedEnum;
-    }
-    atributes.push_back({attr.first, attrType});
-    const auto insert{
-        currentUserType_->insertAttr(Attribute{attr.first, attrType, pos})};
-    if (!insert) {
-      return createError(insert.error());
-    }
+    auto attrType = attr.second;
+    if (auto maskedEnum = typeTable_->isCompundEnumType(attrType))
+      attrType = *maskedEnum;
+
+    if (auto maskedGeneric =
+            typeTable_->isCompundGenericType(attrType, currentGenericList_))
+      attrType = *maskedGeneric;
+    attributes.push_back({attr.first, attrType});
+    const auto insertResult =
+        currentUserType_->insertAttr(Attribute{attr.first, attrType, pos});
+    if (!insertResult)
+      return createError(insertResult.error());
     ++pos;
   }
-  node->setAttributes(Attributes{atributes});
+  node->setAttributes(Attributes{attributes});
 
   for (const auto &method : node->methods()) {
     const auto result{method->accept(*this)};
@@ -162,6 +162,7 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
     if (currentUserType_->hasAttribute(param.first))
       return createError(ERROR_TYPE::ATTR, "Variable " + param.first +
                                                " is shadowing an attribute");
+
     if (!typeTable_->isPossibleType(param.second) &&
         !typeTable_->isGenericType(param.second, currentGenericList_))
       return createError(ERROR_TYPE::TYPE,
@@ -169,15 +170,17 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
                              " is not a possible type or generic");
 
     auto newType = param.second;
-    const auto maskedEnum = typeTable_->isCompundEnumType(newType);
-    if (maskedEnum)
+    if (auto maskedEnum = typeTable_->isCompundEnumType(newType))
       newType = *maskedEnum;
+    if (auto maskedGeneric =
+            typeTable_->isCompundGenericType(newType, currentGenericList_))
+      newType = *maskedGeneric;
 
     updatedParams.push_back({param.first, newType});
 
-    const auto insertVar =
-        currentScope_->insert(Variable{param.first, newType, nullptr});
-    if (!insertVar)
+    if (auto insertVar =
+            currentScope_->insert(Variable{param.first, newType, nullptr});
+        !insertVar)
       return createError(insertVar.error());
   }
   Parameters params{updatedParams};
@@ -189,12 +192,16 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
                        node->returnType()->toString() +
                            " is not a possible type or generic");
 
-  const auto maskedReturn = typeTable_->isCompundEnumType(node->returnType());
-  if (maskedReturn)
-    node->setReturnType(*maskedReturn);
+  auto retType = node->returnType();
+  if (auto maskedReturn = typeTable_->isCompundEnumType(retType))
+    retType = *maskedReturn;
+  if (auto maskedGenericReturn =
+          typeTable_->isCompundGenericType(retType, currentGenericList_))
+    retType = *maskedGenericReturn;
+  node->setReturnType(retType);
 
-  Method newMethod{node->id(),         currentGenericList_, params,
-                   node->returnType(), node->body(),        node->isVirtual()};
+  Method newMethod{node->id(), currentGenericList_, params,
+                   retType,    node->body(),        node->isVirtual()};
 
   const auto combinedMethods = currentUserType_->getMethods(node->id());
   if (combinedMethods) {
@@ -216,7 +223,6 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
 
   popScope();
   currentGenericList_.clear();
-
   return {};
 }
 
@@ -252,8 +258,11 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
     auto newType = param.second;
     if (auto masked = typeTable_->isCompundEnumType(newType))
       newType = *masked;
-    updatedParams.push_back({param.first, newType});
+    if (auto maskedGeneric =
+            typeTable_->isCompundGenericType(newType, currentGenericList_))
+      newType = *maskedGeneric;
 
+    updatedParams.push_back({param.first, newType});
     if (auto insertResult =
             currentScope_->insert(Variable{param.first, newType, nullptr});
         !insertResult)
@@ -276,6 +285,14 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
                        node->returnType()->toString() +
                            " is not a possible type or generic");
 
+  auto retType = node->returnType();
+  if (auto masked = typeTable_->isCompundEnumType(retType))
+    retType = *masked;
+  if (auto maskedGeneric =
+          typeTable_->isCompundGenericType(retType, currentGenericList_))
+    retType = *maskedGeneric;
+  node->setReturnType(retType);
+
   if (auto bodyResult = node->body()->accept(*this); !bodyResult)
     return createError(bodyResult.error());
 
@@ -287,22 +304,45 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
 std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_SUPER *node) const noexcept {
   if (!node) {
-    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SUPER");
+    return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_SUPER");
   }
-  for (const auto &replacement : node->replacements()) {
-    if (!typeTable_->isPossibleType(replacement) and
+
+  const auto &reps = node->replacements();
+  for (std::size_t i = 0; i < reps.size(); ++i) {
+    auto replacement = reps[i];
+
+    if (!typeTable_->isPossibleType(replacement) &&
         !typeTable_->isGenericType(replacement, currentGenericList_)) {
       return createError(ERROR_TYPE::TYPE,
                          replacement->toString() +
-                             " is not a posibble type or generic");
+                             " is not a possible type or generic");
+    }
+
+    if (auto maskedEnum = typeTable_->isCompundEnumType(replacement)) {
+      replacement = *maskedEnum;
+      auto res = node->setGenericReplacement(i, replacement);
+      if (!res) {
+        return createError(res.error());
+      }
+    }
+
+    if (auto maskedGeneric = typeTable_->isCompundGenericType(
+            replacement, currentGenericList_)) {
+      replacement = *maskedGeneric;
+      auto res = node->setGenericReplacement(i, replacement);
+      if (!res) {
+        return createError(res.error());
+      }
     }
   }
+
   for (const auto &arg : node->arguments()) {
     const auto result{arg->accept(*this)};
     if (!result) {
       return createError(result.error());
     }
   }
+
   return {};
 }
 
@@ -357,7 +397,9 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   }
   if (const auto enumType{std::dynamic_pointer_cast<EnumType>(*type)}) {
     if (node->replaceOfGenerics().size()) {
-      return createError(ERROR_TYPE::TYPE, "a enum cannot use generics in it's constructor");
+      return createError(
+          ERROR_TYPE::TYPE,
+          "a enum cannot use generics replacements in it's constructor");
     }
     return {};
   }

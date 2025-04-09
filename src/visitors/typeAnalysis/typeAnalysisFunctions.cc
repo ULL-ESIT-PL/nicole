@@ -122,9 +122,11 @@ TypeAnalysis::visit(const AST_RETURN *node) const noexcept {
   if (!result)
     return createError(result.error());
   auto retType = result.value();
+  /*
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(retType, currentGenericList_))
     return std::make_shared<PlaceHolder>(retType);
+  */
   return retType;
 }
 

@@ -9,44 +9,56 @@ namespace nicole {
 
 std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_FUNC_CALL *node) const noexcept {
-  if (!node) {
+  if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_FUNC_CALL");
-  }
 
   if (functionTable_->getFunctions(node->id()).empty()) {
     return createError(ERROR_TYPE::FUNCTION,
                        "no function with id: " + node->id() + " exists");
   }
 
-  for (const auto &replacement : node->replaceOfGenerics()) {
-    if (!typeTable_->isPossibleType(replacement) and
+  for (std::size_t i = 0; i < node->replaceOfGenerics().size(); ++i) {
+    auto replacement = node->replaceOfGenerics()[i];
+    if (!typeTable_->isPossibleType(replacement) &&
         !typeTable_->isGenericType(replacement, currentGenericList_)) {
       return createError(ERROR_TYPE::TYPE,
                          replacement->toString() +
-                             " is not a posibble type or generic");
+                             " is not a possible type or generic");
+    }
+
+    if (auto maskedEnum = typeTable_->isCompundEnumType(replacement)) {
+      replacement = *maskedEnum;
+      auto setRes = node->setGenericReplacement(i, replacement);
+      if (!setRes)
+        return createError(setRes.error());
+    }
+
+    if (auto maskedGeneric = typeTable_->isCompundGenericType(
+            replacement, currentGenericList_)) {
+      replacement = *maskedGeneric;
+      auto setRes = node->setGenericReplacement(i, replacement);
+      if (!setRes)
+        return createError(setRes.error());
     }
   }
 
   for (const auto &expr : node->parameters()) {
-    const auto resul{expr->accept(*this)};
-    if (!resul) {
-      return createError(resul.error());
-    }
+    const auto result = expr->accept(*this);
+    if (!result)
+      return createError(result.error());
   }
   return {};
 }
 
 std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
-  if (!node) {
+  if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
-  }
 
-  const Function newFunction{Function{node->id(), node->generics(),
-                                      node->parameters(), node->returnType(),
-                                      node->body()}};
+  const Function newFunction{node->id(), node->generics(), node->parameters(),
+                             node->returnType(), node->body()};
 
-  const auto functions{functionTable_->getFunctions(newFunction.id())};
+  const auto functions = functionTable_->getFunctions(newFunction.id());
   for (const auto &func : functions) {
     if (areAmbiguousFunctions(newFunction, func)) {
       return createError(ERROR_TYPE::FUNCTION,
@@ -62,62 +74,64 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
   if (hasDuplicatedGenerics(currentGenericList_)) {
     return createError(ERROR_TYPE::FUNCTION, "has duplicated generics");
   }
+  node->setGenerics(currentGenericList_);
 
-  // Crear un nuevo vector para los parámetros actualizados.
+  if (hasDuplicatedGenerics(currentGenericList_))
+    return createError(ERROR_TYPE::FUNCTION, "has duplicated generics");
+
   std::vector<std::pair<std::string, std::shared_ptr<nicole::Type>>>
       newParameters;
   for (const auto &param : node->parameters()) {
     if (!typeTable_->isPossibleType(param.second) &&
-        !typeTable_->isGenericType(param.second, currentGenericList_)) {
+        !typeTable_->isGenericType(param.second, currentGenericList_))
       return createError(ERROR_TYPE::TYPE,
                          param.second->toString() +
                              " is not a possible type or generic");
-    }
+
     auto newType = param.second;
-    const auto checkIfMaskedEnum = typeTable_->isCompundEnumType(newType);
-    if (checkIfMaskedEnum) {
-      newType = *checkIfMaskedEnum;
-    }
+    if (auto maskedEnum = typeTable_->isCompundEnumType(newType))
+      newType = *maskedEnum;
+    if (auto maskedGeneric =
+            typeTable_->isCompundGenericType(newType, currentGenericList_))
+      newType = *maskedGeneric;
+
     newParameters.push_back({param.first, newType});
-    const auto insertVariable{
-        currentScope_->insert(Variable{param.first, newType, nullptr})};
-    if (!insertVariable) {
-      return createError(insertVariable.error());
-    }
+    if (auto insertResult =
+            currentScope_->insert(Variable{param.first, newType, nullptr});
+        !insertResult)
+      return createError(insertResult.error());
   }
-  // Actualizar los parámetros del AST con el nuevo vector.
   Parameters params{newParameters};
   node->setParameters(params);
-  const auto setted{functionTable_->setFuncParameters(node->id(), params)};
-  if (!setted) {
-    return createError(setted.error());
-  }
 
-  // Procesar el tipo de retorno: verificar y actualizar si es compound enum.
+  if (auto setted = functionTable_->setFuncParameters(node->id(), params);
+      !setted)
+    return createError(setted.error());
+
   if (!typeTable_->isPossibleType(node->returnType()) &&
-      !typeTable_->isGenericType(node->returnType(), currentGenericList_)) {
+      !typeTable_->isGenericType(node->returnType(), currentGenericList_))
     return createError(ERROR_TYPE::TYPE,
                        node->returnType()->toString() +
                            " is not a possible type or generic");
-  }
-  const auto checkReturnEnum =
-      typeTable_->isCompundEnumType(node->returnType());
-  if (checkReturnEnum) {
-    node->setReturnType(*checkReturnEnum);
-    const auto settedReturnType{functionTable_->setFuncReturnType(node->id(), *checkReturnEnum)};
-    if (!settedReturnType) {
-      return createError(settedReturnType.error());
-    }
-  }
 
-  const auto body{node->body()->accept(*this)};
-  if (!body) {
-    return createError(body.error());
-  }
+  auto retType = node->returnType();
+  if (auto maskedEnum = typeTable_->isCompundEnumType(retType))
+    retType = *maskedEnum;
+  if (auto maskedGeneric =
+          typeTable_->isCompundGenericType(retType, currentGenericList_))
+    retType = *maskedGeneric;
+  node->setReturnType(retType);
+
+  if (auto settedReturnType =
+          functionTable_->setFuncReturnType(node->id(), retType);
+      !settedReturnType)
+    return createError(settedReturnType.error());
+
+  if (auto bodyResult = node->body()->accept(*this); !bodyResult)
+    return createError(bodyResult.error());
 
   popScope();
   currentGenericList_.clear();
-
   return {};
 }
 

@@ -2,28 +2,26 @@
 #define PLACE_HOLDER_H
 
 #include "../type.h"
+#include "genericParameter.h"
 #include <memory>
 #include <string>
 
-// car<T, Q>
-// car<int, str> --> car_int_str
 namespace nicole {
 
 class PlaceHolder final : public Type {
 private:
-  std::shared_ptr<Type> genericCompound_;
+  GenericParameter genericParameter_;
 
 public:
-  explicit PlaceHolder(const std::shared_ptr<Type> &genericCompound) noexcept
-      : genericCompound_(genericCompound) {}
+  explicit PlaceHolder(const GenericParameter &genericParameter) noexcept
+      : genericParameter_(genericParameter) {}
 
   [[nodiscard]] std::string toString() const noexcept override {
-    return "PlaceHolder: " + genericCompound_->toString();
+    return "PlaceHolder: " + genericParameter_.name();
   }
 
-  [[nodiscard]] const std::shared_ptr<Type> &
-  getGenericCompound() const noexcept {
-    return genericCompound_;
+  [[nodiscard]] const GenericParameter &getGenericParameter() const noexcept {
+    return genericParameter_;
   }
 };
 

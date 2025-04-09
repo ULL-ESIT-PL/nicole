@@ -18,6 +18,10 @@ public:
   [[nodiscard]] bool operator==(const GenericParameter &other) const noexcept {
     return name_ == other.name_;
   }
+
+  [[nodiscard]] bool operator<(const GenericParameter &other) const noexcept {
+    return name_ < other.name_;
+  }
 };
 
 } // namespace nicole

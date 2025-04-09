@@ -62,6 +62,12 @@ FillSemanticInfo::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
     node->setVarType(varType);
   }
 
+  auto maybeGeneric = typeTable_->isCompundGenericType(varType, currentGenericList_);
+  if (maybeGeneric.has_value()) {
+    varType = *maybeGeneric;
+    node->setVarType(varType);
+  }
+
   const auto insert{
       currentScope_->insert(Variable{node->id(), varType, nullptr})};
   if (!insert) {
