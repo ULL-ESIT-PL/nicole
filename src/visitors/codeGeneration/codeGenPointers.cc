@@ -13,6 +13,10 @@ CodeGeneration::visit(const AST_DELETE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DELETE");
   }
+  const auto result{node->value()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
+  }
   return {};
 }
 
@@ -21,6 +25,10 @@ CodeGeneration::visit(const AST_NEW *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_NEW");
   }
+  const auto result{node->value()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
+  }
   return {};
 }
 
@@ -28,6 +36,10 @@ std::expected<std::shared_ptr<llvm::Value>, Error>
 CodeGeneration::visit(const AST_DEREF *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DEREF");
+  }
+  const auto result{node->value()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
   }
   return {};
 }

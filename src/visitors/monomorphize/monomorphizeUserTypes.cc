@@ -13,6 +13,20 @@ Monomorphize::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
   }
+  const auto constructor{node->constructor()->accept(*this)};
+  if (!constructor) {
+    return createError(constructor.error());
+  }
+  const auto destructor{node->destructor()->accept(*this)};
+  if (!destructor) {
+    return createError(destructor.error());
+  }
+  for (const auto &chain : node->methods()) {
+    const auto result{chain->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
   return {};
 }
 
@@ -29,6 +43,12 @@ Monomorphize::visit(const AST_METHOD_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL");
   }
+  for (const auto &chain : node->parameters()) {
+    const auto result{chain->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
   return {};
 }
 
@@ -36,6 +56,10 @@ std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_METHOD_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_DECL");
+  }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
   }
   return {};
 }
@@ -45,6 +69,16 @@ Monomorphize::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_DECL");
   }
+  if (node->super()) {
+    const auto result{node->super()->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
+  }
   return {};
 }
 
@@ -53,6 +87,12 @@ Monomorphize::visit(const AST_SUPER *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SUPER");
   }
+  for (const auto &chain : node->arguments()) {
+    const auto result{chain->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
   return {};
 }
 
@@ -60,6 +100,10 @@ std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_DESTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_DESTRUCTOR_DECL");
+  }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
   }
   return {};
 }
@@ -76,6 +120,12 @@ std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL");
+  }
+  for (const auto &chain : node->parameters()) {
+    const auto result{chain->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
   }
   return {};
 }

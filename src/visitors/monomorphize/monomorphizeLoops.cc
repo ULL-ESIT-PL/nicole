@@ -13,6 +13,14 @@ Monomorphize::visit(const AST_WHILE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_WHILE");
   }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
+  }
   return {};
 }
 
@@ -21,6 +29,26 @@ Monomorphize::visit(const AST_FOR *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FOR");
   }
+  for (const auto &expr : node->init()) {
+    const auto result{expr->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
+  }
+  for (const auto &expr : node->update()) {
+    const auto result{expr->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
+  }
   return {};
 }
 
@@ -28,6 +56,14 @@ std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_DO_WHILE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DO_WHILE");
+  }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
+  }
+  const auto condition{node->condition()->accept(*this)};
+  if (!condition) {
+    return createError(condition.error());
   }
   return {};
 }

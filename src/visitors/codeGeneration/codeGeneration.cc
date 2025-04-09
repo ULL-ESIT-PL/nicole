@@ -24,13 +24,19 @@ CodeGeneration::visit(const AST_STATEMENT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STATEMENT");
   }
-  return {};
+  return node->expression()->accept(*this);
 }
 
 std::expected<std::shared_ptr<llvm::Value>, Error>
 CodeGeneration::visit(const AST_BODY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BODY");
+  }
+  for (const auto &statement : node->body()) {
+    const auto val{statement->accept(*this)};
+    if (!val) {
+      return createError(val.error());
+    }
   }
   return {};
 }
@@ -40,7 +46,7 @@ CodeGeneration::visit(const Tree *tree) const noexcept {
   if (!tree) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid Tree");
   }
-  return {};
+  return tree->root()->accept(*this);
 }
 
 } // namespace nicole

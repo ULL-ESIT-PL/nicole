@@ -11,6 +11,12 @@ Monomorphize::visit(const AST_FUNC_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_FUNC_CALL");
   }
+  for (const auto &chain : node->parameters()) {
+    const auto result{chain->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
   return {};
 }
 
@@ -19,6 +25,10 @@ Monomorphize::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
   }
+  const auto result{node->body()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
+  }
   return {};
 }
 
@@ -26,6 +36,10 @@ std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_RETURN *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_RETURN");
+  }
+  const auto result{node->expression()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
   }
   return {};
 }

@@ -137,7 +137,36 @@ FillSemanticInfo::visit(const AST_METHOD_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL");
   }
+  for (std::size_t i = 0; i < node->replaceOfGenerics().size(); ++i) {
+    auto replacement = node->replaceOfGenerics()[i];
+    if (!typeTable_->isPossibleType(replacement) &&
+        !typeTable_->isGenericType(replacement, currentGenericList_)) {
+      return createError(ERROR_TYPE::TYPE,
+                         replacement->toString() +
+                             " is not a possible type or generic");
+    }
 
+    if (auto maskedEnum = typeTable_->isCompundEnumType(replacement)) {
+      replacement = *maskedEnum;
+      auto setRes = node->setGenericReplacement(i, replacement);
+      if (!setRes)
+        return createError(setRes.error());
+    }
+
+    if (auto maskedGeneric = typeTable_->isCompundGenericType(
+            replacement, currentGenericList_)) {
+      replacement = *maskedGeneric;
+      auto setRes = node->setGenericReplacement(i, replacement);
+      if (!setRes)
+        return createError(setRes.error());
+    }
+  }
+
+  for (const auto &expr : node->parameters()) {
+    const auto result = expr->accept(*this);
+    if (!result)
+      return createError(result.error());
+  }
   return {};
 }
 

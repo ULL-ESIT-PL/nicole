@@ -12,6 +12,12 @@ CodeGeneration::visit(const AST_PRINT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PRINT");
   }
+  for (const auto &chain : node->values()) {
+    const auto result{chain->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+  }
   return {};
 }
 
