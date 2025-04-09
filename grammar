@@ -4,7 +4,7 @@ Start -> StatementList
 
 StatementList -> Statement
 
-Statement -> IF | SWITCH | WHILE | FOR | DO | DEF | STRUCT | CLASS | RETURN | IMPORT | ENUM | LET | CONST | AUTO | selfOperation
+Statement -> IF | SWITCH | WHILE | FOR | DO | DEF | STRUCT | RETURN | IMPORT | ENUM | LET | CONST | AUTO | selfOperation
 
 IF -> if ( or ) { StatementList } elseIfList else { StatementList }
 
@@ -29,8 +29,6 @@ parameters -> id : type,  parameters
     |-- empty
 
 STRUCT -> NOT YET DECIDED
-
-CLASS -> NOT YET DECIDED
 
 RETURN -> return Statement ;
     |

@@ -66,7 +66,6 @@ Nicole::compile(const Options &options) const noexcept {
     std::cout << "|--------------------------------|\n";
   }
 
-  /*
   const nicole::TypeAnalysis typeAnalysis{functionTable, typeTable};
   const auto analyzed{typeAnalysis.analyze((*tree).get())};
   if (!analyzed) {
@@ -74,7 +73,6 @@ Nicole::compile(const Options &options) const noexcept {
   }
 
   std::cout << "Finished type analysis\n";
-  */
 
   return {};
 }
