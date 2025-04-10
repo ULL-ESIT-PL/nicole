@@ -1,7 +1,6 @@
 #include "../inc/compiler/nicole.h"
 
 
-// Just creates a main function for our program like a wrapper
 int main(int argc, char *argv[]) {
   const std::vector<std::string_view> arguments(argv + 1, argv + argc);
   std::expected<nicole::Options, nicole::Error> options{

@@ -19,6 +19,9 @@ TypeAnalysis::visit(const AST_ASSIGNMENT *node) const noexcept {
   if (!left) {
     return createError(left.error());
   }
+  if (const auto constType{std::dynamic_pointer_cast<ConstType>(*left)}) {
+    return createError(ERROR_TYPE::TYPE, "cannot reassign to a const variable");
+  }
   const auto right{node->value()->accept(*this)};
   if (!right) {
     return createError(right.error());
