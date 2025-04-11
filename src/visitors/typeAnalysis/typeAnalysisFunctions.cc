@@ -1,7 +1,7 @@
-#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
 #include "../../../inc/parsingAnalysis/ast/functions/ast_funcCall.h"
 #include "../../../inc/parsingAnalysis/ast/functions/ast_funcDecl.h"
 #include "../../../inc/parsingAnalysis/ast/functions/ast_return.h"
+#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
 #include <cstddef>
 #include <memory>
 
@@ -128,13 +128,14 @@ TypeAnalysis::visit(const AST_RETURN *node) const noexcept {
   if (!result)
     return createError(result.error());
   auto retType = result.value();
-  /*
+
   if (insideDeclWithGenerics &&
-      typeTable_->isGenericType(retType, currentGenericList_))
-    return std::make_shared<PlaceHolder>(retType);
-  */
+      typeTable_->isGenericType(retType, currentGenericList_)) {
+    return retType;
+  }
+
   node->setReturnedFromAnalysis(retType);
   return retType;
 }
 
-}
+} // namespace nicole

@@ -337,7 +337,6 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL");
 
-  // Primero, comprobar si el id del constructor se considera un tipo genérico.
   auto tempUserType = std::make_shared<UserType>(
       node->id(), nullptr, std::vector<GenericParameter>{});
   if (insideDeclWithGenerics &&
@@ -359,7 +358,6 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
     }
   }
 
-  // Procesamiento normal cuando el id no es considerado genérico.
   std::vector<std::shared_ptr<Type>> argTypes;
   for (const auto &expr : node->parameters()) {
     auto res = expr->accept(*this);
@@ -372,6 +370,18 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!baseTypeExp)
     return createError(baseTypeExp.error());
   auto baseType = baseTypeExp.value();
+
+  if (const auto enumType{std::dynamic_pointer_cast<EnumType>(baseType)}) {
+    if (argTypes.size() != 1) {
+      return createError(ERROR_TYPE::TYPE,
+                       "constructor call of a enum must have one argument of the same type");
+    }
+    if (!typeTable_->canAssign(enumType, argTypes[0])) {
+      return createError(ERROR_TYPE::TYPE,
+                       "constructor call of a enum must have one argument of the same type");
+    }
+    return enumType;
+  }
 
   auto userType = std::dynamic_pointer_cast<UserType>(baseType);
   if (!userType)

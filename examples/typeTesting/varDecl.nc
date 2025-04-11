@@ -37,7 +37,7 @@ struct Prueba<T> {
 
 Prueba<Enu***>{};
 
-Enu{};
+Enu{Enu::a};
 
 
 const xxxx: int = 10;

@@ -29,11 +29,10 @@ TypeAnalysis::visit(const AST_IF *node) const noexcept {
   if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
     condType = constCond->baseType();
 
-  /*
   if (insideDeclWithGenerics &&
-      typeTable_->isGenericType(condType, currentGenericList_))
-    return std::make_shared<PlaceHolder>(condType);
-  */
+      typeTable_->isGenericType(condType, currentGenericList_)) {
+    return condType;
+  }
 
   auto boolType = typeTable_->getType("bool");
   if (!typeTable_->areSameType(condType, *boolType))
@@ -107,11 +106,10 @@ TypeAnalysis::visit(const AST_ELSE_IF *node) const noexcept {
   if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
     condType = constCond->baseType();
 
-  /*
   if (insideDeclWithGenerics &&
-      typeTable_->isGenericType(condType, currentGenericList_))
-    return std::make_shared<PlaceHolder>(condType);
-  */
+      typeTable_->isGenericType(condType, currentGenericList_)) {
+    return condType;
+  }
 
   auto boolType = typeTable_->getType("bool");
   if (!typeTable_->areSameType(condType, *boolType))
@@ -146,11 +144,12 @@ TypeAnalysis::visit(const AST_SWITCH *node) const noexcept {
   auto condType = condition.value();
   if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
     condType = constCond->baseType();
-  /*
+
   if (insideDeclWithGenerics &&
-      typeTable_->isGenericType(condType, currentGenericList_))
-    return std::make_shared<PlaceHolder>(condType);
-  */
+      typeTable_->isGenericType(condType, currentGenericList_)) {
+    return condType;
+  }
+
   auto boolType = typeTable_->getType("bool");
   auto intType = typeTable_->getType("int");
   auto charType = typeTable_->getType("char");
@@ -217,11 +216,11 @@ TypeAnalysis::visit(const AST_CASE *node) const noexcept {
   if (auto constMatch = std::dynamic_pointer_cast<ConstType>(matchType))
     matchType = constMatch->baseType();
 
-  /*
   if (insideDeclWithGenerics &&
-      typeTable_->isGenericType(matchType, currentGenericList_))
-    return std::make_shared<PlaceHolder>(matchType);
-  */
+      typeTable_->isGenericType(matchType, currentGenericList_)) {
+    return matchType;
+  }
+
   if (!typeTable_->areSameType(matchType, switchTypeCondition_))
     return createError(ERROR_TYPE::TYPE,
                        "case match type does not match switch condition type");
@@ -279,11 +278,11 @@ TypeAnalysis::visit(const AST_TERNARY *node) const noexcept {
   if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
     condType = constCond->baseType();
 
-  /*
   if (insideDeclWithGenerics &&
-      typeTable_->isGenericType(condType, currentGenericList_))
-    return std::make_shared<PlaceHolder>(condType);
-  */
+      typeTable_->isGenericType(condType, currentGenericList_)) {
+    return condType;
+  }
+
   auto boolType = typeTable_->getType("bool");
   if (!typeTable_->areSameType(condType, *boolType))
     return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
@@ -297,7 +296,6 @@ TypeAnalysis::visit(const AST_TERNARY *node) const noexcept {
       typeTable_->isGenericType(firstType, currentGenericList_))
     firstType = std::make_shared<PlaceHolder>(firstType);
   */
-  // Evaluar la rama 'second'
   auto secondResult = node->second()->accept(*this);
   if (!secondResult)
     return createError(secondResult.error());
@@ -334,11 +332,12 @@ TypeAnalysis::visit(const AST_CONDITION *node) const noexcept {
 
   if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
     condType = constCond->baseType();
-  /*
+
   if (insideDeclWithGenerics &&
-      typeTable_->isGenericType(condType, currentGenericList_))
-    return std::make_shared<PlaceHolder>(condType);
-  */
+      typeTable_->isGenericType(condType, currentGenericList_)) {
+    return condType;
+  }
+
   auto boolType = typeTable_->getType("bool");
   auto intType = typeTable_->getType("int");
   auto charType = typeTable_->getType("char");

@@ -12,42 +12,44 @@ namespace nicole {
  */
 std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_DELETE *node) const noexcept {
-  if (!node) {
+  if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DELETE");
-  }
 
+  // Se analiza el valor que se desea borrar.
   auto result = node->value()->accept(*this);
-  if (!result) {
+  if (!result)
     return createError(result.error());
-  }
-
+  
   auto type = result.value();
 
-  if (insideDeclWithGenerics) {
-    /*
-    if (auto placeholder = std::dynamic_pointer_cast<PlaceHolder>(type)) {
-      auto genericCompound = placeholder->getGenericCompound();
-      if (std::dynamic_pointer_cast<PointerType>(genericCompound)) {
-        return placeholder;
-      }
-      return createError(ERROR_TYPE::TYPE, "can only delete pointers");
-    }
-    */
-  }
+  if (insideDeclWithGenerics && typeTable_->isGenericType(type, currentGenericList_)) {
+    std::shared_ptr<Type> unwrapped = type;
+    if (auto constType = std::dynamic_pointer_cast<ConstType>(unwrapped))
+      unwrapped = constType->baseType();
+    auto pointerType = std::dynamic_pointer_cast<PointerType>(unwrapped);
+    if (!pointerType)
+      return createError(ERROR_TYPE::TYPE, "Delete on generic: type is not a pointer");
+    if (!std::dynamic_pointer_cast<PlaceHolder>(pointerType->baseType()))
+      return createError(ERROR_TYPE::TYPE, "Delete on generic: pointer does not wrap a PlaceHolder");
 
-  if (auto constType = std::dynamic_pointer_cast<ConstType>(type)) {
-    if (std::dynamic_pointer_cast<PointerType>(constType->baseType())) {
-      return type;
-    }
-    return createError(ERROR_TYPE::TYPE, "can only delete pointers");
-  }
-
-  if (std::dynamic_pointer_cast<PointerType>(type)) {
     node->setReturnedFromAnalysis(typeTable_->noPropagateType());
     return typeTable_->noPropagateType();
   }
 
-  return createError(ERROR_TYPE::TYPE, "can only delete pointers");
+  std::shared_ptr<PointerType> pointer =
+      std::dynamic_pointer_cast<PointerType>(type);
+  if (!pointer) {
+    if (auto constType = std::dynamic_pointer_cast<ConstType>(type)) {
+      pointer = std::dynamic_pointer_cast<PointerType>(constType->baseType());
+      if (!pointer)
+        return createError(ERROR_TYPE::TYPE, "can only delete pointers");
+    } else {
+      return createError(ERROR_TYPE::TYPE, "can only delete pointers");
+    }
+  }
+
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
+  return typeTable_->noPropagateType();
 }
 
 /*
@@ -103,11 +105,11 @@ TypeAnalysis::visit(const AST_DEREF *node) const noexcept {
 
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(unwrappedType, currentGenericList_)) {
-    /*
+    
     if (auto ptrType = std::dynamic_pointer_cast<PointerType>(unwrappedType))
-      return std::make_shared<PlaceHolder>(ptrType->baseType());
+      return ptrType->baseType();
     return createError(ERROR_TYPE::TYPE, "can only deref a pointer");
-    */
+    
   }
 
   if (auto ptrType = std::dynamic_pointer_cast<PointerType>(unwrappedType)) {

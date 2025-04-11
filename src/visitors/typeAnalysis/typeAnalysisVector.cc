@@ -69,12 +69,12 @@ TypeAnalysis::visit(const AST_INDEX *node) const noexcept {
   if (!result) {
     return createError(result.error());
   }
-  /*
+  
   if (insideDeclWithGenerics and
       typeTable_->isGenericType(*result, currentGenericList_)) {
-    return std::make_shared<PlaceHolder>(*result);
+    return *result;
   }
-  */
+  
   if (!typeTable_->areSameType(*result, *typeTable_->getType("int"))) {
     return createError(ERROR_TYPE::TYPE, "index must be type int");
   }
