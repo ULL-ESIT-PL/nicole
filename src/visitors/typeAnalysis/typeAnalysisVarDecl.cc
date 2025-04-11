@@ -28,7 +28,7 @@ TypeAnalysis::visit(const AST_AUTO_DECL *node) const noexcept {
   auto insertRes = currentScope_->setVariableType(node->id(), deducedType);
   if (!insertRes)
     return createError(insertRes.error());
-
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 

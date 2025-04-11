@@ -28,6 +28,7 @@ TypeAnalysis::visit(const AST_ASSIGNMENT *node) const noexcept {
   }
   if (!typeTable_->canAssign(left.value(), right.value()))
     return createError(ERROR_TYPE::TYPE, "incompatible types in assignment");
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 

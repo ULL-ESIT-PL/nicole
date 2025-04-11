@@ -32,16 +32,16 @@
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
-            <td class="headerCovTableEntry">27</td>
+            <td class="headerCovTableEntry">36</td>
             <td class="headerCovTableEntry">0</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-04-09 02:10:57</td>
+            <td class="headerValue">2025-04-11 02:11:23</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
-            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntry">11</td>
             <td class="headerCovTableEntry">0</td>
           </tr>
                   <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
@@ -73,7 +73,7 @@
 <span id="L11"><span class="lineNum">      11</span>              : class AST_METHOD_CALL : public AST {</span>
 <span id="L12"><span class="lineNum">      12</span>              : private:</span>
 <span id="L13"><span class="lineNum">      13</span>              :   std::string id_;</span>
-<span id="L14"><span class="lineNum">      14</span>              :   std::vector&lt;std::shared_ptr&lt;Type&gt;&gt; replaceOfGenerics_;</span>
+<span id="L14"><span class="lineNum">      14</span>              :   mutable std::vector&lt;std::shared_ptr&lt;Type&gt;&gt; replaceOfGenerics_;</span>
 <span id="L15"><span class="lineNum">      15</span>              :   std::vector&lt;std::shared_ptr&lt;AST&gt;&gt; parameters_;</span>
 <span id="L16"><span class="lineNum">      16</span>              : </span>
 <span id="L17"><span class="lineNum">      17</span>              : public:</span>
@@ -96,40 +96,52 @@
 <span id="L34"><span class="lineNum">      34</span> <span class="tlaUNC">           0 :     return parameters_;</span></span>
 <span id="L35"><span class="lineNum">      35</span> <span class="tlaUNC">           0 :   }</span></span>
 <span id="L36"><span class="lineNum">      36</span>              : </span>
-<span id="L37"><span class="lineNum">      37</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
-<span id="L38"><span class="lineNum">      38</span> <span class="tlaUNC">           0 :   accept(const PrintTree &amp;visitor) const noexcept override {</span></span>
-<span id="L39"><span class="lineNum">      39</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
-<span id="L40"><span class="lineNum">      40</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L41"><span class="lineNum">      41</span>              : </span>
-<span id="L42"><span class="lineNum">      42</span>              :   [[nodiscard]] std::expected&lt;bool, Error&gt;</span>
-<span id="L43"><span class="lineNum">      43</span> <span class="tlaUNC">           0 :   accept(const ValidateTree &amp;visitor) const noexcept override {</span></span>
-<span id="L44"><span class="lineNum">      44</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
-<span id="L45"><span class="lineNum">      45</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L46"><span class="lineNum">      46</span>              : </span>
-<span id="L47"><span class="lineNum">      47</span>              :   [[nodiscard]] std::expected&lt;std::monostate, Error&gt;</span>
-<span id="L48"><span class="lineNum">      48</span> <span class="tlaUNC">           0 :   accept(const FillSemanticInfo &amp;visitor) const noexcept override {</span></span>
-<span id="L49"><span class="lineNum">      49</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
-<span id="L50"><span class="lineNum">      50</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L51"><span class="lineNum">      51</span>              : </span>
-<span id="L52"><span class="lineNum">      52</span>              :   [[nodiscard]] std::expected&lt;std::shared_ptr&lt;Type&gt;, Error&gt;</span>
-<span id="L53"><span class="lineNum">      53</span> <span class="tlaUNC">           0 :   accept(const TypeAnalysis &amp;visitor) const noexcept override {</span></span>
-<span id="L54"><span class="lineNum">      54</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
-<span id="L55"><span class="lineNum">      55</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L56"><span class="lineNum">      56</span>              : </span>
-<span id="L57"><span class="lineNum">      57</span>              :   [[nodiscard]] std::expected&lt;std::monostate, Error&gt;</span>
-<span id="L58"><span class="lineNum">      58</span> <span class="tlaUNC">           0 :   accept(const Monomorphize &amp;visitor) const noexcept override {</span></span>
-<span id="L59"><span class="lineNum">      59</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
-<span id="L60"><span class="lineNum">      60</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L61"><span class="lineNum">      61</span>              : </span>
-<span id="L62"><span class="lineNum">      62</span>              :   [[nodiscard]] std::expected&lt;std::shared_ptr&lt;llvm::Value&gt;, Error&gt;</span>
-<span id="L63"><span class="lineNum">      63</span> <span class="tlaUNC">           0 :   accept(const CodeGeneration &amp;visitor) const noexcept override {</span></span>
-<span id="L64"><span class="lineNum">      64</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
-<span id="L65"><span class="lineNum">      65</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L66"><span class="lineNum">      66</span>              : };</span>
-<span id="L67"><span class="lineNum">      67</span>              : </span>
-<span id="L68"><span class="lineNum">      68</span>              : } // namespace nicole</span>
-<span id="L69"><span class="lineNum">      69</span>              : </span>
-<span id="L70"><span class="lineNum">      70</span>              : #endif</span>
+<span id="L37"><span class="lineNum">      37</span>              :   [[nodiscard]] std::expected&lt;std::monostate, Error&gt;</span>
+<span id="L38"><span class="lineNum">      38</span>              :   setGenericReplacement(const std::size_t pos,</span>
+<span id="L39"><span class="lineNum">      39</span> <span class="tlaUNC">           0 :                         const std::shared_ptr&lt;Type&gt; &amp;type) const noexcept {</span></span>
+<span id="L40"><span class="lineNum">      40</span> <span class="tlaUNC">           0 :     if (pos &gt;= replaceOfGenerics_.size()) {</span></span>
+<span id="L41"><span class="lineNum">      41</span> <span class="tlaUNC">           0 :       return createError(</span></span>
+<span id="L42"><span class="lineNum">      42</span> <span class="tlaUNC">           0 :           ERROR_TYPE::TYPE,</span></span>
+<span id="L43"><span class="lineNum">      43</span> <span class="tlaUNC">           0 :           &quot;trying to access a invalid position in a replacement list&quot;);</span></span>
+<span id="L44"><span class="lineNum">      44</span> <span class="tlaUNC">           0 :     }</span></span>
+<span id="L45"><span class="lineNum">      45</span> <span class="tlaUNC">           0 :     replaceOfGenerics_[pos] = type;</span></span>
+<span id="L46"><span class="lineNum">      46</span> <span class="tlaUNC">           0 :     return {};</span></span>
+<span id="L47"><span class="lineNum">      47</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L48"><span class="lineNum">      48</span>              : </span>
+<span id="L49"><span class="lineNum">      49</span>              :   [[nodiscard]] std::expected&lt;std::string, Error&gt;</span>
+<span id="L50"><span class="lineNum">      50</span> <span class="tlaUNC">           0 :   accept(const PrintTree &amp;visitor) const noexcept override {</span></span>
+<span id="L51"><span class="lineNum">      51</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
+<span id="L52"><span class="lineNum">      52</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L53"><span class="lineNum">      53</span>              : </span>
+<span id="L54"><span class="lineNum">      54</span>              :   [[nodiscard]] std::expected&lt;bool, Error&gt;</span>
+<span id="L55"><span class="lineNum">      55</span> <span class="tlaUNC">           0 :   accept(const ValidateTree &amp;visitor) const noexcept override {</span></span>
+<span id="L56"><span class="lineNum">      56</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
+<span id="L57"><span class="lineNum">      57</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L58"><span class="lineNum">      58</span>              : </span>
+<span id="L59"><span class="lineNum">      59</span>              :   [[nodiscard]] std::expected&lt;std::monostate, Error&gt;</span>
+<span id="L60"><span class="lineNum">      60</span> <span class="tlaUNC">           0 :   accept(const FillSemanticInfo &amp;visitor) const noexcept override {</span></span>
+<span id="L61"><span class="lineNum">      61</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
+<span id="L62"><span class="lineNum">      62</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L63"><span class="lineNum">      63</span>              : </span>
+<span id="L64"><span class="lineNum">      64</span>              :   [[nodiscard]] std::expected&lt;std::shared_ptr&lt;Type&gt;, Error&gt;</span>
+<span id="L65"><span class="lineNum">      65</span> <span class="tlaUNC">           0 :   accept(const TypeAnalysis &amp;visitor) const noexcept override {</span></span>
+<span id="L66"><span class="lineNum">      66</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
+<span id="L67"><span class="lineNum">      67</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L68"><span class="lineNum">      68</span>              : </span>
+<span id="L69"><span class="lineNum">      69</span>              :   [[nodiscard]] std::expected&lt;std::monostate, Error&gt;</span>
+<span id="L70"><span class="lineNum">      70</span> <span class="tlaUNC">           0 :   accept(const Monomorphize &amp;visitor) const noexcept override {</span></span>
+<span id="L71"><span class="lineNum">      71</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
+<span id="L72"><span class="lineNum">      72</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L73"><span class="lineNum">      73</span>              : </span>
+<span id="L74"><span class="lineNum">      74</span>              :   [[nodiscard]] std::expected&lt;std::shared_ptr&lt;llvm::Value&gt;, Error&gt;</span>
+<span id="L75"><span class="lineNum">      75</span> <span class="tlaUNC">           0 :   accept(const CodeGeneration &amp;visitor) const noexcept override {</span></span>
+<span id="L76"><span class="lineNum">      76</span> <span class="tlaUNC">           0 :     return visitor.visit(this);</span></span>
+<span id="L77"><span class="lineNum">      77</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L78"><span class="lineNum">      78</span>              : };</span>
+<span id="L79"><span class="lineNum">      79</span>              : </span>
+<span id="L80"><span class="lineNum">      80</span>              : } // namespace nicole</span>
+<span id="L81"><span class="lineNum">      81</span>              : </span>
+<span id="L82"><span class="lineNum">      82</span>              : #endif</span>
         </pre>
               </td>
             </tr>

@@ -14,7 +14,9 @@ TypeAnalysis::visit(const AST_BOOL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BOOL");
   }
-  return typeTable_->getType("bool");
+  const auto type{*typeTable_->getType("bool")};
+  node->setReturnedFromAnalysis(type);
+  return type;
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -22,7 +24,9 @@ TypeAnalysis::visit(const AST_CHAR *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CHAR");
   }
-  return typeTable_->getType("char");
+  const auto type{*typeTable_->getType("char")};
+  node->setReturnedFromAnalysis(type);
+  return type;
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -30,7 +34,9 @@ TypeAnalysis::visit(const AST_DOUBLE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DOUBLE");
   }
-  return typeTable_->getType("double");
+  const auto type{*typeTable_->getType("double")};
+  node->setReturnedFromAnalysis(type);
+  return type;
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -38,7 +44,9 @@ TypeAnalysis::visit(const AST_FLOAT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FLOAT");
   }
-  return typeTable_->getType("float");
+  const auto type{*typeTable_->getType("float")};
+  node->setReturnedFromAnalysis(type);
+  return type;
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -46,7 +54,9 @@ TypeAnalysis::visit(const AST_INT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_INT");
   }
-  return typeTable_->getType("int");
+  const auto type{*typeTable_->getType("int")};
+  node->setReturnedFromAnalysis(type);
+  return type;
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -54,7 +64,9 @@ TypeAnalysis::visit(const AST_NULL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_NULL");
   }
-  return typeTable_->null();
+  const auto type{typeTable_->null()};
+  node->setReturnedFromAnalysis(type);
+  return type;
 }
 
 std::expected<std::shared_ptr<Type>, Error>
@@ -62,7 +74,9 @@ TypeAnalysis::visit(const AST_STRING *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRING");
   }
-  return typeTable_->getType("str");
+  const auto type{*typeTable_->getType("str")};
+  node->setReturnedFromAnalysis(type);
+  return type;
 }
 
 }

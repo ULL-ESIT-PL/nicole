@@ -32,12 +32,12 @@
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
-            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">5</td>
             <td class="headerCovTableEntry">0</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-04-09 02:10:57</td>
+            <td class="headerValue">2025-04-11 02:11:23</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
@@ -82,8 +82,8 @@
 <span id="L20"><span class="lineNum">      20</span>              :   Monomorphize(</span>
 <span id="L21"><span class="lineNum">      21</span>              :                const std::shared_ptr&lt;FunctionTable&gt; &amp;functionTable,</span>
 <span id="L22"><span class="lineNum">      22</span>              :                std::shared_ptr&lt;TypeTable&gt; &amp;typeTable) noexcept</span>
-<span id="L23"><span class="lineNum">      23</span>              :       :  functionTable_{functionTable},</span>
-<span id="L24"><span class="lineNum">      24</span> <span class="tlaUNC tlaBgUNC">           0 :         typeTable_{typeTable} {}</span></span>
+<span id="L23"><span class="lineNum">      23</span> <span class="tlaUNC tlaBgUNC">           0 :       :  functionTable_{functionTable},</span></span>
+<span id="L24"><span class="lineNum">      24</span> <span class="tlaUNC">           0 :         typeTable_{typeTable} {}</span></span>
 <span id="L25"><span class="lineNum">      25</span>              : </span>
 <span id="L26"><span class="lineNum">      26</span>              :   [[nodiscard]] std::expected&lt;std::monostate, Error&gt;</span>
 <span id="L27"><span class="lineNum">      27</span>              :   visit(const AST_BOOL *node) const noexcept override;</span>

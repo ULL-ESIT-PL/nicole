@@ -1,10 +1,10 @@
-#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
 #include "../../../inc/parsingAnalysis/ast/conditionals/ast_case.h"
 #include "../../../inc/parsingAnalysis/ast/conditionals/ast_default.h"
 #include "../../../inc/parsingAnalysis/ast/conditionals/ast_elseIf.h"
 #include "../../../inc/parsingAnalysis/ast/conditionals/ast_if.h"
 #include "../../../inc/parsingAnalysis/ast/conditionals/ast_switch.h"
 #include "../../../inc/parsingAnalysis/ast/conditionals/ast_ternary.h"
+#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
 #include <cstddef>
 #include <memory>
 
@@ -84,9 +84,10 @@ TypeAnalysis::visit(const AST_IF *node) const noexcept {
         }
       }
     }
+    node->setReturnedFromAnalysis(commonType);
     return commonType;
   }
-
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 
@@ -105,7 +106,7 @@ TypeAnalysis::visit(const AST_ELSE_IF *node) const noexcept {
 
   if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
     condType = constCond->baseType();
-  
+
   /*
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(condType, currentGenericList_))
@@ -123,8 +124,10 @@ TypeAnalysis::visit(const AST_ELSE_IF *node) const noexcept {
 
   if (!typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) &&
       !typeTable_->areSameType(bodyType, typeTable_->breakType())) {
+    node->setReturnedFromAnalysis(bodyType);
     return bodyType;
   }
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 
@@ -190,8 +193,10 @@ TypeAnalysis::visit(const AST_SWITCH *node) const noexcept {
         }
       }
     }
+    node->setReturnedFromAnalysis(commonType);
     return commonType;
   }
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 
@@ -211,7 +216,7 @@ TypeAnalysis::visit(const AST_CASE *node) const noexcept {
 
   if (auto constMatch = std::dynamic_pointer_cast<ConstType>(matchType))
     matchType = constMatch->baseType();
-  
+
   /*
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(matchType, currentGenericList_))
@@ -228,9 +233,10 @@ TypeAnalysis::visit(const AST_CASE *node) const noexcept {
 
   if (!typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) &&
       !typeTable_->areSameType(bodyType, typeTable_->breakType())) {
+    node->setReturnedFromAnalysis(bodyType);
     return bodyType;
   }
-
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 
@@ -249,8 +255,10 @@ TypeAnalysis::visit(const AST_DEFAULT *node) const noexcept {
 
   if (!typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) &&
       !typeTable_->areSameType(bodyType, typeTable_->breakType())) {
+    node->setReturnedFromAnalysis(bodyType);
     return bodyType;
   }
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 
@@ -270,7 +278,7 @@ TypeAnalysis::visit(const AST_TERNARY *node) const noexcept {
 
   if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
     condType = constCond->baseType();
-  
+
   /*
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(condType, currentGenericList_))
@@ -299,13 +307,16 @@ TypeAnalysis::visit(const AST_TERNARY *node) const noexcept {
       typeTable_->isGenericType(secondType, currentGenericList_))
     secondType = std::make_shared<PlaceHolder>(secondType);
   */
-  if (typeTable_->areSameType(firstType, secondType))
+  if (typeTable_->areSameType(firstType, secondType)) {
+    node->setReturnedFromAnalysis(firstType);
     return firstType;
-  else if (!typeTable_->haveCommonAncestor(firstType, secondType))
+  } else if (!typeTable_->haveCommonAncestor(firstType, secondType))
     return createError(ERROR_TYPE::TYPE,
                        "inconsistent types in ternary operator");
-  else
+  else {
+    node->setReturnedFromAnalysis(firstType);
     return firstType;
+  }
 }
 
 /*
@@ -339,8 +350,8 @@ TypeAnalysis::visit(const AST_CONDITION *node) const noexcept {
     return createError(ERROR_TYPE::TYPE,
                        "condition must be bool, int, char, or enum");
   }
-
+  node->setReturnedFromAnalysis(condType);
   return condType;
 }
 
-}
+} // namespace nicole

@@ -18,7 +18,7 @@ private:
   long long unsigned nodeId_;
   AST_TYPE type_;
   std::weak_ptr<AST> father_;
-  std::shared_ptr<Type> returnedFromTypeAnalysis_{nullptr};
+  mutable std::shared_ptr<Type> returnedFromTypeAnalysis_{nullptr};
 
 public:
   explicit AST(const long long unsigned nodeId, const AST_TYPE type) noexcept
@@ -43,7 +43,8 @@ public:
     father_ = father;
   }
 
-  void setReturnedFromAnalysis(const std::shared_ptr<Type> &type) noexcept {
+  void
+  setReturnedFromAnalysis(const std::shared_ptr<Type> &type) const noexcept {
     returnedFromTypeAnalysis_ = type;
   }
 

@@ -30,6 +30,7 @@ let s: Enu = Enu::a;
 
 struct Prueba<T> {
     constructor<Q>() {
+        let qqqq: Q = 10;
     }
     destructor {}
 }

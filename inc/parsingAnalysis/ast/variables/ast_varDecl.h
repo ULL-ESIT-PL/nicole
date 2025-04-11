@@ -12,7 +12,6 @@ class AST_VAR_DECL : public AST {
 private:
   std::string id_;
   std::shared_ptr<AST> value_;
-  mutable std::shared_ptr<Scope> scope_;
 
 public:
   explicit AST_VAR_DECL(const long long unsigned nodeId, const AST_TYPE astType,
@@ -24,14 +23,6 @@ public:
 
   [[nodiscard]] const std::shared_ptr<AST> &value() const noexcept {
     return value_;
-  }
-
-  [[nodiscard]] const std::shared_ptr<Scope> &scope() const noexcept {
-    return scope_;
-  }
-
-  void setScope(const std::shared_ptr<Scope> &scope) const noexcept {
-    scope_ = scope;
   }
 };
 

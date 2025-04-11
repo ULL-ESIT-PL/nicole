@@ -68,7 +68,7 @@ FillSemanticInfo::visit(const AST_STRUCT *node) const noexcept {
       }
     }
   }
-
+  node->setFatherType(father);
   currentUserType_ =
       std::make_shared<UserType>(node->id(), father, node->generics());
 

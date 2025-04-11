@@ -43,6 +43,7 @@ TypeAnalysis::visit(const AST_DELETE *node) const noexcept {
   }
 
   if (std::dynamic_pointer_cast<PointerType>(type)) {
+    node->setReturnedFromAnalysis(typeTable_->noPropagateType());
     return typeTable_->noPropagateType();
   }
 
@@ -76,7 +77,9 @@ TypeAnalysis::visit(const AST_NEW *node) const noexcept {
         ERROR_TYPE::TYPE,
         "can only use new with primitives, user types or generics");
 
-  return std::make_shared<PointerType>(exprType);
+  const auto wrapperTYpe{std::make_shared<PointerType>(exprType)};
+  node->setReturnedFromAnalysis(wrapperTYpe);
+  return wrapperTYpe;
 }
 
 /*
@@ -107,9 +110,10 @@ TypeAnalysis::visit(const AST_DEREF *node) const noexcept {
     */
   }
 
-  if (auto ptrType = std::dynamic_pointer_cast<PointerType>(unwrappedType))
+  if (auto ptrType = std::dynamic_pointer_cast<PointerType>(unwrappedType)) {
+    node->setReturnedFromAnalysis(ptrType->baseType());
     return ptrType->baseType();
-
+  }
   return createError(ERROR_TYPE::TYPE, "can only deref a pointer");
 }
 

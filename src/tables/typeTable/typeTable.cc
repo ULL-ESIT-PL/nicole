@@ -341,12 +341,15 @@ bool TypeTable::canAssignImpl(const std::shared_ptr<Type> &target,
   if (auto constSource = std::dynamic_pointer_cast<ConstType>(source))
     tSource = constSource->baseType();
 
-  // Manejo de PlaceHolder (omitido para brevedad).
-
   if (auto targetPtr = std::dynamic_pointer_cast<PointerType>(tTarget)) {
     if (auto sourcePtr = std::dynamic_pointer_cast<PointerType>(tSource))
       return canAssignImpl(targetPtr->baseType(), sourcePtr->baseType(), true);
   }
+
+  if (auto holderTarget = std::dynamic_pointer_cast<PlaceHolder>(target))
+    return true;
+  if (auto holderSource = std::dynamic_pointer_cast<PlaceHolder>(source))
+    return true;
 
   auto targetGenInst = std::dynamic_pointer_cast<GenericInstanceType>(tTarget);
   auto sourceGenInst = std::dynamic_pointer_cast<GenericInstanceType>(tSource);

@@ -54,7 +54,6 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
-
   const Function newFunction{node->id(), node->generics(), node->parameters(),
                              node->returnType(), node->body()};
 
@@ -75,9 +74,6 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
     return createError(ERROR_TYPE::FUNCTION, "has duplicated generics");
   }
   node->setGenerics(currentGenericList_);
-
-  if (hasDuplicatedGenerics(currentGenericList_))
-    return createError(ERROR_TYPE::FUNCTION, "has duplicated generics");
 
   std::vector<std::pair<std::string, std::shared_ptr<nicole::Type>>>
       newParameters;

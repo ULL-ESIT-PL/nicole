@@ -70,7 +70,9 @@ TypeAnalysis::visit(const AST_FUNC_CALL *node) const noexcept {
     return createError(ERROR_TYPE::FUNCTION,
                        "ambiguous function call for: " + node->id());
   currentType_ = viableFunctions.front().returnType();
-  return viableFunctions.front().returnType();
+  const auto returnType{viableFunctions.front().returnType()};
+  node->setReturnedFromAnalysis(returnType);
+  return returnType;
 }
 
 /*
@@ -104,6 +106,7 @@ TypeAnalysis::visit(const AST_FUNC_DECL *node) const noexcept {
 
   insideDeclWithGenerics = false;
   currentGenericList_.clear();
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 
@@ -116,8 +119,11 @@ TypeAnalysis::visit(const AST_RETURN *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_RETURN");
   }
-  if (!node->expression())
-    return *typeTable_->getType("void");
+  if (!node->expression()) {
+    const auto voidType{*typeTable_->getType("void")};
+    node->setReturnedFromAnalysis(voidType);
+    return voidType;
+  }
   auto result = node->expression()->accept(*this);
   if (!result)
     return createError(result.error());
@@ -127,6 +133,7 @@ TypeAnalysis::visit(const AST_RETURN *node) const noexcept {
       typeTable_->isGenericType(retType, currentGenericList_))
     return std::make_shared<PlaceHolder>(retType);
   */
+  node->setReturnedFromAnalysis(retType);
   return retType;
 }
 

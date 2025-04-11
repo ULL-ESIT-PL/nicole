@@ -1,9 +1,9 @@
-#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
 #include "../../../inc/parsingAnalysis/ast/loops/ast_doWhile.h"
 #include "../../../inc/parsingAnalysis/ast/loops/ast_for.h"
 #include "../../../inc/parsingAnalysis/ast/loops/ast_pass.h"
 #include "../../../inc/parsingAnalysis/ast/loops/ast_stop.h"
 #include "../../../inc/parsingAnalysis/ast/loops/ast_while.h"
+#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
 #include <memory>
 
 namespace nicole {
@@ -25,7 +25,7 @@ TypeAnalysis::visit(const AST_WHILE *node) const noexcept {
 
   if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
     condType = constCond->baseType();
-  
+
   /*
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(condType, currentGenericList_))
@@ -42,9 +42,10 @@ TypeAnalysis::visit(const AST_WHILE *node) const noexcept {
 
   if (!typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) &&
       !typeTable_->areSameType(bodyType, typeTable_->breakType())) {
+    node->setReturnedFromAnalysis(bodyType);
     return bodyType;
   }
-
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 
@@ -99,9 +100,10 @@ TypeAnalysis::visit(const AST_FOR *node) const noexcept {
 
   if (!typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) &&
       !typeTable_->areSameType(bodyType, typeTable_->breakType())) {
+    node->setReturnedFromAnalysis(bodyType);
     return bodyType;
   }
-
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 
@@ -138,9 +140,10 @@ TypeAnalysis::visit(const AST_DO_WHILE *node) const noexcept {
 
   if (!typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) &&
       !typeTable_->areSameType(bodyType, typeTable_->breakType())) {
+    node->setReturnedFromAnalysis(bodyType);
     return bodyType;
   }
-
+  node->setReturnedFromAnalysis(typeTable_->breakType());
   return typeTable_->noPropagateType();
 }
 
@@ -152,6 +155,7 @@ TypeAnalysis::visit(const AST_PASS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PASS");
   }
+  node->setReturnedFromAnalysis(typeTable_->breakType());
   return typeTable_->breakType();
 }
 
@@ -163,7 +167,8 @@ TypeAnalysis::visit(const AST_STOP *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STOP");
   }
+  node->setReturnedFromAnalysis(typeTable_->breakType());
   return typeTable_->breakType();
 }
 
-}
+} // namespace nicole

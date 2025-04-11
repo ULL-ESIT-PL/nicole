@@ -50,6 +50,7 @@ TypeAnalysis::visit(const AST_STRUCT *node) const noexcept {
   insideDeclWithGenerics = false;
   currentGenericList_.clear();
   analyzingInsideClass = false;
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 
@@ -87,6 +88,7 @@ TypeAnalysis::visit(const AST_ATTR_ACCESS *node) const noexcept {
     attrType = std::make_shared<PlaceHolder>(attrType);
   */
   currentType_ = attrType;
+  node->setReturnedFromAnalysis(attrType);
   return attrType;
 }
 
@@ -164,8 +166,9 @@ TypeAnalysis::visit(const AST_METHOD_CALL *node) const noexcept {
   if (viableMethods.size() > 1)
     return createError(ERROR_TYPE::METHOD,
                        "ambiguous method call for: " + node->id());
-
-  return viableMethods.front().returnType();
+  const auto returnType{viableMethods.front().returnType()};
+  node->setReturnedFromAnalysis(returnType);
+  return returnType;
 }
 
 /*
@@ -197,6 +200,7 @@ TypeAnalysis::visit(const AST_METHOD_DECL *node) const noexcept {
 
   insideDeclWithGenerics = false;
   currentGenericList_.clear();
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 
@@ -227,6 +231,7 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
 
   insideDeclWithGenerics = false;
   currentGenericList_.clear();
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 
@@ -267,11 +272,17 @@ TypeAnalysis::visit(const AST_SUPER *node) const noexcept {
       return createError(
           ERROR_TYPE::TYPE,
           "father type in super call must be a user-defined type");
-    return std::make_shared<GenericInstanceType>(userType,
-                                                 processedReplacements);
+    const auto instance{
+        std::make_shared<GenericInstanceType>(userType, processedReplacements)};
+    node->setReturnedFromAnalysis(instance);
+    return instance;
   }
-
-  return typeTable_->getType(fatherType->toString());
+  const auto result{typeTable_->getType(fatherType->toString())};
+  if (!result) {
+    return createError(result.error());
+  }
+  node->setReturnedFromAnalysis(*result);
+  return result;
 }
 
 /*
@@ -287,6 +298,7 @@ TypeAnalysis::visit(const AST_DESTRUCTOR_DECL *node) const noexcept {
   if (!body) {
     return createError(body.error());
   }
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 
@@ -309,8 +321,10 @@ TypeAnalysis::visit(const AST_THIS *node) const noexcept {
     return createError(ERROR_TYPE::TYPE,
                        "'this' must refer to a user-defined type");
 
-  auto ptrType = std::make_shared<PointerType>(userType);
-  return std::make_shared<ConstType>(ptrType);
+  auto constType =
+      std::make_shared<ConstType>(std::make_shared<PointerType>(userType));
+  node->setReturnedFromAnalysis(constType);
+  return std::make_shared<ConstType>(constType);
 }
 
 /*
@@ -390,13 +404,16 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
     for (const auto &gen : node->replaceOfGenerics()) {
       if (insideDeclWithGenerics &&
           typeTable_->isGenericType(gen, currentGenericList_)) {
-       // genericArgs.push_back(std::make_shared<PlaceHolder>(gen));
+        // genericArgs.push_back(std::make_shared<PlaceHolder>(gen));
       } else
         genericArgs.push_back(gen);
     }
-    return std::make_shared<GenericInstanceType>(userType, genericArgs);
+    const auto instance{
+        std::make_shared<GenericInstanceType>(userType, genericArgs)};
+    node->setReturnedFromAnalysis(instance);
+    return instance;
   }
-
+  node->setReturnedFromAnalysis(baseType);
   return baseType;
 }
 

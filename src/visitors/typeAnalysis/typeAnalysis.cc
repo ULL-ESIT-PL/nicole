@@ -17,8 +17,7 @@ metodos / llamadas a atributos / variables auto
 
 namespace nicole {
 
-std::vector<GenericParameter>
-TypeAnalysis::mergeGenericLists(
+std::vector<GenericParameter> TypeAnalysis::mergeGenericLists(
     const std::vector<GenericParameter> &list,
     const std::vector<GenericParameter> &list1) const noexcept {
   std::vector<GenericParameter> result{};
@@ -35,7 +34,12 @@ TypeAnalysis::visit(const AST_STATEMENT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STATEMENT");
   }
-  return node->expression()->accept(*this);
+  const auto result{node->expression()->accept(*this)};
+  if (!result) {
+    return createError(result.error());
+  }
+  node->setReturnedFromAnalysis(*result);
+  return result;
 }
 
 /*
@@ -86,11 +90,14 @@ TypeAnalysis::visit(const AST_BODY *node) const noexcept {
         // se podría definir commonType como el ancestro común ????????
       }
     }
+    node->setReturnedFromAnalysis(commonType);
     return commonType;
   }
-  if (foundBreak)
+  if (foundBreak) {
+    node->setReturnedFromAnalysis(typeTable_->breakType());
     return typeTable_->breakType();
-
+  }
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 

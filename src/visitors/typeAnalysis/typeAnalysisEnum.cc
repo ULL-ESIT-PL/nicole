@@ -13,7 +13,9 @@ TypeAnalysis::visit(const AST_ENUM *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM");
   }
-  return typeTable_->noPropagateType();
+  const auto type{typeTable_->noPropagateType()};
+  node->setReturnedFromAnalysis(type);
+  return type;
 }
 
 /*
@@ -24,7 +26,12 @@ TypeAnalysis::visit(const AST_ENUM_ACCESS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM_ACCESS");
   }
-  return typeTable_->getType(node->enumId());
+  const auto type{typeTable_->getType(node->enumId())};
+  if (!type) {
+    return createError(ERROR_TYPE::TYPE, "enum does not exist");
+  }
+  node->setReturnedFromAnalysis(*type);
+  return type;
 }
 
 }

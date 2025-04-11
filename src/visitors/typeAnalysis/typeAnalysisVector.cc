@@ -18,9 +18,11 @@ TypeAnalysis::visit(const AST_VECTOR *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VECTOR");
   }
   const auto &values = node->values();
-  if (values.empty())
-    return std::make_shared<VectorType>(typeTable_->null());
-
+  if (values.empty()) {
+    const auto emptyVecType{std::make_shared<VectorType>(typeTable_->null())};
+    node->setReturnedFromAnalysis(emptyVecType);
+    return emptyVecType;
+  }
   auto firstResult = values[0]->accept(*this);
   if (!firstResult)
     return createError(firstResult.error());
@@ -49,8 +51,9 @@ TypeAnalysis::visit(const AST_VECTOR *node) const noexcept {
                            "vector elements do not have a common type");
     }
   }
-
-  return std::make_shared<VectorType>(commonType);
+  const auto vecType{std::make_shared<VectorType>(commonType)};
+  node->setReturnedFromAnalysis(vecType);
+  return std::make_shared<VectorType>(vecType);
 }
 
 /*
@@ -79,6 +82,7 @@ TypeAnalysis::visit(const AST_INDEX *node) const noexcept {
   if (!vectorType) {
     return createError(ERROR_TYPE::TYPE, "can only access to vectors");
   }
+  node->setReturnedFromAnalysis(vectorType->elementType());
   return vectorType->elementType();
 }
 

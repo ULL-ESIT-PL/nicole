@@ -37,6 +37,7 @@ TypeAnalysis::visit(const AST_PRINT *node) const noexcept {
                                                  " must implement toString()");
     }
   }
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 
@@ -48,6 +49,7 @@ TypeAnalysis::visit(const AST_IMPORT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_IMPORT");
   }
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 

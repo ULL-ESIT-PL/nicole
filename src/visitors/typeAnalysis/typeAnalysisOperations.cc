@@ -32,6 +32,7 @@ TypeAnalysis::visit(const AST_BINARY *node) const noexcept {
   auto resultExp = typeTable_->applyBinaryOperator(leftType, rightType, op);
   if (!resultExp)
     return createError(resultExp.error());
+  node->setReturnedFromAnalysis(*resultExp);
   return resultExp.value();
 }
 
@@ -56,6 +57,7 @@ TypeAnalysis::visit(const AST_UNARY *node) const noexcept {
   auto resultTypeExp = typeTable_->applyUnaryOperator(operandType, op);
   if (!resultTypeExp)
     return createError(resultTypeExp.error());
+  node->setReturnedFromAnalysis(*resultTypeExp);
   return resultTypeExp.value();
 }
 

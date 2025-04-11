@@ -23,7 +23,7 @@ TypeAnalysis::visit(const AST_CHAINED *node) const noexcept {
     if (!opRes)
       return createError(opRes.error());
   }
-
+  node->setReturnedFromAnalysis(currentType_);
   return currentType_;
 }
 
