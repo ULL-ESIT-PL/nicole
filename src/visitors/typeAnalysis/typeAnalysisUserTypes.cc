@@ -68,11 +68,12 @@ TypeAnalysis::visit(const AST_ATTR_ACCESS *node) const noexcept {
                        "current type not set for attribute access");
 
   auto baseType = currentType_;
-  /*
+
   if (insideDeclWithGenerics &&
-      typeTable_->isGenericType(baseType, currentGenericList_))
-    return std::make_shared<PlaceHolder>(baseType);
-  */
+      typeTable_->isGenericType(baseType, currentGenericList_)) {
+    return baseType;
+  }
+
   auto userType = std::dynamic_pointer_cast<UserType>(baseType);
   if (!userType)
     return createError(ERROR_TYPE::TYPE,
@@ -346,7 +347,7 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
       for (const auto &gen : node->replaceOfGenerics()) {
         if (insideDeclWithGenerics &&
             typeTable_->isGenericType(gen, currentGenericList_)) {
-          // genericArgs.push_back(std::make_shared<PlaceHolder>(gen));
+           genericArgs.push_back(gen);
         } else
           genericArgs.push_back(gen);
       }
@@ -354,7 +355,7 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
     } else {
       // No se proporcionaron reemplazos; devolvemos un PlaceHolder para el tipo
       // genérico.
-      // return std::make_shared<PlaceHolder>(tempUserType);
+      return tempUserType;
     }
   }
 
@@ -373,12 +374,14 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
 
   if (const auto enumType{std::dynamic_pointer_cast<EnumType>(baseType)}) {
     if (argTypes.size() != 1) {
-      return createError(ERROR_TYPE::TYPE,
-                       "constructor call of a enum must have one argument of the same type");
+      return createError(
+          ERROR_TYPE::TYPE,
+          "constructor call of a enum must have one argument of the same type");
     }
     if (!typeTable_->canAssign(enumType, argTypes[0])) {
-      return createError(ERROR_TYPE::TYPE,
-                       "constructor call of a enum must have one argument of the same type");
+      return createError(
+          ERROR_TYPE::TYPE,
+          "constructor call of a enum must have one argument of the same type");
     }
     return enumType;
   }
@@ -414,7 +417,7 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
     for (const auto &gen : node->replaceOfGenerics()) {
       if (insideDeclWithGenerics &&
           typeTable_->isGenericType(gen, currentGenericList_)) {
-        // genericArgs.push_back(std::make_shared<PlaceHolder>(gen));
+         genericArgs.push_back(gen);
       } else
         genericArgs.push_back(gen);
     }
