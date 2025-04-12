@@ -98,3 +98,5 @@ These versions were used during the development phase but they might not be need
 ## Features yet to implement
 
 ## Folder structure
+
+## Grammar

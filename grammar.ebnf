@@ -1,0 +1,119 @@
+Nicole Grammar using EBNF format
+
+program = BODY;
+
+BODY= { STATEMENT };
+
+STATEMENT = IF | SWITCH | WHILE | FOR | DO | DEF | STRUCT | DELETE | NEW | RETURN | IMPORT | PRINT | ENUM | LET | CONST | AUTO | ASSIGMENT;
+
+IF = if,  '(', OR, ')', '{', BODY, '}', ELSE_IF_LIST;
+
+ELSE_IF_LIST= else, if, '(', OR, ')', '{', BODY, '}', ELSE_IF_LIST| ELSE;
+
+ELSE = else, '{', BODY, '}'  | empty;
+
+SWITCH = switch,  '(', OR, ')', '{', CASES, '}';
+
+CASES= case, {'int' | 'char' | 'bool'}, ':',  '{', BODY, '}', CASES | DEFAULT;
+
+DEFAULT =  default, '{', BODY, '}' | empty;
+
+WHILE = while, '(', OR, ')', '{', BODY, '}';
+
+FOR =  for, '(', INIT, ';', OR, ';', UPDATE, ')', '{', BODY, '}';
+
+DO =  do, '{', BODY, '}', while, '(', OR, ')';
+
+DEF =  def, id, GENERIC_LIST, '(', PARAMETERS, ')', ':', type, '{', BODY, '}';
+
+GENERIC_LIST = '<', AUXILIAR_GENERIC_LIST | empty;
+
+AUXILIAR_GENERIC_LIST = 'id', ',', SECOND_AUXILIAR_GENERIC_LIST;
+
+SECOND_AUXILIAR_GENERIC_LIST = id, AUXILAIR_GENERIC_LIST | empty;
+
+PARAMETERS= id, ':', type, ',',  PARAMETERS| empty;
+
+NEW = 'new', TERNARY ;
+
+DELETE = 'delete', TERNARY, ';' ;
+
+RETURN = return, (TERNARY| empty), ';' ;
+
+IMPORT = import, string, ';' ;
+
+ENUM = enum, id, '{', enumValues, '}';
+
+enumValues = id, enumValues | empty ;
+
+PRINT = 'print', '(', ARGS, ')';
+
+ARGS = TERNARY, ARGS | empty;
+
+CONST = const, id, ':', type, '=', TERNARY, ';' ;
+
+LET= let, id, ':', type, '=', TERNARY, ';' ;
+
+AUTO = auto, id, ':', '=', TERNARY, ';' ;
+
+ASSIGNMENT = TERNARY, (':=' | '+=' | '-=' | '*=' | '/='), TERNARY;
+
+TERNARY = '(', OR, ')', '?', OR, ':', OR | OR;
+
+OR = (, AND, ), or, AND | AND;
+
+AND = (, EQUAL, ), and, EQUAL | EQUAL;
+
+EQUAL= (, COMPARE, ), ('==' | '!='), COMPARE | COMPARE;
+
+COMPARE = (, ADD_SUB , ), ('<' | '<=' | '>' | '>='), ADD_SUB | ADD_SUB ;
+
+ADD_SUB = (, MULT_DIV_MODULE , ), ('+' | '-'), MULT_DIV_MODULE | MULT_DIV_MODULE ;
+
+MULT_DIV_MODULE = (, FACTOR , ), ('*' | '/' | '%'), FACTOR | FACTOR ;
+
+FACTOR = 'true' | 'false' | 'number' | 'char' | 'string' | 'null' | 'pass' | 'stop' | NOT | INCREMENT | DECREMENT | NEG | DEREF | VECTOR | CHAINED | empty;
+
+NOT = '!', OR;
+
+INCREMENT = '++', OR;
+
+DECREMENT = '--', OR;
+
+NEG = '-', OR;
+
+DEREF = '*', '(', OR, ')' ;
+
+VECTOR = '[', ARGS, ']' ;
+
+CHAINED = 'id', POSSIBLES;
+
+POSSIBLES = FUNC_CALL | CONSTRUCTOR_CALL | ENUM_ACCESS;
+
+FUNC_CALL = GERERIC_REPLACEMENTS, '(', ARGS, ')', AFTER_POSSIBLES;
+
+CONSTRUCTOR_CALL = GERERIC_REPLACEMENTS, '{', ARGS, '}', AFTER_POSSIBLES;
+
+ENUM_ACCESS = '::', 'id';
+
+AFTER_POSSIBLES = ATTR_ACCESS | METHOD_CALL | empty;
+
+ATTR_ACCESS = '.', 'id', AFTER_POSSIBLES;
+
+METHOD_CALL = '.', 'id', GERERIC_REPLACEMENTS, '(', ARGS, ')', AFTER_POSSIBLES;
+
+GENERIC_REPLACEMENTS = '<', TYPE_LIST,  | empty;
+
+TYPE_LIST = TYPE, ',', TYPE_LIST_TRAILING;
+
+TYPE_LIST_TRAILING = TYPE_LIST | '>';
+
+TYPE = 'void' | OTHER_TYPES;
+
+OTHER_TYPES = VECTOR_TYPE | PTR_TYPE;
+
+VECTOR_TYPE = 'vector', '<', OTHER_TYPES, '>' | PRIMITIVES;
+
+PTR_TYPE = OTHER_TYPES, '*';
+
+PRIMTIVES = ('int' | 'bool' | 'char', | 'double' | 'float' | 'str') ;
