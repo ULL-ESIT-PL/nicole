@@ -191,12 +191,24 @@ TypeAnalysis::visit(const AST_METHOD_DECL *node) const noexcept {
     return createError(bodyRes.error());
   auto bodyType = bodyRes.value();
 
-  if (!typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) &&
-      !typeTable_->areSameType(bodyType, typeTable_->breakType())) {
-    if (!typeTable_->canAssign(node->returnType(), bodyType))
+  auto voidType = *typeTable_->getType("void");
+  auto declaredReturnType = node->returnType();
+
+  if (typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) ||
+      typeTable_->areSameType(bodyType, voidType)) {
+    if (!typeTable_->areSameType(declaredReturnType, voidType)) {
+      return createError(ERROR_TYPE::TYPE,
+                         "function body returns void/noPropagate, but function "
+                         "return type is: " +
+                             declaredReturnType->toString());
+    }
+  } else {
+    if (!typeTable_->canAssign(declaredReturnType, bodyType)) {
       return createError(
           ERROR_TYPE::TYPE,
-          "method body return type does not match declared return type");
+          "function body return type does not match declared return type -> " +
+              declaredReturnType->toString() + " | " + bodyType->toString());
+    }
   }
 
   insideDeclWithGenerics = false;

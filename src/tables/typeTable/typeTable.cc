@@ -315,14 +315,11 @@ bool TypeTable::areSameType(const std::shared_ptr<Type> &type1,
   return type1->toString() == type2->toString();
 }
 
-// Función pública que no requiere el tercer parámetro.
 bool TypeTable::canAssign(const std::shared_ptr<Type> &target,
                           const std::shared_ptr<Type> &source) const noexcept {
   return canAssignImpl(target, source, false);
 }
 
-// Función interna que maneja la lógica completa, incluyendo el parámetro
-// pointerContext.
 bool TypeTable::canAssignImpl(const std::shared_ptr<Type> &target,
                               const std::shared_ptr<Type> &source,
                               bool pointerContext) const noexcept {
@@ -439,9 +436,7 @@ TypeTable::applyUnaryOperator(const std::shared_ptr<Type> &operand,
     t = constType->baseType();
 
   if (std::dynamic_pointer_cast<PlaceHolder>(t))
-    return createError(
-        ERROR_TYPE::TYPE,
-        "cannot apply unary operator to unresolved generic type");
+    return *getType("bool");
 
   // Si el operando es un tipo definido por el usuario, se busca el método
   // correspondiente sin parámetros.
@@ -495,10 +490,8 @@ TypeTable::applyUnaryOperator(const std::shared_ptr<Type> &operand,
     case TokenType::DECREMENT:
       return t; // Se retorna el mismo tipo puntero.
     case TokenType::OPERATOR_NOT: {
-      auto boolTypeExp = getType("bool");
-      if (!boolTypeExp)
-        return createError(ERROR_TYPE::TYPE, "bool type not found");
-      return boolTypeExp.value();
+      auto boolTypeExp = *getType("bool");
+      return boolTypeExp;
     }
     default:
       return createError(ERROR_TYPE::TYPE,
@@ -510,11 +503,15 @@ TypeTable::applyUnaryOperator(const std::shared_ptr<Type> &operand,
   if (auto basic = std::dynamic_pointer_cast<BasicType>(t)) {
     switch (op) {
     case TokenType::OPERATOR_NOT: {
-      // El resultado de ! siempre es bool.
-      auto boolTypeExp = getType("bool");
-      if (!boolTypeExp)
-        return createError(ERROR_TYPE::TYPE, "bool type not found");
-      return boolTypeExp.value();
+      switch (basic->baseKind()) {
+      case BasicKind::Str:
+        return createError(ERROR_TYPE::TYPE,
+                           "operator " + tokenTypeToString(op) +
+                               " cannot be applied to type " + t->toString());
+      default:
+        auto boolTypeExp = *getType("bool");
+        return boolTypeExp;
+      }
     }
     case TokenType::INCREMENT:
     case TokenType::DECREMENT:

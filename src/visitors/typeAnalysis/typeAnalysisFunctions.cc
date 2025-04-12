@@ -91,35 +91,27 @@ TypeAnalysis::visit(const AST_FUNC_DECL *node) const noexcept {
     currentGenericList_ = node->generics();
   }
 
-  // Analiza el cuerpo de la función
   auto bodyRes = node->body()->accept(*this);
   if (!bodyRes)
     return createError(bodyRes.error());
   auto bodyType = bodyRes.value();
-  // Obtenemos el tipo "void" de la tabla de tipos.
   auto voidType = *typeTable_->getType("void");
-
-  // Se obtiene el tipo declarado como returnType de la función.
   auto declaredReturnType = node->returnType();
 
-  // Caso 1: El cuerpo no produce un valor (bodyType es noPropagate o void).
   if (typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) ||
       typeTable_->areSameType(bodyType, voidType)) {
-    // Para que la función sea válida, el returnType declarado debe ser void.
     if (!typeTable_->areSameType(declaredReturnType, voidType)) {
-      return createError(
-          ERROR_TYPE::TYPE,
-          "function body returns void/noPropagate, but function return type is: " +
-          declaredReturnType->toString());
+      return createError(ERROR_TYPE::TYPE,
+                         "function body returns void/noPropagate, but function "
+                         "return type is: " +
+                             declaredReturnType->toString());
     }
-  }
-  // Caso 2: El cuerpo produce un valor (diferente a void/noPropagate).
-  else {
+  } else {
     if (!typeTable_->canAssign(declaredReturnType, bodyType)) {
       return createError(
           ERROR_TYPE::TYPE,
           "function body return type does not match declared return type -> " +
-          declaredReturnType->toString() + " | " + bodyType->toString());
+              declaredReturnType->toString() + " | " + bodyType->toString());
     }
   }
 
@@ -128,8 +120,6 @@ TypeAnalysis::visit(const AST_FUNC_DECL *node) const noexcept {
   node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
-
-
 
 /*
 - si esta vacio retorna void

@@ -31,6 +31,7 @@ let s: Enu = Enu::a;
 struct Prueba<T> {
     constructor<Q>() {
         let qqqq: Q = 10;
+        if (!qqqq) {}
     }
     destructor {}
 }
@@ -45,11 +46,13 @@ const xxxx: int = 10;
 /*
 xxxx := 10;
 */
-if (!1) {
+if (!"1") {
     return ;
 }
 
 return;
+
+print(Enu{Enu::a});
 
 
 def fooooooo (): void { 
