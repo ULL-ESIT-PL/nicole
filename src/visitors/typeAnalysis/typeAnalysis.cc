@@ -71,6 +71,17 @@ TypeAnalysis::visit(const AST_BODY *node) const noexcept {
       continue;
     }
 
+    if (!node->father()) {
+      const auto voidType{*typeTable_->getType("void")};
+      const auto noPropagateType{typeTable_->noPropagateType()};
+      const auto intType{*typeTable_->getType("int")};
+      if (!typeTable_->areSameType(type, voidType) and
+          !typeTable_->areSameType(type, noPropagateType) and
+          !typeTable_->areSameType(type, intType)) {
+        continue;
+      }
+    }
+
     returnTypes.push_back(type);
   }
 
@@ -85,9 +96,8 @@ TypeAnalysis::visit(const AST_BODY *node) const noexcept {
       if (!typeTable_->areSameType(commonType, returnTypes[i])) {
         if (!typeTable_->haveCommonAncestor(commonType, returnTypes[i])) {
           return createError(ERROR_TYPE::TYPE,
-                             "inconsistent return types in body");
+                             "inconsistent return types in body with id: " + std::to_string(node->nodeId()));
         }
-        // se podría definir commonType como el ancestro común ????????
       }
     }
     node->setReturnedFromAnalysis(commonType);

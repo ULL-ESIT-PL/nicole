@@ -42,4 +42,18 @@ Enu{Enu::a};
 
 const xxxx: int = 10;
 
+/*
 xxxx := 10;
+*/
+if (!1) {
+    return ;
+}
+
+return;
+
+
+def fooooooo (): void { 
+    if (true) {
+        return ;
+    }
+ }

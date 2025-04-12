@@ -83,25 +83,44 @@ TypeAnalysis::visit(const AST_FUNC_CALL *node) const noexcept {
 */
 std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_FUNC_DECL *node) const noexcept {
-  if (!node) {
+  if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
-  }
 
   if (!node->generics().empty()) {
     insideDeclWithGenerics = true;
     currentGenericList_ = node->generics();
   }
 
+  // Analiza el cuerpo de la función
   auto bodyRes = node->body()->accept(*this);
   if (!bodyRes)
     return createError(bodyRes.error());
   auto bodyType = bodyRes.value();
+  // Obtenemos el tipo "void" de la tabla de tipos.
+  auto voidType = *typeTable_->getType("void");
 
-  if (!typeTable_->areSameType(bodyType, typeTable_->noPropagateType())) {
-    if (!typeTable_->canAssign(node->returnType(), bodyType))
+  // Se obtiene el tipo declarado como returnType de la función.
+  auto declaredReturnType = node->returnType();
+
+  // Caso 1: El cuerpo no produce un valor (bodyType es noPropagate o void).
+  if (typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) ||
+      typeTable_->areSameType(bodyType, voidType)) {
+    // Para que la función sea válida, el returnType declarado debe ser void.
+    if (!typeTable_->areSameType(declaredReturnType, voidType)) {
       return createError(
           ERROR_TYPE::TYPE,
-          "function body return type does not match declared return type");
+          "function body returns void/noPropagate, but function return type is: " +
+          declaredReturnType->toString());
+    }
+  }
+  // Caso 2: El cuerpo produce un valor (diferente a void/noPropagate).
+  else {
+    if (!typeTable_->canAssign(declaredReturnType, bodyType)) {
+      return createError(
+          ERROR_TYPE::TYPE,
+          "function body return type does not match declared return type -> " +
+          declaredReturnType->toString() + " | " + bodyType->toString());
+    }
   }
 
   insideDeclWithGenerics = false;
@@ -109,6 +128,8 @@ TypeAnalysis::visit(const AST_FUNC_DECL *node) const noexcept {
   node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
+
+
 
 /*
 - si esta vacio retorna void
