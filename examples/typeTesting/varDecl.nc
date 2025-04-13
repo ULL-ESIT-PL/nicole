@@ -77,3 +77,13 @@ Madrid{}.x + 1;
 
 
 return;
+
+
+struct T {
+    constructor() {}
+    destructor {}
+}
+
+def lll<T>(): void {
+    let cccc: T = T{};
+}
