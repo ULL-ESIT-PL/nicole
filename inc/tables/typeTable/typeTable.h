@@ -95,14 +95,21 @@ public:
   haveCommonAncestor(const std::shared_ptr<Type> &type1,
                      const std::shared_ptr<Type> &type2) const noexcept;
 
-  std::expected<std::shared_ptr<Type>, Error>
+  [[nodiscard]] std::expected<std::shared_ptr<Type>, Error>
   applyUnaryOperator(const std::shared_ptr<Type> &operand,
                      const TokenType op) const noexcept;
 
-  std::expected<std::shared_ptr<Type>, Error>
+  [[nodiscard]] std::expected<std::shared_ptr<Type>, Error>
   applyBinaryOperator(const std::shared_ptr<Type> &left,
                       const std::shared_ptr<Type> &right,
                       TokenType op) const noexcept;
+
+  [[nodiscard]] std::expected<std::string, Error>
+  nameMangling(const std::shared_ptr<Type> &type) const noexcept;
+
+  [[nodiscard]] std::expected<std::string, Error>
+  nameManglingImpl(const std::shared_ptr<Type> &type,
+                   std::string &result) const noexcept;
 };
 
 } // namespace nicole

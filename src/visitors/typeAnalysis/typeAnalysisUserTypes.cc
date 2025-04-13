@@ -27,6 +27,7 @@ TypeAnalysis::visit(const AST_STRUCT *node) const noexcept {
     currentGenericList_ = node->generics();
   }
 
+  firstBody = false;
   analyzingInsideClass = true;
 
   if (node->constructor()) {
@@ -50,6 +51,7 @@ TypeAnalysis::visit(const AST_STRUCT *node) const noexcept {
   insideDeclWithGenerics = false;
   currentGenericList_.clear();
   analyzingInsideClass = false;
+  firstBody = true;
   node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
@@ -359,7 +361,7 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
       for (const auto &gen : node->replaceOfGenerics()) {
         if (insideDeclWithGenerics &&
             typeTable_->isGenericType(gen, currentGenericList_)) {
-           genericArgs.push_back(gen);
+          genericArgs.push_back(gen);
         } else
           genericArgs.push_back(gen);
       }
@@ -427,7 +429,7 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
     for (const auto &gen : node->replaceOfGenerics()) {
       if (insideDeclWithGenerics &&
           typeTable_->isGenericType(gen, currentGenericList_)) {
-         genericArgs.push_back(gen);
+        genericArgs.push_back(gen);
       } else
         genericArgs.push_back(gen);
     }

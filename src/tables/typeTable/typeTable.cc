@@ -558,7 +558,7 @@ TypeTable::applyBinaryOperator(const std::shared_ptr<Type> &leftOperand,
         std::dynamic_pointer_cast<BasicType>(rightResolvedType);
     if (leftBasicType && rightBasicType) {
       // Si alguno es de tipo cadena (Str), se asume concatenación.
-      if (leftBasicType->baseKind() == BasicKind::Str ||
+      if (leftBasicType->baseKind() == BasicKind::Str and
           rightBasicType->baseKind() == BasicKind::Str) {
         std::expected<std::shared_ptr<Type>, Error> stringTypeExp =
             getType("str");
@@ -851,9 +851,7 @@ TypeTable::applyBinaryOperator(const std::shared_ptr<Type> &leftOperand,
   // sin resolver.
   if (std::dynamic_pointer_cast<PlaceHolder>(leftResolvedType) ||
       std::dynamic_pointer_cast<PlaceHolder>(rightResolvedType)) {
-    return createError(ERROR_TYPE::TYPE,
-                       "binary operator " + tokenTypeToString(operatorToken) +
-                           " not supported on generic placeholders");
+    return leftResolvedType;
   }
 
   // Si leftOperand es un PointerType y ningún otro caso aplicó:
@@ -875,6 +873,20 @@ TypeTable::applyBinaryOperator(const std::shared_ptr<Type> &leftOperand,
       "operator " + tokenTypeToString(operatorToken) +
           " not implemented for given types: " + leftResolvedType->toString() +
           " and " + rightResolvedType->toString());
+}
+
+std::expected<std::string, Error>
+TypeTable::nameMangling(const std::shared_ptr<Type> &type) const noexcept {
+  std::string result{"$"};
+  return nameManglingImpl(type, result);
+}
+
+std::expected<std::string, Error>
+TypeTable::nameManglingImpl(const std::shared_ptr<Type> &type,
+                            std::string &result) const noexcept {
+  if (type) {
+  }
+  return result;
 }
 
 } // namespace nicole

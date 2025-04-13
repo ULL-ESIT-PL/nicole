@@ -64,3 +64,16 @@ def fooooooo (): void {
         return ;
     }
  }
+
+
+
+ struct Madrid {
+    x: int
+    constructor() {}
+    destructor {}
+}
+
+Madrid{}.x + 1;
+
+
+return;

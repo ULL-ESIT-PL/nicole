@@ -86,6 +86,8 @@ TypeAnalysis::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
 
+  firstBody = false;
+
   if (!node->generics().empty()) {
     insideDeclWithGenerics = true;
     currentGenericList_ = node->generics();
@@ -116,6 +118,7 @@ TypeAnalysis::visit(const AST_FUNC_DECL *node) const noexcept {
   }
 
   insideDeclWithGenerics = false;
+  firstBody = true;
   currentGenericList_.clear();
   node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
@@ -130,8 +133,14 @@ TypeAnalysis::visit(const AST_RETURN *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_RETURN");
   }
+
+  if (firstBody)
+    foundReturn = true;
+  else {
+    foundReturn = false;
+  }
+  const auto voidType{*typeTable_->getType("void")};
   if (!node->expression()) {
-    const auto voidType{*typeTable_->getType("void")};
     node->setReturnedFromAnalysis(voidType);
     return voidType;
   }
@@ -143,6 +152,12 @@ TypeAnalysis::visit(const AST_RETURN *node) const noexcept {
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(retType, currentGenericList_)) {
     return retType;
+  }
+
+  if (typeTable_->areSameType(retType, voidType)) {
+    return createError(ERROR_TYPE::TYPE,
+                       "a return statement can return void when it does not "
+                       "have expression, but if it has it must not be void");
   }
 
   node->setReturnedFromAnalysis(retType);

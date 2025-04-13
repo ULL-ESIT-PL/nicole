@@ -24,6 +24,8 @@ private:
   mutable std::shared_ptr<Type> switchTypeCondition_{nullptr};
   mutable bool analyzingInsideClass{false};
   mutable bool insideDeclWithGenerics{false};
+  mutable bool firstBody{true};
+  mutable bool foundReturn{false};
 
   [[nodiscard]] std::vector<GenericParameter>
   mergeGenericLists(const std::vector<GenericParameter> &list1,

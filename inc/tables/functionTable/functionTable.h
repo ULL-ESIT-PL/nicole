@@ -30,8 +30,13 @@ public:
                     const std::shared_ptr<Type> &type) noexcept;
 
   [[nodiscard]] std::expected<std::monostate, Error>
-  setFuncParameters(const std::string &id,
-                    const Parameters &params) noexcept;
+  setFuncParameters(const std::string &id, const Parameters &params) noexcept;
+
+  [[nodiscard]] std::expected<std::string, Error>
+  nameMangling(const Function &type) const noexcept;
+
+  [[nodiscard]] std::expected<std::string, Error>
+  nameManglingImpl(const Function &type, std::string &result) const noexcept;
 };
 
 } // namespace nicole

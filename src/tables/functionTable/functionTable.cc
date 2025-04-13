@@ -48,5 +48,18 @@ FunctionTable::setFuncParameters(const std::string &id,
   return std::expected<std::monostate, Error>{std::monostate{}};
 }
 
+std::expected<std::string, Error>
+FunctionTable::nameMangling(const Function &type) const noexcept {
+  std::string result{"$"};
+  return nameManglingImpl(type, result);
+}
+
+std::expected<std::string, Error>
+FunctionTable::nameManglingImpl(const Function &type,
+                                std::string &result) const noexcept {
+  if (type.returnType()) {
+  }
+  return result;
+}
 
 } // namespace nicole
