@@ -365,8 +365,6 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
       }
       return std::make_shared<GenericInstanceType>(tempUserType, genericArgs);
     } else {
-      // No se proporcionaron reemplazos; devolvemos un PlaceHolder para el tipo
-      // genérico.
       return tempUserType;
     }
   }

@@ -539,39 +539,342 @@ TypeTable::applyUnaryOperator(const std::shared_ptr<Type> &operand,
 }
 
 std::expected<std::shared_ptr<Type>, Error>
-TypeTable::applyBinaryOperator(const std::shared_ptr<Type> &left,
-                               const std::shared_ptr<Type> &right,
-                               TokenType op) const noexcept {
-  std::shared_ptr<Type> l = left;
-  std::shared_ptr<Type> r = right;
+TypeTable::applyBinaryOperator(const std::shared_ptr<Type> &leftOperand,
+                               const std::shared_ptr<Type> &rightOperand,
+                               TokenType operatorToken) const noexcept {
+  // Desenrollar los tipos constantes para trabajar con la representación base.
+  std::shared_ptr<Type> leftResolvedType = leftOperand;
+  std::shared_ptr<Type> rightResolvedType = rightOperand;
+  if (auto leftConst = std::dynamic_pointer_cast<ConstType>(leftResolvedType))
+    leftResolvedType = leftConst->baseType();
+  if (auto rightConst = std::dynamic_pointer_cast<ConstType>(rightResolvedType))
+    rightResolvedType = rightConst->baseType();
 
-  if (auto lConst = std::dynamic_pointer_cast<ConstType>(l))
-    l = lConst->baseType();
-  if (auto rConst = std::dynamic_pointer_cast<ConstType>(r))
-    r = rConst->baseType();
-
-  switch (op) {
-  case TokenType::OPERATOR_ADD: {
-    auto leftBasic = std::dynamic_pointer_cast<BasicType>(l);
-    auto rightBasic = std::dynamic_pointer_cast<BasicType>(r);
-    if (leftBasic && rightBasic) {
-      if (areSameType(l, r))
-        return l;
+  // Caso: operador +
+  if (operatorToken == TokenType::OPERATOR_ADD) {
+    // Caso 1: Operando izquierdo y derecho son BasicType.
+    auto leftBasicType = std::dynamic_pointer_cast<BasicType>(leftResolvedType);
+    auto rightBasicType =
+        std::dynamic_pointer_cast<BasicType>(rightResolvedType);
+    if (leftBasicType && rightBasicType) {
+      // Si alguno es de tipo cadena (Str), se asume concatenación.
+      if (leftBasicType->baseKind() == BasicKind::Str ||
+          rightBasicType->baseKind() == BasicKind::Str) {
+        std::expected<std::shared_ptr<Type>, Error> stringTypeExp =
+            getType("str");
+        if (!stringTypeExp)
+          return createError(ERROR_TYPE::TYPE, "string type not found");
+        return stringTypeExp.value();
+      }
+      // Si son numéricos y ambos son del mismo tipo.
+      if (areSameType(leftResolvedType, rightResolvedType))
+        return leftResolvedType;
       else
         return createError(ERROR_TYPE::TYPE,
-                           "incompatible types for operator +");
+                           "incompatible numeric types for operator +");
     }
-    // Extend here for string concatenation, pointer arithmetic, etc.
+    // Caso 2: Aritmética de punteros: si el operando izquierdo es un puntero
+    // y el derecho es un entero (o un char).
+    auto leftPointerType =
+        std::dynamic_pointer_cast<PointerType>(leftResolvedType);
+    auto rightNumericBasic =
+        std::dynamic_pointer_cast<BasicType>(rightResolvedType);
+    if (leftPointerType && rightNumericBasic &&
+        (rightNumericBasic->baseKind() == BasicKind::Int ||
+         rightNumericBasic->baseKind() == BasicKind::Char)) {
+      return leftResolvedType;
+    }
     return createError(ERROR_TYPE::TYPE,
-                       "operator + not applicable for given types");
+                       "operator + not applicable for given types: " +
+                           leftResolvedType->toString() + " and " +
+                           rightResolvedType->toString());
   }
-  // Cases for other operators (OR, AND, SMALLEREQUAL, BIGGEREQUAL, NOTEQUAL,
-  // EQUAL, OPERATOR_SUB, OPERATOR_MULT, OPERATOR_DIV, OPERATOR_SMALLER,
-  // OPERATOR_GREATER, OPERATOR_MODULE)
-  default:
+
+  // Caso: operador -
+  if (operatorToken == TokenType::OPERATOR_SUB) {
+    // Caso 1: Resta entre BasicType numéricos.
+    auto leftNumericType =
+        std::dynamic_pointer_cast<BasicType>(leftResolvedType);
+    auto rightNumericType =
+        std::dynamic_pointer_cast<BasicType>(rightResolvedType);
+    if (leftNumericType && rightNumericType) {
+      if (areSameType(leftResolvedType, rightResolvedType))
+        return leftResolvedType;
+      else
+        return createError(ERROR_TYPE::TYPE,
+                           "incompatible numeric types for operator -");
+    }
+    // Caso 2: Resta entre punteros.
+    auto leftPtrType = std::dynamic_pointer_cast<PointerType>(leftResolvedType);
+    if (leftPtrType) {
+      auto rightNumericOperand =
+          std::dynamic_pointer_cast<BasicType>(rightResolvedType);
+      if (rightNumericOperand &&
+          (rightNumericOperand->baseKind() == BasicKind::Int ||
+           rightNumericOperand->baseKind() == BasicKind::Char)) {
+        return leftResolvedType;
+      }
+      // Si se resta dos punteros, el resultado es un entero.
+      auto rightPtrType =
+          std::dynamic_pointer_cast<PointerType>(rightResolvedType);
+      if (rightPtrType) {
+        std::expected<std::shared_ptr<Type>, Error> intTypeExp = getType("int");
+        if (!intTypeExp)
+          return createError(ERROR_TYPE::TYPE, "int type not found");
+        return intTypeExp.value();
+      }
+    }
     return createError(ERROR_TYPE::TYPE,
-                       "operator not implemented: " + tokenTypeToString(op));
+                       "operator - not applicable for given types: " +
+                           leftResolvedType->toString() + " and " +
+                           rightResolvedType->toString());
   }
+
+  // Caso: operador *
+  if (operatorToken == TokenType::OPERATOR_MULT) {
+    auto leftNumeric = std::dynamic_pointer_cast<BasicType>(leftResolvedType);
+    auto rightNumeric = std::dynamic_pointer_cast<BasicType>(rightResolvedType);
+    if (leftNumeric && rightNumeric) {
+      if (areSameType(leftResolvedType, rightResolvedType))
+        return leftResolvedType;
+      else
+        return createError(ERROR_TYPE::TYPE,
+                           "incompatible types for operator *");
+    }
+    return createError(ERROR_TYPE::TYPE,
+                       "operator * not applicable for given types: " +
+                           leftResolvedType->toString() + " and " +
+                           rightResolvedType->toString());
+  }
+
+  // Caso: operador /
+  if (operatorToken == TokenType::OPERATOR_DIV) {
+    auto leftNumeric = std::dynamic_pointer_cast<BasicType>(leftResolvedType);
+    auto rightNumeric = std::dynamic_pointer_cast<BasicType>(rightResolvedType);
+    if (leftNumeric && rightNumeric) {
+      if (areSameType(leftResolvedType, rightResolvedType))
+        return leftResolvedType;
+      else
+        return createError(ERROR_TYPE::TYPE,
+                           "incompatible types for operator /");
+    }
+    return createError(ERROR_TYPE::TYPE,
+                       "operator / not applicable for given types: " +
+                           leftResolvedType->toString() + " and " +
+                           rightResolvedType->toString());
+  }
+
+  // Caso: operador % (módulo)
+  if (operatorToken == TokenType::OPERATOR_MODULE) {
+    auto leftNumeric = std::dynamic_pointer_cast<BasicType>(leftResolvedType);
+    auto rightNumeric = std::dynamic_pointer_cast<BasicType>(rightResolvedType);
+    if (leftNumeric && rightNumeric) {
+      if ((leftNumeric->baseKind() == BasicKind::Int ||
+           leftNumeric->baseKind() == BasicKind::Char) &&
+          (rightNumeric->baseKind() == BasicKind::Int ||
+           rightNumeric->baseKind() == BasicKind::Char)) {
+        return leftResolvedType;
+      } else {
+        return createError(ERROR_TYPE::TYPE,
+                           "operator % not applicable for non-integral types");
+      }
+    }
+    return createError(ERROR_TYPE::TYPE,
+                       "operator % not applicable for given types: " +
+                           leftResolvedType->toString() + " and " +
+                           rightResolvedType->toString());
+  }
+
+  // Caso: operadores lógicos && y ||
+  if (operatorToken == TokenType::AND || operatorToken == TokenType::OR) {
+    auto leftBool = std::dynamic_pointer_cast<BasicType>(leftResolvedType);
+    auto rightBool = std::dynamic_pointer_cast<BasicType>(rightResolvedType);
+    if (leftBool && rightBool && leftBool->baseKind() == BasicKind::Bool &&
+        rightBool->baseKind() == BasicKind::Bool) {
+      std::expected<std::shared_ptr<Type>, Error> boolTypeExp = getType("bool");
+      if (!boolTypeExp)
+        return createError(ERROR_TYPE::TYPE, "bool type not found");
+      return boolTypeExp.value();
+    }
+    return createError(ERROR_TYPE::TYPE,
+                       "logical operators require boolean operands: " +
+                           leftResolvedType->toString() + " and " +
+                           rightResolvedType->toString());
+  }
+
+  // Caso: operadores de igualdad (== y !=)
+  if (operatorToken == TokenType::EQUAL ||
+      operatorToken == TokenType::NOTEQUAL) {
+    const bool leftIsNull =
+        (std::dynamic_pointer_cast<NullType>(leftResolvedType) != nullptr);
+    const bool rightIsNull =
+        (std::dynamic_pointer_cast<NullType>(rightResolvedType) != nullptr);
+
+    if (leftIsNull || rightIsNull) {
+      // Verificar que el otro operando es efectivamente un puntero.
+      if (leftIsNull &&
+          !std::dynamic_pointer_cast<PointerType>(rightResolvedType))
+        return createError(ERROR_TYPE::TYPE,
+                           "cannot compare non-pointer type with null");
+      if (rightIsNull &&
+          !std::dynamic_pointer_cast<PointerType>(leftResolvedType))
+        return createError(ERROR_TYPE::TYPE,
+                           "cannot compare non-pointer type with null");
+
+      std::expected<std::shared_ptr<Type>, Error> boolTypeExp = getType("bool");
+      if (!boolTypeExp)
+        return createError(ERROR_TYPE::TYPE, "bool type not found");
+      return boolTypeExp.value();
+    }
+
+    // Si ninguno es NullType, procedemos con la comparación habitual:
+    if (areSameType(leftResolvedType, rightResolvedType) ||
+        haveCommonAncestor(leftResolvedType, rightResolvedType)) {
+      std::expected<std::shared_ptr<Type>, Error> boolTypeExp = getType("bool");
+      if (!boolTypeExp)
+        return createError(ERROR_TYPE::TYPE, "bool type not found");
+      return boolTypeExp.value();
+    }
+
+    return createError(ERROR_TYPE::TYPE,
+                       "incompatible types for equality operator: " +
+                           leftResolvedType->toString() + " vs " +
+                           rightResolvedType->toString());
+  }
+
+  // Caso: operadores relacionales (<, >, <=, >=)
+  if (operatorToken == TokenType::OPERATOR_SMALLER ||
+      operatorToken == TokenType::OPERATOR_GREATER ||
+      operatorToken == TokenType::SMALLEREQUAL ||
+      operatorToken == TokenType::BIGGEREQUAL) {
+    auto leftNumeric = std::dynamic_pointer_cast<BasicType>(leftResolvedType);
+    auto rightNumeric = std::dynamic_pointer_cast<BasicType>(rightResolvedType);
+    if (leftNumeric && rightNumeric) {
+      if (areSameType(leftResolvedType, rightResolvedType) ||
+          haveCommonAncestor(leftResolvedType, rightResolvedType)) {
+        std::expected<std::shared_ptr<Type>, Error> boolTypeExp =
+            getType("bool");
+        if (!boolTypeExp)
+          return createError(ERROR_TYPE::TYPE, "bool type not found");
+        return boolTypeExp.value();
+      } else {
+        return createError(ERROR_TYPE::TYPE,
+                           "incompatible types for relational operator: " +
+                               leftResolvedType->toString() + " vs " +
+                               rightResolvedType->toString());
+      }
+    }
+    return createError(ERROR_TYPE::TYPE,
+                       "relational operators not applicable for given types: " +
+                           leftResolvedType->toString() + " and " +
+                           rightResolvedType->toString());
+  }
+
+  // Aquí se podrían agregar casos para tipos definidos por el usuario y enums,
+  // etc. Por ejemplo, si el operando izquierdo es de UserType, se intentaría
+  // llamar a un método sobrecargado que implemente el operador.
+  if (auto leftUserType =
+          std::dynamic_pointer_cast<UserType>(leftResolvedType)) {
+    std::string methodName;
+    switch (operatorToken) {
+    case TokenType::OPERATOR_ADD:
+      methodName = "addable";
+      break;
+    case TokenType::OPERATOR_SUB:
+      methodName = "substrable";
+      break;
+    case TokenType::OPERATOR_MULT:
+      methodName = "multiplicable";
+      break;
+    case TokenType::OPERATOR_DIV:
+      methodName = "divisble";
+      break;
+    case TokenType::AND:
+      methodName = "andable";
+      break;
+    case TokenType::OR:
+      methodName = "orable";
+      break;
+    case TokenType::EQUAL:
+      methodName = "equal";
+      break;
+    case TokenType::NOTEQUAL:
+      methodName = "notEqual";
+      break;
+    default:
+      break;
+    }
+    if (!methodName.empty()) {
+      std::expected<std::vector<Method>, Error> userMethodsExp =
+          leftUserType->getMethods(methodName);
+      if (!userMethodsExp)
+        return createError(userMethodsExp.error());
+      std::vector<Method> userMethods = userMethodsExp.value();
+      for (const Method &userMethod : userMethods) {
+        if (userMethod.params().size() == 1) {
+          // Verificar compatibilidad del parámetro con rightResolvedType.
+          if (canAssign(userMethod.params().params().front().second,
+                        rightResolvedType))
+            return userMethod.returnType();
+        }
+      }
+      return createError(ERROR_TYPE::TYPE,
+                         "user type " + leftUserType->name() +
+                             " does not overload operator " +
+                             tokenTypeToString(operatorToken));
+    }
+  }
+
+  // Caso para EnumType: Se permiten operadores de igualdad y desigualdad.
+  if (auto leftEnumType =
+          std::dynamic_pointer_cast<EnumType>(leftResolvedType)) {
+    if (auto rightEnumType =
+            std::dynamic_pointer_cast<EnumType>(rightResolvedType)) {
+      if (operatorToken == TokenType::EQUAL ||
+          operatorToken == TokenType::NOTEQUAL) {
+        std::expected<std::shared_ptr<Type>, Error> boolTypeExp =
+            getType("bool");
+        if (!boolTypeExp)
+          return createError(ERROR_TYPE::TYPE, "bool type not found");
+        return boolTypeExp.value();
+      } else {
+        return createError(ERROR_TYPE::TYPE,
+                           "operator " + tokenTypeToString(operatorToken) +
+                               " not allowed on enums");
+      }
+    }
+    return createError(ERROR_TYPE::TYPE,
+                       "incompatible types for binary operator: enum mismatch");
+  }
+
+  // Caso para PlaceHolder: no se permiten operaciones binarias sobre generics
+  // sin resolver.
+  if (std::dynamic_pointer_cast<PlaceHolder>(leftResolvedType) ||
+      std::dynamic_pointer_cast<PlaceHolder>(rightResolvedType)) {
+    return createError(ERROR_TYPE::TYPE,
+                       "binary operator " + tokenTypeToString(operatorToken) +
+                           " not supported on generic placeholders");
+  }
+
+  // Si leftOperand es un PointerType y ningún otro caso aplicó:
+  if (auto leftPointerType =
+          std::dynamic_pointer_cast<PointerType>(leftResolvedType)) {
+    if (operatorToken == TokenType::OPERATOR_SUB) {
+      // Si ambos operandos son punteros, el resultado es un entero.
+      if (std::dynamic_pointer_cast<PointerType>(rightResolvedType)) {
+        std::expected<std::shared_ptr<Type>, Error> intTypeExp = getType("int");
+        if (!intTypeExp)
+          return createError(ERROR_TYPE::TYPE, "int type not found");
+        return intTypeExp.value();
+      }
+    }
+  }
+
+  return createError(
+      ERROR_TYPE::TYPE,
+      "operator " + tokenTypeToString(operatorToken) +
+          " not implemented for given types: " + leftResolvedType->toString() +
+          " and " + rightResolvedType->toString());
 }
 
 } // namespace nicole

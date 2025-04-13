@@ -245,6 +245,7 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
   }
 
   currentUserType_->insertMethod(newMethod);
+  // std::cout << "~~~~~~~~~~~~~~~~~~~~~~"<< currentUserType_->getMethods("toString")->size() << "\n";
 
   const auto bodyResult = node->body()->accept(*this);
   if (!bodyResult)

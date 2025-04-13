@@ -1,6 +1,6 @@
-#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
 #include "../../../inc/parsingAnalysis/ast/utils/ast_import.h"
 #include "../../../inc/parsingAnalysis/ast/utils/ast_print.h"
+#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
 #include <memory>
 
 namespace nicole {
@@ -29,9 +29,15 @@ TypeAnalysis::visit(const AST_PRINT *node) const noexcept {
       continue;
 
     if (auto userType = std::dynamic_pointer_cast<UserType>(exprType)) {
-      auto methodsExp = userType->getMethods("toString");
-      if (!methodsExp)
+      const auto exists = typeTable_->getType(userType->name());
+      if (!exists) {
+        return createError(exists.error());
+      }
+      auto methodsExp = std::dynamic_pointer_cast<UserType>(*exists)
+                            ->getMethods("toString");
+      if (!methodsExp) {
         return createError(methodsExp.error());
+      }
       if (methodsExp.value().empty())
         return createError(ERROR_TYPE::TYPE, "User type " + userType->name() +
                                                  " must implement toString()");
@@ -53,4 +59,4 @@ TypeAnalysis::visit(const AST_IMPORT *node) const noexcept {
   return typeTable_->noPropagateType();
 }
 
-}
+} // namespace nicole

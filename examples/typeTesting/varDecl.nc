@@ -34,25 +34,29 @@ struct Prueba<T> {
         if (!qqqq) {}
     }
     destructor {}
+
+    method toString(): str { return ""; }
 }
 
 Prueba<Enu***>{};
 
 Enu{Enu::a};
 
+const wewe: int* = new 5;
+if (null != wewe) {}
 
 const xxxx: int = 10;
 
 /*
 xxxx := 10;
 */
-if (!"1") {
+if (!1) {
     return ;
 }
 
 return;
 
-print(Enu{Enu::a});
+print(Prueba<int>{});
 
 
 def fooooooo (): void { 
