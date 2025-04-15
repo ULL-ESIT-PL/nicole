@@ -100,7 +100,10 @@ Prueba<int>{}.toString()[1];
 lll<int>();
 
 def hhh(kkl: int): int {
-    return int;
+    return 5;
 }
 
-hhh();
+hhh(1);
+
+
+let zzzzzz: Hola*  = new Adios{};

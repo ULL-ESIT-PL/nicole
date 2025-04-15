@@ -285,7 +285,7 @@ bool TypeTable::areSameType(const std::shared_ptr<Type> &type1,
   if (auto genInst1 = std::dynamic_pointer_cast<GenericInstanceType>(type1)) {
     if (auto genInst2 = std::dynamic_pointer_cast<GenericInstanceType>(type2)) {
       // Se comparan primero los tipos genéricos base
-      if (!areSameType(genInst1, genInst2)) {
+      if (genInst1->name() != genInst2->name()) {
         return false;
       }
       const auto &args1 = genInst1->typeArgs();
