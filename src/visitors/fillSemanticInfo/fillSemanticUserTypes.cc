@@ -433,6 +433,12 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
     }
     return {};
   }
+
+  const auto isUserType{std::dynamic_pointer_cast<UserType>(*type)};
+  if (node->replaceOfGenerics().size() != isUserType->genericParams().size()) {
+    return createError(ERROR_TYPE::TYPE, "invalid replacements of list size");
+  }
+
   for (const auto &replacement : node->replaceOfGenerics()) {
     if (!typeTable_->isPossibleType(replacement) and
         !typeTable_->isGenericType(replacement, currentGenericList_)) {

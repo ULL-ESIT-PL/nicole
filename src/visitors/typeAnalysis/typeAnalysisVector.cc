@@ -1,6 +1,6 @@
-#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
 #include "../../../inc/parsingAnalysis/ast/vector/ast_index.h"
 #include "../../../inc/parsingAnalysis/ast/vector/ast_vector.h"
+#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
 #include <cstddef>
 #include <memory>
 
@@ -53,7 +53,7 @@ TypeAnalysis::visit(const AST_VECTOR *node) const noexcept {
   }
   const auto vecType{std::make_shared<VectorType>(commonType)};
   node->setReturnedFromAnalysis(vecType);
-  return std::make_shared<VectorType>(vecType);
+  return vecType;
 }
 
 /*
@@ -69,21 +69,36 @@ TypeAnalysis::visit(const AST_INDEX *node) const noexcept {
   if (!result) {
     return createError(result.error());
   }
-  
+
   if (insideDeclWithGenerics and
       typeTable_->isGenericType(*result, currentGenericList_)) {
     return *result;
   }
-  
+
   if (!typeTable_->areSameType(*result, *typeTable_->getType("int"))) {
     return createError(ERROR_TYPE::TYPE, "index must be type int");
   }
   const auto vectorType{std::dynamic_pointer_cast<VectorType>(currentType_)};
-  if (!vectorType) {
-    return createError(ERROR_TYPE::TYPE, "can only access to vectors");
+  const auto basicType{std::dynamic_pointer_cast<BasicType>(currentType_)};
+  if (!vectorType and !basicType) {
+    return createError(ERROR_TYPE::TYPE,
+                       "can only access to vectors or strings");
   }
-  node->setReturnedFromAnalysis(vectorType->elementType());
-  return vectorType->elementType();
+  std::shared_ptr<Type> indexType{nullptr};
+  if (vectorType) {
+    indexType = vectorType->elementType();
+    node->setReturnedFromAnalysis(indexType);
+  }
+  if (basicType) {
+    if (basicType->baseKind() != BasicKind::Str) {
+      return createError(ERROR_TYPE::TYPE,
+                       "can only access to vectors or strings");
+    }
+    indexType = *typeTable_->getType("char");
+    node->setReturnedFromAnalysis(indexType);
+  }
+  currentType_ = indexType;
+  return indexType;
 }
 
-}
+} // namespace nicole

@@ -170,6 +170,7 @@ TypeAnalysis::visit(const AST_METHOD_CALL *node) const noexcept {
     return createError(ERROR_TYPE::METHOD,
                        "ambiguous method call for: " + node->id());
   const auto returnType{viableMethods.front().returnType()};
+  currentType_ = returnType;
   node->setReturnedFromAnalysis(returnType);
   return returnType;
 }
@@ -365,8 +366,12 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
         } else
           genericArgs.push_back(gen);
       }
-      return std::make_shared<GenericInstanceType>(tempUserType, genericArgs);
+      const auto instance{
+          std::make_shared<GenericInstanceType>(tempUserType, genericArgs)};
+      currentType_ = instance;
+      return instance;
     } else {
+      currentType_ = tempUserType;
       return tempUserType;
     }
   }
@@ -435,11 +440,13 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
     }
     const auto instance{
         std::make_shared<GenericInstanceType>(userType, genericArgs)};
+    currentType_ = instance;
     node->setReturnedFromAnalysis(instance);
     return instance;
   }
-  node->setReturnedFromAnalysis(baseType);
-  return baseType;
+  currentType_ = userType;
+  node->setReturnedFromAnalysis(userType);
+  return userType;
 }
 
 } // namespace nicole

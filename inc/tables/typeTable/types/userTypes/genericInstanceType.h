@@ -18,8 +18,7 @@ private:
 public:
   GenericInstanceType(const std::shared_ptr<UserType> &genericType,
                       const std::vector<std::shared_ptr<Type>> &args) noexcept
-      : UserType(genericType->name(), genericType->baseType(),
-                 genericType->genericParams()),
+      : UserType(*genericType),
         typeArgs_{args} {}
 
   [[nodiscard]] const std::vector<std::shared_ptr<Type>> &

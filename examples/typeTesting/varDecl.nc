@@ -87,3 +87,14 @@ struct T {
 def lll<T>(): void {
     let cccc: T = T{};
 }
+
+def vec(): vector<int> {
+    return [10];
+}
+
+vec()[1];
+
+Prueba<int>{}.toString()[1];
+
+
+lll<int>();

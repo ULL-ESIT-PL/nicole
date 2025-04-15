@@ -85,6 +85,7 @@ TypeAnalysis::visit(const AST_VAR_CALL *node) const noexcept {
   auto varExp = currentScope_->getVariable(node->id());
   if (!varExp)
     return createError(varExp.error());
+  currentType_ = varExp->type();
   return varExp.value().type();
 }
 

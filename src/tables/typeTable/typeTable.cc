@@ -392,9 +392,13 @@ bool TypeTable::canAssignImpl(const std::shared_ptr<Type> &target,
   }
 
   if (auto targetVec = std::dynamic_pointer_cast<VectorType>(tTarget)) {
-    if (auto sourceVec = std::dynamic_pointer_cast<VectorType>(tSource))
+    if (auto sourceVec = std::dynamic_pointer_cast<VectorType>(tSource)) {
+      if (areSameType(sourceVec->elementType(), null_)) {
+        return true;
+      }
       return canAssignImpl(targetVec->elementType(), sourceVec->elementType(),
                            pointerContext);
+    }
   }
 
   return false;
