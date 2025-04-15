@@ -98,3 +98,9 @@ Prueba<int>{}.toString()[1];
 
 
 lll<int>();
+
+def hhh(kkl: int): int {
+    return int;
+}
+
+hhh();
