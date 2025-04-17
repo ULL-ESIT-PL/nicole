@@ -440,7 +440,7 @@ TypeTable::applyUnaryOperator(const std::shared_ptr<Type> &operand,
     t = constType->baseType();
 
   if (std::dynamic_pointer_cast<PlaceHolder>(t))
-    return *getType("bool");
+    return boolType();
 
   // Si el operando es un tipo definido por el usuario, se busca el método
   // correspondiente sin parámetros.
@@ -471,12 +471,10 @@ TypeTable::applyUnaryOperator(const std::shared_ptr<Type> &operand,
       if (m.params().size() == 0) {
         // Para operator_not, el resultado debe ser bool.
         if (op == TokenType::OPERATOR_NOT) {
-          auto boolTypeExp = getType("bool");
-          if (!boolTypeExp)
-            return createError(ERROR_TYPE::TYPE, "bool type not found");
-          if (!areSameType(m.returnType(), *boolTypeExp))
+          auto boolTypeExp = boolType();
+          if (!areSameType(m.returnType(), boolTypeExp))
             return createError(ERROR_TYPE::TYPE, "operator ! must return bool");
-          return boolTypeExp.value();
+          return boolTypeExp;
         }
         // Para los otros operadores, se retorna el tipo que devuelve el método.
         return m.returnType();
@@ -494,8 +492,7 @@ TypeTable::applyUnaryOperator(const std::shared_ptr<Type> &operand,
     case TokenType::DECREMENT:
       return t; // Se retorna el mismo tipo puntero.
     case TokenType::OPERATOR_NOT: {
-      auto boolTypeExp = *getType("bool");
-      return boolTypeExp;
+      return boolType();
     }
     default:
       return createError(ERROR_TYPE::TYPE,
@@ -513,8 +510,7 @@ TypeTable::applyUnaryOperator(const std::shared_ptr<Type> &operand,
                            "operator " + tokenTypeToString(op) +
                                " cannot be applied to type " + t->toString());
       default:
-        auto boolTypeExp = *getType("bool");
-        return boolTypeExp;
+        return boolType();
       }
     }
     case TokenType::INCREMENT:
@@ -564,11 +560,7 @@ TypeTable::applyBinaryOperator(const std::shared_ptr<Type> &leftOperand,
       // Si alguno es de tipo cadena (Str), se asume concatenación.
       if (leftBasicType->baseKind() == BasicKind::Str and
           rightBasicType->baseKind() == BasicKind::Str) {
-        std::expected<std::shared_ptr<Type>, Error> stringTypeExp =
-            getType("str");
-        if (!stringTypeExp)
-          return createError(ERROR_TYPE::TYPE, "string type not found");
-        return stringTypeExp.value();
+        return strType();
       }
       // Si son numéricos y ambos son del mismo tipo.
       if (areSameType(leftResolvedType, rightResolvedType))
@@ -622,10 +614,7 @@ TypeTable::applyBinaryOperator(const std::shared_ptr<Type> &leftOperand,
       auto rightPtrType =
           std::dynamic_pointer_cast<PointerType>(rightResolvedType);
       if (rightPtrType) {
-        std::expected<std::shared_ptr<Type>, Error> intTypeExp = getType("int");
-        if (!intTypeExp)
-          return createError(ERROR_TYPE::TYPE, "int type not found");
-        return intTypeExp.value();
+        return intType();
       }
     }
     return createError(ERROR_TYPE::TYPE,
@@ -695,10 +684,7 @@ TypeTable::applyBinaryOperator(const std::shared_ptr<Type> &leftOperand,
     auto rightBool = std::dynamic_pointer_cast<BasicType>(rightResolvedType);
     if (leftBool && rightBool && leftBool->baseKind() == BasicKind::Bool &&
         rightBool->baseKind() == BasicKind::Bool) {
-      std::expected<std::shared_ptr<Type>, Error> boolTypeExp = getType("bool");
-      if (!boolTypeExp)
-        return createError(ERROR_TYPE::TYPE, "bool type not found");
-      return boolTypeExp.value();
+      return boolType();
     }
     return createError(ERROR_TYPE::TYPE,
                        "logical operators require boolean operands: " +
@@ -725,19 +711,13 @@ TypeTable::applyBinaryOperator(const std::shared_ptr<Type> &leftOperand,
         return createError(ERROR_TYPE::TYPE,
                            "cannot compare non-pointer type with null");
 
-      std::expected<std::shared_ptr<Type>, Error> boolTypeExp = getType("bool");
-      if (!boolTypeExp)
-        return createError(ERROR_TYPE::TYPE, "bool type not found");
-      return boolTypeExp.value();
+      return boolType();
     }
 
     // Si ninguno es NullType, procedemos con la comparación habitual:
     if (areSameType(leftResolvedType, rightResolvedType) ||
         haveCommonAncestor(leftResolvedType, rightResolvedType)) {
-      std::expected<std::shared_ptr<Type>, Error> boolTypeExp = getType("bool");
-      if (!boolTypeExp)
-        return createError(ERROR_TYPE::TYPE, "bool type not found");
-      return boolTypeExp.value();
+      return boolType();
     }
 
     return createError(ERROR_TYPE::TYPE,
@@ -756,11 +736,7 @@ TypeTable::applyBinaryOperator(const std::shared_ptr<Type> &leftOperand,
     if (leftNumeric && rightNumeric) {
       if (areSameType(leftResolvedType, rightResolvedType) ||
           haveCommonAncestor(leftResolvedType, rightResolvedType)) {
-        std::expected<std::shared_ptr<Type>, Error> boolTypeExp =
-            getType("bool");
-        if (!boolTypeExp)
-          return createError(ERROR_TYPE::TYPE, "bool type not found");
-        return boolTypeExp.value();
+        return boolType();
       } else {
         return createError(ERROR_TYPE::TYPE,
                            "incompatible types for relational operator: " +
@@ -836,11 +812,7 @@ TypeTable::applyBinaryOperator(const std::shared_ptr<Type> &leftOperand,
             std::dynamic_pointer_cast<EnumType>(rightResolvedType)) {
       if (operatorToken == TokenType::EQUAL ||
           operatorToken == TokenType::NOTEQUAL) {
-        std::expected<std::shared_ptr<Type>, Error> boolTypeExp =
-            getType("bool");
-        if (!boolTypeExp)
-          return createError(ERROR_TYPE::TYPE, "bool type not found");
-        return boolTypeExp.value();
+        return boolType();
       } else {
         return createError(ERROR_TYPE::TYPE,
                            "operator " + tokenTypeToString(operatorToken) +
@@ -864,10 +836,7 @@ TypeTable::applyBinaryOperator(const std::shared_ptr<Type> &leftOperand,
     if (operatorToken == TokenType::OPERATOR_SUB) {
       // Si ambos operandos son punteros, el resultado es un entero.
       if (std::dynamic_pointer_cast<PointerType>(rightResolvedType)) {
-        std::expected<std::shared_ptr<Type>, Error> intTypeExp = getType("int");
-        if (!intTypeExp)
-          return createError(ERROR_TYPE::TYPE, "int type not found");
-        return intTypeExp.value();
+        return intType();
       }
     }
   }

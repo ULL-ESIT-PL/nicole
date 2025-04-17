@@ -97,7 +97,7 @@ TypeAnalysis::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!bodyRes)
     return createError(bodyRes.error());
   auto bodyType = bodyRes.value();
-  auto voidType = *typeTable_->getType("void");
+  auto voidType = typeTable_->voidType();
   auto declaredReturnType = node->returnType();
 
   if (typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) ||
@@ -139,7 +139,7 @@ TypeAnalysis::visit(const AST_RETURN *node) const noexcept {
   else {
     foundReturn = false;
   }
-  const auto voidType{*typeTable_->getType("void")};
+  const auto voidType{typeTable_->voidType()};
   if (!node->expression()) {
     node->setReturnedFromAnalysis(voidType);
     return voidType;

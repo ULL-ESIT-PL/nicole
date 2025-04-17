@@ -81,12 +81,9 @@ TypeAnalysis::visit(const AST_BODY *node) const noexcept {
         continue;
       }
       foundReturn = false;
-      const auto voidType{*typeTable_->getType("void")};
-      const auto noPropagateType{typeTable_->noPropagateType()};
-      const auto intType{*typeTable_->getType("int")};
-      if (!typeTable_->areSameType(type, voidType) and
-          !typeTable_->areSameType(type, noPropagateType) and
-          !typeTable_->areSameType(type, intType)) {
+      if (!typeTable_->areSameType(type, typeTable_->voidType()) and
+          !typeTable_->areSameType(type, typeTable_->noPropagateType()) and
+          !typeTable_->areSameType(type, typeTable_->intType())) {
         return createError(
             ERROR_TYPE::TYPE,
             " if a return affects the root body it must be void/int and cannot "
@@ -144,18 +141,9 @@ TypeAnalysis::visit(const Tree *tree) const noexcept {
   if (auto constBody = std::dynamic_pointer_cast<ConstType>(bodyType))
     bodyType = constBody->baseType();
 
-  auto intTypeExp = typeTable_->getType("int");
-  auto voidTypeExp = typeTable_->getType("void");
-  if (!intTypeExp || !voidTypeExp)
-    return createError(ERROR_TYPE::TYPE, "failed to retrieve int or void type");
-
-  auto intType = intTypeExp.value();
-  auto voidType = voidTypeExp.value();
-  auto npType = typeTable_->noPropagateType();
-
-  if (!(typeTable_->areSameType(bodyType, intType) ||
-        typeTable_->areSameType(bodyType, voidType) ||
-        typeTable_->areSameType(bodyType, npType)))
+  if (!(typeTable_->areSameType(bodyType, typeTable_->intType()) ||
+        typeTable_->areSameType(bodyType, typeTable_->voidType()) ||
+        typeTable_->areSameType(bodyType, typeTable_->noPropagateType())))
     return createError(ERROR_TYPE::TYPE,
                        "body must return int, void, or noPropagate, got " +
                            bodyType->toString());

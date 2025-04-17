@@ -195,7 +195,7 @@ TypeAnalysis::visit(const AST_METHOD_DECL *node) const noexcept {
     return createError(bodyRes.error());
   auto bodyType = bodyRes.value();
 
-  auto voidType = *typeTable_->getType("void");
+  auto voidType = typeTable_->voidType();
   auto declaredReturnType = node->returnType();
 
   if (typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) ||

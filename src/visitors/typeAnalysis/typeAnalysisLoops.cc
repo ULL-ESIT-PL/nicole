@@ -34,8 +34,7 @@ TypeAnalysis::visit(const AST_WHILE *node) const noexcept {
   }
 
   if (!isGeneric) {
-    auto boolType = typeTable_->getType("bool");
-    if (!typeTable_->areSameType(condType, *boolType))
+    if (!typeTable_->areSameType(condType, typeTable_->boolType()))
       return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
   }
 
@@ -88,8 +87,7 @@ TypeAnalysis::visit(const AST_FOR *node) const noexcept {
   }
 
   if (!isGeneric) {
-    auto boolType = typeTable_->getType("bool");
-    if (!typeTable_->areSameType(condType, *boolType))
+    if (!typeTable_->areSameType(condType, typeTable_->boolType()))
       return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
   }
 
@@ -146,8 +144,7 @@ TypeAnalysis::visit(const AST_DO_WHILE *node) const noexcept {
   }
 
   if (!isGeneric) {
-    auto boolType = typeTable_->getType("bool");
-    if (!typeTable_->areSameType(condType, *boolType))
+    if (!typeTable_->areSameType(condType, typeTable_->boolType()))
       return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
   }
 

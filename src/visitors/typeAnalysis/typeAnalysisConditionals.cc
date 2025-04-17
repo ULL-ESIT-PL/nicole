@@ -37,8 +37,7 @@ TypeAnalysis::visit(const AST_IF *node) const noexcept {
   }
 
   if (!isGeneric) {
-    auto boolType = typeTable_->getType("bool");
-    if (!typeTable_->areSameType(condType, *boolType))
+    if (!typeTable_->areSameType(condType, typeTable_->boolType()))
       return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
   }
 
@@ -118,8 +117,7 @@ TypeAnalysis::visit(const AST_ELSE_IF *node) const noexcept {
   }
 
   if (!isGeneric) {
-    auto boolType = typeTable_->getType("bool");
-    if (!typeTable_->areSameType(condType, *boolType))
+    if (!typeTable_->areSameType(condType, typeTable_->boolType()))
       return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
   }
 
@@ -161,13 +159,11 @@ TypeAnalysis::visit(const AST_SWITCH *node) const noexcept {
   }
 
   if (!isGeneric) {
-    auto boolType = typeTable_->getType("bool");
-    auto intType = typeTable_->getType("int");
-    auto charType = typeTable_->getType("char");
     bool isEnum = (std::dynamic_pointer_cast<EnumType>(condType) != nullptr);
-    if (!(typeTable_->areSameType(condType, *boolType) ||
-          typeTable_->areSameType(condType, *intType) ||
-          typeTable_->areSameType(condType, *charType) || isEnum)) {
+    if (!(typeTable_->areSameType(condType, typeTable_->boolType()) ||
+          typeTable_->areSameType(condType, typeTable_->intType()) ||
+          typeTable_->areSameType(condType, typeTable_->charType()) ||
+          isEnum)) {
       return createError(ERROR_TYPE::TYPE,
                          "switch condition must be bool, int, char, or enum");
     }
@@ -302,11 +298,10 @@ TypeAnalysis::visit(const AST_TERNARY *node) const noexcept {
     isGeneric = true;
     // return condType;
   }
-  
+
   if (!isGeneric) {
-  auto boolType = typeTable_->getType("bool");
-  if (!typeTable_->areSameType(condType, *boolType))
-    return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+    if (!typeTable_->areSameType(condType, typeTable_->boolType()))
+      return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
   }
 
   auto firstResult = node->first()->accept(*this);
@@ -360,14 +355,11 @@ TypeAnalysis::visit(const AST_CONDITION *node) const noexcept {
     return condType;
   }
 
-  auto boolType = typeTable_->getType("bool");
-  auto intType = typeTable_->getType("int");
-  auto charType = typeTable_->getType("char");
   bool isEnum = (std::dynamic_pointer_cast<EnumType>(condType) != nullptr);
 
-  if (!typeTable_->areSameType(condType, *boolType) &&
-      !typeTable_->areSameType(condType, *intType) &&
-      !typeTable_->areSameType(condType, *charType) && !isEnum) {
+  if (!typeTable_->areSameType(condType, typeTable_->boolType()) &&
+      !typeTable_->areSameType(condType, typeTable_->intType()) &&
+      !typeTable_->areSameType(condType, typeTable_->charType()) && !isEnum) {
     return createError(ERROR_TYPE::TYPE,
                        "condition must be bool, int, char, or enum");
   }

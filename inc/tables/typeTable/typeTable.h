@@ -51,6 +51,34 @@ public:
     return null_;
   }
 
+  [[nodiscard]] const std::shared_ptr<Type> &boolType() const noexcept {
+    return *getType("bool");
+  }
+
+  [[nodiscard]] const std::shared_ptr<Type> &intType() const noexcept {
+    return *getType("int");
+  }
+
+  [[nodiscard]] const std::shared_ptr<Type> &floatType() const noexcept {
+    return *getType("float");
+  }
+
+  [[nodiscard]] const std::shared_ptr<Type> &doubleType() const noexcept {
+    return *getType("double");
+  }
+
+  [[nodiscard]] const std::shared_ptr<Type> &charType() const noexcept {
+    return *getType("char");
+  }
+
+  [[nodiscard]] const std::shared_ptr<Type> &strType() const noexcept {
+    return *getType("str");
+  }
+
+  [[nodiscard]] const std::shared_ptr<Type> &voidType() const noexcept {
+    return *getType("void");
+  }
+
   [[nodiscard]] const std::shared_ptr<NoPropagateType> &
   noPropagateType() const noexcept {
     return noPropagate_;
