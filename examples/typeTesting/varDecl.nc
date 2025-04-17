@@ -107,3 +107,6 @@ hhh(1);
 
 
 let zzzzzz: Hola*  = new Adios{};
+
+
+if ("") {}
