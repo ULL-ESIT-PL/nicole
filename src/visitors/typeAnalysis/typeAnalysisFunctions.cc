@@ -151,6 +151,7 @@ TypeAnalysis::visit(const AST_RETURN *node) const noexcept {
 
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(retType, currentGenericList_)) {
+    node->setReturnedFromAnalysis(retType);
     return retType;
   }
 

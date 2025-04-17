@@ -26,14 +26,18 @@ TypeAnalysis::visit(const AST_WHILE *node) const noexcept {
   if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
     condType = constCond->baseType();
 
+  bool isGeneric{false};
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(condType, currentGenericList_)) {
-    return condType;
+    isGeneric = true;
+    // return condType;
   }
 
-  auto boolType = typeTable_->getType("bool");
-  if (!typeTable_->areSameType(condType, *boolType))
-    return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+  if (!isGeneric) {
+    auto boolType = typeTable_->getType("bool");
+    if (!typeTable_->areSameType(condType, *boolType))
+      return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+  }
 
   auto body = node->body()->accept(*this);
   if (!body)
@@ -76,14 +80,18 @@ TypeAnalysis::visit(const AST_FOR *node) const noexcept {
   if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
     condType = constCond->baseType();
 
+  bool isGeneric{false};
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(condType, currentGenericList_)) {
-    return condType;
+    isGeneric = true;
+    // return condType;
   }
 
-  auto boolType = typeTable_->getType("bool");
-  if (!typeTable_->areSameType(condType, *boolType))
-    return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+  if (!isGeneric) {
+    auto boolType = typeTable_->getType("bool");
+    if (!typeTable_->areSameType(condType, *boolType))
+      return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+  }
 
   if (!node->update().empty()) {
     for (const auto &expr : node->update()) {
@@ -130,14 +138,18 @@ TypeAnalysis::visit(const AST_DO_WHILE *node) const noexcept {
   if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
     condType = constCond->baseType();
 
+  bool isGeneric{false};
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(condType, currentGenericList_)) {
-    return condType;
+    isGeneric = true;
+    // return condType;
   }
 
-  auto boolType = typeTable_->getType("bool");
-  if (!typeTable_->areSameType(condType, *boolType))
-    return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+  if (!isGeneric) {
+    auto boolType = typeTable_->getType("bool");
+    if (!typeTable_->areSameType(condType, *boolType))
+      return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+  }
 
   if (!typeTable_->areSameType(bodyType, typeTable_->noPropagateType()) &&
       !typeTable_->areSameType(bodyType, typeTable_->breakType())) {

@@ -73,6 +73,7 @@ TypeAnalysis::visit(const AST_ATTR_ACCESS *node) const noexcept {
 
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(baseType, currentGenericList_)) {
+    node->setReturnedFromAnalysis(baseType);
     return baseType;
   }
 
@@ -369,9 +370,11 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
       const auto instance{
           std::make_shared<GenericInstanceType>(tempUserType, genericArgs)};
       currentType_ = instance;
+      node->setReturnedFromAnalysis(instance);
       return instance;
     } else {
       currentType_ = tempUserType;
+      node->setReturnedFromAnalysis(tempUserType);
       return tempUserType;
     }
   }
@@ -400,6 +403,7 @@ TypeAnalysis::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
           ERROR_TYPE::TYPE,
           "constructor call of a enum must have one argument of the same type");
     }
+    node->setReturnedFromAnalysis(enumType);
     return enumType;
   }
 

@@ -70,14 +70,19 @@ TypeAnalysis::visit(const AST_INDEX *node) const noexcept {
     return createError(result.error());
   }
 
+  bool isGeneric{false};
   if (insideDeclWithGenerics and
       typeTable_->isGenericType(*result, currentGenericList_)) {
-    return *result;
+    isGeneric = true;
+    // return *result;
   }
 
-  if (!typeTable_->areSameType(*result, *typeTable_->getType("int"))) {
-    return createError(ERROR_TYPE::TYPE, "index must be type int");
+  if (!isGeneric) {
+    if (!typeTable_->areSameType(*result, *typeTable_->getType("int"))) {
+      return createError(ERROR_TYPE::TYPE, "index must be type int");
+    }
   }
+  
   const auto vectorType{std::dynamic_pointer_cast<VectorType>(currentType_)};
   const auto basicType{std::dynamic_pointer_cast<BasicType>(currentType_)};
   if (!vectorType and !basicType) {
@@ -92,7 +97,7 @@ TypeAnalysis::visit(const AST_INDEX *node) const noexcept {
   if (basicType) {
     if (basicType->baseKind() != BasicKind::Str) {
       return createError(ERROR_TYPE::TYPE,
-                       "can only access to vectors or strings");
+                         "can only access to vectors or strings");
     }
     indexType = *typeTable_->getType("char");
     node->setReturnedFromAnalysis(indexType);

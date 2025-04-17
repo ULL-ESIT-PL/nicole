@@ -59,6 +59,7 @@ TypeAnalysis::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
         "assigned value type does not match declared variable type -> " +
             declaredType->toString() + " | " + valueType->toString());
 
+  node->setReturnedFromAnalysis(typeTable_->noPropagateType());
   return typeTable_->noPropagateType();
 }
 
@@ -76,6 +77,7 @@ TypeAnalysis::visit(const AST_VAR_CALL *node) const noexcept {
     auto attrExp = currentUserType_->getAttribute(node->id());
     if (!attrExp)
       return createError(attrExp.error());
+    node->setReturnedFromAnalysis(attrExp.value().type());
     return attrExp.value().type();
   }
 
@@ -86,7 +88,8 @@ TypeAnalysis::visit(const AST_VAR_CALL *node) const noexcept {
   if (!varExp)
     return createError(varExp.error());
   currentType_ = varExp->type();
-  return varExp.value().type();
+  node->setReturnedFromAnalysis(varExp->type());
+  return varExp->type();
 }
 
 } // namespace nicole

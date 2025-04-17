@@ -1,7 +1,7 @@
-#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
 #include "../../../inc/parsingAnalysis/ast/pointer/ast_delete.h"
 #include "../../../inc/parsingAnalysis/ast/pointer/ast_deref.h"
 #include "../../../inc/parsingAnalysis/ast/pointer/ast_new.h"
+#include "../../../inc/visitors/typeAnalysis/typeAnalysis.h"
 #include <memory>
 
 namespace nicole {
@@ -19,18 +19,22 @@ TypeAnalysis::visit(const AST_DELETE *node) const noexcept {
   auto result = node->value()->accept(*this);
   if (!result)
     return createError(result.error());
-  
+
   auto type = result.value();
 
-  if (insideDeclWithGenerics && typeTable_->isGenericType(type, currentGenericList_)) {
+  if (insideDeclWithGenerics &&
+      typeTable_->isGenericType(type, currentGenericList_)) {
     std::shared_ptr<Type> unwrapped = type;
     if (auto constType = std::dynamic_pointer_cast<ConstType>(unwrapped))
       unwrapped = constType->baseType();
     auto pointerType = std::dynamic_pointer_cast<PointerType>(unwrapped);
     if (!pointerType)
-      return createError(ERROR_TYPE::TYPE, "Delete on generic: type is not a pointer");
+      return createError(ERROR_TYPE::TYPE,
+                         "Delete on generic: type is not a pointer");
     if (!std::dynamic_pointer_cast<PlaceHolder>(pointerType->baseType()))
-      return createError(ERROR_TYPE::TYPE, "Delete on generic: pointer does not wrap a PlaceHolder");
+      return createError(
+          ERROR_TYPE::TYPE,
+          "Delete on generic: pointer does not wrap a PlaceHolder");
 
     node->setReturnedFromAnalysis(typeTable_->noPropagateType());
     return typeTable_->noPropagateType();
@@ -105,11 +109,12 @@ TypeAnalysis::visit(const AST_DEREF *node) const noexcept {
 
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(unwrappedType, currentGenericList_)) {
-    
-    if (auto ptrType = std::dynamic_pointer_cast<PointerType>(unwrappedType))
+
+    if (auto ptrType = std::dynamic_pointer_cast<PointerType>(unwrappedType)) {
+      node->setReturnedFromAnalysis(ptrType->baseType());
       return ptrType->baseType();
+    }
     return createError(ERROR_TYPE::TYPE, "can only deref a pointer");
-    
   }
 
   if (auto ptrType = std::dynamic_pointer_cast<PointerType>(unwrappedType)) {
@@ -119,4 +124,4 @@ TypeAnalysis::visit(const AST_DEREF *node) const noexcept {
   return createError(ERROR_TYPE::TYPE, "can only deref a pointer");
 }
 
-}
+} // namespace nicole

@@ -29,14 +29,18 @@ TypeAnalysis::visit(const AST_IF *node) const noexcept {
   if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
     condType = constCond->baseType();
 
+  bool isGeneric{false};
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(condType, currentGenericList_)) {
-    return condType;
+    isGeneric = true;
+    // return condType;
   }
 
-  auto boolType = typeTable_->getType("bool");
-  if (!typeTable_->areSameType(condType, *boolType))
-    return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+  if (!isGeneric) {
+    auto boolType = typeTable_->getType("bool");
+    if (!typeTable_->areSameType(condType, *boolType))
+      return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+  }
 
   auto mainBody = node->body()->accept(*this);
   if (!mainBody)
@@ -106,14 +110,18 @@ TypeAnalysis::visit(const AST_ELSE_IF *node) const noexcept {
   if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
     condType = constCond->baseType();
 
+  bool isGeneric{false};
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(condType, currentGenericList_)) {
-    return condType;
+    isGeneric = true;
+    // return condType;
   }
 
-  auto boolType = typeTable_->getType("bool");
-  if (!typeTable_->areSameType(condType, *boolType))
-    return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+  if (!isGeneric) {
+    auto boolType = typeTable_->getType("bool");
+    if (!typeTable_->areSameType(condType, *boolType))
+      return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+  }
 
   auto body = node->body()->accept(*this);
   if (!body)
@@ -145,21 +153,26 @@ TypeAnalysis::visit(const AST_SWITCH *node) const noexcept {
   if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
     condType = constCond->baseType();
 
+  bool isGeneric{false};
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(condType, currentGenericList_)) {
-    return condType;
+    isGeneric = true;
+    // return condType;
   }
 
-  auto boolType = typeTable_->getType("bool");
-  auto intType = typeTable_->getType("int");
-  auto charType = typeTable_->getType("char");
-  bool isEnum = (std::dynamic_pointer_cast<EnumType>(condType) != nullptr);
-  if (!(typeTable_->areSameType(condType, *boolType) ||
-        typeTable_->areSameType(condType, *intType) ||
-        typeTable_->areSameType(condType, *charType) || isEnum)) {
-    return createError(ERROR_TYPE::TYPE,
-                       "switch condition must be bool, int, char, or enum");
+  if (!isGeneric) {
+    auto boolType = typeTable_->getType("bool");
+    auto intType = typeTable_->getType("int");
+    auto charType = typeTable_->getType("char");
+    bool isEnum = (std::dynamic_pointer_cast<EnumType>(condType) != nullptr);
+    if (!(typeTable_->areSameType(condType, *boolType) ||
+          typeTable_->areSameType(condType, *intType) ||
+          typeTable_->areSameType(condType, *charType) || isEnum)) {
+      return createError(ERROR_TYPE::TYPE,
+                         "switch condition must be bool, int, char, or enum");
+    }
   }
+
   switchTypeCondition_ = condType;
   std::vector<std::shared_ptr<Type>> branchTypes;
   for (const auto &caseNode : node->cases()) {
@@ -216,14 +229,19 @@ TypeAnalysis::visit(const AST_CASE *node) const noexcept {
   if (auto constMatch = std::dynamic_pointer_cast<ConstType>(matchType))
     matchType = constMatch->baseType();
 
+  bool isGeneric{false};
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(matchType, currentGenericList_)) {
-    return matchType;
+    isGeneric = true;
+    // return matchType;
   }
 
-  if (!typeTable_->areSameType(matchType, switchTypeCondition_))
-    return createError(ERROR_TYPE::TYPE,
-                       "case match type does not match switch condition type");
+  if (!isGeneric) {
+    if (!typeTable_->areSameType(matchType, switchTypeCondition_))
+      return createError(
+          ERROR_TYPE::TYPE,
+          "case match type does not match switch condition type");
+  }
 
   auto bodyResult = node->body()->accept(*this);
   if (!bodyResult)
@@ -278,14 +296,18 @@ TypeAnalysis::visit(const AST_TERNARY *node) const noexcept {
   if (auto constCond = std::dynamic_pointer_cast<ConstType>(condType))
     condType = constCond->baseType();
 
+  bool isGeneric{false};
   if (insideDeclWithGenerics &&
       typeTable_->isGenericType(condType, currentGenericList_)) {
-    return condType;
+    isGeneric = true;
+    // return condType;
   }
-
+  
+  if (!isGeneric) {
   auto boolType = typeTable_->getType("bool");
   if (!typeTable_->areSameType(condType, *boolType))
     return createError(ERROR_TYPE::TYPE, "a condition must be boolean");
+  }
 
   auto firstResult = node->first()->accept(*this);
   if (!firstResult)
