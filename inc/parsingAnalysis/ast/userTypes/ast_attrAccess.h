@@ -11,8 +11,9 @@ private:
 
 public:
   explicit AST_ATTR_ACCESS(const long long unsigned nodeId,
+                           const SourceLocation &srcLoc,
                            const std::string id) noexcept
-      : AST{nodeId, AST_TYPE::ATTR_ACCESS}, id_{id} {}
+      : AST{nodeId, AST_TYPE::ATTR_ACCESS, srcLoc}, id_{id} {}
 
   ~AST_ATTR_ACCESS() noexcept = default;
 

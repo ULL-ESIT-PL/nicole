@@ -11,8 +11,9 @@ private:
 
 public:
   explicit AST_INDEX(const long long unsigned nodeId,
+                     const SourceLocation &srcLoc,
                      const std::shared_ptr<AST> &index) noexcept
-      : AST{nodeId, AST_TYPE::INDEX}, index_{index} {}
+      : AST{nodeId, AST_TYPE::INDEX, srcLoc}, index_{index} {}
 
   ~AST_INDEX() noexcept = default;
 

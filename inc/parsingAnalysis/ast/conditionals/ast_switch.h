@@ -16,11 +16,12 @@ private:
 
 public:
   explicit AST_SWITCH(const long long unsigned nodeId,
+                      const SourceLocation &srcLoc,
                       const std::shared_ptr<AST_CONDITION> &condition,
                       const std::vector<std::shared_ptr<AST_CASE>> &cases,
                       const std::shared_ptr<AST_DEFAULT> &default__) noexcept
-      : AST(nodeId, AST_TYPE::SWITCH), condition_{condition}, cases_{cases},
-        default_{default__} {}
+      : AST(nodeId, AST_TYPE::SWITCH, srcLoc), condition_{condition},
+        cases_{cases}, default_{default__} {}
 
   [[nodiscard]] const std::shared_ptr<AST_CONDITION> &
   condition() const noexcept {

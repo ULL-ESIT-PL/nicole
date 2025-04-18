@@ -7,8 +7,8 @@ using namespace nicole;
 TEST_CASE("AST_UNARY class methods", "[AST_UNARY]") {
   Location loc{"file", 0, 0};
   Token token{TokenType::DECREMENT, "--", loc};
-  auto astInt = *Builder::createInt(42);
-  AST_UNARY astDecrement{0,token, astInt};
+  auto astInt = *Builder::createInt(SourceLocation{token, token}, 42);
+  AST_UNARY astDecrement{0, SourceLocation{token, token}, token, astInt};
 
   REQUIRE(astDecrement.op().raw() == "--");
   REQUIRE(astDecrement.value() == astInt);

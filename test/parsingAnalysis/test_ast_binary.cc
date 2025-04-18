@@ -7,9 +7,9 @@ using namespace nicole;
 TEST_CASE("AST_BINARY class methods", "[AST_BINARY]") {
   Location loc{"file", 0, 0};
   Token token{TokenType::OPERATOR_ADD, "+", loc};
-  auto leftOperand = *Builder::createInt(21);
-  auto rightOperand = *Builder::createInt(21);
-  AST_BINARY astAdd{0,token, leftOperand, rightOperand};
+  auto leftOperand = *Builder::createInt(SourceLocation{token, token}, 21);
+  auto rightOperand = *Builder::createInt(SourceLocation{token, token}, 21);
+  AST_BINARY astAdd{0, SourceLocation{token, token}, token, leftOperand, rightOperand};
 
   REQUIRE(astAdd.op().raw() == "+");
   REQUIRE(astAdd.left() == leftOperand);

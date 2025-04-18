@@ -9,9 +9,10 @@ namespace nicole {
 class AST_WHILE : public AST_LOOP {
 public:
   explicit AST_WHILE(const long long unsigned nodeId,
+                     const SourceLocation &srcLoc,
                      const std::shared_ptr<AST_CONDITION> &condition,
                      const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST_LOOP{nodeId, AST_TYPE::WHILE, condition, body} {}
+      : AST_LOOP{nodeId, AST_TYPE::WHILE, srcLoc, condition, body} {}
 
   [[nodiscard]] std::expected<std::string, Error>
   accept(const PrintTree &visitor) const noexcept override {

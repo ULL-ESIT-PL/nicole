@@ -15,14 +15,15 @@ private:
 
 public:
   explicit AST_CONSTRUCTOR_DECL(const long long unsigned nodeId,
+                                const SourceLocation &srcLoc,
                                 const std::string &id,
                                 const std::vector<GenericParameter> &generics,
                                 const Parameters &params,
                                 const std::shared_ptr<AST_SUPER> super,
                                 const std::shared_ptr<Type> &returnType,
                                 const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST_PARAMETRIZED_SUBRUTINE_DECL(nodeId, AST_TYPE::CONSTRUCTOR_DECL, id,
-                                        params, returnType, body),
+      : AST_PARAMETRIZED_SUBRUTINE_DECL(nodeId, AST_TYPE::CONSTRUCTOR_DECL,
+                                        srcLoc, id, params, returnType, body),
         generics_{generics}, super_{super} {}
 
   [[nodiscard]] const std::vector<GenericParameter> &generics() const noexcept {

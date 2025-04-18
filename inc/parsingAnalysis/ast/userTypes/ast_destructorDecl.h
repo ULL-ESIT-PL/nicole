@@ -10,9 +10,10 @@ namespace nicole {
 class AST_DESTRUCTOR_DECL final : public AST_SUBRUTINE_DECL {
 public:
   explicit AST_DESTRUCTOR_DECL(const long long unsigned nodeId,
+                               const SourceLocation &srcLoc,
                                const std::string &id,
                                const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST_SUBRUTINE_DECL(nodeId, AST_TYPE::DESTRUCTOR_DECL, id,
+      : AST_SUBRUTINE_DECL(nodeId, AST_TYPE::DESTRUCTOR_DECL, srcLoc, id,
                            std::make_shared<VoidType>(), body) {}
 
   [[nodiscard]] std::expected<std::string, Error>

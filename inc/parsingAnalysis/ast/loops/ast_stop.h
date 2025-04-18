@@ -12,8 +12,9 @@ private:
 
 public:
   explicit AST_STOP(const long long unsigned nodeId,
+                    const SourceLocation &srcLoc,
                     const std::shared_ptr<AST> &fatherLoop) noexcept
-      : AST(nodeId, AST_TYPE::STOP), fatherLoop_{fatherLoop} {}
+      : AST(nodeId, AST_TYPE::STOP, srcLoc), fatherLoop_{fatherLoop} {}
 
   [[nodiscard]] const std::shared_ptr<AST> &fatherLoop() const noexcept {
     return fatherLoop_;

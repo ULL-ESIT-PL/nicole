@@ -67,6 +67,7 @@
 
 #include "../errors.h"
 
+#include <cstddef>
 #include <expected>
 #include <memory>
 
@@ -84,152 +85,176 @@ private:
 public:
   // Literals
   [[nodiscard]] static std::expected<std::shared_ptr<AST_BOOL>, Error>
-  createBool(const bool value) noexcept;
+  createBool(const SourceLocation &srcLoc, const bool value) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_CHAR>, Error>
-  createChar(const std::string &value) noexcept;
+  createChar(const SourceLocation &srcLoc, const std::string &value) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DOUBLE>, Error>
-  createDouble(const double value) noexcept;
+  createDouble(const SourceLocation &srcLoc, const double value) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_FLOAT>, Error>
-  createFloat(const float value) noexcept;
+  createFloat(const SourceLocation &srcLoc, const float value) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_INT>, Error>
-  createInt(const int value) noexcept;
+  createInt(const SourceLocation &srcLoc, const int value) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_NULL>, Error>
-  createNull() noexcept;
+  createNull(const SourceLocation &srcLoc) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_STRING>, Error>
-  createString(const std::string value) noexcept;
+  createString(const SourceLocation &srcLoc, const std::string value) noexcept;
 
   // Vectors
   [[nodiscard]] static std::expected<std::shared_ptr<AST_VECTOR>, Error>
-  createVector(const std::vector<std::shared_ptr<AST>> values) noexcept;
+  createVector(const SourceLocation &srcLoc,
+               const std::vector<std::shared_ptr<AST>> values) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_INDEX>, Error>
-  createIndex(const std::shared_ptr<AST> value) noexcept;
+  createIndex(const SourceLocation &srcLoc,
+              const std::shared_ptr<AST> value) noexcept;
 
   // Pointers
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DELETE>, Error>
-  createDelete(const std::shared_ptr<AST> &value) noexcept;
+  createDelete(const SourceLocation &srcLoc,
+               const std::shared_ptr<AST> &value) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_NEW>, Error>
-  createNew(const std::shared_ptr<AST> &value) noexcept;
+  createNew(const SourceLocation &srcLoc,
+            const std::shared_ptr<AST> &value) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DEREF>, Error>
-  createDeref(const std::shared_ptr<AST> &value) noexcept;
+  createDeref(const SourceLocation &srcLoc,
+              const std::shared_ptr<AST> &value) noexcept;
 
   // Binary
   [[nodiscard]] static std::expected<std::shared_ptr<AST_BINARY>, Error>
-  createBinary(const Token &op, const std::shared_ptr<AST> &left,
+  createBinary(const SourceLocation &srcLoc, const Token &op,
+               const std::shared_ptr<AST> &left,
                const std::shared_ptr<AST> &right) noexcept;
 
   // Unary
   [[nodiscard]] static std::expected<std::shared_ptr<AST_UNARY>, Error>
-  createUnary(const Token &op, const std::shared_ptr<AST> &value) noexcept;
+  createUnary(const SourceLocation &srcLoc, const Token &op,
+              const std::shared_ptr<AST> &value) noexcept;
 
   // Asignment
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_ASSIGNMENT>, Error>
-  createAssignment(const Token &op, const std::shared_ptr<AST> &left,
+  createAssignment(const SourceLocation &srcLoc, const Token &op,
+                   const std::shared_ptr<AST> &left,
                    const std::shared_ptr<AST> &value) noexcept;
 
   // Utils
   [[nodiscard]] static std::expected<std::shared_ptr<AST_PRINT>, Error>
-  createPrint(const std::vector<std::shared_ptr<AST>> &values) noexcept;
+  createPrint(const SourceLocation &srcLoc,
+              const std::vector<std::shared_ptr<AST>> &values) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_IMPORT>, Error>
-  createImport(const std::filesystem::path &path) noexcept;
+  createImport(const SourceLocation &srcLoc,
+               const std::filesystem::path &path) noexcept;
 
   // Statements
   [[nodiscard]] static std::expected<std::shared_ptr<AST_STATEMENT>, Error>
-  createStatement(const std::shared_ptr<AST> &expression) noexcept;
+  createStatement(const SourceLocation &srcLoc,
+                  const std::shared_ptr<AST> &expression) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_BODY>, Error>
-  createBody(const std::vector<std::shared_ptr<AST_STATEMENT>> &body) noexcept;
+  createBody(const SourceLocation &srcLoc,
+             const std::vector<std::shared_ptr<AST_STATEMENT>> &body) noexcept;
 
   // Loops
   [[nodiscard]] static std::expected<std::shared_ptr<AST_WHILE>, Error>
-  createWhile(const std::shared_ptr<AST_CONDITION> &condition,
+  createWhile(const SourceLocation &srcLoc,
+              const std::shared_ptr<AST_CONDITION> &condition,
               const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_FOR>, Error>
-  createFor(const std::vector<std::shared_ptr<AST>> &init,
+  createFor(const SourceLocation &srcLoc,
+            const std::vector<std::shared_ptr<AST>> &init,
             const std::shared_ptr<AST_CONDITION> &condition,
             const std::vector<std::shared_ptr<AST>> &update,
             const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DO_WHILE>, Error>
-  createDoWhile(const std::shared_ptr<AST_BODY> &body,
+  createDoWhile(const SourceLocation &srcLoc,
+                const std::shared_ptr<AST_BODY> &body,
                 const std::shared_ptr<AST_CONDITION> &condition) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_PASS>, Error>
-  createPass(const std::shared_ptr<AST> &fatherLoop) noexcept;
+  createPass(const SourceLocation &srcLoc,
+             const std::shared_ptr<AST> &fatherLoop) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_STOP>, Error>
-  createStop(const std::shared_ptr<AST> &fatherLoop) noexcept;
+  createStop(const SourceLocation &srcLoc,
+             const std::shared_ptr<AST> &fatherLoop) noexcept;
 
   // Conditionals
   [[nodiscard]] static std::expected<std::shared_ptr<AST_IF>, Error>
-  createIf(const std::shared_ptr<AST_CONDITION> &condition,
+  createIf(const SourceLocation &srcLoc,
+           const std::shared_ptr<AST_CONDITION> &condition,
            const std::shared_ptr<AST_BODY> &body,
            const std::vector<std::shared_ptr<AST_ELSE_IF>> &elseIf,
            const std::shared_ptr<AST_BODY> &elseBody) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_ELSE_IF>, Error>
-  createElseIf(const std::shared_ptr<AST_CONDITION> &condition,
+  createElseIf(const SourceLocation &srcLoc,
+               const std::shared_ptr<AST_CONDITION> &condition,
                const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_SWITCH>, Error>
-  createSwitch(const std::shared_ptr<AST_CONDITION> &condition,
+  createSwitch(const SourceLocation &srcLoc,
+               const std::shared_ptr<AST_CONDITION> &condition,
                const std::vector<std::shared_ptr<AST_CASE>> &cases,
                const std::shared_ptr<AST_DEFAULT> &default_) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_CASE>, Error>
-  createCase(const std::shared_ptr<AST> &match,
+  createCase(const SourceLocation &srcLoc, const std::shared_ptr<AST> &match,
              const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DEFAULT>, Error>
-  createDefault(const std::shared_ptr<AST_BODY> &body) noexcept;
+  createDefault(const SourceLocation &srcLoc,
+                const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_TERNARY>, Error>
-  createTernary(const std::shared_ptr<AST_CONDITION> &condition,
+  createTernary(const SourceLocation &srcLoc,
+                const std::shared_ptr<AST_CONDITION> &condition,
                 const std::shared_ptr<AST> &first,
                 const std::shared_ptr<AST> &second) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_CONDITION>, Error>
-  createCondition(const std::shared_ptr<AST> &expression) noexcept;
+  createCondition(const SourceLocation &srcLoc,
+                  const std::shared_ptr<AST> &expression) noexcept;
 
   // Functions
   [[nodiscard]] static std::expected<std::shared_ptr<AST_FUNC_CALL>, Error>
-  createFunCall(const std::string &id,
+  createFunCall(const SourceLocation &srcLoc, const std::string &id,
                 const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
                 const std::vector<std::shared_ptr<AST>> &parameters) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
-  createFuncDecl(const std::string &id,
+  createFuncDecl(const SourceLocation &srcLoc, const std::string &id,
                  const std::vector<GenericParameter> &generics,
                  const Parameters &params,
                  const std::shared_ptr<Type> &returnType,
                  const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_RETURN>, Error>
-  createReturn(const std::shared_ptr<AST> &value) noexcept;
+  createReturn(const SourceLocation &srcLoc,
+               const std::shared_ptr<AST> &value) noexcept;
 
   // Enum
   [[nodiscard]] static std::expected<std::shared_ptr<AST_ENUM>, Error>
-  createEnum(const std::string &id,
+  createEnum(const SourceLocation &srcLoc, const std::string &id,
              const std::vector<std::string> &enumIdentifiers) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_ENUM_ACCESS>, Error>
-  createEnumAccess(const std::string &id,
+  createEnumAccess(const SourceLocation &srcLoc, const std::string &id,
                    const std::string &identifiers) noexcept;
 
   // Usert types
   [[nodiscard]] static std::expected<std::shared_ptr<AST_STRUCT>, Error>
-  createStruct(const std::string &id,
+  createStruct(const SourceLocation &srcLoc, const std::string &id,
                const std::vector<GenericParameter> &generics,
                const std::shared_ptr<Type> &fatherType,
                const Attributes &attributes,
@@ -238,16 +263,17 @@ public:
                const std::shared_ptr<AST_DESTRUCTOR_DECL> &destructor) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_ATTR_ACCESS>, Error>
-  createAttrAccess(const std::string &id) noexcept;
+  createAttrAccess(const SourceLocation &srcLoc,
+                   const std::string &id) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_METHOD_CALL>, Error>
   createMethodCall(
-      const std::string &id,
+      const SourceLocation &srcLoc, const std::string &id,
       const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
       const std::vector<std::shared_ptr<AST>> &parameters) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>
-  createMethodDecl(const std::string &id,
+  createMethodDecl(const SourceLocation &srcLoc, const std::string &id,
                    const std::vector<GenericParameter> &generics,
                    const Parameters &params,
 
@@ -257,7 +283,7 @@ public:
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>,
                                      Error>
-  createConstructorDecl(const std::string &id,
+  createConstructorDecl(const SourceLocation &srcLoc, const std::string &id,
                         const std::vector<GenericParameter> &generics,
                         const Parameters &params,
                         const std::shared_ptr<AST_SUPER> &super,
@@ -266,39 +292,42 @@ public:
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>,
                                      Error>
-  createDestructorDecl(const std::string &id,
+  createDestructorDecl(const SourceLocation &srcLoc, const std::string &id,
                        const std::shared_ptr<AST_BODY> &body) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_SUPER>, Error>
-  createSuper(const std::shared_ptr<Type> &fatherType,
+  createSuper(const SourceLocation &srcLoc,
+              const std::shared_ptr<Type> &fatherType,
               const std::vector<std::shared_ptr<Type>> &replacements,
               const std::vector<std::shared_ptr<AST>> &arguments) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_THIS>, Error>
-  createThis() noexcept;
+  createThis(const SourceLocation &srcLoc) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_CONSTRUCTOR_CALL>,
                                      Error>
   createConstructorCall(
-      const std::string &id,
+      const SourceLocation &srcLoc, const std::string &id,
       const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
       const std::vector<std::shared_ptr<AST>> &parameters) noexcept;
 
   // Variables
   [[nodiscard]] static std::expected<std::shared_ptr<AST_AUTO_DECL>, Error>
-  createAutoDecl(const std::string &id, const std::shared_ptr<AST> &value,
+  createAutoDecl(const SourceLocation &srcLoc, const std::string &id,
+                 const std::shared_ptr<AST> &value,
                  const bool isConst) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_VAR_TYPED_DECL>, Error>
-  createVarTypedtDecl(const std::string &id, const std::shared_ptr<Type> &type,
+  createVarTypedtDecl(const SourceLocation &srcLoc, const std::string &id,
+                      const std::shared_ptr<Type> &type,
                       const std::shared_ptr<AST> &value) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_VAR_CALL>, Error>
-  createVarCall(const std::string &id) noexcept;
+  createVarCall(const SourceLocation &srcLoc, const std::string &id) noexcept;
 
   // Chained expression
   [[nodiscard]] static std::expected<std::shared_ptr<AST_CHAINED>, Error>
-  createChained(const std::shared_ptr<AST> &base,
+  createChained(const SourceLocation &srcLoc, const std::shared_ptr<AST> &base,
                 const std::vector<std::shared_ptr<AST>> &operations) noexcept;
 
   // Tree

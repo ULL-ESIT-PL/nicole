@@ -12,8 +12,9 @@ private:
 
 public:
   explicit AST_VAR_CALL(const long long unsigned nodeId,
+                        const SourceLocation &srcLoc,
                         const std::string &id) noexcept
-      : AST(nodeId, AST_TYPE::VAR_CALL), id_{id} {}
+      : AST(nodeId, AST_TYPE::VAR_CALL, srcLoc), id_{id} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 

@@ -4,6 +4,7 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_IMPORT>, Error>
 TopDown::parseImport() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -38,11 +39,13 @@ TopDown::parseImport() const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing ; of import statement at " +
                                                tkStream_.current()->locInfo());
   }
-  return Builder::createImport(currentFilePath);
+  return Builder::createImport(
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, currentFilePath);
 }
 
 const std::expected<std::shared_ptr<AST_PRINT>, Error>
 TopDown::parsePrint() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -57,7 +60,8 @@ TopDown::parsePrint() const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing ; of print statement at " +
                                                tkStream_.lastRead()->locInfo());
   }
-  return Builder::createPrint(*arguemnts);
+  return Builder::createPrint(SourceLocation{*firsToken, *tkStream_.lastRead()},
+                              *arguemnts);
 }
 
 } // namespace nicole

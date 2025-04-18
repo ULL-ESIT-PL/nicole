@@ -16,10 +16,12 @@ private:
 
 public:
   explicit AST_SUBRUTINE_DECL(const long long unsigned nodeId,
-                              const AST_TYPE type, const std::string &id,
+                              const AST_TYPE type, const SourceLocation &srcLoc,
+                              const std::string &id,
                               const std::shared_ptr<Type> &returnType,
                               const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST(nodeId, type), id_{id}, returnType_{returnType}, body_{body} {}
+      : AST(nodeId, type, srcLoc), id_{id}, returnType_{returnType},
+        body_{body} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 

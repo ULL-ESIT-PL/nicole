@@ -13,9 +13,10 @@ private:
 
 public:
   explicit AST_CASE(const long long unsigned nodeId,
+                    const SourceLocation &srcLoc,
                     const std::shared_ptr<AST> &match,
                     const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST(nodeId, AST_TYPE::CASE), match_{match}, body_{body} {}
+      : AST(nodeId, AST_TYPE::CASE, srcLoc), match_{match}, body_{body} {}
 
   [[nodiscard]] const std::shared_ptr<AST> &match() const noexcept {
     return match_;

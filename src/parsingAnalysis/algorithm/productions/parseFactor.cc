@@ -4,6 +4,7 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseFactor() const noexcept {
+  const auto firsToken{tkStream_.current()};
   const std::string raw{tkStream_.current()->raw()};
   const std::string loc{tkStream_.current()->locInfo()};
   switch (tkStream_.current()->type()) {
@@ -12,21 +13,21 @@ TopDown::parseFactor() const noexcept {
     if (!tkStream_.eat()) {
       break;
     }
-    return Builder::createThis();
+    return Builder::createThis(SourceLocation{*firsToken, *tkStream_.lastRead()});
   }
 
   case TokenType::TRUE: {
     if (!tkStream_.eat()) {
       break;
     }
-    return Builder::createBool(true);
+    return Builder::createBool(SourceLocation{*firsToken, *tkStream_.lastRead()}, true);
   }
 
   case TokenType::FALSE: {
     if (!tkStream_.eat()) {
       break;
     }
-    return Builder::createBool(false);
+    return Builder::createBool(SourceLocation{*firsToken, *tkStream_.lastRead()},false);
   }
 
   case TokenType::NUMBER_INT: {
@@ -34,7 +35,7 @@ TopDown::parseFactor() const noexcept {
     if (!tkStream_.eat()) {
       break;
     }
-    return Builder::createInt(value);
+    return Builder::createInt(SourceLocation{*firsToken, *tkStream_.lastRead()},value);
   }
 
   case TokenType::NUMBER_DOUBLE: {
@@ -42,7 +43,7 @@ TopDown::parseFactor() const noexcept {
     if (!tkStream_.eat()) {
       break;
     }
-    return Builder::createDouble(value);
+    return Builder::createDouble(SourceLocation{*firsToken, *tkStream_.lastRead()},value);
   }
 
   case TokenType::NUMBER_FLOAT: {
@@ -50,7 +51,7 @@ TopDown::parseFactor() const noexcept {
     if (!tkStream_.eat()) {
       break;
     }
-    return Builder::createFloat(value);
+    return Builder::createFloat(SourceLocation{*firsToken, *tkStream_.lastRead()},value);
   }
 
   case TokenType::STRING: {
@@ -58,7 +59,7 @@ TopDown::parseFactor() const noexcept {
     if (!tkStream_.eat()) {
       break;
     }
-    return Builder::createString(value);
+    return Builder::createString(SourceLocation{*firsToken, *tkStream_.lastRead()},value);
   }
 
   case TokenType::CHAR: {
@@ -66,14 +67,14 @@ TopDown::parseFactor() const noexcept {
     if (!tkStream_.eat()) {
       break;
     }
-    return Builder::createChar(value);
+    return Builder::createChar(SourceLocation{*firsToken, *tkStream_.lastRead()},value);
   }
 
   case TokenType::NULLPTR: {
     if (!tkStream_.eat()) {
       break;
     }
-    return Builder::createNull();
+    return Builder::createNull(SourceLocation{*firsToken, *tkStream_.lastRead()});
   }
 
   case TokenType::ID: {
@@ -122,7 +123,7 @@ TopDown::parseFactor() const noexcept {
                              ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                              : expression.error());
     }
-    return Builder::createUnary(token, *expression);
+    return Builder::createUnary(SourceLocation{*firsToken, *tkStream_.lastRead()},token, *expression);
   }
 
   case TokenType::OPERATOR_NOT: {
@@ -136,7 +137,7 @@ TopDown::parseFactor() const noexcept {
                              ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                              : expression.error());
     }
-    return Builder::createUnary(token, *expression);
+    return Builder::createUnary(SourceLocation{*firsToken, *tkStream_.lastRead()},token, *expression);
   }
 
   case TokenType::DECREMENT: {
@@ -150,7 +151,7 @@ TopDown::parseFactor() const noexcept {
                              ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                              : expression.error());
     }
-    return Builder::createUnary(token, *expression);
+    return Builder::createUnary(SourceLocation{*firsToken, *tkStream_.lastRead()},token, *expression);
   }
 
   case TokenType::INCREMENT: {
@@ -164,7 +165,7 @@ TopDown::parseFactor() const noexcept {
                              ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                              : expression.error());
     }
-    return Builder::createUnary(token, *expression);
+    return Builder::createUnary(SourceLocation{*firsToken, *tkStream_.lastRead()},token, *expression);
   }
 
   case TokenType::NEW: {
@@ -178,7 +179,7 @@ TopDown::parseFactor() const noexcept {
                              ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                              : expression.error());
     }
-    return Builder::createNew(*expression);
+    return Builder::createNew(SourceLocation{*firsToken, *tkStream_.lastRead()},*expression);
   }
 
   case TokenType::OPERATOR_MULT: {
@@ -191,7 +192,7 @@ TopDown::parseFactor() const noexcept {
                              ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                              : expression.error());
     }
-    return Builder::createDeref(*expression);
+    return Builder::createDeref(SourceLocation{*firsToken, *tkStream_.lastRead()},*expression);
   }
 
   default:
@@ -204,12 +205,13 @@ TopDown::parseFactor() const noexcept {
 
 const std::expected<std::shared_ptr<AST_VECTOR>, Error>
 TopDown::parseVector() const noexcept {
+  const auto firsToken{tkStream_.current()};
   const std::expected<std::vector<std::shared_ptr<AST>>, Error> arguemnts{
       parseArguments({TokenType::LC, TokenType::RC}, true)};
   if (!arguemnts) {
     return createError(arguemnts.error());
   }
-  return Builder::createVector(*arguemnts);
+  return Builder::createVector(SourceLocation{*firsToken, *tkStream_.lastRead()},*arguemnts);
 }
 
 const std::expected<std::vector<std::shared_ptr<AST>>, Error>

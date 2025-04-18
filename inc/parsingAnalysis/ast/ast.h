@@ -1,6 +1,7 @@
 #ifndef AST_H
 #define AST_H
 
+#include "../../lexicalAnalysis/sourceLocation.h"
 #include "../../visitors/codeGeneration/codeGeneration.h"
 #include "../../visitors/fillSemanticInfo/fillSemanticInfo.h"
 #include "../../visitors/monomorphize/monomorphize.h"
@@ -18,11 +19,13 @@ private:
   long long unsigned nodeId_;
   AST_TYPE type_;
   std::weak_ptr<AST> father_;
+  SourceLocation srcLoc_;
   mutable std::shared_ptr<Type> returnedFromTypeAnalysis_{nullptr};
 
 public:
-  explicit AST(const long long unsigned nodeId, const AST_TYPE type) noexcept
-      : nodeId_{nodeId}, type_{type} {}
+  explicit AST(const long long unsigned nodeId, const AST_TYPE type,
+               const SourceLocation &srcLoc) noexcept
+      : nodeId_{nodeId}, type_{type}, srcLoc_{srcLoc} {}
 
   virtual ~AST() noexcept = default;
 
@@ -32,6 +35,10 @@ public:
 
   [[nodiscard]] const std::shared_ptr<AST> father() const noexcept {
     return father_.lock();
+  }
+
+  [[nodiscard]] const SourceLocation &srcLoc() const noexcept {
+    return srcLoc_;
   }
 
   [[nodiscard]] const std::shared_ptr<Type> &

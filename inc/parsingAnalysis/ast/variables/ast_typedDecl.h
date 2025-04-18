@@ -13,11 +13,12 @@ private:
 
 public:
   explicit AST_VAR_TYPED_DECL(const long long unsigned nodeId,
+                              const SourceLocation &srcLoc,
                               const std::string &id,
                               const std::shared_ptr<Type> &type,
                               const std::shared_ptr<AST> &value) noexcept
-      : AST_VAR_DECL(nodeId, AST_TYPE::VAR_TYPED_DECL, id, value), type_{type} {
-  }
+      : AST_VAR_DECL(nodeId, AST_TYPE::VAR_TYPED_DECL, srcLoc, id, value),
+        type_{type} {}
 
   [[nodiscard]] const std::shared_ptr<Type> &varType() const noexcept {
     return type_;

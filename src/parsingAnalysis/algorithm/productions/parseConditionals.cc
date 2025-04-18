@@ -4,6 +4,7 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_IF>, Error>
 TopDown::parseIf() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -31,7 +32,8 @@ TopDown::parseIf() const noexcept {
     elseIfs.push_back(*elseIf);
   }
   if (tkStream_.current()->type() != TokenType::ELSE) {
-    return Builder::createIf(*condition, *bodyIf, elseIfs, nullptr);
+    return Builder::createIf(SourceLocation{*firsToken, *tkStream_.lastRead()},
+                             *condition, *bodyIf, elseIfs, nullptr);
   }
   if (auto res = tryEat(); !res) {
     return createError(res.error());
@@ -41,11 +43,13 @@ TopDown::parseIf() const noexcept {
     return createError(bodyElse ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                 : bodyElse.error());
   }
-  return Builder::createIf(*condition, *bodyIf, elseIfs, *bodyElse);
+  return Builder::createIf(SourceLocation{*firsToken, *tkStream_.lastRead()},
+                           *condition, *bodyIf, elseIfs, *bodyElse);
 }
 
 const std::expected<std::shared_ptr<AST_ELSE_IF>, Error>
 TopDown::parseElseIf() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -63,11 +67,13 @@ TopDown::parseElseIf() const noexcept {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createElseIf(*condition, *body);
+  return Builder::createElseIf(
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, *condition, *body);
 }
 
 const std::expected<std::shared_ptr<AST_SWITCH>, Error>
 TopDown::parseSwitch() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -106,7 +112,9 @@ TopDown::parseSwitch() const noexcept {
     if (auto res = tryEat(); !res) {
       return createError(res.error());
     }
-    return Builder::createSwitch(*condition, cases, nullptr);
+    return Builder::createSwitch(
+        SourceLocation{*firsToken, *tkStream_.lastRead()}, *condition, cases,
+        nullptr);
   }
   if (tkStream_.current()->type() != TokenType::DEFAULT) {
     return createError(ERROR_TYPE::SINTAX,
@@ -128,11 +136,14 @@ TopDown::parseSwitch() const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
-  return Builder::createSwitch(*condition, cases, *defaultCase);
+  return Builder::createSwitch(
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, *condition, cases,
+      *defaultCase);
 }
 
 const std::expected<std::shared_ptr<AST_CASE>, Error>
 TopDown::parseCase() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -153,11 +164,13 @@ TopDown::parseCase() const noexcept {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createCase(*condition, *body);
+  return Builder::createCase(SourceLocation{*firsToken, *tkStream_.lastRead()},
+                             *condition, *body);
 }
 
 const std::expected<std::shared_ptr<AST_DEFAULT>, Error>
 TopDown::parseDefault() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -166,11 +179,13 @@ TopDown::parseDefault() const noexcept {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createDefault(*body);
+  return Builder::createDefault(
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, *body);
 }
 
 const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseTernary() const noexcept {
+  const auto firsToken{tkStream_.current()};
   // to avoid ambigious situations like (something) being treated like ternary
   if (tkStream_.current()->type() == TokenType::LP and
       tkStream_.isTokenAheadBeforeSemicolon(TokenType::TERNARY)) {
@@ -207,13 +222,16 @@ TopDown::parseTernary() const noexcept {
       return createError(second ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                 : second.error());
     }
-    return Builder::createTernary(*condition, *first, *second);
+    return Builder::createTernary(
+        SourceLocation{*firsToken, *tkStream_.lastRead()}, *condition, *first,
+        *second);
   }
   return parseOr();
 }
 
 const std::expected<std::shared_ptr<AST_CONDITION>, Error>
 TopDown::parseCondition(const bool isInsideFor) const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (!isInsideFor) {
     if (tkStream_.current()->type() != TokenType::LP) {
       return createError(ERROR_TYPE::SINTAX,
@@ -244,7 +262,8 @@ TopDown::parseCondition(const bool isInsideFor) const noexcept {
       return createError(res.error());
     }
   }
-  return Builder::createCondition(*condition);
+  return Builder::createCondition(
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, *condition);
 }
 
 } // namespace nicole

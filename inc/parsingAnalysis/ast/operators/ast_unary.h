@@ -13,9 +13,10 @@ private:
   std::shared_ptr<AST> value_;
 
 public:
-  explicit AST_UNARY(const long long unsigned nodeId, const Token &op,
+  explicit AST_UNARY(const long long unsigned nodeId,
+                     const SourceLocation &srcLoc, const Token &op,
                      const std::shared_ptr<AST> &value) noexcept
-      : AST(nodeId, AST_TYPE::UNARY), op_{op}, value_{value} {}
+      : AST(nodeId, AST_TYPE::UNARY, srcLoc), op_{op}, value_{value} {}
 
   [[nodiscard]] const Token &op() const noexcept { return op_; }
 

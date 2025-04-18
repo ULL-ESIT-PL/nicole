@@ -5,7 +5,9 @@
 using namespace nicole;
 
 TEST_CASE("AST_IMPORT class methods", "[AST_IMPORT]") {
-  AST_IMPORT astImport{0, "/path/to/file"};
+  Location loc{"file", 0, 0};
+  Token token{TokenType::OPERATOR_ADD, "+", loc};
+  AST_IMPORT astImport{0, SourceLocation{token, token}, "/path/to/file"};
 
   REQUIRE(astImport.path() == std::filesystem::path{"/path/to/file"});
 }
@@ -32,14 +34,17 @@ bool areASTStatementsEqual(const std::shared_ptr<AST_STATEMENT> &lhs,
 }
 
 TEST_CASE("AST_PRINT class methods", "[AST_PRINT]") {
-  auto astBool1 =
-      *Builder::createStatement(*Builder::createBool(true));
-  auto astBool2 =
-      *Builder::createStatement(*Builder::createBool(false));
-  auto astComma =
-      std::vector<std::shared_ptr<AST>>{astBool1, astBool2};
+  Location loc{"file", 0, 0};
+  Token token{TokenType::OPERATOR_ADD, "+", loc};
+  auto astBool1 = *Builder::createStatement(
+      SourceLocation{token, token},
+      *Builder::createBool(SourceLocation{token, token}, true));
+  auto astBool2 = *Builder::createStatement(
+      SourceLocation{token, token},
+      *Builder::createBool(SourceLocation{token, token}, false));
+  auto astComma = std::vector<std::shared_ptr<AST>>{astBool1, astBool2};
 
-  AST_PRINT astPrint{0,astComma};
+  AST_PRINT astPrint{0, SourceLocation{token, token}, astComma};
 
   REQUIRE(astPrint.values() == astComma);
   REQUIRE(astPrint.values()[0] == astBool1);

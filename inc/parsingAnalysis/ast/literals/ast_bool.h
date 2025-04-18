@@ -10,8 +10,9 @@ private:
   bool value_;
 
 public:
-  explicit AST_BOOL(const long long unsigned nodeId, const bool value) noexcept
-      : AST{nodeId, AST_TYPE::BOOL}, value_{value} {}
+  explicit AST_BOOL(const long long unsigned nodeId,
+                    const SourceLocation &srcLoc, const bool value) noexcept
+      : AST{nodeId, AST_TYPE::BOOL, srcLoc}, value_{value} {}
 
   ~AST_BOOL() noexcept = default;
 

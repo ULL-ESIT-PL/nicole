@@ -7,8 +7,9 @@ namespace nicole {
 
 class AST_NULL final : public AST {
 public:
-  explicit AST_NULL(const long long unsigned nodeId) noexcept
-      : AST{nodeId, AST_TYPE::NULLPTR} {}
+  explicit AST_NULL(const long long unsigned nodeId,
+                    const SourceLocation &srcLoc) noexcept
+      : AST{nodeId, AST_TYPE::NULLPTR, srcLoc} {}
 
   ~AST_NULL() noexcept = default;
 

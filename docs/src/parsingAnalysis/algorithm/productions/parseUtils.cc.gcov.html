@@ -32,12 +32,12 @@
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
-            <td class="headerCovTableEntry">50</td>
+            <td class="headerCovTableEntry">54</td>
             <td class="headerCovTableEntry">0</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-04-11 02:11:23</td>
+            <td class="headerValue">2025-04-18 15:53:49</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
@@ -66,63 +66,67 @@
 <span id="L4"><span class="lineNum">       4</span>              : </span>
 <span id="L5"><span class="lineNum">       5</span>              : const std::expected&lt;std::shared_ptr&lt;AST_IMPORT&gt;, Error&gt;</span>
 <span id="L6"><span class="lineNum">       6</span> <span class="tlaUNC tlaBgUNC">           0 : TopDown::parseImport() const noexcept {</span></span>
-<span id="L7"><span class="lineNum">       7</span> <span class="tlaUNC">           0 :   if (auto res = tryEat(); !res) {</span></span>
-<span id="L8"><span class="lineNum">       8</span> <span class="tlaUNC">           0 :     return createError(res.error());</span></span>
-<span id="L9"><span class="lineNum">       9</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L10"><span class="lineNum">      10</span> <span class="tlaUNC">           0 :   if (tkStream_.current()-&gt;type() != TokenType::STRING) {</span></span>
-<span id="L11"><span class="lineNum">      11</span> <span class="tlaUNC">           0 :     return createError(ERROR_TYPE::SINTAX, &quot;missing file of import at &quot; +</span></span>
-<span id="L12"><span class="lineNum">      12</span> <span class="tlaUNC">           0 :                                                tkStream_.current()-&gt;locInfo());</span></span>
-<span id="L13"><span class="lineNum">      13</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L14"><span class="lineNum">      14</span> <span class="tlaUNC">           0 :   const Token token{*tkStream_.current()};</span></span>
-<span id="L15"><span class="lineNum">      15</span> <span class="tlaUNC">           0 :   if (auto res = tryEat(); !res) {</span></span>
-<span id="L16"><span class="lineNum">      16</span> <span class="tlaUNC">           0 :     return createError(res.error());</span></span>
-<span id="L17"><span class="lineNum">      17</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L18"><span class="lineNum">      18</span> <span class="tlaUNC">           0 :   std::filesystem::path currentFilePath{token.location().file()};</span></span>
-<span id="L19"><span class="lineNum">      19</span>              :   // Gets the base path of the current file</span>
-<span id="L20"><span class="lineNum">      20</span> <span class="tlaUNC">           0 :   currentFilePath = currentFilePath.parent_path();</span></span>
-<span id="L21"><span class="lineNum">      21</span>              :   // builds the path based on the import in the current file's directory</span>
-<span id="L22"><span class="lineNum">      22</span> <span class="tlaUNC">           0 :   currentFilePath =</span></span>
-<span id="L23"><span class="lineNum">      23</span> <span class="tlaUNC">           0 :       currentFilePath / token.raw().substr(1, token.raw().size() - 2);</span></span>
-<span id="L24"><span class="lineNum">      24</span> <span class="tlaUNC">           0 :   if (!parsedFiles_.count(currentFilePath)) {</span></span>
-<span id="L25"><span class="lineNum">      25</span> <span class="tlaUNC">           0 :     parsedFiles_.insert(currentFilePath);</span></span>
-<span id="L26"><span class="lineNum">      26</span> <span class="tlaUNC">           0 :     const std::expected&lt;TokenStream, Error&gt; tokens{</span></span>
-<span id="L27"><span class="lineNum">      27</span> <span class="tlaUNC">           0 :         lexer_.analyze(currentFilePath)};</span></span>
-<span id="L28"><span class="lineNum">      28</span> <span class="tlaUNC">           0 :     if (!tokens) {</span></span>
-<span id="L29"><span class="lineNum">      29</span> <span class="tlaUNC">           0 :       return createError(tokens.error());</span></span>
-<span id="L30"><span class="lineNum">      30</span> <span class="tlaUNC">           0 :     }</span></span>
-<span id="L31"><span class="lineNum">      31</span> <span class="tlaUNC">           0 :     const std::expected&lt;std::monostate, Error&gt; isInserted{</span></span>
-<span id="L32"><span class="lineNum">      32</span> <span class="tlaUNC">           0 :         tkStream_.insertAfter(*tokens, tkStream_.currentPos() + 1)};</span></span>
-<span id="L33"><span class="lineNum">      33</span> <span class="tlaUNC">           0 :     if (!isInserted) {</span></span>
-<span id="L34"><span class="lineNum">      34</span> <span class="tlaUNC">           0 :       return createError(isInserted.error());</span></span>
-<span id="L35"><span class="lineNum">      35</span> <span class="tlaUNC">           0 :     }</span></span>
-<span id="L36"><span class="lineNum">      36</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L37"><span class="lineNum">      37</span> <span class="tlaUNC">           0 :   if (tkStream_.current()-&gt;type() != TokenType::SEMICOLON) {</span></span>
-<span id="L38"><span class="lineNum">      38</span> <span class="tlaUNC">           0 :     return createError(ERROR_TYPE::SINTAX, &quot;missing ; of import statement at &quot; +</span></span>
-<span id="L39"><span class="lineNum">      39</span> <span class="tlaUNC">           0 :                                                tkStream_.current()-&gt;locInfo());</span></span>
-<span id="L40"><span class="lineNum">      40</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L41"><span class="lineNum">      41</span> <span class="tlaUNC">           0 :   return Builder::createImport(currentFilePath);</span></span>
-<span id="L42"><span class="lineNum">      42</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L43"><span class="lineNum">      43</span>              : </span>
-<span id="L44"><span class="lineNum">      44</span>              : const std::expected&lt;std::shared_ptr&lt;AST_PRINT&gt;, Error&gt;</span>
-<span id="L45"><span class="lineNum">      45</span> <span class="tlaUNC">           0 : TopDown::parsePrint() const noexcept {</span></span>
-<span id="L46"><span class="lineNum">      46</span> <span class="tlaUNC">           0 :   if (auto res = tryEat(); !res) {</span></span>
-<span id="L47"><span class="lineNum">      47</span> <span class="tlaUNC">           0 :     return createError(res.error());</span></span>
-<span id="L48"><span class="lineNum">      48</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L49"><span class="lineNum">      49</span>              : </span>
-<span id="L50"><span class="lineNum">      50</span> <span class="tlaUNC">           0 :   const std::expected&lt;std::vector&lt;std::shared_ptr&lt;AST&gt;&gt;, Error&gt; arguemnts{</span></span>
-<span id="L51"><span class="lineNum">      51</span> <span class="tlaUNC">           0 :       parseArguments({TokenType::LP, TokenType::RP}, false)};</span></span>
-<span id="L52"><span class="lineNum">      52</span> <span class="tlaUNC">           0 :   if (!arguemnts) {</span></span>
-<span id="L53"><span class="lineNum">      53</span> <span class="tlaUNC">           0 :     return createError(arguemnts.error());</span></span>
-<span id="L54"><span class="lineNum">      54</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L55"><span class="lineNum">      55</span>              : </span>
-<span id="L56"><span class="lineNum">      56</span> <span class="tlaUNC">           0 :   if (tkStream_.current()-&gt;type() != TokenType::SEMICOLON) {</span></span>
-<span id="L57"><span class="lineNum">      57</span> <span class="tlaUNC">           0 :     return createError(ERROR_TYPE::SINTAX, &quot;missing ; of print statement at &quot; +</span></span>
-<span id="L58"><span class="lineNum">      58</span> <span class="tlaUNC">           0 :                                                tkStream_.lastRead()-&gt;locInfo());</span></span>
-<span id="L59"><span class="lineNum">      59</span> <span class="tlaUNC">           0 :   }</span></span>
-<span id="L60"><span class="lineNum">      60</span> <span class="tlaUNC">           0 :   return Builder::createPrint(*arguemnts);</span></span>
-<span id="L61"><span class="lineNum">      61</span> <span class="tlaUNC">           0 : }</span></span>
-<span id="L62"><span class="lineNum">      62</span>              : </span>
-<span id="L63"><span class="lineNum">      63</span>              : } // namespace nicole</span>
+<span id="L7"><span class="lineNum">       7</span> <span class="tlaUNC">           0 :   const auto firsToken{tkStream_.current()};</span></span>
+<span id="L8"><span class="lineNum">       8</span> <span class="tlaUNC">           0 :   if (auto res = tryEat(); !res) {</span></span>
+<span id="L9"><span class="lineNum">       9</span> <span class="tlaUNC">           0 :     return createError(res.error());</span></span>
+<span id="L10"><span class="lineNum">      10</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L11"><span class="lineNum">      11</span> <span class="tlaUNC">           0 :   if (tkStream_.current()-&gt;type() != TokenType::STRING) {</span></span>
+<span id="L12"><span class="lineNum">      12</span> <span class="tlaUNC">           0 :     return createError(ERROR_TYPE::SINTAX, &quot;missing file of import at &quot; +</span></span>
+<span id="L13"><span class="lineNum">      13</span> <span class="tlaUNC">           0 :                                                tkStream_.current()-&gt;locInfo());</span></span>
+<span id="L14"><span class="lineNum">      14</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L15"><span class="lineNum">      15</span> <span class="tlaUNC">           0 :   const Token token{*tkStream_.current()};</span></span>
+<span id="L16"><span class="lineNum">      16</span> <span class="tlaUNC">           0 :   if (auto res = tryEat(); !res) {</span></span>
+<span id="L17"><span class="lineNum">      17</span> <span class="tlaUNC">           0 :     return createError(res.error());</span></span>
+<span id="L18"><span class="lineNum">      18</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L19"><span class="lineNum">      19</span> <span class="tlaUNC">           0 :   std::filesystem::path currentFilePath{token.location().file()};</span></span>
+<span id="L20"><span class="lineNum">      20</span>              :   // Gets the base path of the current file</span>
+<span id="L21"><span class="lineNum">      21</span> <span class="tlaUNC">           0 :   currentFilePath = currentFilePath.parent_path();</span></span>
+<span id="L22"><span class="lineNum">      22</span>              :   // builds the path based on the import in the current file's directory</span>
+<span id="L23"><span class="lineNum">      23</span> <span class="tlaUNC">           0 :   currentFilePath =</span></span>
+<span id="L24"><span class="lineNum">      24</span> <span class="tlaUNC">           0 :       currentFilePath / token.raw().substr(1, token.raw().size() - 2);</span></span>
+<span id="L25"><span class="lineNum">      25</span> <span class="tlaUNC">           0 :   if (!parsedFiles_.count(currentFilePath)) {</span></span>
+<span id="L26"><span class="lineNum">      26</span> <span class="tlaUNC">           0 :     parsedFiles_.insert(currentFilePath);</span></span>
+<span id="L27"><span class="lineNum">      27</span> <span class="tlaUNC">           0 :     const std::expected&lt;TokenStream, Error&gt; tokens{</span></span>
+<span id="L28"><span class="lineNum">      28</span> <span class="tlaUNC">           0 :         lexer_.analyze(currentFilePath)};</span></span>
+<span id="L29"><span class="lineNum">      29</span> <span class="tlaUNC">           0 :     if (!tokens) {</span></span>
+<span id="L30"><span class="lineNum">      30</span> <span class="tlaUNC">           0 :       return createError(tokens.error());</span></span>
+<span id="L31"><span class="lineNum">      31</span> <span class="tlaUNC">           0 :     }</span></span>
+<span id="L32"><span class="lineNum">      32</span> <span class="tlaUNC">           0 :     const std::expected&lt;std::monostate, Error&gt; isInserted{</span></span>
+<span id="L33"><span class="lineNum">      33</span> <span class="tlaUNC">           0 :         tkStream_.insertAfter(*tokens, tkStream_.currentPos() + 1)};</span></span>
+<span id="L34"><span class="lineNum">      34</span> <span class="tlaUNC">           0 :     if (!isInserted) {</span></span>
+<span id="L35"><span class="lineNum">      35</span> <span class="tlaUNC">           0 :       return createError(isInserted.error());</span></span>
+<span id="L36"><span class="lineNum">      36</span> <span class="tlaUNC">           0 :     }</span></span>
+<span id="L37"><span class="lineNum">      37</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L38"><span class="lineNum">      38</span> <span class="tlaUNC">           0 :   if (tkStream_.current()-&gt;type() != TokenType::SEMICOLON) {</span></span>
+<span id="L39"><span class="lineNum">      39</span> <span class="tlaUNC">           0 :     return createError(ERROR_TYPE::SINTAX, &quot;missing ; of import statement at &quot; +</span></span>
+<span id="L40"><span class="lineNum">      40</span> <span class="tlaUNC">           0 :                                                tkStream_.current()-&gt;locInfo());</span></span>
+<span id="L41"><span class="lineNum">      41</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L42"><span class="lineNum">      42</span> <span class="tlaUNC">           0 :   return Builder::createImport(</span></span>
+<span id="L43"><span class="lineNum">      43</span> <span class="tlaUNC">           0 :       SourceLocation{*firsToken, *tkStream_.lastRead()}, currentFilePath);</span></span>
+<span id="L44"><span class="lineNum">      44</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L45"><span class="lineNum">      45</span>              : </span>
+<span id="L46"><span class="lineNum">      46</span>              : const std::expected&lt;std::shared_ptr&lt;AST_PRINT&gt;, Error&gt;</span>
+<span id="L47"><span class="lineNum">      47</span> <span class="tlaUNC">           0 : TopDown::parsePrint() const noexcept {</span></span>
+<span id="L48"><span class="lineNum">      48</span> <span class="tlaUNC">           0 :   const auto firsToken{tkStream_.current()};</span></span>
+<span id="L49"><span class="lineNum">      49</span> <span class="tlaUNC">           0 :   if (auto res = tryEat(); !res) {</span></span>
+<span id="L50"><span class="lineNum">      50</span> <span class="tlaUNC">           0 :     return createError(res.error());</span></span>
+<span id="L51"><span class="lineNum">      51</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L52"><span class="lineNum">      52</span>              : </span>
+<span id="L53"><span class="lineNum">      53</span> <span class="tlaUNC">           0 :   const std::expected&lt;std::vector&lt;std::shared_ptr&lt;AST&gt;&gt;, Error&gt; arguemnts{</span></span>
+<span id="L54"><span class="lineNum">      54</span> <span class="tlaUNC">           0 :       parseArguments({TokenType::LP, TokenType::RP}, false)};</span></span>
+<span id="L55"><span class="lineNum">      55</span> <span class="tlaUNC">           0 :   if (!arguemnts) {</span></span>
+<span id="L56"><span class="lineNum">      56</span> <span class="tlaUNC">           0 :     return createError(arguemnts.error());</span></span>
+<span id="L57"><span class="lineNum">      57</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L58"><span class="lineNum">      58</span>              : </span>
+<span id="L59"><span class="lineNum">      59</span> <span class="tlaUNC">           0 :   if (tkStream_.current()-&gt;type() != TokenType::SEMICOLON) {</span></span>
+<span id="L60"><span class="lineNum">      60</span> <span class="tlaUNC">           0 :     return createError(ERROR_TYPE::SINTAX, &quot;missing ; of print statement at &quot; +</span></span>
+<span id="L61"><span class="lineNum">      61</span> <span class="tlaUNC">           0 :                                                tkStream_.lastRead()-&gt;locInfo());</span></span>
+<span id="L62"><span class="lineNum">      62</span> <span class="tlaUNC">           0 :   }</span></span>
+<span id="L63"><span class="lineNum">      63</span> <span class="tlaUNC">           0 :   return Builder::createPrint(SourceLocation{*firsToken, *tkStream_.lastRead()},</span></span>
+<span id="L64"><span class="lineNum">      64</span> <span class="tlaUNC">           0 :                               *arguemnts);</span></span>
+<span id="L65"><span class="lineNum">      65</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L66"><span class="lineNum">      66</span>              : </span>
+<span id="L67"><span class="lineNum">      67</span>              : } // namespace nicole</span>
         </pre>
               </td>
             </tr>

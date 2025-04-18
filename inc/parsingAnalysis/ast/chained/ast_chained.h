@@ -14,9 +14,11 @@ private:
 
 public:
   explicit AST_CHAINED(
-      const long long unsigned nodeId, const std::shared_ptr<AST> &base,
+      const long long unsigned nodeId, const SourceLocation &srcLoc,
+      const std::shared_ptr<AST> &base,
       const std::vector<std::shared_ptr<AST>> &operations) noexcept
-      : AST{nodeId, AST_TYPE::CHAIN}, base_{base}, operations_{operations} {}
+      : AST{nodeId, AST_TYPE::CHAIN, srcLoc}, base_{base},
+        operations_{operations} {}
 
   [[nodiscard]] const std::shared_ptr<AST> &base() const noexcept {
     return base_;

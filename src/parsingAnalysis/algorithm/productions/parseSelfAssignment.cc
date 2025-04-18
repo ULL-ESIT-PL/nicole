@@ -4,6 +4,7 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseAssignment(const bool insideFor) const noexcept {
+  const auto firsToken{tkStream_.current()};
   const auto left{parseOr()};
   if (!left || !*left) {
     return createError(left ? Error{ERROR_TYPE::NULL_NODE, "left is null"}
@@ -24,7 +25,9 @@ TopDown::parseAssignment(const bool insideFor) const noexcept {
   }
 
   std::expected<std::shared_ptr<AST>, Error> operation{
-      Builder::createAssignment(token, *left, *value)};
+      Builder::createAssignment(
+          SourceLocation{*firsToken, *tkStream_.lastRead()}, token, *left,
+          *value)};
 
   if (!operation || !*operation) {
     return createError(operation ? Error{ERROR_TYPE::NULL_NODE, "right is null"}

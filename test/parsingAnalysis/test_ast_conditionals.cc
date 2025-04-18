@@ -5,52 +5,85 @@
 using namespace nicole;
 
 TEST_CASE("AST_CASE class methods", "[AST_CASE]") {
-  auto condition = *Builder::createCondition(*Builder::createBool(true));
-  auto statement = *Builder::createStatement(*Builder::createBool(true));
+  Location loc{"file", 0, 0};
+  Token token{TokenType::OPERATOR_ADD, "+", loc};
+  auto condition = *Builder::createCondition(
+      SourceLocation{token, token},
+      *Builder::createBool(SourceLocation{token, token}, true));
+  auto statement = *Builder::createStatement(
+      SourceLocation{token, token},
+      *Builder::createBool(SourceLocation{token, token}, true));
   auto body = *Builder::createBody(
+      SourceLocation{token, token},
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
-  AST_CASE astCase{0,condition, body};
+  AST_CASE astCase{0, SourceLocation{token, token}, condition, body};
 
   REQUIRE(astCase.match() == condition);
   REQUIRE(astCase.body() == body);
 }
 
 TEST_CASE("AST_DEFAULT class methods", "[AST_DEFAULT]") {
-  auto statement = *Builder::createStatement(*Builder::createBool(false));
+  Location loc{"file", 0, 0};
+  Token token{TokenType::OPERATOR_ADD, "+", loc};
+  auto statement = *Builder::createStatement(
+      SourceLocation{token, token},
+      *Builder::createBool(SourceLocation{token, token}, false));
   auto body = *Builder::createBody(
+      SourceLocation{token, token},
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
-  AST_DEFAULT astDefault{0,body};
+  AST_DEFAULT astDefault{0, SourceLocation{token, token}, body};
 
   REQUIRE(astDefault.body() == body);
 }
 
 TEST_CASE("AST_ELSE_IF class methods", "[AST_ELSE_IF]") {
-  auto condition = *Builder::createCondition(*Builder::createBool(true));
-  auto statement = *Builder::createStatement(*Builder::createBool(true));
+  Location loc{"file", 0, 0};
+  Token token{TokenType::OPERATOR_ADD, "+", loc};
+  auto condition = *Builder::createCondition(
+      SourceLocation{token, token},
+      *Builder::createBool(SourceLocation{token, token}, true));
+  auto statement = *Builder::createStatement(
+      SourceLocation{token, token},
+      *Builder::createBool(SourceLocation{token, token}, true));
   auto body = *Builder::createBody(
+      SourceLocation{token, token},
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
-  AST_ELSE_IF astElseIf{0,condition, body};
+  AST_ELSE_IF astElseIf{0, SourceLocation{token, token}, condition, body};
 
   REQUIRE(astElseIf.condition() == condition);
   REQUIRE(astElseIf.body() == body);
 }
 
 TEST_CASE("AST_IF class methods", "[AST_IF]") {
-  auto condition = *Builder::createCondition(*Builder::createBool(true));
-  auto statement = *Builder::createStatement(*Builder::createBool(true));
+  Location loc{"file", 0, 0};
+  Token token{TokenType::OPERATOR_ADD, "+", loc};
+  auto condition = *Builder::createCondition(
+      SourceLocation{token, token},
+      *Builder::createBool(SourceLocation{token, token}, true));
+  auto statement = *Builder::createStatement(
+      SourceLocation{token, token},
+      *Builder::createBool(SourceLocation{token, token}, true));
   auto body = *Builder::createBody(
+      SourceLocation{token, token},
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
 
-  auto elseCondition = *Builder::createCondition(*Builder::createBool(false));
-  auto elseStatement = *Builder::createStatement(elseCondition);
+  auto elseCondition = *Builder::createCondition(
+      SourceLocation{token, token},
+      *Builder::createBool(SourceLocation{token, token}, false));
+  auto elseStatement =
+      *Builder::createStatement(SourceLocation{token, token}, elseCondition);
   auto elseIfBody = *Builder::createBody(
+      SourceLocation{token, token},
       std::vector<std::shared_ptr<AST_STATEMENT>>{elseStatement});
-  auto elseIf = *Builder::createElseIf(elseCondition, elseIfBody);
+  auto elseIf = *Builder::createElseIf(SourceLocation{token, token},
+                                       elseCondition, elseIfBody);
 
   auto elseBody = *Builder::createBody(
+      SourceLocation{token, token},
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
 
-  AST_IF astIf{0,condition, body, {elseIf}, elseBody};
+  AST_IF astIf{0,       SourceLocation{token, token}, condition, body, {elseIf},
+               elseBody};
 
   REQUIRE(astIf.condition() == condition);
   REQUIRE(astIf.body() == body);
@@ -60,17 +93,28 @@ TEST_CASE("AST_IF class methods", "[AST_IF]") {
 }
 
 TEST_CASE("AST_SWITCH class methods", "[AST_SWITCH]") {
-  auto condition = *Builder::createCondition(*Builder::createBool(true));
-  auto statement = *Builder::createStatement(*Builder::createBool(true));
+  Location loc{"file", 0, 0};
+  Token token{TokenType::OPERATOR_ADD, "+", loc};
+  auto condition = *Builder::createCondition(
+      SourceLocation{token, token},
+      *Builder::createBool(SourceLocation{token, token}, true));
+  auto statement = *Builder::createStatement(
+      SourceLocation{token, token},
+      *Builder::createBool(SourceLocation{token, token}, true));
   auto body = *Builder::createBody(
+      SourceLocation{token, token},
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
-  auto case1 = std::make_shared<AST_CASE>(0,condition, body);
+  auto case1 = std::make_shared<AST_CASE>(0, SourceLocation{token, token},
+                                          condition, body);
 
   auto defaultBody = *Builder::createBody(
+      SourceLocation{token, token},
       std::vector<std::shared_ptr<AST_STATEMENT>>{statement});
-  auto defaultCase = *Builder::createDefault(defaultBody);
+  auto defaultCase =
+      *Builder::createDefault(SourceLocation{token, token}, defaultBody);
 
-  AST_SWITCH astSwitch{0,condition, {case1}, defaultCase};
+  AST_SWITCH astSwitch{
+      0, SourceLocation{token, token}, condition, {case1}, defaultCase};
 
   REQUIRE(astSwitch.condition() == condition);
   REQUIRE(astSwitch.cases().size() == 1);
@@ -79,11 +123,16 @@ TEST_CASE("AST_SWITCH class methods", "[AST_SWITCH]") {
 }
 
 TEST_CASE("AST_TERNARY class methods", "[AST_TERNARY]") {
-  auto condition = *Builder::createCondition(*Builder::createBool(true));
-  auto first = *Builder::createBool(false);
-  auto second = *Builder::createBool(true);
+  Location loc{"file", 0, 0};
+  Token token{TokenType::OPERATOR_ADD, "+", loc};
+  auto condition = *Builder::createCondition(
+      SourceLocation{token, token},
+      *Builder::createBool(SourceLocation{token, token}, true));
+  auto first = *Builder::createBool(SourceLocation{token, token}, false);
+  auto second = *Builder::createBool(SourceLocation{token, token}, true);
 
-  AST_TERNARY astTernary{0,condition, first, second};
+  AST_TERNARY astTernary{0, SourceLocation{token, token}, condition, first,
+                         second};
 
   REQUIRE(astTernary.condition() == condition);
   REQUIRE(astTernary.first() == first);

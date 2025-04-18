@@ -5,6 +5,7 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_ENUM>, Error>
 TopDown::parseEnum() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -55,11 +56,13 @@ TopDown::parseEnum() const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
-  return Builder::createEnum(id.raw(), identifiers);
+  return Builder::createEnum(SourceLocation{*firsToken, *tkStream_.lastRead()},
+                             id.raw(), identifiers);
 }
 
 const std::expected<std::shared_ptr<AST_ENUM_ACCESS>, Error>
 TopDown::parseEnumAccess() const noexcept {
+  const auto firsToken{tkStream_.current()};
   const Token id{*tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
@@ -83,11 +86,14 @@ TopDown::parseEnumAccess() const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
-  return Builder::createEnumAccess(id.raw(), identifier.raw());
+  return Builder::createEnumAccess(
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, id.raw(),
+      identifier.raw());
 }
 
 const std::expected<std::shared_ptr<AST_STRUCT>, Error>
 TopDown::parseStructDecl() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -227,15 +233,16 @@ TopDown::parseStructDecl() const noexcept {
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
-  return Builder::createStruct(id.raw(), *generics, *fatherType,
-                               Attributes{params}, methods, *constructor,
-                               *destructor);
+  return Builder::createStruct(
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, id.raw(), *generics,
+      *fatherType, Attributes{params}, methods, *constructor, *destructor);
 }
 
 const std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>, Error>
 TopDown::parseConstructorDecl(
     const std::string &id_returnType,
     const std::shared_ptr<Type> &fatherType) const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -288,7 +295,9 @@ TopDown::parseConstructorDecl(
     if (!arguments) {
       return createError(arguments.error());
     }
-    super = Builder::createSuper(fatherType, *replacements, *arguments);
+    super =
+        Builder::createSuper(SourceLocation{*firsToken, *tkStream_.lastRead()},
+                             fatherType, *replacements, *arguments);
     if (!super) {
       return createError(super.error());
     }
@@ -299,7 +308,8 @@ TopDown::parseConstructorDecl(
                             : body.error());
   }
   return Builder::createConstructorDecl(
-      id_returnType, *generics, *params, *super,
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, id_returnType,
+      *generics, *params, *super,
       std::make_shared<UserType>(id_returnType, nullptr,
                                  std::vector<GenericParameter>{}),
       *body);
@@ -307,6 +317,7 @@ TopDown::parseConstructorDecl(
 
 const std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>, Error>
 TopDown::parseDestructorDecl(const std::string &id) const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -315,11 +326,13 @@ TopDown::parseDestructorDecl(const std::string &id) const noexcept {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createDestructorDecl(id, *body);
+  return Builder::createDestructorDecl(
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, id, *body);
 }
 
 const std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>
 TopDown::parseMethodDecl(const bool isVirtual) const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -333,9 +346,11 @@ TopDown::parseMethodDecl(const bool isVirtual) const noexcept {
     return createError(res.error());
   }
   std::expected<std::vector<GenericParameter>, Error> generics{};
-  if (isVirtual and tkStream_.current()->type() == TokenType::OPERATOR_SMALLER) {
-    return createError(ERROR_TYPE::SINTAX, "a virtual method cannot be templated " +
-                                               tkStream_.current()->locInfo());
+  if (isVirtual and
+      tkStream_.current()->type() == TokenType::OPERATOR_SMALLER) {
+    return createError(ERROR_TYPE::SINTAX,
+                       "a virtual method cannot be templated " +
+                           tkStream_.current()->locInfo());
   }
   if (tkStream_.current()->type() == TokenType::OPERATOR_SMALLER) {
     generics = parseGenerics();
@@ -379,8 +394,9 @@ TopDown::parseMethodDecl(const bool isVirtual) const noexcept {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createMethodDecl(id.raw(), *generics, *params, *returnType,
-                                   *body, isVirtual);
+  return Builder::createMethodDecl(
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, id.raw(), *generics,
+      *params, *returnType, *body, isVirtual);
 }
 
 } // namespace nicole

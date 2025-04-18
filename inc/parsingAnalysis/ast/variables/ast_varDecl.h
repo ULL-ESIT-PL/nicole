@@ -15,9 +15,9 @@ private:
 
 public:
   explicit AST_VAR_DECL(const long long unsigned nodeId, const AST_TYPE astType,
-                        const std::string &id,
+                        const SourceLocation &srcLoc, const std::string &id,
                         const std::shared_ptr<AST> &value) noexcept
-      : AST(nodeId, astType), id_{id}, value_{value} {}
+      : AST(nodeId, astType, srcLoc), id_{id}, value_{value} {}
 
   [[nodiscard]] const std::string &id() const noexcept { return id_; }
 

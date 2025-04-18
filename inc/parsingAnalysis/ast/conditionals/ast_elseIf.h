@@ -14,9 +14,11 @@ private:
 
 public:
   explicit AST_ELSE_IF(const long long unsigned nodeId,
+                       const SourceLocation &srcLoc,
                        const std::shared_ptr<AST_CONDITION> &condition,
                        const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST(nodeId, AST_TYPE::ELSE_IF), condition_{condition}, body_{body} {}
+      : AST(nodeId, AST_TYPE::ELSE_IF, srcLoc), condition_{condition},
+        body_{body} {}
 
   [[nodiscard]] const std::shared_ptr<AST_CONDITION> &
   condition() const noexcept {

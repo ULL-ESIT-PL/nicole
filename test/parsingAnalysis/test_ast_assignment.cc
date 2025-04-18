@@ -6,9 +6,9 @@ using namespace nicole;
 
 TEST_CASE("AST_ASSIGNMENT class methods", "[AST_ASSIGNMENT]") {
   const Token op{TokenType::SELF_ADD, "+=", Location{"archivo.cpp", 10, 5}};
-  auto astBool = *Builder::createBool(true);
-  auto left = *Builder::createBool(true);
-  AST_ASSIGNMENT astSelfAdd{0,op, left, astBool};
+  auto astBool = *Builder::createBool(SourceLocation{op, op}, true);
+  auto left = *Builder::createBool(SourceLocation{op, op}, true);
+  AST_ASSIGNMENT astSelfAdd{0, SourceLocation{op, op}, op, left, astBool};
 
   REQUIRE(astSelfAdd.op().raw() == "+=");
   REQUIRE(astSelfAdd.left() == left);

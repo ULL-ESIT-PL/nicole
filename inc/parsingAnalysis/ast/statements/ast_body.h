@@ -15,9 +15,9 @@ private:
 
 public:
   explicit AST_BODY(
-      const long long unsigned nodeId,
+      const long long unsigned nodeId, const SourceLocation &srcLoc,
       const std::vector<std::shared_ptr<AST_STATEMENT>> &body) noexcept
-      : AST(nodeId, AST_TYPE::BODY), body_{body} {}
+      : AST(nodeId, AST_TYPE::BODY, srcLoc), body_{body} {}
 
   [[nodiscard]] const std::vector<std::shared_ptr<AST_STATEMENT>> &
   body() const noexcept {

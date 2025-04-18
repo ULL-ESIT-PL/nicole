@@ -6,22 +6,23 @@
 #include <cstddef>
 #include <expected>
 #include <map>
-#include <variant>
 
 namespace nicole {
 
 class ErrorTable {
 private:
-    mutable std::map<SourceLocation, Error> errors_;
+  mutable std::map<SourceLocation, Error> errors_;
 
 public:
-    [[nodiscard]] std::size_t size() const noexcept { return errors_.size(); }
+  [[nodiscard]] std::size_t size() const noexcept { return errors_.size(); }
 
-    void insert(const SourceLocation& srcLoc, const Error& err) const noexcept;
+  void insert(const SourceLocation &srcLoc, const Error &err) const noexcept {
+    errors_[srcLoc] = err;
+  }
 
-    [[nodiscard]] auto begin() const noexcept { return errors_.begin(); }
+  [[nodiscard]] auto begin() const noexcept { return errors_.begin(); }
 
-    [[nodiscard]] auto end() const noexcept { return errors_.end(); }
+  [[nodiscard]] auto end() const noexcept { return errors_.end(); }
 };
 
 } // namespace nicole

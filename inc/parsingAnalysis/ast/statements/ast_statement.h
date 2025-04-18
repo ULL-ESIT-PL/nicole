@@ -12,8 +12,9 @@ private:
 
 public:
   explicit AST_STATEMENT(const long long unsigned nodeId,
+                         const SourceLocation &srcLoc,
                          const std::shared_ptr<AST> &expression) noexcept
-      : AST(nodeId, AST_TYPE::STATEMENT), expression_{expression} {}
+      : AST(nodeId, AST_TYPE::STATEMENT, srcLoc), expression_{expression} {}
 
   [[nodiscard]] const std::shared_ptr<AST> &expression() const noexcept {
     return expression_;

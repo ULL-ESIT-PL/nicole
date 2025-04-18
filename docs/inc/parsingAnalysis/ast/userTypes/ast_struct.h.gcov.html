@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-04-11 02:11:23</td>
+            <td class="headerValue">2025-04-18 15:53:49</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
@@ -84,15 +84,15 @@
 <span id="L22"><span class="lineNum">      22</span>              : </span>
 <span id="L23"><span class="lineNum">      23</span>              : public:</span>
 <span id="L24"><span class="lineNum">      24</span>              :   explicit AST_STRUCT(</span>
-<span id="L25"><span class="lineNum">      25</span>              :       const long long unsigned nodeId, const std::string &amp;id,</span>
-<span id="L26"><span class="lineNum">      26</span>              :       const std::vector&lt;GenericParameter&gt; &amp;generics,</span>
+<span id="L25"><span class="lineNum">      25</span>              :       const long long unsigned nodeId, const SourceLocation &amp;srcLoc,</span>
+<span id="L26"><span class="lineNum">      26</span>              :       const std::string &amp;id, const std::vector&lt;GenericParameter&gt; &amp;generics,</span>
 <span id="L27"><span class="lineNum">      27</span>              :       const std::shared_ptr&lt;Type&gt; &amp;fatherType, const Attributes &amp;attributes,</span>
 <span id="L28"><span class="lineNum">      28</span>              :       const std::vector&lt;std::shared_ptr&lt;AST_METHOD_DECL&gt;&gt; &amp;methods,</span>
 <span id="L29"><span class="lineNum">      29</span>              :       const std::shared_ptr&lt;AST_CONSTRUCTOR_DECL&gt; &amp;constructor,</span>
 <span id="L30"><span class="lineNum">      30</span>              :       const std::shared_ptr&lt;AST_DESTRUCTOR_DECL&gt; &amp;destructor) noexcept</span>
-<span id="L31"><span class="lineNum">      31</span> <span class="tlaUNC tlaBgUNC">           0 :       : AST(nodeId, AST_TYPE::STRUCT_DECL), id_{id}, generics_{generics},</span></span>
-<span id="L32"><span class="lineNum">      32</span> <span class="tlaUNC">           0 :         fatherType_{fatherType}, attributes_{attributes}, methods_{methods},</span></span>
-<span id="L33"><span class="lineNum">      33</span> <span class="tlaUNC">           0 :         constructor_{constructor}, destructor_{destructor} {}</span></span>
+<span id="L31"><span class="lineNum">      31</span> <span class="tlaUNC tlaBgUNC">           0 :       : AST(nodeId, AST_TYPE::STRUCT_DECL, srcLoc), id_{id},</span></span>
+<span id="L32"><span class="lineNum">      32</span> <span class="tlaUNC">           0 :         generics_{generics}, fatherType_{fatherType}, attributes_{attributes},</span></span>
+<span id="L33"><span class="lineNum">      33</span> <span class="tlaUNC">           0 :         methods_{methods}, constructor_{constructor}, destructor_{destructor} {}</span></span>
 <span id="L34"><span class="lineNum">      34</span>              : </span>
 <span id="L35"><span class="lineNum">      35</span> <span class="tlaUNC">           0 :   [[nodiscard]] const std::string &amp;id() const noexcept { return id_; }</span></span>
 <span id="L36"><span class="lineNum">      36</span>              : </span>

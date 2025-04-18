@@ -13,9 +13,10 @@ private:
 
 public:
   explicit AST_ENUM_ACCESS(const long long unsigned nodeId,
+                           const SourceLocation &srcLoc,
                            const std::string &enumId,
                            const std::string &identifier) noexcept
-      : AST{nodeId, AST_TYPE::ENUM_ACCESS}, enumId_{enumId},
+      : AST{nodeId, AST_TYPE::ENUM_ACCESS, srcLoc}, enumId_{enumId},
         identifier_{identifier} {}
 
   [[nodiscard]] const std::string &enumId() const noexcept { return enumId_; }

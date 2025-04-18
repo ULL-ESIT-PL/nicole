@@ -10,10 +10,12 @@ private:
   bool isConst_;
 
 public:
-  explicit AST_AUTO_DECL(const long long unsigned nodeId, const std::string &id,
+  explicit AST_AUTO_DECL(const long long unsigned nodeId,
+                         const SourceLocation &srcLoc, const std::string &id,
                          const std::shared_ptr<AST> &value,
                          const bool isConst) noexcept
-      : AST_VAR_DECL(nodeId, AST_TYPE::AUTO_DECL, id, value), isConst_{isConst} {}
+      : AST_VAR_DECL(nodeId, AST_TYPE::AUTO_DECL, srcLoc, id, value),
+        isConst_{isConst} {}
 
   [[nodiscard]] bool isConst() const noexcept { return isConst_; }
 

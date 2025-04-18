@@ -11,8 +11,8 @@ private:
 
 public:
   explicit AST_FLOAT(const long long unsigned nodeId,
-                     const float value) noexcept
-      : AST{nodeId, AST_TYPE::FLOAT}, value_{value} {}
+                     const SourceLocation &srcLoc, const float value) noexcept
+      : AST{nodeId, AST_TYPE::FLOAT, srcLoc}, value_{value} {}
 
   ~AST_FLOAT() noexcept = default;
 

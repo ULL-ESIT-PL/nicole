@@ -6,6 +6,7 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
 TopDown::parseFuncDecl() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -61,12 +62,12 @@ TopDown::parseFuncDecl() const noexcept {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createFuncDecl(id.raw(), *generics, *params, *returnType,
-                                 *body);
+  return Builder::createFuncDecl(
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, id.raw(), *generics,
+      *params, *returnType, *body);
 }
 
-const std::expected<Parameters, Error>
-TopDown::parseParams() const noexcept {
+const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {
   std::vector<std::pair<std::string, std::shared_ptr<Type>>> params{};
   while (tkStream_.currentPos() < tkStream_.size() and
          tkStream_.current()->type() != TokenType::RP) {
@@ -111,11 +112,13 @@ TopDown::parseParams() const noexcept {
 
 const std::expected<std::shared_ptr<AST_RETURN>, Error>
 TopDown::parseReturn() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
   if (tkStream_.current()->type() == TokenType::SEMICOLON) {
-    return Builder::createReturn(nullptr);
+    return Builder::createReturn(
+        SourceLocation{*firsToken, *tkStream_.lastRead()}, nullptr);
   }
   const std::expected<std::shared_ptr<AST>, Error> value{parseTernary()};
   if (!value || !*value) {
@@ -126,7 +129,8 @@ TopDown::parseReturn() const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing ; of return at " +
                                                tkStream_.current()->locInfo());
   }
-  return Builder::createReturn(*value);
+  return Builder::createReturn(
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, *value);
 }
 
 const std::expected<std::vector<std::shared_ptr<Type>>, Error>

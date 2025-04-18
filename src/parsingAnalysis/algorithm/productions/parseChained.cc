@@ -7,6 +7,7 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_CHAINED>, Error>
 TopDown::parseChainedExpression() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (tkStream_.current()->type() != TokenType::ID) {
     return createError(ERROR_TYPE::SINTAX, "Expected identifier at " +
                                                tkStream_.current()->locInfo());
@@ -39,7 +40,7 @@ TopDown::parseChainedExpression() const noexcept {
     }
 
     // Crear nodo de función
-    auto funcCall = Builder::createFunCall(baseToken.raw(),
+    auto funcCall = Builder::createFunCall(SourceLocation{*firsToken, *tkStream_.lastRead()},baseToken.raw(),
                                            *replacementOfGenerics, *arguemnts);
     if (!funcCall || !*funcCall) {
       return createError(
@@ -55,7 +56,7 @@ TopDown::parseChainedExpression() const noexcept {
       return createError(arguemnts.error());
     }
 
-    auto constructorCall = Builder::createConstructorCall(
+    auto constructorCall = Builder::createConstructorCall(SourceLocation{*firsToken, *tkStream_.lastRead()},
         baseToken.raw(), *replacementOfGenerics, *arguemnts);
     if (!constructorCall || !*constructorCall) {
       return createError(constructorCall
@@ -72,7 +73,7 @@ TopDown::parseChainedExpression() const noexcept {
               tkStream_.lastRead()->locInfo());
     }
     // Variable normal
-    auto varCall = Builder::createVarCall(baseToken.raw());
+    auto varCall = Builder::createVarCall(SourceLocation{*firsToken, *tkStream_.lastRead()},baseToken.raw());
     if (!varCall || !*varCall) {
       return createError(
           varCall ? Error{ERROR_TYPE::NULL_NODE, "Failed to create var call"}
@@ -107,7 +108,7 @@ TopDown::parseChainedExpression() const noexcept {
                            "Missing ']' at " + tkStream_.current()->locInfo());
       }
       // Crear nodo de índice
-      auto indexNode = Builder::createIndex(*indexExpr);
+      auto indexNode = Builder::createIndex(SourceLocation{*firsToken, *tkStream_.lastRead()},*indexExpr);
       if (!indexNode || !*indexNode) {
         return createError(indexNode ? Error{ERROR_TYPE::NULL_NODE,
                                              "Failed to create index node"}
@@ -155,7 +156,7 @@ TopDown::parseChainedExpression() const noexcept {
           return createError(arguemnts.error());
         }
 
-        auto methodNode = Builder::createMethodCall(
+        auto methodNode = Builder::createMethodCall(SourceLocation{*firsToken, *tkStream_.lastRead()},
             attrToken.raw(), *replacementOfGenerics2, *arguemnts);
         if (!methodNode || !*methodNode) {
           return createError(methodNode ? Error{ERROR_TYPE::NULL_NODE,
@@ -171,7 +172,7 @@ TopDown::parseChainedExpression() const noexcept {
                   tkStream_.lastRead()->locInfo());
         }
         // Es un atributo
-        auto attrNode = Builder::createAttrAccess(attrToken.raw());
+        auto attrNode = Builder::createAttrAccess(SourceLocation{*firsToken, *tkStream_.lastRead()},attrToken.raw());
         if (!attrNode || !*attrNode) {
           return createError(attrNode
                                  ? Error{ERROR_TYPE::NULL_NODE,
@@ -185,12 +186,12 @@ TopDown::parseChainedExpression() const noexcept {
 
     default:
       // Si ya no es ni '[', ni '.', ni '(', terminamos
-      return Builder::createChained(basePtr, operations);
+      return Builder::createChained(SourceLocation{*firsToken, *tkStream_.lastRead()},basePtr, operations);
     }
   }
 
   // Si se acaban los tokens, retornamos la cadena
-  return Builder::createChained(basePtr, operations);
+  return Builder::createChained(SourceLocation{*firsToken, *tkStream_.lastRead()},basePtr, operations);
 }
 
 } // namespace nicole

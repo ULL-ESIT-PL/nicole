@@ -5,6 +5,7 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseVarDecl(const bool insideFor) const noexcept {
+  const auto firsToken{tkStream_.current()};
   const Token token{*tkStream_.current()};
   std::string varName;
   std::shared_ptr<Type> varType{nullptr};
@@ -80,7 +81,9 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
       return createError(result.error());
     }
     varType = std::make_shared<ConstType>(varType);
-    return Builder::createVarTypedtDecl(varName, varType, valueExpr);
+    return Builder::createVarTypedtDecl(
+        SourceLocation{*firsToken, *tkStream_.lastRead()}, varName, varType,
+        valueExpr);
   }
   case TokenType::LET: { // let variable: type = expression;
     if (auto res = tryEat(); !res) {
@@ -90,7 +93,9 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
     if (!result) {
       return createError(result.error());
     }
-    return Builder::createVarTypedtDecl(varName, varType, valueExpr);
+    return Builder::createVarTypedtDecl(
+        SourceLocation{*firsToken, *tkStream_.lastRead()}, varName, varType,
+        valueExpr);
   }
   case TokenType::AUTO: { // auto variable = expression;
     if (auto res = tryEat(); !res) {
@@ -105,7 +110,9 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
                          "Auto variable should not have a type specified at " +
                              tkStream_.current()->locInfo());
     }
-    return Builder::createAutoDecl(varName, valueExpr, false);
+    return Builder::createAutoDecl(
+        SourceLocation{*firsToken, *tkStream_.lastRead()}, varName, valueExpr,
+        false);
   }
   default: {
     return parseTernary();
@@ -115,6 +122,7 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
 
 const std::expected<std::shared_ptr<AST_DELETE>, Error>
 TopDown::parseDelete() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -128,7 +136,8 @@ TopDown::parseDelete() const noexcept {
                        "Expected ';' at the end of delete expression at " +
                            tkStream_.current()->locInfo());
   }
-  return Builder::createDelete(*value);
+  return Builder::createDelete(
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, *value);
 }
 
 } // namespace nicole

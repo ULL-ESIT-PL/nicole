@@ -4,6 +4,7 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_WHILE>, Error>
 TopDown::parseWhile() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -18,11 +19,13 @@ TopDown::parseWhile() const noexcept {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createWhile(*condition, *body);
+  return Builder::createWhile(SourceLocation{*firsToken, *tkStream_.lastRead()},
+                              *condition, *body);
 }
 
 const std::expected<std::shared_ptr<AST_FOR>, Error>
 TopDown::parseFor() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -71,7 +74,10 @@ TopDown::parseFor() const noexcept {
 
   const std::expected<std::shared_ptr<AST_CONDITION>, Error> condition{
       (tkStream_.current()->type() == TokenType::SEMICOLON)
-          ? *Builder::createCondition(*Builder::createBool(true))
+          ? *Builder::createCondition(
+                SourceLocation{*firsToken, *tkStream_.lastRead()},
+                *Builder::createBool(
+                    SourceLocation{*firsToken, *tkStream_.lastRead()}, true))
           : parseCondition(true)};
   if (!condition || !*condition) {
     return createError(condition ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
@@ -116,11 +122,13 @@ TopDown::parseFor() const noexcept {
     return createError(body ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                             : body.error());
   }
-  return Builder::createFor(init, *condition, update, *body);
+  return Builder::createFor(SourceLocation{*firsToken, *tkStream_.lastRead()},
+                            init, *condition, update, *body);
 }
 
 const std::expected<std::shared_ptr<AST_DO_WHILE>, Error>
 TopDown::parseDoWhile() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -149,11 +157,13 @@ TopDown::parseDoWhile() const noexcept {
                        "missing ; of do while statement at " +
                            (*tkStream_.lastRead()).locInfo());
   }
-  return Builder::createDoWhile(*body, *condition);
+  return Builder::createDoWhile(
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, *body, *condition);
 }
 
 const std::expected<std::shared_ptr<AST_PASS>, Error>
 TopDown::parsePass() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -161,11 +171,13 @@ TopDown::parsePass() const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing ; of pass statement at " +
                                                tkStream_.current()->locInfo());
   }
-  return Builder::createPass(nullptr);
+  return Builder::createPass(SourceLocation{*firsToken, *tkStream_.lastRead()},
+                             nullptr);
 }
 
 const std::expected<std::shared_ptr<AST_STOP>, Error>
 TopDown::parseStop() const noexcept {
+  const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
@@ -173,7 +185,8 @@ TopDown::parseStop() const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing ; of stop statement at " +
                                                tkStream_.current()->locInfo());
   }
-  return Builder::createStop(nullptr);
+  return Builder::createStop(SourceLocation{*firsToken, *tkStream_.lastRead()},
+                             nullptr);
 }
 
 } // namespace nicole

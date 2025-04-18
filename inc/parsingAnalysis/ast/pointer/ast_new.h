@@ -12,8 +12,9 @@ private:
 
 public:
   explicit AST_NEW(const long long unsigned nodeId,
+                   const SourceLocation &srcLoc,
                    const std::shared_ptr<AST> &value) noexcept
-      : AST(nodeId, AST_TYPE::NEW), value_{value} {}
+      : AST(nodeId, AST_TYPE::NEW, srcLoc), value_{value} {}
 
   [[nodiscard]] const std::shared_ptr<AST> &value() const noexcept {
     return value_;

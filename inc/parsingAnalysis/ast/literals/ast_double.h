@@ -11,8 +11,8 @@ private:
 
 public:
   explicit AST_DOUBLE(const long long unsigned nodeId,
-                      const double value) noexcept
-      : AST{nodeId, AST_TYPE::DOUBLE}, value_{value} {}
+                      const SourceLocation &srcLoc, const double value) noexcept
+      : AST{nodeId, AST_TYPE::DOUBLE, srcLoc}, value_{value} {}
 
   ~AST_DOUBLE() noexcept = default;
 

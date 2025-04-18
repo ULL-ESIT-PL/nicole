@@ -11,8 +11,9 @@ private:
 
 public:
   explicit AST_STRING(const long long unsigned nodeId,
+                      const SourceLocation &srcLoc,
                       const std::string value) noexcept
-      : AST{nodeId, AST_TYPE::STRING}, value_{value} {}
+      : AST{nodeId, AST_TYPE::STRING, srcLoc}, value_{value} {}
 
   ~AST_STRING() noexcept = default;
 

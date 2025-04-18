@@ -35,6 +35,8 @@ const std::expected<std::shared_ptr<AST_BODY>, Error>
 TopDown::parseStart() const noexcept {
   std::vector<std::shared_ptr<AST_STATEMENT>> statements{};
 
+  const auto firsToken{tkStream_.current()};
+
   while (tkStream_.currentPos() < tkStream_.size()) {
     const std::expected<std::shared_ptr<AST_STATEMENT>, Error> statement{
         parseStatement()};
@@ -51,7 +53,8 @@ TopDown::parseStart() const noexcept {
   }
 
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{
-      Builder::createBody(statements)};
+      Builder::createBody(SourceLocation{*firsToken, *tkStream_.lastRead()},
+                          statements)};
   if (!body) {
     return createError(body.error());
   }
@@ -61,6 +64,9 @@ TopDown::parseStart() const noexcept {
 
 const std::expected<std::shared_ptr<AST_BODY>, Error>
 TopDown::parseBody() const noexcept {
+
+  const auto firsToken{tkStream_.current()};
+
   if (tkStream_.current()->type() != TokenType::LB) {
     return createError(ERROR_TYPE::SINTAX,
                        "missing { at " + tkStream_.current()->locInfo());
@@ -95,7 +101,8 @@ TopDown::parseBody() const noexcept {
   }
 
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{
-      Builder::createBody(statements)};
+      Builder::createBody(SourceLocation{*firsToken, *tkStream_.lastRead()},
+                          statements)};
   if (!body) {
     return createError(body.error());
   }
@@ -105,6 +112,7 @@ TopDown::parseBody() const noexcept {
 
 const std::expected<std::shared_ptr<AST_STATEMENT>, Error>
 TopDown::parseStatement() const noexcept {
+  const auto firsToken{tkStream_.current()};
   // Función auxiliar para elegir la sentencia a parsear.
   auto parseStmt = [&]() -> std::expected<std::shared_ptr<AST>, Error> {
     // in case that it is an assignment
@@ -156,7 +164,8 @@ TopDown::parseStatement() const noexcept {
     return createError(statement ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
                                  : statement.error());
 
-  return Builder::createStatement(*statement);
+  return Builder::createStatement(
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, *statement);
 }
 
 // topDown.cpp

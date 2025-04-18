@@ -14,14 +14,14 @@ private:
 
 public:
   explicit AST_METHOD_DECL(const long long unsigned nodeId,
-                           const std::string &id,
+                           const SourceLocation &srcLoc, const std::string &id,
                            const std::vector<GenericParameter> &generics,
                            const Parameters &params,
                            const std::shared_ptr<Type> &returnType,
                            const std::shared_ptr<AST_BODY> &body,
                            const bool isVirtual) noexcept
-      : AST_PARAMETRIZED_SUBRUTINE_DECL(nodeId, AST_TYPE::METHOD_DECL, id,
-                                        params, returnType, body),
+      : AST_PARAMETRIZED_SUBRUTINE_DECL(nodeId, AST_TYPE::METHOD_DECL, srcLoc,
+                                        id, params, returnType, body),
         generics_{generics}, isVirtual_{isVirtual} {}
 
   [[nodiscard]] const std::vector<GenericParameter> &generics() const noexcept {

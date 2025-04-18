@@ -14,9 +14,10 @@ protected:
 
 public:
   explicit AST_LOOP(const long long unsigned nodeId, const AST_TYPE type,
+                    const SourceLocation &srcLoc,
                     const std::shared_ptr<AST_CONDITION> &condition,
                     const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST(nodeId, type), condition_{condition}, body_{body} {}
+      : AST(nodeId, type, srcLoc), condition_{condition}, body_{body} {}
 
   [[nodiscard]] const std::shared_ptr<AST_CONDITION> &
   condition() const noexcept {

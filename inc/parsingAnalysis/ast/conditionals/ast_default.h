@@ -12,8 +12,9 @@ private:
 
 public:
   explicit AST_DEFAULT(const long long unsigned nodeId,
+                       const SourceLocation &srcLoc,
                        const std::shared_ptr<AST_BODY> &body) noexcept
-      : AST(nodeId, AST_TYPE::DEFAULT), body_{body} {}
+      : AST(nodeId, AST_TYPE::DEFAULT, srcLoc), body_{body} {}
 
   [[nodiscard]] const std::shared_ptr<AST_BODY> &body() const noexcept {
     return body_;
