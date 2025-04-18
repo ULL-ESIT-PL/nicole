@@ -361,7 +361,7 @@ TypeAnalysis::visit(const AST_CONDITION *node) const noexcept {
       !typeTable_->areSameType(condType, typeTable_->intType()) &&
       !typeTable_->areSameType(condType, typeTable_->charType()) && !isEnum) {
     return createError(ERROR_TYPE::TYPE,
-                       "condition must be bool, int, char, or enum");
+                       "condition must be bool, int, char, or enum(in a switch)");
   }
   node->setReturnedFromAnalysis(condType);
   return condType;

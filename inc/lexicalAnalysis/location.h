@@ -24,6 +24,16 @@ public:
   [[nodiscard]] std::size_t row() const noexcept { return row_; }
 
   [[nodiscard]] std::size_t col() const noexcept { return col_; }
+
+  [[nodiscard]] bool operator<(const Location &loc) const noexcept {
+    if (row_ < loc.row_) {
+      return true;
+    }
+    if (col_ < loc.col_) {
+      return true;
+    }
+    return false;
+  }
 };
 
 } // namespace nicole
