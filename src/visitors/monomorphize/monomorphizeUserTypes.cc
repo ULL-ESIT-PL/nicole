@@ -8,6 +8,9 @@
 
 namespace nicole {
 
+/*
+Needs to be monomporhized, included attributes
+*/
 std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
@@ -30,6 +33,9 @@ Monomorphize::visit(const AST_STRUCT *node) const noexcept {
   return {};
 }
 
+/*
+Needs to be monomporhized
+*/
 std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_ATTR_ACCESS *node) const noexcept {
   if (!node) {
@@ -38,6 +44,9 @@ Monomorphize::visit(const AST_ATTR_ACCESS *node) const noexcept {
   return {};
 }
 
+/*
+Needs to be monomporhized
+*/
 std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_METHOD_CALL *node) const noexcept {
   if (!node) {
@@ -82,6 +91,9 @@ Monomorphize::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   return {};
 }
 
+/*
+Needs to be monomporhized
+*/
 std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_SUPER *node) const noexcept {
   if (!node) {
@@ -116,6 +128,9 @@ Monomorphize::visit(const AST_THIS *node) const noexcept {
   return {};
 }
 
+/*
+Needs to be monomporhized
+*/
 std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!node) {

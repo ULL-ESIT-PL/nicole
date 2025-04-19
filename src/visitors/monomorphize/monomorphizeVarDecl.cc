@@ -6,6 +6,9 @@
 
 namespace nicole {
 
+/*
+Needs to be monomporhized
+*/
 std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node) {
@@ -18,6 +21,9 @@ Monomorphize::visit(const AST_AUTO_DECL *node) const noexcept {
   return {};
 }
 
+/*
+Needs to be monomporhized
+*/
 std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   if (!node) {

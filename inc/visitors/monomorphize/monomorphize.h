@@ -16,6 +16,13 @@ private:
   mutable std::shared_ptr<FunctionTable> functionTable_;
   mutable std::shared_ptr<TypeTable> typeTable_;
 
+  [[nodiscard]] std::expected<std::string, Error>
+  nameMangling(const std::shared_ptr<Type> &type) const noexcept;
+
+  [[nodiscard]] std::expected<std::string, Error>
+  nameManglingImpl(const std::shared_ptr<Type> &type,
+                   std::string &result) const noexcept;
+
 public:
   Monomorphize(
                const std::shared_ptr<FunctionTable> &functionTable,

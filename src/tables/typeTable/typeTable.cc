@@ -848,18 +848,4 @@ TypeTable::applyBinaryOperator(const std::shared_ptr<Type> &leftOperand,
           " and " + rightResolvedType->toString());
 }
 
-std::expected<std::string, Error>
-TypeTable::nameMangling(const std::shared_ptr<Type> &type) const noexcept {
-  std::string result{"$"};
-  return nameManglingImpl(type, result);
-}
-
-std::expected<std::string, Error>
-TypeTable::nameManglingImpl(const std::shared_ptr<Type> &type,
-                            std::string &result) const noexcept {
-  if (type) {
-  }
-  return result;
-}
-
 } // namespace nicole

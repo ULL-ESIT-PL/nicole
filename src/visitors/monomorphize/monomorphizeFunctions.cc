@@ -6,6 +6,9 @@
 
 namespace nicole {
 
+/*
+Needs to be monomporhized
+*/
 std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_FUNC_CALL *node) const noexcept {
   if (!node) {
