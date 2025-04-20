@@ -6,6 +6,8 @@
 #include "../../tables/typeTable/typeTable.h"
 #include "../visitor.h"
 #include <memory>
+#include <string>
+#include <unordered_map>
 #include <variant>
 #include <vector>
 
@@ -15,6 +17,16 @@ class Monomorphize final : public Visitor<std::monostate> {
 private:
   mutable std::shared_ptr<FunctionTable> functionTable_;
   mutable std::shared_ptr<TypeTable> typeTable_;
+  mutable std::vector<GenericParameter> currentGenericList_{};
+  mutable std::vector<GenericParameter> currentStructGenericList_{};
+  mutable std::shared_ptr<UserType> currentUserType_{nullptr};
+  mutable std::shared_ptr<Type> switchTypeCondition_{nullptr};
+  mutable std::unordered_map<std::string, std::shared_ptr<AST_FUNC_DECL>>
+      funcDeclReferences;
+  mutable std::unordered_map<std::string, std::shared_ptr<AST_STRUCT>>
+      structDeclReferences;
+  mutable bool analyzingInsideClass{false};
+  mutable bool insideDeclWithGenerics{false};
 
   [[nodiscard]] std::expected<std::string, Error>
   nameMangling(const std::shared_ptr<Type> &type) const noexcept;
@@ -23,12 +35,14 @@ private:
   nameManglingImpl(const std::shared_ptr<Type> &type,
                    std::string &result) const noexcept;
 
+  [[nodiscard]] std::vector<GenericParameter>
+  mergeGenericLists(const std::vector<GenericParameter> &list1,
+                    const std::vector<GenericParameter> &list2) const noexcept;
+
 public:
-  Monomorphize(
-               const std::shared_ptr<FunctionTable> &functionTable,
+  Monomorphize(const std::shared_ptr<FunctionTable> &functionTable,
                std::shared_ptr<TypeTable> &typeTable) noexcept
-      :  functionTable_{functionTable},
-        typeTable_{typeTable} {}
+      : functionTable_{functionTable}, typeTable_{typeTable} {}
 
   [[nodiscard]] std::expected<std::monostate, Error>
   visit(const AST_BOOL *node) const noexcept override;

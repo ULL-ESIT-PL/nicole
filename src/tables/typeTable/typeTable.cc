@@ -848,4 +848,13 @@ TypeTable::applyBinaryOperator(const std::shared_ptr<Type> &leftOperand,
           " and " + rightResolvedType->toString());
 }
 
+std::expected<std::shared_ptr<Type>, Error> TypeTable::replacedGenerics(
+    const std::shared_ptr<Type> &type,
+    const std::vector<GenericParameter> &generics,
+    const std::vector<std::shared_ptr<Type>> &replacements) const noexcept {
+  if (generics.size() and replacements.size()) {
+  }
+  return type;
+}
+
 } // namespace nicole

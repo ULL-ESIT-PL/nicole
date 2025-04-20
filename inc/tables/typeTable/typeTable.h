@@ -17,9 +17,12 @@
 #include "types/userTypes/genericParameter.h"
 #include "types/userTypes/placeHolder.h"
 #include "types/userTypes/userType.h"
+#include <expected>
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 namespace nicole {
 
@@ -131,6 +134,11 @@ public:
   applyBinaryOperator(const std::shared_ptr<Type> &left,
                       const std::shared_ptr<Type> &right,
                       TokenType op) const noexcept;
+
+  [[nodiscard]] std::expected<std::shared_ptr<Type>, Error> replacedGenerics(
+      const std::shared_ptr<Type> &type,
+      const std::vector<GenericParameter> &generics,
+      const std::vector<std::shared_ptr<Type>> &replacements) const noexcept;
 };
 
 } // namespace nicole

@@ -18,6 +18,9 @@ Monomorphize::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!result) {
     return createError(result.error());
   }
+  if (insideDeclWithGenerics) {
+
+  }
   return {};
 }
 
@@ -32,6 +35,8 @@ Monomorphize::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   const auto result{node->value()->accept(*this)};
   if (!result) {
     return createError(result.error());
+  }
+  if (insideDeclWithGenerics) {
   }
   return {};
 }

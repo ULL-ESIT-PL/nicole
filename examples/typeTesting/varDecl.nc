@@ -110,3 +110,13 @@ let zzzzzz: Hola*  = new Adios{};
 
 
 if (true) {}
+
+
+struct WGG<T> {
+    constructor<Q>() {
+    }
+    
+    destructor {}
+
+    virtual toString(): str { return ""; }
+}

@@ -30,7 +30,7 @@ Monomorphize::nameMangling(const std::shared_ptr<Type> &type) const noexcept {
 
 std::expected<std::string, Error>
 Monomorphize::nameManglingImpl(const std::shared_ptr<Type> &type,
-                            std::string &result) const noexcept {
+                               std::string &result) const noexcept {
   if (!type)
     return createError(ERROR_TYPE::TYPE, "null type in name mangling");
 
@@ -38,17 +38,14 @@ Monomorphize::nameManglingImpl(const std::shared_ptr<Type> &type,
     result += '_' + bt->toString();
     return result;
   }
-
   if (std::dynamic_pointer_cast<VoidType>(type)) {
     result += "_void";
     return result;
   }
-
   if (std::dynamic_pointer_cast<NullType>(type)) {
     result += "_null";
     return result;
   }
-
   if (auto pt = std::dynamic_pointer_cast<PointerType>(type)) {
     auto rec = nameManglingImpl(pt->baseType(), result);
     if (!rec)
@@ -56,8 +53,6 @@ Monomorphize::nameManglingImpl(const std::shared_ptr<Type> &type,
     result += "_ptr";
     return result;
   }
-
-  // VectorType
   if (auto vt = std::dynamic_pointer_cast<VectorType>(type)) {
     auto rec = nameManglingImpl(vt->elementType(), result);
     if (!rec)
@@ -65,7 +60,6 @@ Monomorphize::nameManglingImpl(const std::shared_ptr<Type> &type,
     result += "_vec";
     return result;
   }
-
   if (auto ct = std::dynamic_pointer_cast<ConstType>(type)) {
     result += "_const";
     auto rec = nameManglingImpl(ct->baseType(), result);
@@ -73,12 +67,10 @@ Monomorphize::nameManglingImpl(const std::shared_ptr<Type> &type,
       return rec;
     return result;
   }
-
   if (auto et = std::dynamic_pointer_cast<EnumType>(type)) {
     result += '_' + et->name();
     return result;
   }
-
   if (auto git = std::dynamic_pointer_cast<GenericInstanceType>(type)) {
     result += '_' + git->name();
     for (auto &arg : git->typeArgs()) {
@@ -88,17 +80,24 @@ Monomorphize::nameManglingImpl(const std::shared_ptr<Type> &type,
     }
     return result;
   }
-
   if (auto ut = std::dynamic_pointer_cast<UserType>(type)) {
     result += '_' + ut->name();
     return result;
   }
-
   // Fallback
   std::string raw = type->toString();
   for (char c : raw) {
     result += (std::isalnum(static_cast<unsigned char>(c)) ? c : '_');
   }
+  return result;
+}
+
+std::vector<GenericParameter> Monomorphize::mergeGenericLists(
+    const std::vector<GenericParameter> &list,
+    const std::vector<GenericParameter> &list1) const noexcept {
+  std::vector<GenericParameter> result{};
+  result.insert(result.end(), list.begin(), list.end());
+  result.insert(result.end(), list1.begin(), list1.end());
   return result;
 }
 

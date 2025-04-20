@@ -1,9 +1,10 @@
-#include "../../../inc/visitors/monomorphize/monomorphize.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_attrAccess.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_constructorCall.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_methodCall.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_struct.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_this.h"
+#include "../../../inc/visitors/monomorphize/monomorphize.h"
+#include <memory>
 #include <variant>
 
 namespace nicole {
@@ -15,6 +16,9 @@ std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
+  }
+  if (node->generics().size()) {
+    structDeclReferences[node->id()] = std::make_shared<AST_STRUCT>(*node);
   }
   const auto constructor{node->constructor()->accept(*this)};
   if (!constructor) {
@@ -145,4 +149,4 @@ Monomorphize::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   return {};
 }
 
-}
+} // namespace nicole

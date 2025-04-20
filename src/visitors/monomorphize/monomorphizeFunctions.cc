@@ -28,6 +28,9 @@ Monomorphize::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
   }
+  if (node->generics().size()) {
+    funcDeclReferences[node->id()] = std::make_shared<AST_FUNC_DECL>(*node);
+  }
   const auto result{node->body()->accept(*this)};
   if (!result) {
     return createError(result.error());
