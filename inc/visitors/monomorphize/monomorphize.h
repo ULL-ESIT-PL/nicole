@@ -35,6 +35,16 @@ private:
   nameManglingImpl(const std::shared_ptr<Type> &type,
                    std::string &result) const noexcept;
 
+  [[nodiscard]] std::expected<std::string, Error>
+  nameManglingFunction(const Function &func,
+                       const std::vector<std::shared_ptr<Type>>
+                           &genericReplacements) const noexcept;
+
+  [[nodiscard]] std::expected<std::string, Error> nameManglingFunctionImpl(
+      const Function &func,
+      const std::vector<std::shared_ptr<Type>> &genericReplacements,
+      std::string &result) const noexcept;
+
   [[nodiscard]] std::vector<GenericParameter>
   mergeGenericLists(const std::vector<GenericParameter> &list1,
                     const std::vector<GenericParameter> &list2) const noexcept;

@@ -8,6 +8,9 @@ namespace nicole {
 
 /*
 Needs to be monomporhized
+- Comprobar que tenga lista de genericos
+- Comrpobar que los parametros sean genericos
+- Comprobar que el tipo de retorno sea generico
 */
 std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_FUNC_CALL *node) const noexcept {
@@ -28,6 +31,7 @@ Monomorphize::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FUNC_DECL");
   }
+  currentGenericList_ = node->generics();
   if (node->generics().size()) {
     funcDeclReferences[node->id()] = std::make_shared<AST_FUNC_DECL>(*node);
   }
@@ -35,6 +39,7 @@ Monomorphize::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!result) {
     return createError(result.error());
   }
+  currentGenericList_.clear();
   return {};
 }
 

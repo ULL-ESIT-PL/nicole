@@ -76,6 +76,8 @@ bool TypeTable::isPossibleType(
 bool TypeTable::isGenericType(
     const std::shared_ptr<Type> &type,
     const std::vector<GenericParameter> &generics) const noexcept {
+  if (std::dynamic_pointer_cast<PlaceHolder>(type))
+    return true;
   if (const auto &vectorType = std::dynamic_pointer_cast<VectorType>(type)) {
     return isGenericType(vectorType->elementType(), generics);
   } else if (const auto &pointerType =
@@ -112,6 +114,28 @@ bool TypeTable::isGenericType(
   }
   return false;
 }
+
+bool TypeTable::isCompundPlaceHolder(const std::shared_ptr<Type> &type) const noexcept {
+  if (!type) 
+    return false;
+  if (std::dynamic_pointer_cast<PlaceHolder>(type))
+    return true;
+  if (auto ct = std::dynamic_pointer_cast<ConstType>(type))
+    return isCompundPlaceHolder(ct->baseType());
+  if (auto pt = std::dynamic_pointer_cast<PointerType>(type))
+    return isCompundPlaceHolder(pt->baseType());
+  if (auto vt = std::dynamic_pointer_cast<VectorType>(type))
+    return isCompundPlaceHolder(vt->elementType());
+  if (auto git = std::dynamic_pointer_cast<GenericInstanceType>(type)) {
+    for (const auto &arg : git->typeArgs()) {
+      if (isCompundPlaceHolder(arg))
+        return true;
+    }
+    return false;
+  }
+  return false;
+}
+
 
 std::expected<std::shared_ptr<Type>, Error>
 TypeTable::isCompundEnumType(const std::shared_ptr<Type> &type) const noexcept {

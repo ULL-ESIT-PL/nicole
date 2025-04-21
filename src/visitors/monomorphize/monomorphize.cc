@@ -18,7 +18,7 @@ namespace nicole {
 
 std::expected<std::string, Error>
 Monomorphize::nameMangling(const std::shared_ptr<Type> &type) const noexcept {
-  std::string mangled;
+  std::string mangled{};
   auto res = nameManglingImpl(type, mangled);
   if (!res)
     return res;
@@ -89,6 +89,52 @@ Monomorphize::nameManglingImpl(const std::shared_ptr<Type> &type,
   for (char c : raw) {
     result += (std::isalnum(static_cast<unsigned char>(c)) ? c : '_');
   }
+  return result;
+}
+
+std::expected<std::string, Error>
+Monomorphize::nameManglingFunction(const Function &func,
+                                   const std::vector<std::shared_ptr<Type>>
+                                       &genericReplacements) const noexcept {
+  std::string mangled{};
+  auto res = nameManglingFunctionImpl(func, genericReplacements, mangled);
+  if (!res)
+    return res;
+  if (!mangled.empty() && mangled.front() == '_')
+    mangled.erase(mangled.begin());
+  return mangled;
+}
+
+std::expected<std::string, Error>
+Monomorphize::nameManglingFunctionImpl(
+    const Function &func,
+    const std::vector<std::shared_ptr<Type>> &genericReplacements,
+    std::string &result) const noexcept {
+  result += '_';
+  result += func.id();
+
+  for (const auto &genType : genericReplacements) {
+    auto resType = nameMangling(genType);
+    if (!resType)
+      return createError(resType.error());
+    result += '_';
+    result += *resType;
+  }
+
+  for (const auto &param : func.params().params()) {
+    auto resParam = nameMangling(param.second);
+    if (!resParam)
+      return createError(resParam.error());
+    result += '_';
+    result += *resParam;
+  }
+
+  auto resRet = nameMangling(func.returnType());
+  if (!resRet)
+    return createError(resRet.error());
+  result += "_ret_";
+  result += *resRet;
+
   return result;
 }
 
