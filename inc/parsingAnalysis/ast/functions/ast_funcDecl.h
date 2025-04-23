@@ -3,6 +3,8 @@
 
 #include "../../../tables/typeTable/types/userTypes/genericParameter.h"
 #include "ast_parametrizedSubritineDecl.h"
+#include <cstddef>
+#include <memory>
 
 namespace nicole {
 

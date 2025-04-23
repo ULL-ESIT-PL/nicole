@@ -13,6 +13,10 @@ TopDown::parse(const std::filesystem::path &entryFile) const noexcept {
     return createError(tkStream.error());
   }
 
+  if (!tkStream->size()) {
+    return createError(ERROR_TYPE::SINTAX, "empty file");
+  }
+
   tkStream_ = *tkStream;
 
   const std::expected<std::shared_ptr<AST_BODY>, Error> root{parseStart()};

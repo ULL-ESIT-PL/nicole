@@ -17,16 +17,20 @@ class Monomorphize final : public Visitor<std::monostate> {
 private:
   mutable std::shared_ptr<FunctionTable> functionTable_;
   mutable std::shared_ptr<TypeTable> typeTable_;
+  mutable std::vector<GenericParameter> currentCallGenerics_;
+  mutable std::vector<std::shared_ptr<Type>> currentCallReplacements_;
   mutable std::vector<GenericParameter> currentGenericList_{};
   mutable std::vector<GenericParameter> currentStructGenericList_{};
   mutable std::shared_ptr<UserType> currentUserType_{nullptr};
   mutable std::shared_ptr<Type> switchTypeCondition_{nullptr};
-  mutable std::unordered_map<std::string, std::shared_ptr<AST_FUNC_DECL>>
+  mutable std::unordered_map<std::string,
+                             std::vector<std::shared_ptr<AST_FUNC_DECL>>>
       funcDeclReferences;
   mutable std::unordered_map<std::string, std::shared_ptr<AST_STRUCT>>
       structDeclReferences;
   mutable bool analyzingInsideClass{false};
   mutable bool insideDeclWithGenerics{false};
+  mutable bool insideCopy{false};
 
   [[nodiscard]] std::expected<std::string, Error>
   nameMangling(const std::shared_ptr<Type> &type) const noexcept;

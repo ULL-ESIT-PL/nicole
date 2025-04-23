@@ -26,6 +26,7 @@ private:
   mutable bool insideDeclWithGenerics{false};
   mutable bool firstBody{true};
   mutable bool foundReturn{false};
+  mutable bool secondAnalysis{false};
 
   [[nodiscard]] std::vector<GenericParameter>
   mergeGenericLists(const std::vector<GenericParameter> &list1,

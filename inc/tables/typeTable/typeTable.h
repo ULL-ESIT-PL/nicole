@@ -138,9 +138,10 @@ public:
                       const std::shared_ptr<Type> &right,
                       TokenType op) const noexcept;
 
-  [[nodiscard]] std::expected<std::shared_ptr<Type>, Error> replacedGenerics(
+  [[nodiscard]] std::expected<std::shared_ptr<Type>, Error>
+  applyGenericReplacements(
       const std::shared_ptr<Type> &type,
-      const std::vector<GenericParameter> &generics,
+      const std::vector<GenericParameter> &genericParams,
       const std::vector<std::shared_ptr<Type>> &replacements) const noexcept;
 };
 

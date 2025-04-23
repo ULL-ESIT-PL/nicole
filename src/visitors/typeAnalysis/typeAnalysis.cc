@@ -147,7 +147,7 @@ TypeAnalysis::visit(const Tree *tree) const noexcept {
     return createError(ERROR_TYPE::TYPE,
                        "body must return int, void, or noPropagate, got " +
                            bodyType->toString());
-
+  secondAnalysis = true;
   return result;
 }
 

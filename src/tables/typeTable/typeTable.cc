@@ -115,8 +115,9 @@ bool TypeTable::isGenericType(
   return false;
 }
 
-bool TypeTable::isCompundPlaceHolder(const std::shared_ptr<Type> &type) const noexcept {
-  if (!type) 
+bool TypeTable::isCompundPlaceHolder(
+    const std::shared_ptr<Type> &type) const noexcept {
+  if (!type)
     return false;
   if (std::dynamic_pointer_cast<PlaceHolder>(type))
     return true;
@@ -135,7 +136,6 @@ bool TypeTable::isCompundPlaceHolder(const std::shared_ptr<Type> &type) const no
   }
   return false;
 }
-
 
 std::expected<std::shared_ptr<Type>, Error>
 TypeTable::isCompundEnumType(const std::shared_ptr<Type> &type) const noexcept {
@@ -872,13 +872,91 @@ TypeTable::applyBinaryOperator(const std::shared_ptr<Type> &leftOperand,
           " and " + rightResolvedType->toString());
 }
 
-std::expected<std::shared_ptr<Type>, Error> TypeTable::replacedGenerics(
+std::expected<std::shared_ptr<Type>, Error> TypeTable::applyGenericReplacements(
     const std::shared_ptr<Type> &type,
-    const std::vector<GenericParameter> &generics,
+    const std::vector<GenericParameter> &genericParams,
     const std::vector<std::shared_ptr<Type>> &replacements) const noexcept {
-  if (generics.size() and replacements.size()) {
+  if (!type) {
+    return createError(ERROR_TYPE::TYPE, "null type in generic replacement");
   }
-  return type;
+
+  // 1) Si es un placeholder, sustituimos directamente:
+  if (auto ph = std::dynamic_pointer_cast<PlaceHolder>(type)) {
+    // Buscamos el índice del parámetro genérico
+    auto it =
+        std::find_if(genericParams.begin(), genericParams.end(), [&](auto &gp) {
+          return gp.name() == ph->getGenericParameter().name();
+        });
+    if (it == genericParams.end()) {
+      return createError(ERROR_TYPE::TYPE,
+                         "placeholder refers to unknown generic: " +
+                             ph->getGenericParameter().name());
+    }
+    auto dist = std::distance(genericParams.begin(), it);
+    size_t idx = static_cast<size_t>(dist);
+
+    if (idx >= replacements.size()) {
+      return createError(ERROR_TYPE::TYPE,
+                         "missing replacement for generic " +
+                             ph->getGenericParameter().name());
+    }
+    return replacements[idx];
+  }
+
+  // 2) Const, punteros, vectores: descendemos recursivamente
+  if (auto ct = std::dynamic_pointer_cast<ConstType>(type)) {
+    auto inner =
+        applyGenericReplacements(ct->baseType(), genericParams, replacements);
+    if (!inner)
+      return inner;
+    return std::make_shared<ConstType>(inner.value());
+  }
+  if (auto pt = std::dynamic_pointer_cast<PointerType>(type)) {
+    auto inner =
+        applyGenericReplacements(pt->baseType(), genericParams, replacements);
+    if (!inner)
+      return inner;
+    return std::make_shared<PointerType>(inner.value());
+  }
+  if (auto vt = std::dynamic_pointer_cast<VectorType>(type)) {
+    auto inner = applyGenericReplacements(vt->elementType(), genericParams,
+                                          replacements);
+    if (!inner)
+      return inner;
+    return std::make_shared<VectorType>(inner.value());
+  }
+
+  // 3) Instancias genéricas y user‑types: bajamos y propagamos
+  if (auto git = std::dynamic_pointer_cast<GenericInstanceType>(type)) {
+    for (size_t i = 0; i < git->typeArgs().size(); ++i) {
+      auto sub = applyGenericReplacements(git->typeArgs()[i], genericParams,
+                                          replacements);
+      if (!sub)
+        return sub;
+      if (auto err = git->setGenericReplacement(i, sub.value()); !err)
+        return createError(err.error());
+    }
+    return git;
+  }
+  if (auto ut = std::dynamic_pointer_cast<UserType>(type)) {
+    // No es placeholder (ese ya lo cubrimos arriba), así que devolvemos tal
+    // cual:
+    return ut;
+  }
+  if (auto et = std::dynamic_pointer_cast<EnumType>(type)) {
+    return et;
+  }
+
+  // 4) Básicos, void, null… sin cambios
+  if (std::dynamic_pointer_cast<BasicType>(type) ||
+      std::dynamic_pointer_cast<VoidType>(type) ||
+      std::dynamic_pointer_cast<NullType>(type)) {
+    return type;
+  }
+
+  return createError(ERROR_TYPE::TYPE,
+                     "unexpected type form in generic replacement: " +
+                         type->toString());
 }
 
 } // namespace nicole
