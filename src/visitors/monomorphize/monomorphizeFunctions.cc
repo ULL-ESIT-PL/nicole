@@ -2,6 +2,7 @@
 #include "../../../inc/parsingAnalysis/ast/functions/ast_funcDecl.h"
 #include "../../../inc/parsingAnalysis/ast/functions/ast_return.h"
 #include "../../../inc/visitors/monomorphize/monomorphize.h"
+#include <cstddef>
 #include <memory>
 #include <variant>
 
@@ -21,27 +22,40 @@ std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_FUNC_CALL *node) const noexcept {
   if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_FUNC_CALL");
-
-  for (const auto& arg : node->parameters()) {
+  for (const auto &arg : node->parameters()) {
     const auto result{arg->accept(*this)};
     if (!result) {
       return createError(result.error());
     }
   }
 
-  for (const auto &replacement : node->replaceOfGenerics()) {
-    if (typeTable_->isCompundPlaceHolder(replacement)) {
-      return {};
+  if (!currentCallReplacements_.size()) {
+    for (const auto &replacement : node->replaceOfGenerics()) {
+      if (typeTable_->isCompundPlaceHolder(replacement)) {
+        return {};
+      }
+    }
+    for (const auto &arg : node->parameters()) {
+      if (typeTable_->isCompundPlaceHolder(arg->returnedFromTypeAnalysis())) {
+        return {};
+      }
     }
   }
-  for (const auto &arg : node->parameters()) {
-    if (typeTable_->isCompundPlaceHolder(arg->returnedFromTypeAnalysis())) {
-      return {};
+  if (!currentCallReplacements_.size()) {
+    currentCallReplacements_ = node->replaceOfGenerics();
+  } else {
+    auto auxiliar{node->replaceOfGenerics()};
+    for (auto &auxRpl : auxiliar) {
+      if (typeTable_->isCompundPlaceHolder(auxRpl)) {
+        const auto substitute{typeTable_->applyGenericReplacements(
+            auxRpl, currentGenericList_, currentCallReplacements_)};
+        if (!substitute) {
+          return createError(substitute.error());
+        }
+        auxRpl = *substitute;
+      }
     }
-  }
-  currentCallReplacements_ = node->replaceOfGenerics();
-  for (const auto& type : currentCallReplacements_) {
-    std::cout << type->toString() << "\n";
+    currentCallReplacements_ = auxiliar;
   }
   const auto funcOriginalDecl{funcDeclReferences.at(node->id()).front()};
   auto copyFunDecl{std::make_shared<AST_FUNC_DECL>(*funcOriginalDecl)};
@@ -73,22 +87,20 @@ Monomorphize::visit(const AST_FUNC_CALL *node) const noexcept {
 
   copyFunDecl->setParameters(Parameters{newParams});
 
-  Function mono{
-    copyFunDecl->id(), {}, copyFunDecl->parameters(),
-    copyFunDecl->returnType(), copyFunDecl->body()
-  };
+  Function mono{copyFunDecl->id(),
+                {},
+                copyFunDecl->parameters(),
+                copyFunDecl->returnType(),
+                copyFunDecl->body()};
   auto mname = nameManglingFunction(mono, currentCallReplacements_);
-  if (!mname) return createError(mname.error());
-  mono = Function{
-    *mname, {}, copyFunDecl->parameters(),
-    copyFunDecl->returnType(), copyFunDecl->body()
-  };
+  if (!mname)
+    return createError(mname.error());
+  mono = Function{*mname,
+                  {},
+                  copyFunDecl->parameters(),
+                  copyFunDecl->returnType(),
+                  copyFunDecl->body()};
   functionTable_->insert(mono);
-
-  /*
-  if (auto r = copyFunDecl->body()->accept(*this); !r)
-    return createError(r.error());
-  */
   const auto copyy{copyFunDecl->accept(*this)};
   if (!copyy) {
     return createError(copyy.error());
@@ -105,7 +117,6 @@ Monomorphize::visit(const AST_FUNC_DECL *node) const noexcept {
     return {};
   }
   currentGenericList_ = node->generics();
-  currentCallReplacements_.clear();
   insideDeclWithGenerics = true;
   funcDeclReferences[node->id()].push_back(
       std::make_shared<AST_FUNC_DECL>(*node));
@@ -113,8 +124,6 @@ Monomorphize::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!body) {
     return createError(body.error());
   }
-  currentGenericList_.clear();
-  currentCallReplacements_.clear();
   return {};
 }
 
