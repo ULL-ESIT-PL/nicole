@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <variant>
 #include <vector>
 
@@ -26,6 +27,7 @@ private:
   mutable std::unordered_map<std::string,
                              std::vector<std::shared_ptr<AST_FUNC_DECL>>>
       funcDeclReferences;
+  mutable std::unordered_set<std::string> specializedFunctions_;
   mutable std::unordered_map<std::string, std::shared_ptr<AST_STRUCT>>
       structDeclReferences;
   mutable bool analyzingInsideClass{false};

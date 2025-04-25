@@ -29,7 +29,9 @@ Monomorphize::visit(const AST_FUNC_CALL *node) const noexcept {
     }
   }
 
+  // Si la llamada se realiza dentro de otra funcion con genericos 
   if (!currentCallReplacements_.size()) {
+    // si algun substituto de un generico sigue siendo generico debemos esperar: ejemplo: def foo<T>(): T { foo2<T>(); ...}
     for (const auto &replacement : node->replaceOfGenerics()) {
       if (typeTable_->isCompundPlaceHolder(replacement)) {
         return {};
@@ -42,11 +44,14 @@ Monomorphize::visit(const AST_FUNC_CALL *node) const noexcept {
     }
   }
   if (!currentCallReplacements_.size()) {
+    // si no esta dentro de otra declaracion
     currentCallReplacements_ = node->replaceOfGenerics();
   } else {
+    // Si esta dentro de otra declaracion con genericos debemos tener encuenta los substitutos padres
     auto auxiliar{node->replaceOfGenerics()};
     for (auto &auxRpl : auxiliar) {
       if (typeTable_->isCompundPlaceHolder(auxRpl)) {
+        // currentGenericList de la declaracion
         const auto substitute{typeTable_->applyGenericReplacements(
             auxRpl, currentGenericList_, currentCallReplacements_)};
         if (!substitute) {
@@ -57,15 +62,64 @@ Monomorphize::visit(const AST_FUNC_CALL *node) const noexcept {
     }
     currentCallReplacements_ = auxiliar;
   }
-  const auto funcOriginalDecl{funcDeclReferences.at(node->id()).front()};
+
+  // resolver sobrecarga de funciones
+  std::vector<std::shared_ptr<Type>> argTypes;
+  for (const auto &expr : node->parameters())
+    argTypes.push_back(expr->returnedFromTypeAnalysis());
+
+  auto &declList = funcDeclReferences.at(node->id());
+  std::vector<std::shared_ptr<AST_FUNC_DECL>> viableDecls;
+  const auto &explicitGens = node->replaceOfGenerics();
+
+  for (auto &decl : declList) {
+    auto params = decl->parameters().params();
+    if (params.size() != argTypes.size())
+      continue;
+    if (!explicitGens.empty() && decl->generics().size() != explicitGens.size())
+      continue;
+
+    bool matches = true;
+    bool hasExplicit = !explicitGens.empty();
+    for (size_t i = 0; i < params.size(); ++i) {
+      auto pty = params[i].second;
+      auto aty = argTypes[i];
+      if ((typeTable_->isCompundPlaceHolder(pty) ||
+           typeTable_->isCompundPlaceHolder(aty)) &&
+          !hasExplicit) {
+        // aún no resuelto → posponer
+        matches = false;
+        break;
+      }
+      if (!typeTable_->canAssign(pty, aty)) {
+        matches = false;
+        break;
+      }
+    }
+    if (matches)
+      viableDecls.push_back(decl);
+  }
+
+  if (viableDecls.empty())
+    return createError(ERROR_TYPE::FUNCTION,
+                       "no matching template instantiation for: " + node->id());
+  if (viableDecls.size() > 1)
+    return createError(ERROR_TYPE::FUNCTION,
+                       "ambiguous template instantiation for: " + node->id());
+
+  auto funcOriginalDecl = viableDecls.front();
+  // en vez de currentGenericLists para no encontrar basura
+  auto declGenerics = funcOriginalDecl->generics();
+  // realizar copia
   auto copyFunDecl{std::make_shared<AST_FUNC_DECL>(*funcOriginalDecl)};
 
+  // substituir parametros y tipo de retorno
   std::vector<std::pair<std::string, std::shared_ptr<Type>>> newParams{};
   std::expected<std::shared_ptr<Type>, Error> substituteParam{nullptr};
   for (auto param : copyFunDecl->parameters()) {
     if (typeTable_->isCompundPlaceHolder(param.second)) {
       substituteParam = typeTable_->applyGenericReplacements(
-          param.second, currentGenericList_, currentCallReplacements_);
+          param.second, declGenerics, currentCallReplacements_);
       if (!substituteParam) {
         return createError(substituteParam.error());
       }
@@ -77,8 +131,7 @@ Monomorphize::visit(const AST_FUNC_CALL *node) const noexcept {
   std::expected<std::shared_ptr<Type>, Error> substituteReturnType{nullptr};
   if (typeTable_->isCompundPlaceHolder(copyFunDecl->returnType())) {
     substituteReturnType = typeTable_->applyGenericReplacements(
-        copyFunDecl->returnType(), currentGenericList_,
-        currentCallReplacements_);
+        copyFunDecl->returnType(), declGenerics, currentCallReplacements_);
     if (!substituteReturnType) {
       return createError(substituteReturnType.error());
     }
@@ -100,12 +153,17 @@ Monomorphize::visit(const AST_FUNC_CALL *node) const noexcept {
                   copyFunDecl->parameters(),
                   copyFunDecl->returnType(),
                   copyFunDecl->body()};
-  functionTable_->insert(mono);
-  const auto copyy{copyFunDecl->accept(*this)};
-  if (!copyy) {
-    return createError(copyy.error());
+  // si previamente no fue monomorfizado
+  if (!specializedFunctions_.count(*mname)) {
+    functionTable_->insert(mono);
+    specializedFunctions_.insert(*mname);
+    // visitamos su declaracion en busqueda de mas nodos func_call
+    const auto copyy{copyFunDecl->accept(*this)};
+    if (!copyy) {
+      return createError(copyy.error());
+    }
   }
-
+  currentCallReplacements_.clear();
   return {};
 }
 
@@ -118,12 +176,26 @@ Monomorphize::visit(const AST_FUNC_DECL *node) const noexcept {
   }
   currentGenericList_ = node->generics();
   insideDeclWithGenerics = true;
-  funcDeclReferences[node->id()].push_back(
-      std::make_shared<AST_FUNC_DECL>(*node));
+  bool alreadyStoredRef{false};
+  if (funcDeclReferences.count(node->id())) {
+    const auto vec{funcDeclReferences.at(node->id())};
+    for (const auto &decl : vec) {
+      if (decl->nodeId() == node->nodeId()) {
+        alreadyStoredRef = true;
+      }
+    }
+  }
+  if (!alreadyStoredRef) {
+    funcDeclReferences[node->id()].push_back(
+        std::make_shared<AST_FUNC_DECL>(*node));
+  }
   const auto body{node->body()->accept(*this)};
   if (!body) {
     return createError(body.error());
   }
+  currentCallReplacements_.clear();
+  currentGenericList_.clear();
+  insideDeclWithGenerics = false;
   return {};
 }
 
