@@ -177,6 +177,21 @@ TopDown::parseStructDecl() const noexcept {
     }
 
     case TokenType::VIRTUAL: {
+      if (tkStream_.lookAhead(1)->type() == TokenType::DESTRUCTOR) {
+        if (isDestructorParsed) {
+          return createError(ERROR_TYPE::SINTAX,
+                             "destructor overloading not implemented, at " +
+                                 tkStream_.current()->locInfo());
+        }
+        isDestructorParsed = true;
+        destructor = parseDestructorDecl(id.raw(), true);
+        if (!destructor || !*destructor) {
+          return createError(destructor
+                                 ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
+                                 : destructor.error());
+        }
+        break;
+      }
       const std::expected<std::shared_ptr<AST_METHOD_DECL>, Error> method{
           parseMethodDecl(true)};
       if (!method || !*method) {
@@ -211,7 +226,7 @@ TopDown::parseStructDecl() const noexcept {
                                tkStream_.current()->locInfo());
       }
       isDestructorParsed = true;
-      destructor = parseDestructorDecl(id.raw());
+      destructor = parseDestructorDecl(id.raw(), false);
       if (!destructor || !*destructor) {
         return createError(destructor
                                ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
@@ -316,10 +331,16 @@ TopDown::parseConstructorDecl(
 }
 
 const std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>, Error>
-TopDown::parseDestructorDecl(const std::string &id) const noexcept {
+TopDown::parseDestructorDecl(const std::string &id,
+                             const bool isVirtual) const noexcept {
   const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
+  }
+  if (isVirtual) {
+    if (auto res = tryEat(); !res) {
+      return createError(res.error());
+    }
   }
   const auto body{parseBody()};
   if (!body || !*body) {
@@ -327,7 +348,7 @@ TopDown::parseDestructorDecl(const std::string &id) const noexcept {
                             : body.error());
   }
   return Builder::createDestructorDecl(
-      SourceLocation{*firsToken, *tkStream_.lastRead()}, id, *body);
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, id, *body, isVirtual);
 }
 
 const std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>

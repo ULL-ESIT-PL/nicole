@@ -96,12 +96,10 @@ std::expected<std::string, Error>
 Monomorphize::nameManglingFunction(const Function &func,
                                    const std::vector<std::shared_ptr<Type>>
                                        &genericReplacements) const noexcept {
-  std::string mangled{};
+  std::string mangled{"$"};
   auto res = nameManglingFunctionImpl(func, genericReplacements, mangled);
   if (!res)
     return res;
-  if (!mangled.empty() && mangled.front() == '_')
-    mangled.erase(mangled.begin());
   return mangled;
 }
 

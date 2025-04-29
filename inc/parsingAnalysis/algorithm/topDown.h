@@ -1,8 +1,8 @@
 #ifndef TOP_DOWN_H
 #define TOP_DOWN_H
 
-#include "../builder.h"
 #include "../../tables/typeTable/typeTable.h"
+#include "../builder.h"
 #include "parser.h"
 #include <expected>
 #include <memory>
@@ -44,10 +44,12 @@ private:
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>,
                                     Error>
-  parseConstructorDecl(const std::string &id_returnType, const std::shared_ptr<Type>& fatherType) const noexcept;
+  parseConstructorDecl(const std::string &id_returnType,
+                       const std::shared_ptr<Type> &fatherType) const noexcept;
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>, Error>
-  parseDestructorDecl(const std::string &id) const noexcept;
+  parseDestructorDecl(const std::string &id,
+                      const bool isVirtual) const noexcept;
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST_METHOD_DECL>, Error>
   parseMethodDecl(const bool isVirtual) const noexcept;

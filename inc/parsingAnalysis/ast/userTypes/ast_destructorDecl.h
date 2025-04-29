@@ -8,13 +8,20 @@
 namespace nicole {
 
 class AST_DESTRUCTOR_DECL final : public AST_SUBRUTINE_DECL {
+private:
+  bool isVirtual_;
+
 public:
   explicit AST_DESTRUCTOR_DECL(const long long unsigned nodeId,
                                const SourceLocation &srcLoc,
                                const std::string &id,
-                               const std::shared_ptr<AST_BODY> &body) noexcept
+                               const std::shared_ptr<AST_BODY> &body,
+                               const bool isVirtual) noexcept
       : AST_SUBRUTINE_DECL(nodeId, AST_TYPE::DESTRUCTOR_DECL, srcLoc, id,
-                           std::make_shared<VoidType>(), body) {}
+                           std::make_shared<VoidType>(), body),
+        isVirtual_{isVirtual} {}
+
+  [[nodiscard]] bool isVirtual() const noexcept { return isVirtual_; }
 
   [[nodiscard]] std::expected<std::string, Error>
   accept(const PrintTree &visitor) const noexcept override {

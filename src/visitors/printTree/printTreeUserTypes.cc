@@ -244,6 +244,8 @@ PrintTree::visit(const AST_DESTRUCTOR_DECL *node) const noexcept {
   result << indent_ << "Destructor Decl:\n";
   increaseIndent();
   result << indent_ << "Name: " << node->id() << "\n";
+  result << indent_ << "Virtual: " << (node->isVirtual() ? "true" : "false")
+         << "\n";
   if (node->body()) {
     const auto bodyStr{node->body()->accept(*this)};
     if (!bodyStr) {

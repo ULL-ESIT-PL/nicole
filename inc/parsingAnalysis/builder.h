@@ -293,7 +293,7 @@ public:
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>,
                                      Error>
   createDestructorDecl(const SourceLocation &srcLoc, const std::string &id,
-                       const std::shared_ptr<AST_BODY> &body) noexcept;
+                       const std::shared_ptr<AST_BODY> &body, const bool isVirtual) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_SUPER>, Error>
   createSuper(const SourceLocation &srcLoc,

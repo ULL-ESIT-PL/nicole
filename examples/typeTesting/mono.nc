@@ -4,6 +4,12 @@ struct Prueba {
     destructor {}
 }
 
+struct PPPP extends Prueba {
+    constructor(): super() {}
+
+    destructor {}
+}
+
 def foo<T>(): T {
     return T{};
 }
@@ -30,3 +36,16 @@ def ggggggggg_<T>(fgf: T): T {
 
 
 ggggggggg_<Prueba>(Prueba{});
+
+let kkkkkk: Prueba* = new PPPP{}; 
+
+
+
+
+struct QQQ {
+    constructor() {}
+
+    virtual destructor {}
+
+ method eeee(): void {}
+}
