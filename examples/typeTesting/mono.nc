@@ -49,3 +49,9 @@ struct QQQ {
 
  method eeee(): void {}
 }
+
+
+enum fdkf {
+    a,
+    a
+}
