@@ -120,7 +120,13 @@ FillSemanticInfo::visit(const AST_STRUCT *node) const noexcept {
   analyzingInsideClass = false;
   currentStructGenericList_.clear();
   currentGenericList_.clear();
-
+  for (const auto &methodDecl : node->methods()) {
+    if (methodDecl->isVirtual() and !node->destructor()->isVirtual()) {
+      return createError(
+          ERROR_TYPE::METHOD,
+          "a method cannot be virtual if the destructor is not virtual too");
+    }
+  }
   return {};
 }
 
@@ -245,7 +251,8 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
   }
 
   currentUserType_->insertMethod(newMethod);
-  // std::cout << "~~~~~~~~~~~~~~~~~~~~~~"<< currentUserType_->getMethods("toString")->size() << "\n";
+  // std::cout << "~~~~~~~~~~~~~~~~~~~~~~"<<
+  // currentUserType_->getMethods("toString")->size() << "\n";
 
   const auto bodyResult = node->body()->accept(*this);
   if (!bodyResult)
