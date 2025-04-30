@@ -38,21 +38,3 @@ def ggggggggg_<T>(fgf: T): T {
 ggggggggg_<Prueba>(Prueba{});
 
 let kkkkkk: Prueba* = new PPPP{}; 
-
-
-
-
-struct QQQ {
-    constructor() {}
-
-    virtual destructor {}
-
- method eeee(): void {}
-}
-
-
-enum fdkf {
-    a,
-    b,
-    a
-}

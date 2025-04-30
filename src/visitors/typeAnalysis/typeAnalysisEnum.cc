@@ -26,7 +26,7 @@ TypeAnalysis::visit(const AST_ENUM_ACCESS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM_ACCESS");
   }
-  const auto type{typeTable_->getType(node->enumId())};
+  const auto type{typeTable_->getType(node->id())};
   if (!type) {
     return createError(ERROR_TYPE::TYPE, "enum does not exist");
   }

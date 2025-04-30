@@ -2,15 +2,14 @@
 #define AST_METHOD_CALL_H
 
 #include "../../../tables/typeTable/types/type.h"
-#include "../ast.h"
+#include "../functions/ast_callable.h"
 #include <memory>
 #include <vector>
 
 namespace nicole {
 
-class AST_METHOD_CALL : public AST {
+class AST_METHOD_CALL : public AST_CALLABLE {
 private:
-  std::string id_;
   mutable std::vector<std::shared_ptr<Type>> replaceOfGenerics_;
   std::vector<std::shared_ptr<AST>> parameters_;
 
@@ -20,10 +19,8 @@ public:
       const std::string &id,
       const std::vector<std::shared_ptr<Type>> &replaceOfGenerics,
       const std::vector<std::shared_ptr<AST>> &parameters) noexcept
-      : AST(nodeId, AST_TYPE::METHOD_CALL, srcLoc), id_{id},
+      : AST_CALLABLE(nodeId, AST_TYPE::METHOD_CALL, srcLoc, id),
         replaceOfGenerics_{replaceOfGenerics}, parameters_{parameters} {}
-
-  [[nodiscard]] const std::string &id() const noexcept { return id_; }
 
   [[nodiscard]] const std::vector<std::shared_ptr<Type>> &
   replaceOfGenerics() const noexcept {

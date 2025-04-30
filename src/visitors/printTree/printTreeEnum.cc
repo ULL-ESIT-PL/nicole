@@ -30,7 +30,7 @@ PrintTree::visit(const AST_ENUM_ACCESS *node) const noexcept {
   std::ostringstream result;
   result << indent_ << "Enum Access:\n";
   increaseIndent();
-  result << indent_ << "id: " << node->enumId() << "\n";
+  result << indent_ << "id: " << node->id() << "\n";
   result << indent_ << "name: " + node->identifier() + "\n";
   decreaseIndent();
   return result.str();

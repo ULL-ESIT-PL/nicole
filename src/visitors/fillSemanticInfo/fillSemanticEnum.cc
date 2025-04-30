@@ -31,7 +31,7 @@ FillSemanticInfo::visit(const AST_ENUM_ACCESS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM_ACCESS");
   }
-  const auto typeExists{typeTable_->getType(node->enumId())};
+  const auto typeExists{typeTable_->getType(node->id())};
   if (!typeExists) {
     return createError(typeExists.error());
   }

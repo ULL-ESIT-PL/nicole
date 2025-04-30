@@ -1,14 +1,13 @@
 #ifndef AST_ENUM_ACCESS_H
 #define AST_ENUM_ACCESS_H
 
-#include "../ast.h"
+#include "../functions/ast_callable.h"
 #include <string>
 
 namespace nicole {
 
-class AST_ENUM_ACCESS final : public AST {
+class AST_ENUM_ACCESS final : public AST_CALLABLE {
 private:
-  std::string enumId_;
   std::string identifier_;
 
 public:
@@ -16,10 +15,8 @@ public:
                            const SourceLocation &srcLoc,
                            const std::string &enumId,
                            const std::string &identifier) noexcept
-      : AST{nodeId, AST_TYPE::ENUM_ACCESS, srcLoc}, enumId_{enumId},
+      : AST_CALLABLE{nodeId, AST_TYPE::ENUM_ACCESS, srcLoc, enumId},
         identifier_{identifier} {}
-
-  [[nodiscard]] const std::string &enumId() const noexcept { return enumId_; }
 
   [[nodiscard]] const std::string &identifier() const noexcept {
     return identifier_;
