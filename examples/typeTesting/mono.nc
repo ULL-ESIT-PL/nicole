@@ -53,5 +53,6 @@ struct QQQ {
 
 enum fdkf {
     a,
+    b,
     a
 }

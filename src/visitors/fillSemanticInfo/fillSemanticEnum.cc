@@ -1,7 +1,8 @@
-#include "../../../inc/visitors/fillSemanticInfo/fillSemanticInfo.h"
 #include "../../../inc/parsingAnalysis/ast/enum/ast_enum.h"
 #include "../../../inc/parsingAnalysis/ast/enum/ast_enumAccess.h"
+#include "../../../inc/visitors/fillSemanticInfo/fillSemanticInfo.h"
 #include <memory>
+#include <set>
 #include <variant>
 
 namespace nicole {
@@ -10,6 +11,12 @@ std::expected<std::monostate, Error>
 FillSemanticInfo::visit(const AST_ENUM *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ENUM");
+  }
+  std::set<std::string> noRepetitions{node->identifiers().begin(),
+                                      node->identifiers().end()};
+  if (noRepetitions.size() != node->identifiers().size()) {
+    return createError(ERROR_TYPE::ENUM,
+                       "a enum cannot have two identifiers with the same name");
   }
   const auto insert{typeTable_->insert(
       std::make_shared<EnumType>(node->id(), node->identifiers()))};
@@ -42,4 +49,4 @@ FillSemanticInfo::visit(const AST_ENUM_ACCESS *node) const noexcept {
   return {};
 }
 
-}
+} // namespace nicole
