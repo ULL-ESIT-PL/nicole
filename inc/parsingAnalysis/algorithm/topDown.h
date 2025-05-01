@@ -44,8 +44,9 @@ private:
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>,
                                     Error>
-  parseConstructorDecl(const std::string &id_returnType,
-                       const std::shared_ptr<Type> &fatherType) const noexcept;
+  parseConstructorDecl(
+      const std::string &id_returnType, const std::shared_ptr<Type> &fatherType,
+      const std::vector<GenericParameter> &classGenerics) const noexcept;
 
   [[nodiscard]] const std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>, Error>
   parseDestructorDecl(const std::string &id,

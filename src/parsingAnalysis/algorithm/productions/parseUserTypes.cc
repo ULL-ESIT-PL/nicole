@@ -209,8 +209,9 @@ TopDown::parseStructDecl() const noexcept {
                                tkStream_.current()->locInfo());
       }
       isConstructorParsed = true;
-      constructor = (fatherType) ? parseConstructorDecl(id.raw(), *fatherType)
-                                 : parseConstructorDecl(id.raw(), nullptr);
+      constructor = (fatherType)
+                        ? parseConstructorDecl(id.raw(), *fatherType, *generics)
+                        : parseConstructorDecl(id.raw(), nullptr, *generics);
       if (!constructor || !*constructor) {
         return createError(constructor
                                ? Error{ERROR_TYPE::NULL_NODE, "node is null"}
@@ -255,12 +256,13 @@ TopDown::parseStructDecl() const noexcept {
 
 const std::expected<std::shared_ptr<AST_CONSTRUCTOR_DECL>, Error>
 TopDown::parseConstructorDecl(
-    const std::string &id_returnType,
-    const std::shared_ptr<Type> &fatherType) const noexcept {
+    const std::string &id_returnType, const std::shared_ptr<Type> &fatherType,
+    const std::vector<GenericParameter> &classGenerics) const noexcept {
   const auto firsToken{tkStream_.current()};
   if (auto res = tryEat(); !res) {
     return createError(res.error());
   }
+  /*
   std::expected<std::vector<GenericParameter>, Error> generics{};
   if (tkStream_.current()->type() == TokenType::OPERATOR_SMALLER) {
     generics = parseGenerics();
@@ -268,6 +270,7 @@ TopDown::parseConstructorDecl(
   if (!generics) {
     return createError(generics.error());
   }
+  */
   if (tkStream_.current()->type() != TokenType::LP) {
     return createError(ERROR_TYPE::SINTAX, "missing ( of function at " +
                                                tkStream_.current()->locInfo());
@@ -324,7 +327,7 @@ TopDown::parseConstructorDecl(
   }
   return Builder::createConstructorDecl(
       SourceLocation{*firsToken, *tkStream_.lastRead()}, id_returnType,
-      *generics, *params, *super,
+      classGenerics, *params, *super,
       std::make_shared<UserType>(id_returnType, nullptr,
                                  std::vector<GenericParameter>{}),
       *body);
