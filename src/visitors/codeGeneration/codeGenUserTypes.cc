@@ -10,7 +10,7 @@
 
 namespace nicole {
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
@@ -32,7 +32,7 @@ CodeGeneration::visit(const AST_STRUCT *node) const noexcept {
   return {};
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_ATTR_ACCESS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ATTR_ACCESS");
@@ -40,7 +40,7 @@ CodeGeneration::visit(const AST_ATTR_ACCESS *node) const noexcept {
   return {};
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_METHOD_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL");
@@ -54,7 +54,7 @@ CodeGeneration::visit(const AST_METHOD_CALL *node) const noexcept {
   return {};
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_METHOD_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_DECL");
@@ -66,7 +66,7 @@ CodeGeneration::visit(const AST_METHOD_DECL *node) const noexcept {
   return {};
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_DECL");
@@ -84,7 +84,7 @@ CodeGeneration::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   return {};
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_SUPER *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SUPER");
@@ -98,7 +98,7 @@ CodeGeneration::visit(const AST_SUPER *node) const noexcept {
   return {};
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_DESTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_DESTRUCTOR_DECL");
@@ -110,7 +110,7 @@ CodeGeneration::visit(const AST_DESTRUCTOR_DECL *node) const noexcept {
   return {};
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_THIS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_THIS");
@@ -118,7 +118,7 @@ CodeGeneration::visit(const AST_THIS *node) const noexcept {
   return {};
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL");

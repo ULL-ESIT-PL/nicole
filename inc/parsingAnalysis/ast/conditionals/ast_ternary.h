@@ -59,7 +59,7 @@ public:
     return visitor.visit(this);
   }
 
-  [[nodiscard]] std::expected<std::shared_ptr<llvm::Value>, Error>
+  [[nodiscard]] std::expected<llvm::Value*, Error>
   accept(const CodeGeneration &visitor) const noexcept override {
     return visitor.visit(this);
   }

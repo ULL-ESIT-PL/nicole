@@ -12,7 +12,7 @@
 
 namespace nicole {
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_IF *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_IF");
@@ -40,7 +40,7 @@ CodeGeneration::visit(const AST_IF *node) const noexcept {
   return {};
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_ELSE_IF *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ELSE_IF");
@@ -56,7 +56,7 @@ CodeGeneration::visit(const AST_ELSE_IF *node) const noexcept {
   return {};
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_SWITCH *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SWITCH");
@@ -80,7 +80,7 @@ CodeGeneration::visit(const AST_SWITCH *node) const noexcept {
   return {};
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_CASE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CASE");
@@ -96,7 +96,7 @@ CodeGeneration::visit(const AST_CASE *node) const noexcept {
   return {};
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_DEFAULT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DEFAULT");
@@ -108,7 +108,7 @@ CodeGeneration::visit(const AST_DEFAULT *node) const noexcept {
   return {};
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_TERNARY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_TERNARY");
@@ -128,7 +128,7 @@ CodeGeneration::visit(const AST_TERNARY *node) const noexcept {
   return {};
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_CONDITION *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CONDITION");

@@ -70,7 +70,7 @@ public:
   [[nodiscard]] virtual std::expected<std::monostate, Error>
   accept(const Monomorphize &visitor) const noexcept = 0;
 
-  [[nodiscard]] virtual std::expected<std::shared_ptr<llvm::Value>, Error>
+  [[nodiscard]] virtual std::expected<llvm::Value*, Error>
   accept(const CodeGeneration &visitor) const noexcept = 0;
 };
 

@@ -19,7 +19,7 @@ metodos / llamadas a atributos / variables auto
 
 namespace nicole {
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_STATEMENT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STATEMENT");
@@ -27,12 +27,12 @@ CodeGeneration::visit(const AST_STATEMENT *node) const noexcept {
   return node->expression()->accept(*this);
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_BODY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BODY");
   }
-  std::shared_ptr<llvm::Value> lastValue{nullptr};
+  llvm::Value* lastValue{nullptr};
 
   // Recorremos todas las sentencias del cuerpo
   for (const auto &statement : node->body()) {
@@ -51,7 +51,7 @@ CodeGeneration::visit(const AST_BODY *node) const noexcept {
   return lastValue;
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const Tree *tree) const noexcept {
   if (!tree) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid Tree");
@@ -62,7 +62,17 @@ CodeGeneration::visit(const Tree *tree) const noexcept {
     return createError(result.error());
   }
 
-  builder_.CreateRetVoid();
+  funcType_ = llvm::FunctionType::get(
+      (options_.validateTree()) ? builder_.getInt32Ty() : builder_.getVoidTy(),
+      /*isVarArg=*/false);
+  mainFunction_ = llvm::Function::Create(
+      funcType_, llvm::Function::ExternalLinkage, "main", module_.get());
+  entry_ = llvm::BasicBlock::Create(context_, "entry", mainFunction_);
+  builder_.SetInsertPoint(entry_);
+
+  if (!options_.validateTree()) {
+    builder_.CreateRetVoid();
+  }
 
   llvm::verifyModule(*module_, &llvm::errs());
 

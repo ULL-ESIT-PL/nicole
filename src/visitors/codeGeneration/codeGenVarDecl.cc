@@ -8,7 +8,7 @@
 
 namespace nicole {
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
@@ -20,7 +20,7 @@ CodeGeneration::visit(const AST_AUTO_DECL *node) const noexcept {
   return {};
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_TYPED_DECL");
@@ -32,7 +32,7 @@ CodeGeneration::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   return {};
 }
 
-std::expected<std::shared_ptr<llvm::Value>, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_VAR_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_CALL");

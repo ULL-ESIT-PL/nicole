@@ -89,7 +89,7 @@ Nicole::compile(const Options &options) const noexcept {
     return createError(analyzedSecondTime.error());
   }
 
-  const nicole::CodeGeneration codeGenerator{functionTable, typeTable};
+  const nicole::CodeGeneration codeGenerator{functionTable, typeTable, options};
   const auto generatedIR{codeGenerator.generate((*tree).get())};
   if (!generatedIR) {
     return createError(generatedIR.error());
