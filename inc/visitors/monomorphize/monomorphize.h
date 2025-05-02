@@ -28,8 +28,10 @@ private:
                              std::vector<std::shared_ptr<AST_FUNC_DECL>>>
       funcDeclReferences;
   mutable std::unordered_set<std::string> specializedFunctions_;
+  mutable std::unordered_set<std::string> specializedMethod_;
   mutable std::unordered_map<std::string, std::shared_ptr<AST_STRUCT>>
       structDeclReferences;
+  mutable std::shared_ptr<AST_STRUCT> currentMangledStruct{nullptr};
   mutable bool analyzingInsideClass{false};
   mutable bool insideDeclWithGenerics{false};
   mutable bool insideCopy{false};

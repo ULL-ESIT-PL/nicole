@@ -5,6 +5,16 @@
 #include "../../tables/scope/scope.h"
 #include "../../tables/typeTable/typeTable.h"
 #include "../visitor.h"
+#include <llvm/ExecutionEngine/ExecutionEngine.h>
+#include <llvm/ExecutionEngine/GenericValue.h>
+#include <llvm/ExecutionEngine/MCJIT.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/Module.h>
+#include <llvm/IR/Verifier.h>
+#include <llvm/Support/TargetSelect.h>
+#include <llvm/Support/raw_ostream.h>
 #include <memory>
 #include <variant>
 #include <vector>
@@ -15,11 +25,30 @@ class CodeGeneration final : public Visitor<std::shared_ptr<llvm::Value>> {
 private:
   std::shared_ptr<FunctionTable> functionTable_;
   std::shared_ptr<TypeTable> typeTable_;
+  // Start LLVM
+  mutable llvm::LLVMContext context_;
+  mutable llvm::IRBuilder<> builder_{context_};
+
+  // 2) Módulo, lo gestionamos con unique_ptr para que se limpie al final
+  mutable std::unique_ptr<llvm::Module> module_{
+      std::make_unique<llvm::Module>("my_module", context_)};
+
+  // 3) Función main y bloque básico, punteros no propietarios
+  mutable llvm::FunctionType *funcType_{nullptr};
+  mutable llvm::Function *mainFunction_{nullptr};
+  mutable llvm::BasicBlock *entry_{nullptr};
 
 public:
   CodeGeneration(const std::shared_ptr<FunctionTable> &functionTable,
                  std::shared_ptr<TypeTable> &typeTable) noexcept
-      : functionTable_{functionTable}, typeTable_{typeTable} {}
+      : functionTable_{functionTable}, typeTable_{typeTable} {
+    funcType_ =
+        llvm::FunctionType::get(builder_.getVoidTy(), /*isVarArg=*/false);
+    mainFunction_ = llvm::Function::Create(
+        funcType_, llvm::Function::ExternalLinkage, "main", module_.get());
+    entry_ = llvm::BasicBlock::Create(context_, "entry", mainFunction_);
+    builder_.SetInsertPoint(entry_);
+  }
 
   [[nodiscard]] std::expected<std::shared_ptr<llvm::Value>, Error>
   visit(const AST_BOOL *node) const noexcept override;
