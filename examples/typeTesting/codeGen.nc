@@ -14,3 +14,19 @@ if (false) {
 }   else {
     print(y);
 }
+
+print((false) ? "hola" : "adios");
+
+
+enum AA {
+    a,
+    b
+}
+
+let ww: AA = AA::b;
+
+print(AA::b);
+
+auto qq = true;
+
+print(qq);

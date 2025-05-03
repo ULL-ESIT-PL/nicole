@@ -37,13 +37,18 @@ Scope::insert(const std::shared_ptr<Variable> &variable) noexcept {
 std::expected<std::monostate, Error>
 Scope::setVariableType(const std::string &id,
                        const std::shared_ptr<Type> &type) const noexcept {
-  if (has(id)) {
-    table_.at(id)->setType(type);
+  auto it = table_.find(id);
+  if (it != table_.end()) {
+    it->second->setType(type);
     return {};
   }
+  if (father_) {
+    return father_->setVariableType(id, type);
+  }
   return createError(ERROR_TYPE::VARIABLE,
-                     "the variable: " + id + " already exists");
+                     "variable '" + id + "' does not exist");
 }
+
 
 std::ostream &operator<<(std::ostream &os, const Scope &scope) noexcept {
   os << "Scope { ";

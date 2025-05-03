@@ -18,9 +18,6 @@ TypeAnalysis::visit(const AST_ENUM *node) const noexcept {
   return type;
 }
 
-/*
-- retorna int
-*/
 std::expected<std::shared_ptr<Type>, Error>
 TypeAnalysis::visit(const AST_ENUM_ACCESS *node) const noexcept {
   if (!node) {

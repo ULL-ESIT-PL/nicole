@@ -9,7 +9,6 @@ std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
-
   // Generar el valor inicial
   auto initOrErr = node->value()->accept(*this);
   if (!initOrErr)
@@ -27,7 +26,7 @@ CodeGeneration::visit(const AST_AUTO_DECL *node) const noexcept {
   // Guardamos el punto de inserción actual
   llvm::IRBuilder<>::InsertPointGuard guard(builder_);
   // Movemos a justo después de la etiqueta 'entry'
-  builder_.SetInsertPoint(entry_);
+  builder_.SetInsertPoint(entry_, entry_->getFirstInsertionPt());
   auto llvmTyOrErr = var.type()->llvmVersion(context_);
   if (!llvmTyOrErr)
     return std::unexpected(llvmTyOrErr.error());
@@ -60,7 +59,7 @@ CodeGeneration::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   Variable &var = *varPtr; // referencia al objeto real
 
   llvm::IRBuilder<>::InsertPointGuard guard(builder_);
-  builder_.SetInsertPoint(entry_);
+  builder_.SetInsertPoint(entry_, entry_->getFirstInsertionPt());
   auto llvmTyOrErr = node->varType()->llvmVersion(context_);
   if (!llvmTyOrErr)
     return std::unexpected(llvmTyOrErr.error());

@@ -2,6 +2,7 @@
 #define ENUM_TYPE_H
 
 #include "../type.h"
+#include <cstddef>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -28,6 +29,18 @@ public:
   hasIdentifier(const std::string &identifier) const noexcept {
     return std::find(values_.begin(), values_.end(), identifier) !=
            values_.end();
+  }
+
+  [[nodiscard]] std::expected<size_t, Error>
+  identifierToNumber(const std::string &identifier) const noexcept {
+    for (size_t i{0}; i < values_.size(); ++i) {
+      if (identifier == values_[i]) {
+        return i;
+      }
+    }
+    return createError(ERROR_TYPE::TYPE,
+                       "unable to convert to number identifier " + identifier +
+                           "in enum: " + name_);
   }
 
   [[nodiscard]] std::string toString() const noexcept override {

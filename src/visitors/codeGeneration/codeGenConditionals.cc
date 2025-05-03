@@ -151,19 +151,43 @@ CodeGeneration::visit(const AST_TERNARY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_TERNARY");
   }
-  const auto condition{node->condition()->accept(*this)};
-  if (!condition) {
-    return createError(condition.error());
-  }
-  const auto first{node->first()->accept(*this)};
-  if (!first) {
-    return createError(first.error());
-  }
-  const auto second{node->second()->accept(*this)};
-  if (!second) {
-    return createError(second.error());
-  }
-  return {};
+    auto condOrErr = node->condition()->accept(*this);
+  if (!condOrErr) return createError(condOrErr.error());
+  llvm::Value *condVal = *condOrErr;  // debe ser un i1
+
+  // Crear bloques
+  llvm::Function *parent = builder_.GetInsertBlock()->getParent();
+  std::string id = std::to_string(node->nodeId());
+  auto *thenBB  = llvm::BasicBlock::Create(context_, "tern_then"  + id, parent);
+  auto *elseBB  = llvm::BasicBlock::Create(context_, "tern_else"  + id, parent);
+  auto *mergeBB = llvm::BasicBlock::Create(context_, "tern_merge" + id, parent);
+
+  // Branch condicional
+  builder_.CreateCondBr(condVal, thenBB, elseBB);
+
+  // THEN block
+  builder_.SetInsertPoint(thenBB);
+  auto thenOrErr = node->first()->accept(*this);
+  if (!thenOrErr) return createError(thenOrErr.error());
+  llvm::Value *thenVal = *thenOrErr;
+  builder_.CreateBr(mergeBB);  // saltar a merge al final
+
+  // ELSE block
+  builder_.SetInsertPoint(elseBB);
+  auto elseOrErr = node->second()->accept(*this);
+  if (!elseOrErr) return createError(elseOrErr.error());
+  llvm::Value *elseVal = *elseOrErr;
+  builder_.CreateBr(mergeBB);
+
+  // Merge block y PHI node
+  builder_.SetInsertPoint(mergeBB);
+  // El tipo de los valores thenVal y elseVal debe ser el mismo
+  llvm::PHINode *phi = builder_.CreatePHI(
+      thenVal->getType(), 2, "tern_phi" + id);
+  phi->addIncoming(thenVal, thenBB);
+  phi->addIncoming(elseVal, elseBB);
+
+  return phi;
 }
 
 std::expected<llvm::Value *, Error>

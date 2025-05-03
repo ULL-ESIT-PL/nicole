@@ -53,6 +53,7 @@ TypeAnalysis::visit(const AST_BODY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BODY");
   }
+  auto oldScope = currentScope_;
   currentScope_ = node->scope();
   std::vector<std::shared_ptr<Type>> returnTypes;
   bool foundBreak = false;
@@ -61,21 +62,13 @@ TypeAnalysis::visit(const AST_BODY *node) const noexcept {
     auto result = expr->accept(*this);
     if (!result)
       return createError(result.error());
-
     auto type = result.value();
     if (typeTable_->areSameType(type, typeTable_->noPropagateType()))
       continue;
-
     if (typeTable_->areSameType(type, typeTable_->breakType())) {
       foundBreak = true;
       continue;
     }
-
-    /*
-    if (!node->father()) {
-
-    }
-    */
     if (firstBody) {
       if (!foundReturn) {
         continue;
@@ -91,17 +84,17 @@ TypeAnalysis::visit(const AST_BODY *node) const noexcept {
       }
       returnTypes.push_back(type);
     }
-
     if (!firstBody) {
       returnTypes.push_back(type);
     }
   }
 
+  currentScope_ = oldScope;
+
   if (!returnTypes.empty() && foundBreak)
     return createError(ERROR_TYPE::TYPE,
                        "inconsistent return types: cannot mix return and "
                        "break/continue in the same body");
-
   if (!returnTypes.empty()) {
     auto commonType = returnTypes.front();
     for (size_t i = 1; i < returnTypes.size(); ++i) {
@@ -148,6 +141,7 @@ TypeAnalysis::visit(const Tree *tree) const noexcept {
                        "body must return int, void, or noPropagate, got " +
                            bodyType->toString());
   secondAnalysis = true;
+
   return result;
 }
 
