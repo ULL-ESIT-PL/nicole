@@ -87,9 +87,9 @@ TypeAnalysis::visit(const AST_VAR_CALL *node) const noexcept {
   auto varExp = currentScope_->getVariable(node->id());
   if (!varExp)
     return createError(varExp.error());
-  currentType_ = varExp->type();
-  node->setReturnedFromAnalysis(varExp->type());
-  return varExp->type();
+  currentType_ = (*varExp)->type();
+  node->setReturnedFromAnalysis((*varExp)->type());
+  return (*varExp)->type();
 }
 
 } // namespace nicole

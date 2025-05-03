@@ -23,6 +23,15 @@ public:
   [[nodiscard]] const GenericParameter &getGenericParameter() const noexcept {
     return genericParameter_;
   }
+
+  [[nodiscard]] std::expected<llvm::Type *, Error>
+  llvmVersion(llvm::LLVMContext &) const noexcept override {
+    // Unresolved placeholder: no LLVM type can be generated
+    return createError(ERROR_TYPE::TYPE,
+                       "Unresolved generic parameter '" +
+                           genericParameter_.name() +
+                           "' cannot be lowered to LLVM type.");
+  }
 };
 
 } // namespace nicole

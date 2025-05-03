@@ -22,6 +22,18 @@ public:
   [[nodiscard]] std::string toString() const noexcept override {
     return baseType_->toString() + "*";
   }
+
+  [[nodiscard]] std::expected<llvm::Type *, Error>
+  llvmVersion(llvm::LLVMContext &context) const noexcept override {
+    // Obtener el tipo LLVM del tipo base
+    auto baseTyOrErr = baseType_->llvmVersion(context);
+    if (!baseTyOrErr) {
+      return std::unexpected(baseTyOrErr.error());
+    }
+    llvm::Type *baseTy = *baseTyOrErr;
+    // Crear y retornar el puntero al tipo base
+    return llvm::PointerType::get(baseTy, /*AddressSpace=*/0);
+  }
 };
 
 } // namespace nicole

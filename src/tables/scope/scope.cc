@@ -12,7 +12,7 @@ bool Scope::has(const std::string &id) const noexcept {
   return false;
 }
 
-const std::expected<Variable, Error>
+const std::expected<std::shared_ptr<Variable>, Error>
 Scope::getVariable(const std::string &id) const noexcept {
   if (table_.count(id)) {
     return table_.at(id);
@@ -25,20 +25,20 @@ Scope::getVariable(const std::string &id) const noexcept {
 }
 
 std::expected<std::monostate, Error>
-Scope::insert(const Variable &variable) noexcept {
-  if (!has(variable.id())) {
-    table_.emplace(variable.id(), variable);
+Scope::insert(const std::shared_ptr<Variable> &variable) noexcept {
+  if (!has(variable->id())) {
+    table_.emplace(variable->id(), variable);
     return {};
   }
   return createError(ERROR_TYPE::VARIABLE,
-                     "the variable: " + variable.id() + " already exists");
+                     "the variable: " + variable->id() + " already exists");
 }
 
 std::expected<std::monostate, Error>
 Scope::setVariableType(const std::string &id,
                        const std::shared_ptr<Type> &type) const noexcept {
   if (has(id)) {
-    table_.at(id).setType(type);
+    table_.at(id)->setType(type);
     return {};
   }
   return createError(ERROR_TYPE::VARIABLE,

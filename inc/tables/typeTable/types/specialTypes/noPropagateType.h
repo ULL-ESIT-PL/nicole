@@ -12,6 +12,11 @@ public:
   [[nodiscard]] std::string toString() const noexcept override {
     return "NoPropagateType";
   }
+
+  [[nodiscard]] std::expected<llvm::Type *, Error>
+  llvmVersion(llvm::LLVMContext &) const noexcept override {
+    return createError(ERROR_TYPE::TYPE, "invalid llvm conversion");
+  }
 };
 
 } // namespace nicole

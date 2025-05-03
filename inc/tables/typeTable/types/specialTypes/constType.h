@@ -22,6 +22,11 @@ public:
   [[nodiscard]] std::string toString() const noexcept override {
     return "const " + baseType_->toString();
   }
+
+  [[nodiscard]] std::expected<llvm::Type *, Error>
+  llvmVersion(llvm::LLVMContext & context) const noexcept override {
+    return baseType_->llvmVersion(context);
+  }
 };
 
 } // namespace nicole

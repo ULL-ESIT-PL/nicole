@@ -1,7 +1,7 @@
-#include "../../../inc/visitors/fillSemanticInfo/fillSemanticInfo.h"
 #include "../../../inc/parsingAnalysis/ast/variables/ast_autoDecl.h"
 #include "../../../inc/parsingAnalysis/ast/variables/ast_typedDecl.h"
 #include "../../../inc/parsingAnalysis/ast/variables/ast_varCall.h"
+#include "../../../inc/visitors/fillSemanticInfo/fillSemanticInfo.h"
 #include <memory>
 #include <variant>
 
@@ -23,8 +23,8 @@ FillSemanticInfo::visit(const AST_AUTO_DECL *node) const noexcept {
                                              " is shadowing the atribute");
   }
 
-  const auto insert{
-      currentScope_->insert(Variable{node->id(), nullptr, nullptr})};
+  const auto insert{currentScope_->insert(
+      std::make_shared<Variable>(node->id(), nullptr, nullptr))};
   if (!insert) {
     return createError(insert.error());
   }
@@ -62,14 +62,15 @@ FillSemanticInfo::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
     node->setVarType(varType);
   }
 
-  auto maybeGeneric = typeTable_->isCompundGenericType(varType, currentGenericList_);
+  auto maybeGeneric =
+      typeTable_->isCompundGenericType(varType, currentGenericList_);
   if (maybeGeneric.has_value()) {
     varType = *maybeGeneric;
     node->setVarType(varType);
   }
 
-  const auto insert{
-      currentScope_->insert(Variable{node->id(), varType, nullptr})};
+  const auto insert{currentScope_->insert(
+      std::make_shared<Variable>(node->id(), varType, nullptr))};
   if (!insert) {
     return createError(insert.error());
   }
@@ -92,4 +93,4 @@ FillSemanticInfo::visit(const AST_VAR_CALL *node) const noexcept {
   return {};
 }
 
-}
+} // namespace nicole

@@ -213,8 +213,8 @@ FillSemanticInfo::visit(const AST_METHOD_DECL *node) const noexcept {
 
     updatedParams.push_back({param.first, newType});
 
-    if (auto insertVar =
-            currentScope_->insert(Variable{param.first, newType, nullptr});
+    if (auto insertVar = currentScope_->insert(
+            std::make_shared<Variable>(param.first, newType, nullptr));
         !insertVar)
       return createError(insertVar.error());
   }
@@ -300,8 +300,8 @@ FillSemanticInfo::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
       newType = *maskedGeneric;
 
     updatedParams.push_back({param.first, newType});
-    if (auto insertResult =
-            currentScope_->insert(Variable{param.first, newType, nullptr});
+    if (auto insertResult = currentScope_->insert(
+            std::make_shared<Variable>(param.first, newType, nullptr));
         !insertResult)
       return createError(insertResult.error());
   }

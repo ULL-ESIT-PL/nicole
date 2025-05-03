@@ -33,6 +33,27 @@ public:
       return "str";
     }
   }
+
+  [[nodiscard]] std::expected<llvm::Type *, Error>
+  llvmVersion(llvm::LLVMContext &context) const noexcept override {
+    switch (kind_) {
+    case BasicKind::Bool:
+      return llvm::Type::getInt1Ty(context);
+    case BasicKind::Int:
+      return llvm::Type::getInt32Ty(context);
+    case BasicKind::Float:
+      return llvm::Type::getFloatTy(context);
+    case BasicKind::Double:
+      return llvm::Type::getDoubleTy(context);
+    case BasicKind::Char:
+      return llvm::Type::getInt8Ty(context);
+    case BasicKind::Str: {
+      // C-style string: pointer to i8
+      llvm::Type *i8Ty = llvm::Type::getInt8Ty(context);
+      return llvm::PointerType::get(i8Ty, /*AddressSpace=*/0);
+    }
+    }
+  }
 };
 
 } // namespace nicole

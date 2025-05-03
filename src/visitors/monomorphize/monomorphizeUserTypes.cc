@@ -11,6 +11,11 @@ namespace nicole {
 
 /*
 Needs to be monomporhized, included attributes
+
+Primero monomorfizo el padre
+Segundo los atributos
+Tercero el constructor
+Cuarto los metodos
 */
 std::expected<std::monostate, Error>
 Monomorphize::visit(const AST_STRUCT *node) const noexcept {

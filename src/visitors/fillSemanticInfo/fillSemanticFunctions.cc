@@ -92,8 +92,8 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
       newType = *maskedGeneric;
 
     newParameters.push_back({param.first, newType});
-    if (auto insertResult =
-            currentScope_->insert(Variable{param.first, newType, nullptr});
+    if (auto insertResult = currentScope_->insert(
+            std::make_shared<Variable>(param.first, newType, nullptr));
         !insertResult)
       return createError(insertResult.error());
   }

@@ -39,6 +39,9 @@ private:
   mutable llvm::FunctionType *funcType_{nullptr};
   mutable llvm::Function *mainFunction_{nullptr};
   mutable llvm::BasicBlock *entry_{nullptr};
+  mutable llvm::Value *resultChainedExpression_{nullptr};
+
+  mutable std::shared_ptr<Scope> currentScope_{nullptr};
 
 public:
   CodeGeneration(const std::shared_ptr<FunctionTable> &functionTable,

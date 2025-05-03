@@ -49,6 +49,29 @@ public:
     oss << ">";
     return oss.str();
   }
+
+  [[nodiscard]] std::expected<llvm::Type*, Error>
+  llvmVersion(llvm::LLVMContext &context) const noexcept override {
+    // Recupera el struct opaco base por nombre
+    llvm::StructType *origStruct = llvm::StructType::getTypeByName(context, name());
+    if (!origStruct) {
+      return createError(ERROR_TYPE::TYPE, "Unknown user type: " + name());
+    }
+    // Si el struct es opaco, define su cuerpo con los argumentos de tipo
+    if (origStruct->isOpaque()) {
+      std::vector<llvm::Type*> elements;
+      elements.reserve(typeArgs_.size());
+      for (const auto &arg : typeArgs_) {
+        auto tyOrErr = arg->llvmVersion(context);
+        if (!tyOrErr) {
+          return createError(tyOrErr.error());
+        }
+        elements.push_back(*tyOrErr);
+      }
+      origStruct->setBody(elements, /*isPacked=*/false);
+    }
+    return origStruct;
+  }
 };
 
 } // namespace nicole

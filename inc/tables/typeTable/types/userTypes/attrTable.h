@@ -28,8 +28,11 @@ public:
   [[nodiscard]] std::expected<std::monostate, Error>
   setAttribute(const Attribute &variable) noexcept;
 
+  [[nodiscard]] auto begin() const noexcept { return table_.begin(); }
+
+  [[nodiscard]] auto end() const noexcept { return table_.end(); }
 }; // namespace nicole
 
-}
+} // namespace nicole
 
 #endif

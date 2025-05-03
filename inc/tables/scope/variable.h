@@ -14,30 +14,29 @@ namespace nicole {
 class Variable final : public Symbol {
 private:
   mutable std::shared_ptr<Type> type_;
-  mutable std::shared_ptr<llvm::Value> value_;
-  mutable std::shared_ptr<llvm::AllocaInst> address_;
+  mutable llvm::Value *value_;
+  mutable llvm::AllocaInst *address_;
 
 public:
   explicit Variable(const std::string &id, const std::shared_ptr<Type> &type,
-                    const std::shared_ptr<llvm::Value> &value) noexcept
+                    llvm::Value *value) noexcept
       : Symbol{id}, type_{type}, value_{value} {}
 
   [[nodiscard]] const std::shared_ptr<Type> &type() const noexcept {
     return type_;
   }
 
-  [[nodiscard]] const std::shared_ptr<llvm::Value> &value() const noexcept {
-    return value_;
-  }
+  [[nodiscard]] llvm::Value *&value() const noexcept { return value_; }
 
-  [[nodiscard]] const std::shared_ptr<llvm::AllocaInst> &
-  address() const noexcept {
-    return address_;
-  }
+  [[nodiscard]] llvm::AllocaInst *address() const noexcept { return address_; }
 
   void setType(const std::shared_ptr<Type> &type) const noexcept {
     type_ = type;
   }
+
+  void setValue(llvm::Value *v) const noexcept { value_ = v; }
+
+  void setAddress(llvm::AllocaInst *addr) const noexcept { address_ = addr; }
 };
 
 } // namespace nicole

@@ -42,6 +42,12 @@ public:
     oss << " }";
     return oss.str();
   }
+
+  [[nodiscard]] std::expected<llvm::Type *, Error>
+  llvmVersion(llvm::LLVMContext &context) const noexcept override {
+    // Representamos enum como i32
+    return llvm::Type::getInt32Ty(context);
+  }
 };
 
 } // namespace nicole

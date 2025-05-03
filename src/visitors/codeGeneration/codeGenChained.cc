@@ -6,22 +6,31 @@
 
 namespace nicole {
 
-std::expected<llvm::Value*, Error>
+std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_CHAINED *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CHAINED");
   }
-  const auto base{node->base()->accept(*this)};
-  if (!base) {
-    return createError(base.error());
+
+  // Generar y guardar el valor base
+  auto baseOrErr = node->base()->accept(*this);
+  if (!baseOrErr)
+    return createError(baseOrErr.error());
+  // Guarda en el atributo
+  resultChainedExpression_ = *baseOrErr;
+
+  // Para cada operación, invoca accept: cada visit actualizará
+  // resultChainedExpression_
+  for (const auto &op : node->operations()) {
+    auto opOrErr = op->accept(*this);
+    if (!opOrErr)
+      return createError(opOrErr.error());
+    // No necesitamos nada más aquí: resultChainedExpression_ ya apunta al nuevo
+    // valor
   }
-  for (const auto &chain : node->operations()) {
-    const auto result{chain->accept(*this)};
-    if (!result) {
-      return createError(result.error());
-    }
-  }
-  return {};
+
+  // Devolver el valor acumulado
+  return resultChainedExpression_;
 }
 
 } // namespace nicole
