@@ -40,6 +40,8 @@ private:
   mutable llvm::Function *mainFunction_{nullptr};
   mutable llvm::BasicBlock *entry_{nullptr};
   mutable llvm::Value *resultChainedExpression_{nullptr};
+  mutable llvm::BasicBlock *currentMergeBlock_{nullptr};
+
 
   mutable std::shared_ptr<Scope> currentScope_{nullptr};
 
