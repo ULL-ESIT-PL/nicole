@@ -27,6 +27,20 @@ let ww: AA = AA::b;
 
 print(AA::b);
 
-auto qq = true;
+auto qq = 3;
 
 print(qq);
+
+
+switch(qq) {
+    case 1: {
+        print("primer case");
+    }
+    case 2: {
+        print("segundo case");
+    }
+    default {
+        return;
+        print("default");
+    }
+}

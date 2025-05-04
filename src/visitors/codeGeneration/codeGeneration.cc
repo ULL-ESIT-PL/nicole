@@ -43,6 +43,8 @@ CodeGeneration::visit(const AST_BODY *node) const noexcept {
       // Propagamos el error si alguna sentencia falla
       return createError(res.error());
     }
+    if (builder_.GetInsertBlock()->getTerminator())
+      break;
     // Guardamos el valor devuelto (puede ser nullptr si la sentencia no produce
     // valor)
     lastValue = res.value();
