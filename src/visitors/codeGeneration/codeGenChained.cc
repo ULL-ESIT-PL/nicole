@@ -18,6 +18,7 @@ CodeGeneration::visit(const AST_CHAINED *node) const noexcept {
     return createError(baseOrErr.error());
   // Guarda en el atributo
   resultChainedExpression_ = *baseOrErr;
+  currentType = node->base()->returnedFromTypeAnalysis();
 
   // Para cada operación, invoca accept: cada visit actualizará
   // resultChainedExpression_
@@ -27,6 +28,7 @@ CodeGeneration::visit(const AST_CHAINED *node) const noexcept {
       return createError(opOrErr.error());
     // No necesitamos nada más aquí: resultChainedExpression_ ya apunta al nuevo
     // valor
+    currentType = op->returnedFromTypeAnalysis();
   }
 
   // Devolver el valor acumulado

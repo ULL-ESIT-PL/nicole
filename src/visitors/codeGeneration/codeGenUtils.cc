@@ -109,45 +109,7 @@ CodeGeneration::visit(const AST_PRINT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PRINT");
   }
-  /*
-  std::vector<llvm::Value *> values{};
-  std::string fullFormatStr = "";
-  for (const auto &chain : node->values()) {
-    const auto result{chain->accept(*this)};
-    if (!result) {
-      return createError(result.error());
-    }
-    values.push_back(*result);
-  }
 
-  auto paramsAndFormats{printParameters(values, context_, builder_)};
-  std::vector<llvm::Value *> args{};
-
-  for (const auto &paramAndFormat : paramsAndFormats) {
-    fullFormatStr += paramAndFormat.second; // Concatenar el formato
-    args.push_back(paramAndFormat.first);   // Añadir el valor
-  }
-
-  // Check if printf already exists in the module
-  llvm::Function *printfFunc = module_->getFunction("printf");
-  if (!printfFunc) {
-    llvm::FunctionType *printfType = llvm::FunctionType::get(
-        llvm::IntegerType::getInt32Ty(context_),
-        llvm::PointerType::getUnqual(llvm::Type::getInt8Ty(context_)), true);
-    printfFunc = llvm::Function::Create(
-        printfType, llvm::Function::ExternalLinkage, "printf", module_.get());
-  }
-
-  // Crear una cadena de formato y pasarla junto con los valores a printf
-  llvm::Value *formatStr = builder_.CreateGlobalStringPtr(fullFormatStr, "fmt");
-  args.insert(args.begin(),
-              formatStr); // Insert the format at the beginning of the arguments
-
-  // call printf
-  builder_.CreateCall(printfFunc, args, "calltmp");
-
-  return nullptr;
-  */
   std::vector<llvm::Value *> values;
   values.reserve(node->values().size());
   for (const auto &chain : node->values()) {

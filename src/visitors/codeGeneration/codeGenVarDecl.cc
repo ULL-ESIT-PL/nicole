@@ -26,7 +26,8 @@ CodeGeneration::visit(const AST_AUTO_DECL *node) const noexcept {
   // Guardamos el punto de inserción actual
   llvm::IRBuilder<>::InsertPointGuard guard(builder_);
   // Movemos a justo después de la etiqueta 'entry'
-  builder_.SetInsertPoint(entry_, entry_->getFirstInsertionPt());
+  // builder_.SetInsertPoint(entry_, entry_->getFirstInsertionPt());
+  builder_.SetInsertPoint(entry_);
   auto llvmTyOrErr = var.type()->llvmVersion(context_);
   if (!llvmTyOrErr)
     return std::unexpected(llvmTyOrErr.error());
@@ -35,9 +36,18 @@ CodeGeneration::visit(const AST_AUTO_DECL *node) const noexcept {
   var.setAddress(alloca);
   // Restauramos el punto de inserción original (gracias al guard)
 
-  // Store del valor inicial y actualizar en la Variable
-  builder_.CreateStore(initVal, alloca);
-  var.setValue(initVal);
+   // Si es un struct (aggregate), primero cargamos el valor y luego lo almacenamos
+  if (llvmTy->isAggregateType()) {
+    // initVal es un ptr a struct, cargamos el struct completo
+    llvm::LoadInst *loadedStruct =
+      builder_.CreateLoad(llvmTy, initVal, node->id() + "_agg_load");
+    builder_.CreateStore(loadedStruct, alloca);
+    var.setValue(loadedStruct);
+  } else {
+    // Escalar o ptr: almacenar directamente
+    builder_.CreateStore(initVal, alloca);
+    var.setValue(initVal);
+  }
 
   return alloca;
 }
@@ -67,8 +77,18 @@ CodeGeneration::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   llvm::AllocaInst *alloca = builder_.CreateAlloca(llvmTy, nullptr, node->id());
   var.setAddress(alloca);
 
-  builder_.CreateStore(initVal, alloca);
-  var.setValue(initVal);
+  // Si es un struct (aggregate), primero cargamos el valor y luego lo almacenamos
+  if (llvmTy->isAggregateType()) {
+    // initVal es un ptr a struct, cargamos el struct completo
+    llvm::LoadInst *loadedStruct =
+      builder_.CreateLoad(llvmTy, initVal, node->id() + "_agg_load");
+    builder_.CreateStore(loadedStruct, alloca);
+    var.setValue(loadedStruct);
+  } else {
+    // Escalar o ptr: almacenar directamente
+    builder_.CreateStore(initVal, alloca);
+    var.setValue(initVal);
+  }
 
   return alloca;
 }
@@ -88,11 +108,20 @@ CodeGeneration::visit(const AST_VAR_CALL *node) const noexcept {
   if (!addr)
     return createError(ERROR_TYPE::VALIDATE_TREE, "variable has no address");
   // Simplemente load y actualizar el value_
-  llvm::Value *loaded =
-      builder_.CreateLoad(addr->getAllocatedType(), addr, node->id() + "_val");
-  var.setValue(loaded);
+  llvm::Type *varTy = addr->getAllocatedType();
+  llvm::Value *resultPtr;
 
-  return loaded;
+  if (varTy->isAggregateType()) {
+    // Para tipos aggregate devolvemos EL PUNTERO, SIN load
+    resultPtr = addr;
+  } else {
+    // Para escalares, hacemos load
+    resultPtr = builder_.CreateLoad(varTy, addr, node->id() + "_val");
+  }
+
+  // Actualizar estado para cadenas encadenadas
+  resultChainedExpression_ = resultPtr;
+  return resultPtr;
 }
 
 } // namespace nicole
