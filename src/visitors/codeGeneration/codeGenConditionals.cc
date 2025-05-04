@@ -118,6 +118,9 @@ CodeGeneration::visit(const AST_SWITCH *node) const noexcept {
   llvm::BasicBlock *mergeBB =
       llvm::BasicBlock::Create(context_, "switch_merge" + id, parent);
 
+  // Empujar destino de break para 'stop' dentro del switch
+  breakTargets_.push(mergeBB);
+
   // Bloque por defecto (o salto directo a merge si no hay default)
   llvm::BasicBlock *defaultBB =
       node->defaultCase()
@@ -163,6 +166,9 @@ CodeGeneration::visit(const AST_SWITCH *node) const noexcept {
     if (!builder_.GetInsertBlock()->getTerminator())
       builder_.CreateBr(mergeBB);
   }
+
+  // Popear la pila de breaks al salir del switch
+  breakTargets_.pop();
 
   // Continuar en merge
   builder_.SetInsertPoint(mergeBB);

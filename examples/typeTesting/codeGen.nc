@@ -40,7 +40,15 @@ switch(qq) {
         print("segundo case");
     }
     default {
-        return;
         print("default");
     }
+}
+
+
+while (true) {
+    print("hola\n");
+    if (true) {
+    pass;
+    }
+    print("adios\n");
 }

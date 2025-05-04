@@ -17,6 +17,7 @@
 #include <llvm/Support/TargetSelect.h>
 #include <llvm/Support/raw_ostream.h>
 #include <memory>
+#include <stack>
 #include <variant>
 #include <vector>
 
@@ -41,6 +42,8 @@ private:
   mutable llvm::BasicBlock *entry_{nullptr};
   mutable llvm::Value *resultChainedExpression_{nullptr};
   mutable llvm::BasicBlock *currentMergeBlock_{nullptr};
+   mutable std::stack<llvm::BasicBlock*> continueTargets_;
+  mutable std::stack<llvm::BasicBlock*> breakTargets_;
 
 
   mutable std::shared_ptr<Scope> currentScope_{nullptr};
