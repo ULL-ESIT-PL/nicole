@@ -7,18 +7,10 @@
 namespace nicole {
 
 class AST_STOP : public AST {
-private:
-  std::shared_ptr<AST> fatherLoop_;
-
 public:
   explicit AST_STOP(const long long unsigned nodeId,
-                    const SourceLocation &srcLoc,
-                    const std::shared_ptr<AST> &fatherLoop) noexcept
-      : AST(nodeId, AST_TYPE::STOP, srcLoc), fatherLoop_{fatherLoop} {}
-
-  [[nodiscard]] const std::shared_ptr<AST> &fatherLoop() const noexcept {
-    return fatherLoop_;
-  }
+                    const SourceLocation &srcLoc) noexcept
+      : AST(nodeId, AST_TYPE::STOP, srcLoc) {}
 
   [[nodiscard]] std::expected<std::string, Error>
   accept(const PrintTree &visitor) const noexcept override {

@@ -64,6 +64,7 @@ FillSemanticInfo::visit(const AST_FUNC_DECL *node) const noexcept {
                          "redeclaration of function: " + newFunction.id());
     }
   }
+  newFunction.setDeclReference(node);
   functionTable_->insert(newFunction);
 
   pushScope();

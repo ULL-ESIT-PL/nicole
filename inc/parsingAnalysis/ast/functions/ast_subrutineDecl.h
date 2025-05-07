@@ -10,7 +10,7 @@ namespace nicole {
 
 class AST_SUBRUTINE_DECL : public AST {
 private:
-  std::string id_;
+  mutable std::string id_;
   mutable std::shared_ptr<Type> returnType_;
   mutable std::shared_ptr<AST_BODY> body_;
 
@@ -36,6 +36,8 @@ public:
   void setReturnType(const std::shared_ptr<Type> &type) const noexcept {
     returnType_ = type;
   }
+
+  void setId(const std::string& id) const noexcept { id_ = id; }
 };
 
 } // namespace nicole

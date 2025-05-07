@@ -48,6 +48,26 @@ private:
 
   mutable std::shared_ptr<Scope> currentScope_{nullptr};
 
+  [[nodiscard]] std::expected<std::string, Error>
+  nameMangling(const std::shared_ptr<Type> &type) const noexcept;
+
+  [[nodiscard]] std::expected<std::string, Error>
+  nameManglingImpl(const std::shared_ptr<Type> &type,
+                   std::string &result) const noexcept;
+
+  [[nodiscard]] std::expected<std::string, Error>
+  nameManglingFunction(const Function &func,
+                       const std::vector<std::shared_ptr<Type>>
+                           &genericReplacements) const noexcept;
+
+  [[nodiscard]] std::expected<std::string, Error> nameManglingFunctionImpl(
+      const Function &func,
+      const std::vector<std::shared_ptr<Type>> &genericReplacements,
+      std::string &result) const noexcept;
+
+  [[nodiscard]] std::expected<std::string, Error>
+  nameManglingFunctionDecl(const Function &func) const noexcept;
+
 public:
   CodeGeneration(const std::shared_ptr<FunctionTable> &functionTable,
                  std::shared_ptr<TypeTable> &typeTable,

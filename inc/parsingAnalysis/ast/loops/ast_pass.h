@@ -7,18 +7,10 @@
 namespace nicole {
 
 class AST_PASS : public AST {
-private:
-  std::shared_ptr<AST> fatherLoop_;
-
 public:
   explicit AST_PASS(const long long unsigned nodeId,
-                    const SourceLocation &srcLoc,
-                    const std::shared_ptr<AST> &fatherLoop) noexcept
-      : AST(nodeId, AST_TYPE::PASS, srcLoc), fatherLoop_{fatherLoop} {}
-
-  [[nodiscard]] const std::shared_ptr<AST> &fatherLoop() const noexcept {
-    return fatherLoop_;
-  }
+                    const SourceLocation &srcLoc) noexcept
+      : AST(nodeId, AST_TYPE::PASS, srcLoc) {}
 
   [[nodiscard]] std::expected<std::string, Error>
   accept(const PrintTree &visitor) const noexcept override {
@@ -45,7 +37,7 @@ public:
     return visitor.visit(this);
   }
 
-  [[nodiscard]] std::expected<llvm::Value*, Error>
+  [[nodiscard]] std::expected<llvm::Value *, Error>
   accept(const CodeGeneration &visitor) const noexcept override {
     return visitor.visit(this);
   }

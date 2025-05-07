@@ -10,6 +10,7 @@
 namespace nicole {
 
 class AST_BODY;
+class AST_FUNC_DECL;
 
 class Function final : public Symbol {
 private:
@@ -18,6 +19,7 @@ private:
   mutable std::shared_ptr<Type> returnType_;
   std::shared_ptr<AST_BODY> body_;
   mutable std::shared_ptr<llvm::Function> llvmVersion_;
+  mutable const AST_FUNC_DECL *declReference_;
 
 public:
   explicit Function(const std::string &id,
@@ -42,9 +44,17 @@ public:
     return body_;
   }
 
+  [[nodiscard]] const AST_FUNC_DECL *declReference() const noexcept {
+    return declReference_;
+  }
+
   [[nodiscard]] const std::shared_ptr<llvm::Function> &
   llvmVersion() const noexcept {
     return llvmVersion_;
+  }
+
+  void setDeclReference(const AST_FUNC_DECL *declReference) const noexcept {
+    declReference_ = declReference;
   }
 
   void

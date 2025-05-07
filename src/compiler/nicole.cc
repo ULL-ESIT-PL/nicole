@@ -83,12 +83,12 @@ Nicole::compile(const Options &options) const noexcept {
   std::cout << "Finished monomorphization\n";
 
   functionTable->print();
-
+/*
   const auto analyzedSecondTime{typeAnalysis.analyze((*tree).get())};
   if (!analyzedSecondTime) {
     return createError(analyzedSecondTime.error());
   }
-
+*/
   const nicole::CodeGeneration codeGenerator{functionTable, typeTable, options};
   const auto generatedIR{codeGenerator.generate((*tree).get())};
   if (!generatedIR) {

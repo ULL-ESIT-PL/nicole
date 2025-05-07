@@ -182,12 +182,10 @@ public:
                 const std::shared_ptr<AST_CONDITION> &condition) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_PASS>, Error>
-  createPass(const SourceLocation &srcLoc,
-             const std::shared_ptr<AST> &fatherLoop) noexcept;
+  createPass(const SourceLocation &srcLoc) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_STOP>, Error>
-  createStop(const SourceLocation &srcLoc,
-             const std::shared_ptr<AST> &fatherLoop) noexcept;
+  createStop(const SourceLocation &srcLoc) noexcept;
 
   // Conditionals
   [[nodiscard]] static std::expected<std::shared_ptr<AST_IF>, Error>
@@ -293,7 +291,8 @@ public:
   [[nodiscard]] static std::expected<std::shared_ptr<AST_DESTRUCTOR_DECL>,
                                      Error>
   createDestructorDecl(const SourceLocation &srcLoc, const std::string &id,
-                       const std::shared_ptr<AST_BODY> &body, const bool isVirtual) noexcept;
+                       const std::shared_ptr<AST_BODY> &body,
+                       const bool isVirtual) noexcept;
 
   [[nodiscard]] static std::expected<std::shared_ptr<AST_SUPER>, Error>
   createSuper(const SourceLocation &srcLoc,

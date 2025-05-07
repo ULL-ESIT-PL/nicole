@@ -72,6 +72,7 @@ TypeAnalysis::visit(const AST_FUNC_CALL *node) const noexcept {
   currentType_ = viableFunctions.front().returnType();
   const auto returnType{viableFunctions.front().returnType()};
   node->setReturnedFromAnalysis(returnType);
+  node->setDeclReference(viableFunctions.front().declReference());
   return returnType;
 }
 

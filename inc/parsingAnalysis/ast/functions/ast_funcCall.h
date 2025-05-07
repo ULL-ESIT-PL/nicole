@@ -3,6 +3,7 @@
 
 #include "../../../tables/typeTable/types/type.h"
 #include "ast_callable.h"
+#include "ast_funcDecl.h"
 #include <memory>
 #include <vector>
 
@@ -12,6 +13,7 @@ class AST_FUNC_CALL : public AST_CALLABLE {
 private:
   mutable std::vector<std::shared_ptr<Type>> replaceOfGenerics_;
   std::vector<std::shared_ptr<AST>> parameters_;
+  mutable const AST_FUNC_DECL *declReference_{nullptr};
 
 public:
   explicit AST_FUNC_CALL(
@@ -37,6 +39,14 @@ public:
     }
     replaceOfGenerics_[pos] = type;
     return {};
+  }
+
+  [[nodiscard]] const AST_FUNC_DECL *declReference() const noexcept {
+    return declReference_;
+  }
+
+  void setDeclReference(const AST_FUNC_DECL *declReference) const noexcept {
+    declReference_ = declReference;
   }
 
   [[nodiscard]] const std::vector<std::shared_ptr<AST>> &
@@ -69,7 +79,7 @@ public:
     return visitor.visit(this);
   }
 
-  [[nodiscard]] std::expected<llvm::Value*, Error>
+  [[nodiscard]] std::expected<llvm::Value *, Error>
   accept(const CodeGeneration &visitor) const noexcept override {
     return visitor.visit(this);
   }

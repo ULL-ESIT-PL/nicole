@@ -27,7 +27,7 @@ CodeGeneration::visit(const AST_AUTO_DECL *node) const noexcept {
   llvm::IRBuilder<>::InsertPointGuard guard(builder_);
   // Movemos a justo después de la etiqueta 'entry'
   // builder_.SetInsertPoint(entry_, entry_->getFirstInsertionPt());
-  builder_.SetInsertPoint(entry_);
+  // builder_.SetInsertPoint(entry_);
   auto llvmTyOrErr = var.type()->llvmVersion(context_);
   if (!llvmTyOrErr)
     return std::unexpected(llvmTyOrErr.error());
@@ -69,7 +69,7 @@ CodeGeneration::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   Variable &var = *varPtr; // referencia al objeto real
 
   llvm::IRBuilder<>::InsertPointGuard guard(builder_);
-  builder_.SetInsertPoint(entry_, entry_->getFirstInsertionPt());
+  // builder_.SetInsertPoint(entry_, entry_->getFirstInsertionPt());
   auto llvmTyOrErr = node->varType()->llvmVersion(context_);
   if (!llvmTyOrErr)
     return std::unexpected(llvmTyOrErr.error());

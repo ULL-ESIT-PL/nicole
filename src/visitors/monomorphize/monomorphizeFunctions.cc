@@ -28,10 +28,14 @@ Monomorphize::visit(const AST_FUNC_CALL *node) const noexcept {
       return createError(result.error());
     }
   }
+  if (!node->replaceOfGenerics().size()) {
+    return {};
+  }
 
-  // Si la llamada se realiza dentro de otra funcion con genericos 
-  if (!currentCallReplacements_.size()) {
-    // si algun substituto de un generico sigue siendo generico debemos esperar: ejemplo: def foo<T>(): T { foo2<T>(); ...}
+  // Si la llamada se realiza dentro de otra funcion con genericos
+  if (currentCallReplacements_.size()) {
+    // si algun substituto de un generico sigue siendo generico debemos esperar:
+    // ejemplo: def foo<T>(): T { foo2<T>(); ...}
     for (const auto &replacement : node->replaceOfGenerics()) {
       if (typeTable_->isCompundPlaceHolder(replacement)) {
         return {};
@@ -47,7 +51,8 @@ Monomorphize::visit(const AST_FUNC_CALL *node) const noexcept {
     // si no esta dentro de otra declaracion
     currentCallReplacements_ = node->replaceOfGenerics();
   } else {
-    // Si esta dentro de otra declaracion con genericos debemos tener encuenta los substitutos padres
+    // Si esta dentro de otra declaracion con genericos debemos tener encuenta
+    // los substitutos padres
     auto auxiliar{node->replaceOfGenerics()};
     for (auto &auxRpl : auxiliar) {
       if (typeTable_->isCompundPlaceHolder(auxRpl)) {
@@ -67,7 +72,6 @@ Monomorphize::visit(const AST_FUNC_CALL *node) const noexcept {
   std::vector<std::shared_ptr<Type>> argTypes;
   for (const auto &expr : node->parameters())
     argTypes.push_back(expr->returnedFromTypeAnalysis());
-
   auto &declList = funcDeclReferences.at(node->id());
   std::vector<std::shared_ptr<AST_FUNC_DECL>> viableDecls;
   const auto &explicitGens = node->replaceOfGenerics();
@@ -162,6 +166,9 @@ Monomorphize::visit(const AST_FUNC_CALL *node) const noexcept {
     if (!copyy) {
       return createError(copyy.error());
     }
+    copyFunDecl->setId(*mname);
+    copyFunDecl->setGenerics({});
+    node->setDeclReference(copyFunDecl.get());
   }
   currentCallReplacements_.clear();
   return {};

@@ -28,6 +28,12 @@ TypeAnalysis::visit(const AST_PRINT *node) const noexcept {
         typeTable_->isGenericType(exprType, currentGenericList_))
       continue;
 
+    if (auto constType = std::dynamic_pointer_cast<ConstType>(exprType)) {
+      exprType = constType->baseType();
+    }
+    if (auto vecType = std::dynamic_pointer_cast<VectorType>(exprType)) {
+      return createError(ERROR_TYPE::TYPE, "cannot print a vector");
+    }
     if (auto userType = std::dynamic_pointer_cast<UserType>(exprType)) {
       const auto exists = typeTable_->getType(userType->name());
       if (!exists) {

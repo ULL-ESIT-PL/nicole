@@ -171,8 +171,7 @@ TopDown::parsePass() const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing ; of pass statement at " +
                                                tkStream_.current()->locInfo());
   }
-  return Builder::createPass(SourceLocation{*firsToken, *tkStream_.lastRead()},
-                             nullptr);
+  return Builder::createPass(SourceLocation{*firsToken, *tkStream_.lastRead()});
 }
 
 const std::expected<std::shared_ptr<AST_STOP>, Error>
@@ -185,8 +184,7 @@ TopDown::parseStop() const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing ; of stop statement at " +
                                                tkStream_.current()->locInfo());
   }
-  return Builder::createStop(SourceLocation{*firsToken, *tkStream_.lastRead()},
-                             nullptr);
+  return Builder::createStop(SourceLocation{*firsToken, *tkStream_.lastRead()});
 }
 
 } // namespace nicole

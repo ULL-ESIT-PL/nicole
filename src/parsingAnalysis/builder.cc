@@ -297,18 +297,14 @@ std::expected<std::shared_ptr<AST_DO_WHILE>, Error> Builder::createDoWhile(
 }
 
 std::expected<std::shared_ptr<AST_PASS>, Error>
-Builder::createPass(const SourceLocation &srcLoc,
-                    const std::shared_ptr<AST> &fatherLoop) noexcept {
-  const auto astPass{
-      std::make_shared<AST_PASS>(generateNextId(), srcLoc, fatherLoop)};
+Builder::createPass(const SourceLocation &srcLoc) noexcept {
+  const auto astPass{std::make_shared<AST_PASS>(generateNextId(), srcLoc)};
   return astPass;
 }
 
 std::expected<std::shared_ptr<AST_STOP>, Error>
-Builder::createStop(const SourceLocation &srcLoc,
-                    const std::shared_ptr<AST> &fatherLoop) noexcept {
-  const auto astStop{
-      std::make_shared<AST_STOP>(generateNextId(), srcLoc, fatherLoop)};
+Builder::createStop(const SourceLocation &srcLoc) noexcept {
+  const auto astStop{std::make_shared<AST_STOP>(generateNextId(), srcLoc)};
   return astStop;
 }
 
