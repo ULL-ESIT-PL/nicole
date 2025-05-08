@@ -18,7 +18,6 @@
 #include <llvm/Support/raw_ostream.h>
 #include <memory>
 #include <stack>
-#include <variant>
 #include <vector>
 
 namespace nicole {
@@ -67,6 +66,9 @@ private:
 
   [[nodiscard]] std::expected<std::string, Error>
   nameManglingFunctionDecl(const Function &func) const noexcept;
+
+  std::expected<llvm::Value*, Error>
+  getLValueAddress(const AST *lhs) const noexcept;
 
 public:
   CodeGeneration(const std::shared_ptr<FunctionTable> &functionTable,

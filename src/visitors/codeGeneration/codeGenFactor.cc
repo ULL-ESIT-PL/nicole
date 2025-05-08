@@ -6,10 +6,7 @@
 #include "../../../inc/parsingAnalysis/ast/literals/ast_null.h"
 #include "../../../inc/parsingAnalysis/ast/literals/ast_string.h"
 #include "../../../inc/visitors/codeGeneration/codeGeneration.h"
-#include <cstddef>
 #include <cstdint>
-#include <memory>
-#include <variant>
 
 namespace nicole {
 

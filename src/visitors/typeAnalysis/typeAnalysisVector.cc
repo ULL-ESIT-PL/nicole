@@ -65,6 +65,7 @@ TypeAnalysis::visit(const AST_INDEX *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_INDEX");
   }
+  auto prevType = currentType_;
   const auto result{node->index()->accept(*this)};
   if (!result) {
     return createError(result.error());
@@ -83,8 +84,8 @@ TypeAnalysis::visit(const AST_INDEX *node) const noexcept {
     }
   }
 
-  const auto vectorType{std::dynamic_pointer_cast<VectorType>(currentType_)};
-  const auto basicType{std::dynamic_pointer_cast<BasicType>(currentType_)};
+  const auto vectorType{std::dynamic_pointer_cast<VectorType>(prevType)};
+  const auto basicType{std::dynamic_pointer_cast<BasicType>(prevType)};
   if (!vectorType and !basicType) {
     return createError(ERROR_TYPE::TYPE,
                        "can only access to vectors or strings");

@@ -6,7 +6,6 @@
 #include <cstddef>
 #include <llvm/IR/Value.h>
 #include <memory>
-#include <variant>
 
 namespace nicole {
 

@@ -24,6 +24,8 @@ print(prr<int>());
 print(prr<str>());
 
 */
+
+/*
 def prueba(X: int, w: int): int {
     if (true) {
         print("hhhhhhhhh");
@@ -55,3 +57,15 @@ def generic<T>(): int {
 }
 
 print(generic<int>());
+
+*/
+auto x = "jj" + "kkkkkkkk";
+print("aa" + "aaa" + "adios" + x);
+
+
+auto a = [[1, 2, 3]];
+auto b = 1;
+
+/*
+print(a[b]);
+*/
