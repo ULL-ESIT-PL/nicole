@@ -3,6 +3,7 @@
 #include "../../../inc/parsingAnalysis/ast/tree.h"
 #include "../../../inc/parsingAnalysis/ast/vector/ast_index.h"
 #include <cstddef>
+#include <llvm/Passes/PassBuilder.h>
 #include <memory>
 #include <variant>
 
@@ -140,7 +141,7 @@ std::expected<std::string, Error> CodeGeneration::nameManglingFunctionImpl(
 }
 
 bool isVectorElement(const AST *node) noexcept {
-  return dynamic_cast<const AST_INDEX*>(node) != nullptr;
+  return dynamic_cast<const AST_INDEX *>(node) != nullptr;
 }
 
 // EMIT LVALUE: simplemente delega al visitor y devuelve la dirección
@@ -157,20 +158,20 @@ CodeGeneration::emitLValue(const AST *node) const noexcept {
 std::expected<llvm::Value *, Error>
 CodeGeneration::emitRValue(const AST *node) const noexcept {
   auto valOrErr = emitLValue(node);
-  if (!valOrErr) return createError(valOrErr.error());
+  if (!valOrErr)
+    return createError(valOrErr.error());
   llvm::Value *val = *valOrErr;
 
   auto tyOrErr = node->returnedFromTypeAnalysis()->llvmVersion(context_);
-  if (!tyOrErr) return createError(tyOrErr.error());
+  if (!tyOrErr)
+    return createError(tyOrErr.error());
   llvm::Type *llvmTy = *tyOrErr;
 
   // Agregados completos…
   if (llvmTy->isAggregateType()) {
-    llvm::AllocaInst *tmp =
-      builder_.CreateAlloca(llvmTy, nullptr, "agg_tmp");
+    llvm::AllocaInst *tmp = builder_.CreateAlloca(llvmTy, nullptr, "agg_tmp");
     const auto &DL = module_->getDataLayout();
-    builder_.CreateMemCpy(tmp, llvm::MaybeAlign(),
-                          val, llvm::MaybeAlign(),
+    builder_.CreateMemCpy(tmp, llvm::MaybeAlign(), val, llvm::MaybeAlign(),
                           DL.getTypeAllocSize(llvmTy));
     return tmp;
   }
@@ -178,7 +179,7 @@ CodeGeneration::emitRValue(const AST *node) const noexcept {
   // Si es puntero:
   if (val->getType()->isPointerTy()) {
     // ¡Pero sólo cargamos si NO es una constante!
-    if (!llvm::isa<llvm::Constant>(val)  && !isVectorElement(node)) {
+    if (!llvm::isa<llvm::Constant>(val) && !isVectorElement(node)) {
       // esto cubre variables locales (alloca), argumentos, etc.
       return builder_.CreateLoad(llvmTy, val, "rval_load");
     }
@@ -190,7 +191,6 @@ CodeGeneration::emitRValue(const AST *node) const noexcept {
   // escalar ya cargado (int, float, bool…)
   return val;
 }
-
 
 std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_STATEMENT *node) const noexcept {
@@ -249,6 +249,24 @@ CodeGeneration::visit(const Tree *tree) const noexcept {
 
   if (!options_.validateTree()) {
     builder_.CreateRetVoid();
+  }
+
+  if (options_.optimize()) {
+    llvm::PassBuilder PB;
+    llvm::LoopAnalysisManager LAM;
+    llvm::FunctionAnalysisManager FAM;
+    llvm::CGSCCAnalysisManager CGAM;
+    llvm::ModuleAnalysisManager MAM;
+
+    PB.registerModuleAnalyses(MAM);
+    PB.registerCGSCCAnalyses(CGAM);
+    PB.registerFunctionAnalyses(FAM);
+    PB.registerLoopAnalyses(LAM);
+    PB.crossRegisterProxies(LAM, FAM, CGAM, MAM);
+
+    auto MPM = PB.buildPerModuleDefaultPipeline(
+        llvm::OptimizationLevel::O3, true);
+    MPM.run(*module_, MAM);
   }
 
   llvm::verifyModule(*module_, &llvm::errs());
