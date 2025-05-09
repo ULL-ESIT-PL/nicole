@@ -17,7 +17,7 @@ CodeGeneration::visit(const AST_FUNC_CALL *node) const noexcept {
   llvm::SmallVector<llvm::Value *, 8> argValues;
   argValues.reserve(node->parameters().size());
   for (auto &expr : node->parameters()) {
-    auto valOrErr = expr->accept(*this);
+    auto valOrErr = emitRValue(expr.get());
     if (!valOrErr)
       return createError(valOrErr.error());
     argValues.push_back(*valOrErr);
@@ -173,20 +173,20 @@ CodeGeneration::visit(const AST_RETURN *node) const noexcept {
 
 std::expected<std::string, Error>
 CodeGeneration::nameManglingFunctionDecl(const Function &func) const noexcept {
-  // 1) Prefijo
+  // Prefijo
   std::string mangled = "$";
 
-  // 2) Nombre base de la función
+  // Nombre base de la función
   mangled += "_";
   mangled += func.id(); // id() es el nombre base sin parámetros
 
-  // 3) Genéricos (si los hay)
+  // Genéricos (si los hay)
   for (auto &genType : func.generics()) {
     mangled += "_";
     mangled += genType.name();
   }
 
-  // 4) Parámetros formales
+  // Parámetros formales
   for (auto &param : func.params().params()) {
     std::string tmp;
     if (auto res = nameManglingImpl(param.second, tmp); !res)
@@ -195,7 +195,7 @@ CodeGeneration::nameManglingFunctionDecl(const Function &func) const noexcept {
     mangled += tmp;
   }
 
-  // 5) Tipo de retorno
+  // Tipo de retorno
   {
     std::string tmp;
     if (auto res = nameManglingImpl(func.returnType(), tmp); !res)
@@ -204,7 +204,7 @@ CodeGeneration::nameManglingFunctionDecl(const Function &func) const noexcept {
     mangled += tmp;
   }
 
-  // 6) Limpiar posible guión bajo inicial
+  // Limpiar posible guión bajo inicial
   if (!mangled.empty() && mangled.front() == '_')
     mangled.erase(mangled.begin());
 

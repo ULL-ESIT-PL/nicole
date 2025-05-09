@@ -18,6 +18,7 @@
 #include <llvm/Support/raw_ostream.h>
 #include <memory>
 #include <stack>
+#include <unordered_set>
 #include <vector>
 
 namespace nicole {
@@ -47,6 +48,8 @@ private:
 
   mutable std::shared_ptr<Scope> currentScope_{nullptr};
 
+  mutable bool mustLoad{false};
+
   [[nodiscard]] std::expected<std::string, Error>
   nameMangling(const std::shared_ptr<Type> &type) const noexcept;
 
@@ -67,8 +70,18 @@ private:
   [[nodiscard]] std::expected<std::string, Error>
   nameManglingFunctionDecl(const Function &func) const noexcept;
 
-  std::expected<llvm::Value*, Error>
-  getLValueAddress(const AST *lhs) const noexcept;
+  // Devuelve la dirección (lvalue) de la expresión AST.
+  std::expected<llvm::Value *, Error>
+  emitLValue(const AST *node) const noexcept;
+
+  // Devuelve el valor cargado (rvalue) de la expresión AST.
+  std::expected<llvm::Value *, Error>
+  emitRValue(const AST *node) const noexcept;
+
+  mutable std::unordered_set<llvm::Value *> allocatedPtrs_;
+  mutable llvm::Function *mallocFn_ = nullptr;
+  mutable llvm::Function *freeFn_ = nullptr;
+  void ensureMallocFreeDeclared() const noexcept;
 
 public:
   CodeGeneration(const std::shared_ptr<FunctionTable> &functionTable,

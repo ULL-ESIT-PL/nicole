@@ -2,10 +2,7 @@
 
 #include "../../../inc/parsingAnalysis/ast/enum/ast_enum.h"
 #include "../../../inc/parsingAnalysis/ast/enum/ast_enumAccess.h"
-#include <cstddef>
-#include <cstdint>
 #include <memory>
-#include <variant>
 
 namespace nicole {
 

@@ -32,14 +32,15 @@ FillSemanticInfo::visit(const AST_FOR *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FOR");
   }
-  pushScope();
-  node->body()->setScope(currentScope_);
+  
   for (const auto &expr : node->init()) {
     const auto result{expr->accept(*this)};
     if (!result) {
       return createError(result.error());
     }
   }
+  pushScope();
+  node->body()->setScope(currentScope_);
   const auto condition{node->condition()->accept(*this)};
   if (!condition) {
     return createError(condition.error());

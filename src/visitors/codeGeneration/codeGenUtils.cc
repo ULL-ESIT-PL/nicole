@@ -2,6 +2,8 @@
 #include "../../../inc/parsingAnalysis/ast/utils/ast_print.h"
 #include "../../../inc/visitors/codeGeneration/codeGeneration.h"
 #include <cstddef>
+#include <llvm/IR/Type.h>
+#include <llvm/IR/Value.h>
 #include <memory>
 #include <variant>
 
@@ -113,10 +115,12 @@ CodeGeneration::visit(const AST_PRINT *node) const noexcept {
   std::vector<llvm::Value *> values;
   values.reserve(node->values().size());
   for (const auto &chain : node->values()) {
-    auto result = chain->accept(*this);
+    auto result = emitRValue(chain.get());
     if (!result)
       return createError(result.error());
-    values.push_back(*result);
+    llvm::Value *val = *result;
+    // VERSION VAR CALL RETORNA ADDR
+    values.push_back(val);
   }
 
   // Llamar a printParameters (sin cambios respecto a tu código)

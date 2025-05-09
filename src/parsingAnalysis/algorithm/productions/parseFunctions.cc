@@ -136,7 +136,9 @@ TopDown::parseReturn() const noexcept {
 const std::expected<std::vector<std::shared_ptr<Type>>, Error>
 TopDown::parseReplacementOfGenerics() const noexcept {
   std::vector<std::shared_ptr<Type>> replacemments{};
-  if (tkStream_.current()->type() == TokenType::OPERATOR_SMALLER) {
+  if (tkStream_.current()->type() == TokenType::OPERATOR_SMALLER and
+      tkStream_.hasMatchingPairBefore(TokenType::OPERATOR_SMALLER,
+                                      TokenType::OPERATOR_GREATER)) {
     auto res = tryEat(); // consume el identificador
     if (!res) {
       return createError(res.error());

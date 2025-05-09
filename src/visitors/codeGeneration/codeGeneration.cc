@@ -1,6 +1,7 @@
 #include "../../../inc/visitors/codeGeneration/codeGeneration.h"
 
 #include "../../../inc/parsingAnalysis/ast/tree.h"
+#include "../../../inc/parsingAnalysis/ast/vector/ast_index.h"
 #include <cstddef>
 #include <memory>
 #include <variant>
@@ -33,7 +34,7 @@ CodeGeneration::nameMangling(const std::shared_ptr<Type> &type) const noexcept {
 
 std::expected<std::string, Error>
 CodeGeneration::nameManglingImpl(const std::shared_ptr<Type> &type,
-                               std::string &result) const noexcept {
+                                 std::string &result) const noexcept {
   if (!type)
     return createError(ERROR_TYPE::TYPE, "null type in name mangling");
 
@@ -97,8 +98,8 @@ CodeGeneration::nameManglingImpl(const std::shared_ptr<Type> &type,
 
 std::expected<std::string, Error>
 CodeGeneration::nameManglingFunction(const Function &func,
-                                   const std::vector<std::shared_ptr<Type>>
-                                       &genericReplacements) const noexcept {
+                                     const std::vector<std::shared_ptr<Type>>
+                                         &genericReplacements) const noexcept {
   std::string mangled{"$"};
   auto res = nameManglingFunctionImpl(func, genericReplacements, mangled);
   if (!res)
@@ -106,8 +107,7 @@ CodeGeneration::nameManglingFunction(const Function &func,
   return mangled;
 }
 
-std::expected<std::string, Error>
-CodeGeneration::nameManglingFunctionImpl(
+std::expected<std::string, Error> CodeGeneration::nameManglingFunctionImpl(
     const Function &func,
     const std::vector<std::shared_ptr<Type>> &genericReplacements,
     std::string &result) const noexcept {
@@ -138,6 +138,59 @@ CodeGeneration::nameManglingFunctionImpl(
 
   return result;
 }
+
+bool isVectorElement(const AST *node) noexcept {
+  return dynamic_cast<const AST_INDEX*>(node) != nullptr;
+}
+
+// EMIT LVALUE: simplemente delega al visitor y devuelve la dirección
+std::expected<llvm::Value *, Error>
+CodeGeneration::emitLValue(const AST *node) const noexcept {
+  if (!node)
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST for lvalue");
+  // asumimos que el visit de ese nodo produce *siempre* un
+  // AllocaInst*/dirección
+  return node->accept(*this);
+}
+
+// EMIT RVALUE: carga una vez la dirección devuelta por emitLValue
+std::expected<llvm::Value *, Error>
+CodeGeneration::emitRValue(const AST *node) const noexcept {
+  auto valOrErr = emitLValue(node);
+  if (!valOrErr) return createError(valOrErr.error());
+  llvm::Value *val = *valOrErr;
+
+  auto tyOrErr = node->returnedFromTypeAnalysis()->llvmVersion(context_);
+  if (!tyOrErr) return createError(tyOrErr.error());
+  llvm::Type *llvmTy = *tyOrErr;
+
+  // Agregados completos…
+  if (llvmTy->isAggregateType()) {
+    llvm::AllocaInst *tmp =
+      builder_.CreateAlloca(llvmTy, nullptr, "agg_tmp");
+    const auto &DL = module_->getDataLayout();
+    builder_.CreateMemCpy(tmp, llvm::MaybeAlign(),
+                          val, llvm::MaybeAlign(),
+                          DL.getTypeAllocSize(llvmTy));
+    return tmp;
+  }
+
+  // Si es puntero:
+  if (val->getType()->isPointerTy()) {
+    // ¡Pero sólo cargamos si NO es una constante!
+    if (!llvm::isa<llvm::Constant>(val)  && !isVectorElement(node)) {
+      // esto cubre variables locales (alloca), argumentos, etc.
+      return builder_.CreateLoad(llvmTy, val, "rval_load");
+    }
+    // en cambio, literales de cadena (CreateGlobalStringPtr → Constant*)
+    // se dejan tal cual, como i8* apuntando al .rodata
+    return val;
+  }
+
+  // escalar ya cargado (int, float, bool…)
+  return val;
+}
+
 
 std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_STATEMENT *node) const noexcept {

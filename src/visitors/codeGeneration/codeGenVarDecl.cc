@@ -36,11 +36,12 @@ CodeGeneration::visit(const AST_AUTO_DECL *node) const noexcept {
   var.setAddress(alloca);
   // Restauramos el punto de inserción original (gracias al guard)
 
-   // Si es un struct (aggregate), primero cargamos el valor y luego lo almacenamos
+  // Si es un struct (aggregate), primero cargamos el valor y luego lo
+  // almacenamos
   if (llvmTy->isAggregateType()) {
     // initVal es un ptr a struct, cargamos el struct completo
     llvm::LoadInst *loadedStruct =
-      builder_.CreateLoad(llvmTy, initVal, node->id() + "_agg_load");
+        builder_.CreateLoad(llvmTy, initVal, node->id() + "_agg_load");
     builder_.CreateStore(loadedStruct, alloca);
     var.setValue(loadedStruct);
   } else {
@@ -77,11 +78,12 @@ CodeGeneration::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   llvm::AllocaInst *alloca = builder_.CreateAlloca(llvmTy, nullptr, node->id());
   var.setAddress(alloca);
 
-  // Si es un struct (aggregate), primero cargamos el valor y luego lo almacenamos
+  // Si es un struct (aggregate), primero cargamos el valor y luego lo
+  // almacenamos
   if (llvmTy->isAggregateType()) {
     // initVal es un ptr a struct, cargamos el struct completo
     llvm::LoadInst *loadedStruct =
-      builder_.CreateLoad(llvmTy, initVal, node->id() + "_agg_load");
+        builder_.CreateLoad(llvmTy, initVal, node->id() + "_agg_load");
     builder_.CreateStore(loadedStruct, alloca);
     var.setValue(loadedStruct);
   } else {
@@ -93,6 +95,7 @@ CodeGeneration::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   return alloca;
 }
 
+/*
 std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_VAR_CALL *node) const noexcept {
   if (!node) {
@@ -122,6 +125,24 @@ CodeGeneration::visit(const AST_VAR_CALL *node) const noexcept {
   // Actualizar estado para cadenas encadenadas
   resultChainedExpression_ = resultPtr;
   return resultPtr;
+}
+*/
+std::expected<llvm::Value *, Error>
+CodeGeneration::visit(const AST_VAR_CALL *node) const noexcept {
+  if (!node)
+    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_CALL");
+
+  auto varOrErr = currentScope_->getVariable(node->id());
+  if (!varOrErr)
+    return createError(varOrErr.error());
+
+  auto varPtr = *varOrErr;
+  llvm::AllocaInst *addr = varPtr->address();
+  if (!addr)
+    return createError(ERROR_TYPE::VALIDATE_TREE, "variable has no address");
+
+  resultChainedExpression_ = addr;
+  return addr;
 }
 
 } // namespace nicole

@@ -15,7 +15,7 @@ CodeGeneration::visit(const AST_IF *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_IF");
   }
-  auto condOrErr = node->condition()->accept(*this);
+  auto condOrErr = emitRValue(node->condition().get());
   if (!condOrErr)
     return createError(condOrErr.error());
   llvm::Value *condVal = *condOrErr; // debe ser i1
@@ -72,7 +72,7 @@ std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_ELSE_IF *node) const noexcept {
   if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ELSE_IF");
-  auto condOrErr = node->condition()->accept(*this);
+  auto condOrErr = emitRValue(node->condition().get());
   if (!condOrErr)
     return createError(condOrErr.error());
   llvm::Value *condVal = *condOrErr;
@@ -105,7 +105,7 @@ CodeGeneration::visit(const AST_SWITCH *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SWITCH");
 
   // Evaluar la condición
-  auto condOrErr = node->condition()->accept(*this);
+  auto condOrErr = emitRValue(node->condition().get());
   if (!condOrErr)
     return createError(condOrErr.error());
   llvm::Value *condVal = *condOrErr;
@@ -134,7 +134,7 @@ CodeGeneration::visit(const AST_SWITCH *node) const noexcept {
   // Recorrer cada case: crear bloque, registrarlo y emitir body
   for (auto &caseNode : node->cases()) {
     // Evaluar el literal del case
-    auto litOrErr = caseNode->match()->accept(*this);
+    auto litOrErr = emitRValue(caseNode->match().get());
     if (!litOrErr)
       return createError(litOrErr.error());
     auto *litVal = llvm::dyn_cast<llvm::ConstantInt>(*litOrErr);
@@ -189,59 +189,54 @@ CodeGeneration::visit(const AST_DEFAULT *node) const noexcept {
 
 std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_TERNARY *node) const noexcept {
-  if (!node) {
+  if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_TERNARY");
-  }
-  auto condOrErr = node->condition()->accept(*this);
-  if (!condOrErr)
-    return createError(condOrErr.error());
-  llvm::Value *condVal = *condOrErr; // debe ser un i1
 
-  // Crear bloques
+  // condición como rvalue (i1)
+  auto condOrErr = emitRValue(node->condition().get());
+  if (!condOrErr) return createError(condOrErr.error());
+  llvm::Value *condVal = *condOrErr;
+
+  // bloques
   llvm::Function *parent = builder_.GetInsertBlock()->getParent();
-  std::string id = std::to_string(node->nodeId());
-  auto *thenBB = llvm::BasicBlock::Create(context_, "tern_then" + id, parent);
-  auto *elseBB = llvm::BasicBlock::Create(context_, "tern_else" + id, parent);
-  auto *mergeBB = llvm::BasicBlock::Create(context_, "tern_merge" + id, parent);
+  std::string   id     = std::to_string(node->nodeId());
+  auto *thenBB  = llvm::BasicBlock::Create(context_, "tern_then"+id, parent);
+  auto *elseBB  = llvm::BasicBlock::Create(context_, "tern_else"+id, parent);
+  auto *mergeBB = llvm::BasicBlock::Create(context_, "tern_merge"+id, parent);
 
-  // Branch condicional
   builder_.CreateCondBr(condVal, thenBB, elseBB);
 
-  // THEN block
+  // THEN branch: rvalue de la primera expresión
   builder_.SetInsertPoint(thenBB);
-  auto thenOrErr = node->first()->accept(*this);
-  if (!thenOrErr)
-    return createError(thenOrErr.error());
-  llvm::Value *thenVal = *thenOrErr;
-  if (!builder_.GetInsertBlock()->getTerminator())
-    builder_.CreateBr(mergeBB); // saltar a merge al final
+  auto thenOrErr = emitRValue(node->first().get());
+  if (!thenOrErr) return createError(thenOrErr.error());
+  llvm::Value *thenVal = *thenOrErr;  // ¡aquí es un i32, no un ptr!
+  builder_.CreateBr(mergeBB);
 
-  // ELSE block
+  // ELSE branch: rvalue de la segunda expresión
   builder_.SetInsertPoint(elseBB);
-  auto elseOrErr = node->second()->accept(*this);
-  if (!elseOrErr)
-    return createError(elseOrErr.error());
-  llvm::Value *elseVal = *elseOrErr;
-  if (!builder_.GetInsertBlock()->getTerminator())
-    builder_.CreateBr(mergeBB);
+  auto elseOrErr = emitRValue(node->second().get());
+  if (!elseOrErr) return createError(elseOrErr.error());
+  llvm::Value *elseVal = *elseOrErr;  // también un i32
+  builder_.CreateBr(mergeBB);
 
-  // Merge block y PHI node
+  // Merge y PHI: ahora both son i32
   builder_.SetInsertPoint(mergeBB);
-  // El tipo de los valores thenVal y elseVal debe ser el mismo
-  llvm::PHINode *phi =
-      builder_.CreatePHI(thenVal->getType(), 2, "tern_phi" + id);
+  llvm::PHINode *phi = builder_.CreatePHI(thenVal->getType(), 2,
+                                          "tern_phi"+id);
   phi->addIncoming(thenVal, thenBB);
   phi->addIncoming(elseVal, elseBB);
 
   return phi;
 }
 
+
 std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_CONDITION *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CONDITION");
   }
-  return node->condition()->accept(*this);
+  return emitRValue(node->condition().get());
 }
 
 } // namespace nicole

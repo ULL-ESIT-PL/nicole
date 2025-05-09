@@ -78,4 +78,32 @@ void TokenStream::shiftToSemicolon() noexcept {
   }
 }
 
+bool TokenStream::hasMatchingPairBefore(TokenType open,
+                                        TokenType until) const noexcept {
+  size_t depth = 0;
+  size_t i = currentPos_;
+  while (i < tokens_.size()) {
+    const TokenType type = tokens_[i].type();
+    if (type == until)
+      return false; // llegó al delimitador sin cerrar
+
+    if (type == open) {
+      ++depth;
+    } else if ((open == TokenType::OPERATOR_SMALLER &&
+                type == TokenType::OPERATOR_GREATER) ||
+               (open == TokenType::LP && type == TokenType::RP) ||
+               (open == TokenType::LC && type == TokenType::RC) ||
+               (open == TokenType::LB && type == TokenType::RB)) {
+      if (depth == 0)
+        return false; // cierre sin apertura
+      --depth;
+      if (depth == 0)
+        return true; // se cerró correctamente
+    }
+
+    ++i;
+  }
+  return false;
+}
+
 } // namespace nicole

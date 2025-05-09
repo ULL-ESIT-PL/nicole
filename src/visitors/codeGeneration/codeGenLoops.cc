@@ -16,12 +16,8 @@ CodeGeneration::visit(const AST_WHILE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_WHILE");
   }
-  auto condOrErr = node->condition()->accept(*this);
-  if (!condOrErr)
-    return createError(condOrErr.error());
-  llvm::Value *condVal = *condOrErr; // debe ser un i1
 
-  // 2) Preparar los bloques
+  // Preparar los bloques
   llvm::Function *parent = builder_.GetInsertBlock()->getParent();
   std::string id = std::to_string(node->nodeId());
   // Bloque para la condición
@@ -39,6 +35,12 @@ CodeGeneration::visit(const AST_WHILE *node) const noexcept {
 
   // Condición: branch condicional
   builder_.SetInsertPoint(condBB);
+
+  auto condOrErr = emitRValue(node->condition().get());
+  if (!condOrErr)
+    return createError(condOrErr.error());
+  llvm::Value *condVal = *condOrErr; // debe ser un i1
+
   builder_.CreateCondBr(condVal, bodyBB, mergeBB);
 
   // Empujar destinos
@@ -88,7 +90,7 @@ CodeGeneration::visit(const AST_FOR *node) const noexcept {
 
   // Bloque de condición
   builder_.SetInsertPoint(condBB);
-  auto condOrErr = node->condition()->accept(*this);
+  auto condOrErr = emitRValue(node->condition().get());
   if (!condOrErr)
     return createError(condOrErr.error());
   llvm::Value *condVal = *condOrErr; // debe ser i1
@@ -130,7 +132,7 @@ CodeGeneration::visit(const AST_DO_WHILE *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_DO_WHILE");
   }
-  // 1) Preparar bloques
+  // Preparar bloques
   llvm::Function *parent = builder_.GetInsertBlock()->getParent();
   std::string id = std::to_string(node->nodeId());
   // Bloque para el cuerpo (se ejecuta primero)
@@ -160,7 +162,7 @@ CodeGeneration::visit(const AST_DO_WHILE *node) const noexcept {
 
   // Condición
   builder_.SetInsertPoint(condBB);
-  auto condOrErr = node->condition()->accept(*this);
+  auto condOrErr = emitRValue(node->condition().get());
   if (!condOrErr)
     return createError(condOrErr.error());
   llvm::Value *condVal = *condOrErr; // debe ser i1
@@ -204,7 +206,7 @@ CodeGeneration::visit(const AST_STOP *node) const noexcept {
   // Saltar al destino de break del bucle o switch actual
   llvm::BasicBlock *brkBB = breakTargets_.top();
   builder_.CreateBr(
-      brkBB); // unconditional branch :contentReference[oaicite:2]{index=2}
+      brkBB);
   return nullptr;
 }
 

@@ -9,155 +9,167 @@
 
 namespace nicole {
 
-std::expected<llvm::Value *, Error>
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_VECTOR *node) const noexcept {
   if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VECTOR");
 
-  // obtener VectorType y su StructType { T* data; i64 size; }
-  auto vecType =
-      std::dynamic_pointer_cast<VectorType>(node->returnedFromTypeAnalysis());
+  // Recuperar el VectorType y su StructType { T* data; i64 size; }
+  auto vecType = std::dynamic_pointer_cast<VectorType>(
+      node->returnedFromTypeAnalysis());
   if (!vecType)
-    return createError(ERROR_TYPE::TYPE, "AST_VECTOR no retorna VectorType");
+    return createError(ERROR_TYPE::TYPE,
+                       "AST_VECTOR no retorna VectorType");
   auto structOrErr = vecType->llvmVersion(context_);
-  if (!structOrErr)
-    return createError(structOrErr.error());
-  llvm::StructType *vecStruct = llvm::cast<llvm::StructType>(*structOrErr);
+  if (!structOrErr) return createError(structOrErr.error());
+  llvm::StructType *vecStruct =
+      llvm::cast<llvm::StructType>(*structOrErr);
 
-  // tipo de elemento y número de elementos
+  // Tipo del elemento y número de entradas
   auto elemTyOrErr = vecType->elementType()->llvmVersion(context_);
-  if (!elemTyOrErr)
-    return createError(elemTyOrErr.error());
+  if (!elemTyOrErr) return createError(elemTyOrErr.error());
   llvm::Type *elemTy = *elemTyOrErr;
-  llvm::Value *numElems = llvm::ConstantInt::get(
-      llvm::Type::getInt64Ty(context_), node->values().size());
 
-  // crear allocas en entry
+  size_t count = node->values().size();
+  llvm::Value *numElems = llvm::ConstantInt::get(
+      llvm::Type::getInt64Ty(context_), count);
+
+  // Crear allocas en el bloque entry()
   llvm::AllocaInst *vecAlloca, *dataAlloca;
   {
+    // Mover el IRBuilder al entry block para las allocas
     llvm::IRBuilder<> entryBuilder(entry_);
-    auto ip = entry_->getFirstInsertionPt();
-    entryBuilder.SetInsertPoint(entry_, ip);
-    vecAlloca = entryBuilder.CreateAlloca(vecStruct, nullptr, "vec_literal");
-    dataAlloca = entryBuilder.CreateAlloca(elemTy, numElems, "vec_data");
+    entryBuilder.SetInsertPoint(entry_, entry_->getFirstInsertionPt());
+
+    // Alocar el struct vector
+    vecAlloca = entryBuilder.CreateAlloca(
+      vecStruct, nullptr, "vec_literal");
+
+    // Alocar buffer de elementos T[numElems]
+    dataAlloca = entryBuilder.CreateAlloca(
+      elemTy, numElems, "vec_data");
   }
 
+  // Para quien venga encadenando, el resultado de vector es el struct ptr
   resultChainedExpression_ = vecAlloca;
 
-  // rellenar buffer
-  for (size_t i = 0; i < node->values().size(); ++i) {
+  // Rellenar el buffer, elemento a elemento
+  for (size_t i = 0; i < count; ++i) {
+    // Generar el valor del elemento (puede ser ptr a struct o valor escalar)
     auto valOrErr = node->values()[i]->accept(*this);
-    if (!valOrErr)
-      return createError(valOrErr.error());
+    if (!valOrErr) return createError(valOrErr.error());
     llvm::Value *elemValPtr = *valOrErr;
 
-    // apuntar al slot i
+    // Obtener puntero al slot i: &dataAlloca[i]
+    llvm::Value *idx = builder_.getInt64(i);
     llvm::Value *slotPtr = builder_.CreateInBoundsGEP(
-        elemTy, dataAlloca, {builder_.getInt64(i)}, "vec_elem_gep");
+      elemTy,                          // tipo de elemento
+      dataAlloca,                      // puntero al primer elemento
+      idx,                             // índice
+      "vec_elem_gep");
 
-    // si es struct (otro vector), copiarlo entero; si no, store directo
+    // Si T es un aggregate (struct, otro vector...), cargar y store profundo
     if (elemTy->isAggregateType()) {
-      llvm::Value *loadedStruct =
-          builder_.CreateLoad(elemTy, elemValPtr, "agg_load");
-      builder_.CreateStore(loadedStruct, slotPtr);
+      llvm::Value *loaded = builder_.CreateLoad(
+        elemTy, elemValPtr, "agg_load");
+      builder_.CreateStore(loaded, slotPtr);
     } else {
+      // Escalar o puntero: store directo
       builder_.CreateStore(elemValPtr, slotPtr);
     }
   }
 
-  // escribir campos .data y .size en el struct
-  llvm::Value *dataField =
-      builder_.CreateStructGEP(vecStruct, vecAlloca, 0, "vec_data_ptr");
+  // Escribir campos .data y .size en el struct
+  // vecAlloca->data = dataAlloca
+  llvm::Value *dataField = builder_.CreateStructGEP(
+    vecStruct, vecAlloca, 0, "vec_data_ptr");
   builder_.CreateStore(dataAlloca, dataField);
 
-  llvm::Value *sizeField =
-      builder_.CreateStructGEP(vecStruct, vecAlloca, 1, "vec_size_ptr");
+  // vecAlloca->size = numElems
+  llvm::Value *sizeField = builder_.CreateStructGEP(
+    vecStruct, vecAlloca, 1, "vec_size_ptr");
   builder_.CreateStore(numElems, sizeField);
 
-  // actualizar tipo y devolver
+  // Actualizar tipo y devolver el ptr al struct
   currentType = vecType;
   return vecAlloca;
 }
 
-std::expected<llvm::Value *, Error>
+
+std::expected<llvm::Value*, Error>
 CodeGeneration::visit(const AST_INDEX *node) const noexcept {
   if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_INDEX");
 
-  // Evaluar y extender índice a i64
-  auto idxOrErr = node->index()->accept(*this);
-  if (!idxOrErr)
-    return createError(idxOrErr.error());
+  // Índice a i64
+  auto idxOrErr = emitRValue(node->index().get());
+  if (!idxOrErr) return createError(idxOrErr.error());
   llvm::Value *idxVal = *idxOrErr;
   if (idxVal->getType()->isIntegerTy(32)) {
-    idxVal = builder_.CreateSExt(idxVal, llvm::Type::getInt64Ty(context_),
+    idxVal = builder_.CreateSExt(idxVal,
+                                 llvm::Type::getInt64Ty(context_),
                                  "idx_to_i64");
   }
 
-  // Obtener base del índice
+  // Dirección base (lvalue) de la expresión encadenada
   llvm::Value *basePtr = resultChainedExpression_;
   if (!basePtr || !basePtr->getType()->isPointerTy())
     return createError(ERROR_TYPE::TYPE, "base of index is not a pointer");
 
-  // Determinar comportamiento según tipo actual
-  llvm::Value *resultPtr = nullptr;
-
-  // --- Caso VECTOR ---
+  // Si es vector, extraer el puntero al buffer (campo .data)
   if (auto vecType = std::dynamic_pointer_cast<VectorType>(currentType)) {
-    // Obtener StructType { T* data; i64 size; }
+    // Tipo del struct del vector
     auto structOrErr = vecType->llvmVersion(context_);
-    if (!structOrErr)
-      return createError(structOrErr.error());
-    llvm::StructType *vecStruct = llvm::cast<llvm::StructType>(*structOrErr);
+    if (!structOrErr) return createError(structOrErr.error());
+    auto *vecStructTy = llvm::cast<llvm::StructType>(*structOrErr);
 
-    // GEP a campo .data: índices {0,0}
-    llvm::Value *dataPtrField = builder_.CreateInBoundsGEP(
-        vecStruct, basePtr, {builder_.getInt64(0), builder_.getInt32(0)},
-        "vec_data_gep");
-    // Load del T* que apunta al buffer
-    llvm::Type *tTy = vecType->elementType()->llvmVersion(context_).value();
-    llvm::Value *dataPtr = builder_.CreateLoad(
-        llvm::PointerType::getUnqual(tTy), dataPtrField, "vec_data_load");
+    // Cargar el struct completo
+    llvm::Value *vecVal = builder_.CreateLoad(vecStructTy, basePtr,
+                                              "load_vec_struct");
+    // Extraer .data (índice 0)
+    llvm::Value *dataPtr = builder_.CreateExtractValue(vecVal, {0},
+                                                       "vec_data_ptr");
 
-    // GEP al elemento dentro del buffer
-    llvm::Type *elemTy = tTy;
-    llvm::Value *elemPtr =
-        builder_.CreateInBoundsGEP(elemTy, dataPtr, {idxVal}, "vec_elem_gep");
+    // Calcular GEP **sobre elemTy**, no sobre el struct
+    auto elemTyOrErr = vecType->elementType()->llvmVersion(context_);
+    if (!elemTyOrErr) return createError(elemTyOrErr.error());
+    llvm::Type *elemTy = *elemTyOrErr;
 
-    // Si el elemento es un struct (otro vector), devolvemos el ptr;
-    //      si no, hacemos load
-    if (elemTy->isAggregateType()) {
-      resultPtr = elemPtr;
-    } else {
-      resultPtr = builder_.CreateLoad(elemTy, elemPtr, "idx_load");
-    }
+    // dataPtr es puntero a elemTy (por ejemplo i8* para Str),
+    // así que su tipo es elemTy*
+    llvm::Value *elemPtr = builder_.CreateInBoundsGEP(
+      elemTy,                    // tipo de elemento
+      dataPtr,                   // puntero al primer elemento
+      idxVal,                    // índice
+      "vec_elem_gep");
 
-    // Actualizar estado
-    resultChainedExpression_ = resultPtr;
+    resultChainedExpression_ = elemPtr;
     currentType = vecType->elementType();
-    return resultPtr;
+    return elemPtr;
   }
 
-  // --- Caso STRING ---
+  // Si es cadena, igual: devolvemos la dirección al carácter
   if (auto basic = std::dynamic_pointer_cast<BasicType>(currentType);
       basic && basic->baseKind() == BasicKind::Str) {
-    // 4.1) El puntero base es i8*: acceder con un único índice
-    llvm::Type *charTy = llvm::Type::getInt8Ty(context_);
-    llvm::Value *charPtr =
-        builder_.CreateInBoundsGEP(charTy, basePtr, {idxVal}, "str_elem_gep");
-    // Load del carácter
-    llvm::LoadInst *loadedChar =
-        builder_.CreateLoad(charTy, charPtr, "idx_load");
+    // cargar el i8* de la variable
+    llvm::Value *strPtr = builder_.CreateLoad(
+    llvm::Type::getInt8Ty(context_)->getPointerTo(),
+    basePtr,
+    "load_str_ptr");
 
-    // Actualizar estado y tipo
-    resultChainedExpression_ = loadedChar;
+    llvm::Value *charPtr = builder_.CreateInBoundsGEP(
+      builder_.getInt8Ty(),
+      strPtr,
+      idxVal,
+      "str_elem_gep");
+    resultChainedExpression_ = charPtr;
     currentType = std::make_shared<BasicType>(BasicKind::Char);
-    return loadedChar;
+    return charPtr;
   }
 
-  // --- Caso NO SOPORTADO ---
   return createError(ERROR_TYPE::TYPE,
                      "indexed type is neither vector nor string");
 }
+
 
 } // namespace nicole

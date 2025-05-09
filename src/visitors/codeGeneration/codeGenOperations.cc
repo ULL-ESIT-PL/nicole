@@ -10,14 +10,13 @@ CodeGeneration::visit(const AST_BINARY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BINARY");
   }
-
   // Generar subexpresiones
-  auto leftOrErr = node->left()->accept(*this);
+  auto leftOrErr = emitRValue(node->left().get());
   if (!leftOrErr)
     return createError(leftOrErr.error());
   llvm::Value *L = *leftOrErr;
 
-  auto rightOrErr = node->right()->accept(*this);
+  auto rightOrErr = emitRValue(node->right().get());
   if (!rightOrErr)
     return createError(rightOrErr.error());
   llvm::Value *R = *rightOrErr;
@@ -160,8 +159,64 @@ CodeGeneration::visit(const AST_BINARY *node) const noexcept {
             /*Index=*/sumLR2, "termPtr");
         builder_.CreateStore(llvm::ConstantInt::get(i8Ty, 0), termPtr);
 
-        // 9) Devolver buffer mutable
+        // Devolver buffer mutable
         return buf;
+      }
+      /*
+      llvm::Module &M = *module_;
+      llvm::Type *i8Ty = llvm::Type::getInt8Ty(context_);
+      llvm::PointerType *i8Ptr = i8Ty->getPointerTo();
+      llvm::Type *i32Ty = llvm::Type::getInt32Ty(context_);
+      auto *strcmpFT = llvm::FunctionType::get(i32Ty, {i8Ptr, i8Ptr}, false);
+      M.getOrInsertFunction("strcmp", strcmpFT);
+
+      // Llamar a strcmp(L,R)
+      llvm::Value *cmp =
+          builder_.CreateCall(M.getFunction("strcmp"), {L, R}, "strcmp");
+      // Comparaciones: usaremos constantes cero
+      llvm::Value *zero =
+          llvm::ConstantInt::get(llvm::Type::getInt32Ty(context_), 0);
+      switch (node->op().type()) {
+      case TokenType::EQUAL:
+        // strcmp == 0
+        return builder_.CreateICmpEQ(cmp, zero, "streq");
+      case TokenType::NOTEQUAL:
+        // strcmp != 0
+        return builder_.CreateICmpNE(cmp, zero, "strne");
+      case TokenType::OPERATOR_SMALLER:
+        // strcmp < 0
+        return builder_.CreateICmpSLT(cmp, zero, "strlt");
+      case TokenType::SMALLEREQUAL:
+        // strcmp <= 0
+        return builder_.CreateICmpSLE(cmp, zero, "strle");
+      case TokenType::OPERATOR_GREATER:
+        // strcmp > 0
+        return builder_.CreateICmpSGT(cmp, zero, "strgt");
+      case TokenType::BIGGEREQUAL:
+        // strcmp >= 0
+        return builder_.CreateICmpSGE(cmp, zero, "strge");
+      default:
+        break;
+      }
+      */
+      switch (node->op().type()) {
+      // Igualdad/Desigualdad por puntero
+      case TokenType::EQUAL:
+        return builder_.CreateICmpEQ(L, R, "ptr_eq");
+      case TokenType::NOTEQUAL:
+        return builder_.CreateICmpNE(L, R, "ptr_ne");
+      case TokenType::OPERATOR_SMALLER:
+        return builder_.CreateICmpULT(L, R, "ptr_lt");
+      case TokenType::SMALLEREQUAL:
+        return builder_.CreateICmpULE(L, R, "ptr_le");
+      case TokenType::OPERATOR_GREATER:
+        return builder_.CreateICmpUGT(L, R, "ptr_gt");
+      case TokenType::BIGGEREQUAL:
+        return builder_.CreateICmpUGE(L, R, "ptr_ge");
+      default:
+        return createError(ERROR_TYPE::TYPE,
+                           "operator " + tokenTypeToString(node->op().type()) +
+                               " cannot be applied to type Str");
       }
       break;
     }
@@ -216,7 +271,7 @@ CodeGeneration::visit(const AST_UNARY *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_UNARY");
 
   // Generar código del operando
-  auto valOrErr = node->value()->accept(*this);
+  auto valOrErr = emitRValue(node->value().get());
   if (!valOrErr)
     return createError(valOrErr.error());
   llvm::Value *V = *valOrErr;
@@ -248,18 +303,32 @@ CodeGeneration::visit(const AST_UNARY *node) const noexcept {
     case TokenType::INCREMENT:
     case TokenType::DECREMENT: {
       bool isInc = (node->op().type() == TokenType::INCREMENT);
-      // Constante 1 del tipo adecuado
-      llvm::Value *one = nullptr;
-      if (basic->baseKind() == BasicKind::Int) {
-        one = llvm::ConstantInt::get(V->getType(), 1);
-        return isInc ? builder_.CreateAdd(V, one, "inc")
-                     : builder_.CreateSub(V, one, "dec");
-      } else {
-        // float o double
-        one = llvm::ConstantFP::get(V->getType(), 1.0);
-        return isInc ? builder_.CreateFAdd(V, one, "finc")
-                     : builder_.CreateFSub(V, one, "fdec");
-      }
+
+      // obtener la dirección de la variable (ptr)
+      auto ptrOrErr = node->value()->accept(*this);
+      if (!ptrOrErr)
+        return createError(ptrOrErr.error());
+      llvm::Value *ptr = *ptrOrErr; // debe ser algo tipo i32*
+
+      // tipo entero LLVM
+      llvm::LLVMContext &C = context_;
+      llvm::Type *i32Ty = llvm::Type::getInt32Ty(C);
+
+      // cargar el valor actual
+      llvm::Value *oldVal = builder_.CreateLoad(i32Ty, ptr, "ldtmp");
+
+      // crear constante “1”
+      llvm::Value *one = llvm::ConstantInt::get(i32Ty, 1);
+
+      // sumar o restar
+      llvm::Value *newVal = isInc ? builder_.CreateAdd(oldVal, one, "inctmp")
+                                  : builder_.CreateSub(oldVal, one, "dectmp");
+
+      // almacenar el resultado en memoria
+      builder_.CreateStore(newVal, ptr);
+
+      // devolver el nuevo valor
+      return newVal;
     }
 
     default:

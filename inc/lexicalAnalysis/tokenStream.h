@@ -35,8 +35,7 @@ public:
   [[nodiscard]] const std::expected<Token, Error>
   lookAhead(const size_t pos) const noexcept;
 
-  [[nodiscard]] const std::expected<Token, Error>
-  lastRead() const noexcept;
+  [[nodiscard]] const std::expected<Token, Error> lastRead() const noexcept;
 
   [[nodiscard]] const std::expected<bool, Error>
   isCurrentTokenType(const TokenType type) const noexcept;
@@ -54,6 +53,9 @@ public:
   [[nodiscard]] auto begin() const noexcept { return tokens_.begin(); }
 
   [[nodiscard]] auto end() const noexcept { return tokens_.end(); }
+
+  [[nodiscard]] bool hasMatchingPairBefore(TokenType open,
+                                           TokenType until) const noexcept ;
 };
 
 } // namespace nicole
