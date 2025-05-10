@@ -262,15 +262,17 @@ TopDown::parseArguments(std::pair<TokenType, TokenType> delimiters,
       continue;
     } else if (tkStream_.current()->type() != delimiters.second) {
       return createError(ERROR_TYPE::SINTAX,
-                         "missing " + tokenTypeToString(delimiters.first) +
-                             " at " + tkStream_.current()->locInfo());
+                         "missing " + tokenTypeToString(delimiters.second) +
+                             " at " + tkStream_.current()->locInfo() +
+                             " found: " + tkStream_.current()->raw());
     }
     break;
   }
   if (tkStream_.current()->type() != delimiters.second) {
     return createError(ERROR_TYPE::SINTAX,
-                       "missing " + tokenTypeToString(delimiters.first) +
-                           " at " + tkStream_.current()->locInfo());
+                       "missing " + tokenTypeToString(delimiters.second) +
+                           " at " + tkStream_.current()->locInfo() +
+                           " found: " + tkStream_.current()->raw());
   }
   if (auto res = tryEat(); !res) {
     return createError(res.error());

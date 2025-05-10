@@ -132,7 +132,7 @@ TopDown::parseCompare() const noexcept {
   while (tkStream_.currentPos() < tkStream_.size() &&
          (tkStream_.current()->type() == TokenType::OPERATOR_SMALLER ||
           tkStream_.current()->type() == TokenType::SMALLEREQUAL ||
-          tkStream_.current()->type() == TokenType::BIGGEREQUAL ||
+          tkStream_.current()->type() == TokenType::OPERATOR_GREATER ||
           tkStream_.current()->type() == TokenType::BIGGEREQUAL)) {
     const Token token{*tkStream_.current()};
     std::expected<std::monostate, Error> eaten{tkStream_.eat()};

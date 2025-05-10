@@ -10,6 +10,7 @@ CodeGeneration::visit(const AST_BINARY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BINARY");
   }
+
   // Generar subexpresiones
   auto leftOrErr = emitRValue(node->left().get());
   if (!leftOrErr)
@@ -21,13 +22,15 @@ CodeGeneration::visit(const AST_BINARY *node) const noexcept {
     return createError(rightOrErr.error());
   llvm::Value *R = *rightOrErr;
 
-  // Obtener tipo semántico resultante (desenrollando ConstType)
-  auto semTy = node->returnedFromTypeAnalysis();
+  // No uso el tipo que devuelve este nodo porque puede darse el caso de double
+  // == double y siempre entre por el case de bool
+  auto semTy = node->left()->returnedFromTypeAnalysis();
   if (auto c = std::dynamic_pointer_cast<ConstType>(semTy))
     semTy = c->baseType();
 
   // Si es BasicType, usar operaciones LLVM correspondientes
   if (auto basic = std::dynamic_pointer_cast<BasicType>(semTy)) {
+    // return createError(ERROR_TYPE::PRINT_TREE, basic->toString());
     switch (basic->baseKind()) {
     case BasicKind::Int: {
       // Enteros: + - * / % & | comparaciones
@@ -76,7 +79,7 @@ CodeGeneration::visit(const AST_BINARY *node) const noexcept {
       case TokenType::OPERATOR_DIV:
         return builder_.CreateFDiv(L, R, "fdivtmp");
       case TokenType::EQUAL:
-        return builder_.CreateFCmpUEQ(L, R, "feqtmp");
+        return builder_.CreateFCmpOEQ(L, R, "feqtmp");
       case TokenType::NOTEQUAL:
         return builder_.CreateFCmpUNE(L, R, "fnetmp");
       case TokenType::OPERATOR_SMALLER:
@@ -159,7 +162,8 @@ CodeGeneration::visit(const AST_BINARY *node) const noexcept {
             /*Index=*/sumLR2, "termPtr");
         builder_.CreateStore(llvm::ConstantInt::get(i8Ty, 0), termPtr);
 
-        // devolvemos la posicion en memoria para evitar un doble load en otros sitios
+        // devolvemos la posicion en memoria para evitar un doble load en otros
+        // sitios
         llvm::AllocaInst *slot =
             builder_.CreateAlloca(i8Ptr, nullptr, "concat_slot");
         builder_.CreateStore(buf, slot);
