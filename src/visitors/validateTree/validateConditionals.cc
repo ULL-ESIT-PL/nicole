@@ -1,4 +1,3 @@
-#include "../../../inc/visitors/validateTree/validateTree.h"
 #include "../../../inc/parsingAnalysis/ast/conditionals/ast_case.h"
 #include "../../../inc/parsingAnalysis/ast/conditionals/ast_default.h"
 #include "../../../inc/parsingAnalysis/ast/conditionals/ast_elseIf.h"
@@ -6,6 +5,7 @@
 #include "../../../inc/parsingAnalysis/ast/conditionals/ast_switch.h"
 #include "../../../inc/parsingAnalysis/ast/conditionals/ast_ternary.h"
 #include "../../../inc/parsingAnalysis/checkPosition.h"
+#include "../../../inc/visitors/validateTree/validateTree.h"
 
 namespace nicole {
 
@@ -159,13 +159,12 @@ ValidateTree::visit(const AST_CONDITION *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CONDITION");
   }
-  if (CheckPosition::hasAnyAncestorOf(node, {AST_TYPE::IF, AST_TYPE::ELSE_IF,
-                                             AST_TYPE::IF, AST_TYPE::SWITCH,
-                                             AST_TYPE::DO_WHILE,
-                                             AST_TYPE::WHILE, AST_TYPE::FOR})) {
+  if (!CheckPosition::hasAnyAncestorOf(
+          node, {AST_TYPE::IF, AST_TYPE::ELSE_IF, AST_TYPE::SWITCH,
+                 AST_TYPE::DO_WHILE, AST_TYPE::WHILE, AST_TYPE::FOR})) {
     return createError(ERROR_TYPE::VALIDATE_TREE, "misplaced condition");
   }
   return node->condition()->accept(*this);
 }
 
-}
+} // namespace nicole

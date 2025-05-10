@@ -144,7 +144,6 @@ CodeGeneration::visit(const AST_FUNC_DECL *node) const noexcept {
 
     ++idx;
   }
-
   // Generar el cuerpo
   llvm::IRBuilder<>::InsertPointGuard guard(builder_);
   builder_.SetInsertPoint(entryBB);
@@ -153,6 +152,7 @@ CodeGeneration::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!fn->getReturnType()->isVoidTy() && !entryBB->getTerminator())
     builder_.CreateRetVoid();
   currentScope_ = parentScope;
+  module_->print(llvm::outs(), nullptr);
   return fn;
 }
 
@@ -173,6 +173,9 @@ CodeGeneration::visit(const AST_RETURN *node) const noexcept {
 
 std::expected<std::string, Error>
 CodeGeneration::nameManglingFunctionDecl(const Function &func) const noexcept {
+  if (options_.validateTree() and func.id() == "main") {
+    return "$_main";
+  }
   // Prefijo
   std::string mangled = "$";
 

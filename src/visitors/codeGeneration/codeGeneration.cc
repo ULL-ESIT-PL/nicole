@@ -234,21 +234,52 @@ CodeGeneration::visit(const Tree *tree) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid Tree");
   }
 
-  funcType_ = llvm::FunctionType::get(
-      (options_.validateTree()) ? builder_.getInt32Ty() : builder_.getVoidTy(),
-      false);
-  mainFunction_ = llvm::Function::Create(
-      funcType_, llvm::Function::ExternalLinkage, "main", module_.get());
-  entry_ = llvm::BasicBlock::Create(context_, "entry", mainFunction_);
-  builder_.SetInsertPoint(entry_);
+  if (options_.validateTree()) {
+    llvm::Type *i32Ty = llvm::Type::getInt32Ty(context_);
+    llvm::FunctionType *wrapFT =
+      llvm::FunctionType::get(i32Ty, /*isVarArg=*/false);
+    mainFunction_ = llvm::Function::Create(
+      wrapFT, llvm::Function::ExternalLinkage, "main", module_.get());
 
-  const auto result{tree->root()->accept(*this)};
-  if (!result) {
-    return createError(result.error());
-  }
+    // Insertamos el bloque de entrada ANTES de generar el cuerpo de usuario
+    entry_ = llvm::BasicBlock::Create(context_, "entry", mainFunction_);
+    builder_.SetInsertPoint(entry_);
 
-  if (!options_.validateTree()) {
-    builder_.CreateRetVoid();
+    // --- 2) Ahora generamos TODO el AST de usuario (incluido $_main) ---
+    if (auto res = tree->root()->accept(*this); !res)
+      return createError(res.error());
+
+    // --- 3) Llamamos a la función del usuario ($_main) y retornamos su i32 ---
+    llvm::Function *userMain = module_->getFunction("$_main");
+    if (!userMain)
+      return createError(ERROR_TYPE::FUNCTION, "no existe $_main");
+
+    llvm::Value *ret = builder_.CreateCall(userMain, {}, "call_user_main");
+    builder_.CreateRet(ret);
+  } else {
+    std::expected<llvm::Type *, Error> mainType{nullptr};
+    if (const auto isNopropagateType{std::dynamic_pointer_cast<NoPropagateType>(
+            tree->root()->returnedFromTypeAnalysis())}) {
+      mainType = typeTable_->voidType()->llvmVersion(context_);
+    } else {
+      mainType =
+          tree->root()->returnedFromTypeAnalysis()->llvmVersion(context_);
+      if (!mainType) {
+        return createError(mainType.error());
+      }
+    }
+    funcType_ = llvm::FunctionType::get(*mainType, false);
+    mainFunction_ = llvm::Function::Create(
+        funcType_, llvm::Function::ExternalLinkage, "main", module_.get());
+    entry_ = llvm::BasicBlock::Create(context_, "entry", mainFunction_);
+    builder_.SetInsertPoint(entry_);
+
+    const auto result{tree->root()->accept(*this)};
+    if (!result) {
+      return createError(result.error());
+    }
+    if (!builder_.GetInsertBlock()->getTerminator())
+      builder_.CreateRetVoid();
   }
 
   if (options_.optimize()) {
@@ -264,8 +295,8 @@ CodeGeneration::visit(const Tree *tree) const noexcept {
     PB.registerLoopAnalyses(LAM);
     PB.crossRegisterProxies(LAM, FAM, CGAM, MAM);
 
-    auto MPM = PB.buildPerModuleDefaultPipeline(
-        llvm::OptimizationLevel::O3, true);
+    auto MPM =
+        PB.buildPerModuleDefaultPipeline(llvm::OptimizationLevel::O3, true);
     MPM.run(*module_, MAM);
   }
 
