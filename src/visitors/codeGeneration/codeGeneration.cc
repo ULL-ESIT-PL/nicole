@@ -245,11 +245,11 @@ CodeGeneration::visit(const Tree *tree) const noexcept {
     entry_ = llvm::BasicBlock::Create(context_, "entry", mainFunction_);
     builder_.SetInsertPoint(entry_);
 
-    // --- 2) Ahora generamos TODO el AST de usuario (incluido $_main) ---
+    // Ahora generamos TODO el AST de usuario (incluido $_main) ---
     if (auto res = tree->root()->accept(*this); !res)
       return createError(res.error());
 
-    // --- 3) Llamamos a la función del usuario ($_main) y retornamos su i32 ---
+    // Llamamos a la función del usuario ($_main) y retornamos su i32 ---
     llvm::Function *userMain = module_->getFunction("$_main");
     if (!userMain)
       return createError(ERROR_TYPE::FUNCTION, "no existe $_main");
