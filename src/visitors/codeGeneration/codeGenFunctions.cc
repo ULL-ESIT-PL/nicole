@@ -164,7 +164,7 @@ CodeGeneration::visit(const AST_RETURN *node) const noexcept {
   if (!node->expression()) {
     return builder_.CreateRetVoid();
   }
-  const auto result{node->expression()->accept(*this)};
+  const auto result{emitRValue(node->expression().get())};
   if (!result) {
     return createError(result.error());
   }
