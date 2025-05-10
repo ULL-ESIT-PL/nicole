@@ -159,8 +159,11 @@ CodeGeneration::visit(const AST_BINARY *node) const noexcept {
             /*Index=*/sumLR2, "termPtr");
         builder_.CreateStore(llvm::ConstantInt::get(i8Ty, 0), termPtr);
 
-        // Devolver buffer mutable
-        return buf;
+        // devolvemos la posicion en memoria para evitar un doble load en otros sitios
+        llvm::AllocaInst *slot =
+            builder_.CreateAlloca(i8Ptr, nullptr, "concat_slot");
+        builder_.CreateStore(buf, slot);
+        return slot;
       }
       /*
       llvm::Module &M = *module_;

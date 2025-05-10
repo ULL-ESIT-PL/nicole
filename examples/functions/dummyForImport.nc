@@ -7,13 +7,16 @@ def fibonacci(n: int): int {
 }
 
 print(fibonacci(10));
-*/
 
+*/
 def foo(): vector<str> {
   return ["adios", "hola"];
 }
 
 
-auto result = foo()[0];
+auto result = foo();
 
-print(result);
+print(result[0]);
+
+
+auto x = [1, 2, 3];

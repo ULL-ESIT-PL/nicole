@@ -10,7 +10,7 @@ CodeGeneration::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
   // Generar el valor inicial
-  auto initOrErr = node->value()->accept(*this);
+  auto initOrErr = emitRValue(node->value().get());
   if (!initOrErr)
     return createError(initOrErr.error());
   llvm::Value *initVal = *initOrErr;
@@ -58,7 +58,7 @@ CodeGeneration::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_TYPED_DECL");
   }
-  auto initOrErr = node->value()->accept(*this);
+  auto initOrErr = emitRValue(node->value().get());
   if (!initOrErr)
     return createError(initOrErr.error());
   llvm::Value *initVal = *initOrErr;
@@ -95,38 +95,6 @@ CodeGeneration::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   return alloca;
 }
 
-/*
-std::expected<llvm::Value *, Error>
-CodeGeneration::visit(const AST_VAR_CALL *node) const noexcept {
-  if (!node) {
-    return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_CALL");
-  }
-  auto varOrErr = currentScope_->getVariable(node->id());
-  if (!varOrErr)
-    return createError(varOrErr.error());
-
-  auto varPtr = *varOrErr; // shared_ptr<Variable>
-  Variable &var = *varPtr; // referencia al objeto real
-  llvm::AllocaInst *addr = var.address();
-  if (!addr)
-    return createError(ERROR_TYPE::VALIDATE_TREE, "variable has no address");
-  // Simplemente load y actualizar el value_
-  llvm::Type *varTy = addr->getAllocatedType();
-  llvm::Value *resultPtr;
-
-  if (varTy->isAggregateType()) {
-    // Para tipos aggregate devolvemos EL PUNTERO, SIN load
-    resultPtr = addr;
-  } else {
-    // Para escalares, hacemos load
-    resultPtr = builder_.CreateLoad(varTy, addr, node->id() + "_val");
-  }
-
-  // Actualizar estado para cadenas encadenadas
-  resultChainedExpression_ = resultPtr;
-  return resultPtr;
-}
-*/
 std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_VAR_CALL *node) const noexcept {
   if (!node)

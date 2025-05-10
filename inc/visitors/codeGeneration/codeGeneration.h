@@ -83,6 +83,8 @@ private:
   mutable llvm::Function *freeFn_ = nullptr;
   void ensureMallocFreeDeclared() const noexcept;
 
+  bool isAggregateReturn(const AST_FUNC_DECL *node) const;
+
 public:
   CodeGeneration(const std::shared_ptr<FunctionTable> &functionTable,
                  std::shared_ptr<TypeTable> &typeTable,

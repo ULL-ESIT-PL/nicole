@@ -57,6 +57,11 @@ CodeGeneration::visit(const AST_IF *node) const noexcept {
       if (!builder_.GetInsertBlock()->getTerminator())
         builder_.CreateBr(mergeBB);
     }
+    // Si había else-if pero NO hay else, asegurar br a merge
+    if (node->elseIf().size() > 0 && !node->elseBody()) {
+      if (!builder_.GetInsertBlock()->getTerminator())
+        builder_.CreateBr(mergeBB);
+    }
   } else {
     // no hay else, saltar directamente a merge
     if (!builder_.GetInsertBlock()->getTerminator())
@@ -236,7 +241,7 @@ CodeGeneration::visit(const AST_CONDITION *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_CONDITION");
   }
-  return emitRValue(node->condition().get());
+  return node->condition()->accept(*this);
 }
 
 } // namespace nicole
