@@ -120,6 +120,7 @@ CodeGeneration::visit(const AST_FUNC_DECL *node) const noexcept {
 
   // Reservar slots para parámetros y registrarlos
   auto entryBB = llvm::BasicBlock::Create(context_, "entry", fn);
+  entry_ = entryBB;
   llvm::IRBuilder<> entryBuilder(entryBB);
   unsigned idx = 0;
   for (auto &pr : node->parameters().params()) {
@@ -152,7 +153,6 @@ CodeGeneration::visit(const AST_FUNC_DECL *node) const noexcept {
   if (!fn->getReturnType()->isVoidTy() && !entryBB->getTerminator())
     builder_.CreateRetVoid();
   currentScope_ = parentScope;
-  module_->print(llvm::outs(), nullptr);
   return fn;
 }
 

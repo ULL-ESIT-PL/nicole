@@ -1,3 +1,4 @@
+/*
 def fibonacci(n: int): int {
   if (n == 0 or n == 1) {
     return n;
@@ -6,3 +7,13 @@ def fibonacci(n: int): int {
 }
 
 print(fibonacci(10));
+*/
+
+def foo(): vector<str> {
+  return ["adios", "hola"];
+}
+
+
+auto result = foo()[0];
+
+print(result);
