@@ -1,4 +1,5 @@
 #include "../../../inc/tables/typeTable/types/userTypes/userType.h"
+#include <iostream>
 #include <memory>
 #include <sstream>
 
@@ -8,7 +9,9 @@ bool UserType::hasAttribute(const std::string &id) const noexcept {
   if (baseType_) {
     if (const std::shared_ptr<UserType> userType =
             std::dynamic_pointer_cast<UserType>(baseType_)) {
-      return userType->hasAttribute(id);
+      if (userType->hasAttribute(id)) {
+        return true;
+      }
     }
   }
   if (attrTable_.has(id)) {
@@ -36,8 +39,9 @@ UserType::getAttribute(const std::string &id) const noexcept {
   }
   if (baseType_) {
     if (const std::shared_ptr<UserType> userType =
-            std::dynamic_pointer_cast<UserType>(baseType_))
+            std::dynamic_pointer_cast<UserType>(baseType_)) {
       return userType->getAttribute(id);
+    }
   }
   return createError(ERROR_TYPE::ATTR,
                      "the attribute: " + id + " does not exist in " + name_);

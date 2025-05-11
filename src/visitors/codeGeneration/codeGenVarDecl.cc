@@ -105,6 +105,32 @@ std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_VAR_CALL *node) const noexcept {
   if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_CALL");
+  if (insideStruct && currentUserType_ &&
+      currentUserType_->hasAttribute(node->id())) {
+    // Recuperar el alloca de 'this'
+    auto thisOrErr = currentScope_->getVariable("this");
+    if (!thisOrErr)
+      return createError(thisOrErr.error());
+
+    auto *thisVal = (*thisOrErr)->address(); // llvm::Value*
+    auto *thisAlloca = llvm::cast<llvm::AllocaInst>(thisVal);
+    // Cargar el puntero al objeto
+    llvm::Value *thisPtr =
+        builder_.CreateLoad(thisAlloca->getAllocatedType()->getPointerTo(),
+                            thisAlloca, "this.load");
+
+    // Calcular índice del campo en la struct
+    unsigned idx = static_cast<unsigned>(
+        currentUserType_->getAttribute(node->id())->position());
+    llvm::Value *indices[] = {builder_.getInt32(0), builder_.getInt32(idx)};
+
+    // Crear GEP para el campo
+    llvm::Value *fieldPtr =
+        builder_.CreateInBoundsGEP(*currentUserType_->llvmVersion(context_),
+                                   thisPtr, indices, node->id() + ".ptr");
+    resultChainedExpression_ = fieldPtr;
+    return fieldPtr;
+  }
 
   std::expected<std::shared_ptr<Variable>, Error> varOrErr =
       currentScope_->getVariable(node->id());

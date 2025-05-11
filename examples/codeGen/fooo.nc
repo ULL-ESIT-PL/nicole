@@ -1,8 +1,8 @@
 def fooString(): vector<vector<str>> {
-    return [["1", "2", "3"]];
+    return [["1"]];
 }
 
-print(fooString()[0][2][0]);
+print(fooString()[0][0][0]);
 
 auto b = fooString();
 

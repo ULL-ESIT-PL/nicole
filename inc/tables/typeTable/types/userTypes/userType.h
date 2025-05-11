@@ -87,7 +87,7 @@ public:
 
   [[nodiscard]] std::expected<llvm::Type *, Error>
   llvmVersion(llvm::LLVMContext &context) const noexcept override {
-    // 1) Crear o recuperar el struct opaco con el nombre de la clase
+    // Crear o recuperar el struct opaco con el nombre de la clase
     llvm::StructType *st = llvm::StructType::getTypeByName(context, name_);
     if (!st) {
       st = llvm::StructType::create(context, name_);
@@ -109,6 +109,7 @@ public:
             attr.second.type()->llvmVersion(context);
         if (!tyOrErr)
           return std::unexpected(tyOrErr.error());
+        attr.second.setPosition(elems.size());
         elems.push_back(*tyOrErr);
       }
       st->setBody(elems, /*isPacked=*/false);

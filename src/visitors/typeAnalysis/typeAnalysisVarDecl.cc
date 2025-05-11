@@ -80,7 +80,6 @@ TypeAnalysis::visit(const AST_VAR_CALL *node) const noexcept {
     node->setReturnedFromAnalysis(attrExp.value().type());
     return attrExp.value().type();
   }
-
   if (!currentScope_->has(node->id()))
     return createError(ERROR_TYPE::VARIABLE,
                        "variable: " + node->id() + " does not exist");

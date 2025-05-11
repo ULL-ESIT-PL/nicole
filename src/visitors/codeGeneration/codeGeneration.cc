@@ -186,7 +186,7 @@ CodeGeneration::emitRValue(const AST *node) const noexcept {
                           DL.getTypeAllocSize(llvmTy));
     return tmp;
   }
-
+  
   // Si es puntero:
   if (val->getType()->isPointerTy()) {
     // sólo cargamos si NO es una constante
@@ -198,7 +198,7 @@ CodeGeneration::emitRValue(const AST *node) const noexcept {
     // se dejan tal cual, como i8* apuntando al .rodata
     return val;
   }
-
+  
   // escalar ya cargado (int, float, bool…)
   return val;
 }
@@ -216,6 +216,7 @@ CodeGeneration::visit(const AST_BODY *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_BODY");
   }
+  auto parentScope = currentScope_;
   currentScope_ = node->scope();
 
   llvm::Value *lastValue{nullptr};
@@ -233,6 +234,7 @@ CodeGeneration::visit(const AST_BODY *node) const noexcept {
     // valor)
     lastValue = res.value();
   }
+  currentScope_ = parentScope;
 
   // Devolvemos el valor de la última sentencia (o nullptr si no había
   // sentencias)

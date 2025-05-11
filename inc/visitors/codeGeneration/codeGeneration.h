@@ -49,6 +49,8 @@ private:
   mutable std::shared_ptr<Scope> currentScope_{nullptr};
 
   mutable bool mustLoad{false};
+  mutable bool insideStruct{false};
+  mutable std::shared_ptr<UserType> currentUserType_{nullptr};
 
   [[nodiscard]] std::expected<std::string, Error>
   nameMangling(const std::shared_ptr<Type> &type) const noexcept;

@@ -54,7 +54,6 @@ CodeGeneration::visit(const AST_PRINT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_PRINT");
   }
-
   std::vector<llvm::Value *> values;
   values.reserve(node->values().size());
   for (const std::shared_ptr<AST> &chain : node->values()) {

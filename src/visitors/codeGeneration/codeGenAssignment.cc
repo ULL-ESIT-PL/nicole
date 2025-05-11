@@ -6,25 +6,30 @@
 
 namespace nicole {
 
-std::expected<llvm::Value*, Error>
+std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_ASSIGNMENT *node) const noexcept {
   if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ASSIGNMENT");
 
   // obtener dirección de LHS
-  std::expected<llvm::Value *, Error> addrOrErr = emitLValue(node->left().get());
-  if (!addrOrErr) return createError(addrOrErr.error());
+  std::expected<llvm::Value *, Error> addrOrErr =
+      emitLValue(node->left().get());
+  if (!addrOrErr)
+    return createError(addrOrErr.error());
   llvm::Value *addr = *addrOrErr;
 
   // generar valor RHS
-  std::expected<llvm::Value *, Error> valOrErr = emitRValue(node->value().get());
-  if (!valOrErr) return createError(valOrErr.error());
+  std::expected<llvm::Value *, Error> valOrErr =
+      emitRValue(node->value().get());
+  if (!valOrErr)
+    return createError(valOrErr.error());
   llvm::Value *val = *valOrErr;
 
   // ajustar tipo según semántica
   std::shared_ptr<Type> semTy = node->left()->returnedFromTypeAnalysis();
   std::expected<llvm::Type *, Error> llvmTyOrErr = semTy->llvmVersion(context_);
-  if (!llvmTyOrErr) return createError(llvmTyOrErr.error());
+  if (!llvmTyOrErr)
+    return createError(llvmTyOrErr.error());
   llvm::Type *dstTy = *llvmTyOrErr;
   if (val->getType() != dstTy) {
     if (val->getType()->isIntegerTy() && dstTy->isIntegerTy())
@@ -42,5 +47,4 @@ CodeGeneration::visit(const AST_ASSIGNMENT *node) const noexcept {
   return val;
 }
 
-
-}
+} // namespace nicole

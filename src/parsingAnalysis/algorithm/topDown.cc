@@ -121,11 +121,11 @@ TopDown::parseStatement() const noexcept {
   // Función auxiliar para elegir la sentencia a parsear.
   auto parseStmt = [&]() -> std::expected<std::shared_ptr<AST>, Error> {
     // in case that it is an assignment
-    if (tkStream_.isTokenAheadBeforeSemicolon(TokenType::DOTDOT_ASSIGNMENT) ||
+    if ((tkStream_.isTokenAheadBeforeSemicolon(TokenType::DOTDOT_ASSIGNMENT) ||
         tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_ADD) ||
         tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_SUB) ||
         tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_MULT) ||
-        tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_DIV))
+        tkStream_.isTokenAheadBeforeSemicolon(TokenType::SELF_DIV)) and (firsToken->type() != TokenType::STRUCT))
       return parseAssignment(false);
 
     // Se obtiene el tipo del token actual para decidir la rama de parseo.

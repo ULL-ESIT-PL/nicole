@@ -22,8 +22,15 @@ TypeAnalysis::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
   }
+  insideDeclWithGenerics = true;
+  auto foundType{typeTable_->getType(node->id())};
+  if (!foundType) {
+    return createError(foundType.error());
+  }
+  if (const auto isUserType{std::dynamic_pointer_cast<UserType>(*foundType)}) {
+    currentUserType_ = isUserType;
+  }
   if (!node->generics().empty()) {
-    insideDeclWithGenerics = true;
     currentGenericList_ = node->generics();
   }
 
