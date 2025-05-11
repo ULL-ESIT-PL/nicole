@@ -58,7 +58,7 @@ CodeGeneration::visit(const AST_VECTOR *node) const noexcept {
   for (size_t i = 0; i < count; ++i) {
     // Generar el valor del elemento (puede ser ptr a struct o valor escalar)
     std::expected<llvm::Value *, Error> valOrErr =
-        node->values()[i]->accept(*this);
+        emitRValue(node->values()[i].get());
     if (!valOrErr)
       return createError(valOrErr.error());
     llvm::Value *elemValPtr = *valOrErr;
@@ -102,7 +102,11 @@ CodeGeneration::visit(const AST_INDEX *node) const noexcept {
   if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_INDEX");
 
-  // Índice a i64
+  // como el indice puede venir deducido de un chained guardamos los tipos
+  // previos
+  auto prevType{currentType};
+  auto prevResultchained = resultChainedExpression_;
+
   std::expected<llvm::Value *, Error> idxOrErr =
       emitRValue(node->index().get());
   if (!idxOrErr)
@@ -114,13 +118,13 @@ CodeGeneration::visit(const AST_INDEX *node) const noexcept {
   }
 
   // Dirección base (lvalue) de la expresión encadenada
-  llvm::Value *basePtr = resultChainedExpression_;
+  llvm::Value *basePtr = prevResultchained;
   if (!basePtr || !basePtr->getType()->isPointerTy())
     return createError(ERROR_TYPE::TYPE, "base of index is not a pointer");
 
   // Si es vector, extraer el puntero al buffer (campo .data)
   if (std::shared_ptr<VectorType> vecType =
-          std::dynamic_pointer_cast<VectorType>(currentType)) {
+          std::dynamic_pointer_cast<VectorType>(prevType)) {
     // Tipo del struct del vector
     std::expected<llvm::Type *, Error> structOrErr =
         vecType->llvmVersion(context_);
@@ -157,7 +161,7 @@ CodeGeneration::visit(const AST_INDEX *node) const noexcept {
 
   // Si es cadena, igual: devolvemos la dirección al carácter
   if (std::shared_ptr<BasicType> basic =
-          std::dynamic_pointer_cast<BasicType>(currentType);
+          std::dynamic_pointer_cast<BasicType>(prevType);
       basic && basic->baseKind() == BasicKind::Str) {
     // cargar el i8* de la variable
     llvm::Value *strPtr =

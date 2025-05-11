@@ -43,7 +43,6 @@ CodeGeneration::visit(const AST_CHAINED *node) const noexcept {
   // Recorre las operaciones encadenadas
   for (const std::shared_ptr<AST> &op : node->operations()) {
     llvm::Value *next;
-
     if (const AST_ATTR_ACCESS *attr =
             dynamic_cast<const AST_ATTR_ACCESS *>(op.get())) {
       // acceso a atributo → lvalue
@@ -53,7 +52,7 @@ CodeGeneration::visit(const AST_CHAINED *node) const noexcept {
       next = *addr;
     } else if (const AST_INDEX *idx =
                    dynamic_cast<const AST_INDEX *>(op.get())) {
-      // acceso por índice → ¡rvalue!, devuelve el valor dentro del vector/str
+      // acceso por índice rvalue, devuelve el valor dentro del vector/str
       std::expected<llvm::Value *, Error> val = emitRValue(idx);
       if (!val)
         return createError(val.error());
