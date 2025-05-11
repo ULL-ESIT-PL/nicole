@@ -2,10 +2,8 @@
 
 #include "../../../inc/parsingAnalysis/ast/tree.h"
 #include "../../../inc/parsingAnalysis/ast/vector/ast_index.h"
-#include <cstddef>
 #include <llvm/Passes/PassBuilder.h>
 #include <memory>
-#include <variant>
 
 /**
 
@@ -178,7 +176,7 @@ CodeGeneration::emitRValue(const AST *node) const noexcept {
 
   // Si es puntero:
   if (val->getType()->isPointerTy()) {
-    // ¡Pero sólo cargamos si NO es una constante!
+    // sólo cargamos si NO es una constante
     if (!llvm::isa<llvm::Constant>(val) && !isVectorElement(node)) {
       // esto cubre variables locales (alloca), argumentos, etc.
       return builder_.CreateLoad(llvmTy, val, "rval_load");

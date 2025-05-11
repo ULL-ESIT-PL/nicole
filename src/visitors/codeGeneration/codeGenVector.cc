@@ -5,7 +5,6 @@
 
 #include <cstddef>
 #include <memory>
-#include <variant>
 
 namespace nicole {
 
