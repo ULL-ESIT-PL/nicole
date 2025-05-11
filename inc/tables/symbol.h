@@ -2,6 +2,7 @@
 #define SYMBOL_H
 
 #include <string>
+
 namespace nicole {
 
 class Symbol {

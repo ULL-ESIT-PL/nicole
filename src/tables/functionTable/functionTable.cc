@@ -1,4 +1,5 @@
 #include "../../../inc/tables/functionTable/functionTable.h"
+#include <iostream>
 
 namespace nicole {
 
@@ -16,8 +17,9 @@ void FunctionTable::insert(const Function &function) noexcept {
 
 void FunctionTable::print() const noexcept {
   std::cout << "Functions:\n";
-  for (const auto &functions : table_) {
-    for (const auto &function : functions.second) {
+  for (const std::pair<const std::string, std::vector<nicole::Function>>
+           &functions : table_) {
+    for (const Function &function : functions.second) {
       std::cout << function.id() << "\n";
     }
   }

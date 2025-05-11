@@ -1,4 +1,5 @@
 #include "../../../inc/tables/typeTable/types/userTypes/methodTable.h"
+#include <iostream>
 
 namespace nicole {
 
@@ -16,8 +17,9 @@ void MethodTable::insert(const Method &method) noexcept {
 
 void MethodTable::print() const noexcept {
   std::cout << "Methods:\n";
-  for (const auto &methods : table_) {
-    for (const auto &method : methods.second) {
+  for (const std::pair<const std::string, std::vector<nicole::Method>>
+           &methods : table_) {
+    for (const Method &method : methods.second) {
       std::cout << method.id() << "\n";
     }
   }
@@ -45,9 +47,9 @@ MethodTable::setMethodParameters(const std::string &id,
   return std::expected<std::monostate, Error>{std::monostate{}};
 }
 
-std::expected<std::monostate, Error>
-MethodTable::setMethodGenercis(const std::string &id,
-                               const std::vector<GenericParameter> &params) noexcept {
+std::expected<std::monostate, Error> MethodTable::setMethodGenercis(
+    const std::string &id,
+    const std::vector<GenericParameter> &params) noexcept {
   if (table_.find(id) == table_.end() || table_.at(id).empty()) {
     return createError(ERROR_TYPE::METHOD, "Method not found: " + id);
   }
@@ -55,6 +57,5 @@ MethodTable::setMethodGenercis(const std::string &id,
   table_[id].back().setGenerics(params);
   return std::expected<std::monostate, Error>{std::monostate{}};
 }
-
 
 } // namespace nicole

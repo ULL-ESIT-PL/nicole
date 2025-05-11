@@ -7,7 +7,7 @@ namespace nicole {
 
 const Category Lexer::concatCategories() const noexcept {
   std::string pattern{""};
-  for (const auto &category : categories_) {
+  for (const Category &category : categories_) {
     pattern += category.rawPattern() + "|";
   }
   pattern.pop_back();
@@ -18,7 +18,7 @@ const std::expected<void, Error>
 Lexer::checkUnmatched(const std::vector<Token> &tokens) const noexcept {
   bool unmatchedFlag{false};
   std::string everyUnmatched{"Unmatched tokens:\n"};
-  for (const auto &TOKEN : tokens) {
+  for (const Token &TOKEN : tokens) {
     if (TOKEN.type() == TokenType::UNMATCHED) {
       everyUnmatched += TOKEN.raw() + "\n";
       unmatchedFlag = true;
@@ -78,7 +78,8 @@ Lexer::analyze(const std::filesystem::path &fileName,
         std::cout << "Unmatched: " << UNMATCHED << "\n";
       }
 
-      for (auto it = lastMatchEnd; it != what[0].first; ++it) {
+      for (std::string::const_iterator it = lastMatchEnd; it != what[0].first;
+           ++it) {
         if (*it == '\n') {
           ++row;
           col = 1;
@@ -90,7 +91,7 @@ Lexer::analyze(const std::filesystem::path &fileName,
       result.push_back(
           Token{TokenType::UNMATCHED, UNMATCHED, Location{fileName, row, col}});
     }
-    for (const auto &category : categories_) {
+    for (const Category &category : categories_) {
       if (std::regex_match(what[0].str(), category.pattern().pattern())) {
         if (verbose) {
           std::cout << "Category: " << tokenTypeToString(category.type())
@@ -105,7 +106,8 @@ Lexer::analyze(const std::filesystem::path &fileName,
       }
     }
 
-    for (auto it = what[0].first; it != what[0].second; ++it) {
+    for (std::string::const_iterator it = what[0].first; it != what[0].second;
+         ++it) {
       if (*it == '\n') {
         ++row;
         col = 1;
@@ -124,7 +126,7 @@ Lexer::analyze(const std::filesystem::path &fileName,
       std::cout << "Unmatched: " << UNMATCHED << "\n";
     }
 
-    for (auto it = lastMatchEnd; it != end; ++it) {
+    for (std::string::const_iterator it = lastMatchEnd; it != end; ++it) {
       if (*it == '\n') {
         ++row;
         col = 1;

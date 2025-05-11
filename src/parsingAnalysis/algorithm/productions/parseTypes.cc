@@ -7,7 +7,8 @@ namespace nicole {
 const std::expected<std::shared_ptr<Type>, Error>
 TopDown::parseType() const noexcept {
   // Se parsea el tipo base (incluyendo genéricos o vectores)
-  auto baseTypeExpected = parsePrimaryType();
+  std::expected<std::shared_ptr<Type>, Error> baseTypeExpected =
+      parsePrimaryType();
   if (!baseTypeExpected) {
     return createError(baseTypeExpected.error());
   }
@@ -16,7 +17,7 @@ TopDown::parseType() const noexcept {
   // Se admiten múltiples operadores '*' para punteros
   while (tkStream_.current() &&
          tkStream_.current()->type() == TokenType::OPERATOR_MULT) {
-    auto res = tryEat(); // consume '*'
+    std::expected<std::monostate, Error> res = tryEat(); // consume '*'
     if (!res) {
       return createError(res.error());
     }
@@ -27,7 +28,7 @@ TopDown::parseType() const noexcept {
 
 const std::expected<std::shared_ptr<Type>, Error>
 TopDown::parsePrimaryType() const noexcept {
-  const auto tokenExpected = tkStream_.current();
+  const std::expected<Token, Error> tokenExpected = tkStream_.current();
   if (!tokenExpected) {
     return createError(ERROR_TYPE::SINTAX,
                        "Fin de entrada inesperado al parsear un tipo.");
@@ -36,7 +37,7 @@ TopDown::parsePrimaryType() const noexcept {
   switch (token.type()) {
   case TokenType::VECTOR: {
     // Parsea "vector<elementType>"
-    auto res = tryEat(); // consume 'vector'
+    std::expected<std::monostate, Error> res = tryEat(); // consume 'vector'
     if (!res) {
       return createError(res.error());
     }
@@ -50,7 +51,7 @@ TopDown::parsePrimaryType() const noexcept {
     if (!res) {
       return createError(res.error());
     }
-    auto elemTypeExpected = parseType();
+    std::expected<std::shared_ptr<Type>, Error> elemTypeExpected = parseType();
     if (!elemTypeExpected) {
       return createError(elemTypeExpected.error());
     }
@@ -70,8 +71,9 @@ TopDown::parsePrimaryType() const noexcept {
     // Parsea un tipo definido por el usuario, con posibilidad de argumentos
     // genéricos.
     std::string name =
-        token.raw();     // se asume que token.value() retorna el nombre
-    auto res = tryEat(); // consume el identificador
+        token.raw(); // se asume que token.value() retorna el nombre
+    std::expected<std::monostate, Error> res =
+        tryEat(); // consume el identificador
     if (!res) {
       return createError(res.error());
     } // Si sigue un '<', se parsean los argumentos genéricos
@@ -82,7 +84,7 @@ TopDown::parsePrimaryType() const noexcept {
         return createError(res.error());
       }
       std::vector<std::shared_ptr<Type>> typeArgs;
-      auto argExpected = parseType();
+      std::expected<std::shared_ptr<Type>, Error> argExpected = parseType();
       if (!argExpected) {
         return createError(argExpected.error());
       }
@@ -111,7 +113,7 @@ TopDown::parsePrimaryType() const noexcept {
       if (!res) {
         return createError(res.error());
       } // Se crea un GenericInstanceType a partir de un UserType provisional
-      auto userType = std::make_shared<UserType>(
+      std::shared_ptr<UserType> userType = std::make_shared<UserType>(
           name, nullptr, std::vector<GenericParameter>{});
       return std::make_shared<GenericInstanceType>(userType, typeArgs);
     } else {
@@ -127,7 +129,8 @@ TopDown::parsePrimaryType() const noexcept {
   case TokenType::TYPE_STR:
   case TokenType::TYPE_FLOAT:
   case TokenType::TYPE_DOUBLE: {
-    auto res = tryEat(); // consume el tipo incorporado
+    std::expected<std::monostate, Error> res =
+        tryEat(); // consume el tipo incorporado
     if (!res) {
       return createError(res.error());
     }
@@ -161,7 +164,7 @@ TopDown::parsePrimaryType() const noexcept {
 const std::expected<std::vector<GenericParameter>, Error>
 TopDown::parseGenerics() const noexcept {
   std::vector<GenericParameter> result{};
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   while (tkStream_.currentPos() < tkStream_.size() and
@@ -172,11 +175,11 @@ TopDown::parseGenerics() const noexcept {
                              " at " + tkStream_.current()->locInfo());
     }
     result.push_back(GenericParameter{tkStream_.current()->raw()});
-    if (auto res = tryEat(); !res) {
+    if (std::expected<std::monostate, Error> res = tryEat(); !res) {
       return createError(res.error());
     }
     if (tkStream_.current()->type() == TokenType::COMMA) {
-      if (auto res = tryEat(); !res) {
+      if (std::expected<std::monostate, Error> res = tryEat(); !res) {
         return createError(res.error());
       }
       continue;
@@ -187,7 +190,7 @@ TopDown::parseGenerics() const noexcept {
                        "no generic type has been specified at" +
                            tkStream_.current()->locInfo());
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   return result;

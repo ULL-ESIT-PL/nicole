@@ -5,7 +5,7 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseVarDecl(const bool insideFor) const noexcept {
-  const auto firsToken{tkStream_.current()};
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
   const Token token{*tkStream_.current()};
   std::string varName;
   std::shared_ptr<Type> varType{nullptr};
@@ -21,13 +21,13 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
                              tkStream_.current()->locInfo());
     }
     varName = tkStream_.current()->raw();
-    if (auto res = tryEat(); !res) {
+    if (std::expected<std::monostate, Error> res = tryEat(); !res) {
       return createError(res.error());
     }
 
     // Verificar si hay una especificación de tipo
     if (tkStream_.current()->type() == TokenType::DOTDOT) {
-      if (auto res = tryEat(); !res) {
+      if (std::expected<std::monostate, Error> res = tryEat(); !res) {
         return createError(res.error());
       }
       const std::expected<std::shared_ptr<Type>, Error> returnType{parseType()};
@@ -39,11 +39,11 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
 
     // Verificar si hay un operador de asignación '='
     if (tkStream_.current()->type() == TokenType::ASSIGNMENT) {
-      if (auto res = tryEat(); !res) {
+      if (std::expected<std::monostate, Error> res = tryEat(); !res) {
         return createError(res.error());
       }
       // Parsear la expresión de valor
-      auto expr = parseTernary();
+      std::expected<std::shared_ptr<AST>, Error> expr = parseTernary();
       if (!expr || !*expr) {
         return createError(
             expr ? Error{ERROR_TYPE::NULL_NODE, "Expression is null"}
@@ -64,7 +64,7 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
             "Expected ';' at the end of variable declaration at " +
                 tkStream_.current()->locInfo());
       }
-      if (auto res = tryEat(); !res) {
+      if (std::expected<std::monostate, Error> res = tryEat(); !res) {
         return createError(res.error());
       }
     }
@@ -73,10 +73,10 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
 
   switch (token.type()) {
   case TokenType::CONST: { // const variable: type = expression;
-    if (auto res = tryEat(); !res) {
+    if (std::expected<std::monostate, Error> res = tryEat(); !res) {
       return createError(res.error());
     }
-    auto result = parseCommon();
+    std::expected<void, Error> result = parseCommon();
     if (!result) {
       return createError(result.error());
     }
@@ -86,10 +86,10 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
         valueExpr);
   }
   case TokenType::LET: { // let variable: type = expression;
-    if (auto res = tryEat(); !res) {
+    if (std::expected<std::monostate, Error> res = tryEat(); !res) {
       return createError(res.error());
     }
-    auto result = parseCommon();
+    std::expected<void, Error> result = parseCommon();
     if (!result) {
       return createError(result.error());
     }
@@ -98,10 +98,10 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
         valueExpr);
   }
   case TokenType::AUTO: { // auto variable = expression;
-    if (auto res = tryEat(); !res) {
+    if (std::expected<std::monostate, Error> res = tryEat(); !res) {
       return createError(res.error());
     }
-    auto result = parseCommon();
+    std::expected<void, Error> result = parseCommon();
     if (!result) {
       return createError(result.error());
     }
@@ -122,8 +122,8 @@ TopDown::parseVarDecl(const bool insideFor) const noexcept {
 
 const std::expected<std::shared_ptr<AST_DELETE>, Error>
 TopDown::parseDelete() const noexcept {
-  const auto firsToken{tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST>, Error> value{parseOr()};

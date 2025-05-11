@@ -3,7 +3,6 @@
 
 #include "../type.h"
 #include "genericParameter.h"
-#include <memory>
 #include <string>
 
 namespace nicole {

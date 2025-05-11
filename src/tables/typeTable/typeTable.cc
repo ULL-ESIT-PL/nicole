@@ -1,6 +1,7 @@
 #include "../../../inc/tables/typeTable/typeTable.h"
 #include <memory>
 #include <vector>
+#include <iostream>
 
 namespace nicole {
 

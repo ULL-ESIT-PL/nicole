@@ -7,7 +7,6 @@
 #include "../../tables/typeTable/typeTable.h"
 #include "../visitor.h"
 #include <memory>
-#include <variant>
 #include <vector>
 
 namespace nicole {

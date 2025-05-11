@@ -4,7 +4,7 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseOr() const noexcept {
-  const auto firsToken{tkStream_.current()};
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
   std::expected<std::shared_ptr<AST>, Error> left{parseAnd()};
 
   if (!left || !*left) {
@@ -43,7 +43,7 @@ TopDown::parseOr() const noexcept {
 
 const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseAnd() const noexcept {
-  const auto firsToken{tkStream_.current()};
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
   std::expected<std::shared_ptr<AST>, Error> left{parseEqual_NotEqual()};
 
   if (!left || !*left) {
@@ -82,7 +82,7 @@ TopDown::parseAnd() const noexcept {
 
 const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseEqual_NotEqual() const noexcept {
-  const auto firsToken{tkStream_.current()};
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
   std::expected<std::shared_ptr<AST>, Error> left{parseCompare()};
 
   if (!left || !*left) {
@@ -121,7 +121,7 @@ TopDown::parseEqual_NotEqual() const noexcept {
 
 const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseCompare() const noexcept {
-  const auto firsToken{tkStream_.current()};
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
   std::expected<std::shared_ptr<AST>, Error> left{parseAdd_Sub()};
 
   if (!left || !*left) {
@@ -162,7 +162,7 @@ TopDown::parseCompare() const noexcept {
 
 const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseAdd_Sub() const noexcept {
-  const auto firsToken{tkStream_.current()};
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
   std::expected<std::shared_ptr<AST>, Error> left{parseMult_Div_Module()};
 
   if (!left || !*left) {
@@ -202,7 +202,7 @@ TopDown::parseAdd_Sub() const noexcept {
 
 const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseMult_Div_Module() const noexcept {
-  const auto firsToken{tkStream_.current()};
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
   std::expected<std::shared_ptr<AST>, Error> left{parseFactor()};
 
   if (!left || !*left) {

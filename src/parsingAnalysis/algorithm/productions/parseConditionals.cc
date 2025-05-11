@@ -4,8 +4,8 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_IF>, Error>
 TopDown::parseIf() const noexcept {
-  const auto firsToken{tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_CONDITION>, Error> condition{
@@ -35,7 +35,7 @@ TopDown::parseIf() const noexcept {
     return Builder::createIf(SourceLocation{*firsToken, *tkStream_.lastRead()},
                              *condition, *bodyIf, elseIfs, nullptr);
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_BODY>, Error> bodyElse{parseBody()};
@@ -49,11 +49,11 @@ TopDown::parseIf() const noexcept {
 
 const std::expected<std::shared_ptr<AST_ELSE_IF>, Error>
 TopDown::parseElseIf() const noexcept {
-  const auto firsToken{tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_CONDITION>, Error> condition{
@@ -73,8 +73,8 @@ TopDown::parseElseIf() const noexcept {
 
 const std::expected<std::shared_ptr<AST_SWITCH>, Error>
 TopDown::parseSwitch() const noexcept {
-  const auto firsToken{tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_CONDITION>, Error> condition{
@@ -88,7 +88,7 @@ TopDown::parseSwitch() const noexcept {
                        "missing left bracket of switch at " +
                            tkStream_.current()->locInfo());
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   std::vector<std::shared_ptr<AST_CASE>> cases{};
@@ -109,7 +109,7 @@ TopDown::parseSwitch() const noexcept {
                            tkStream_.current()->locInfo());
   }
   if (tkStream_.current()->type() == TokenType::RB) {
-    if (auto res = tryEat(); !res) {
+    if (std::expected<std::monostate, Error> res = tryEat(); !res) {
       return createError(res.error());
     }
     return Builder::createSwitch(
@@ -133,7 +133,7 @@ TopDown::parseSwitch() const noexcept {
                        "missing right bracket of switch at " +
                            tkStream_.current()->locInfo());
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   return Builder::createSwitch(
@@ -143,8 +143,8 @@ TopDown::parseSwitch() const noexcept {
 
 const std::expected<std::shared_ptr<AST_CASE>, Error>
 TopDown::parseCase() const noexcept {
-  const auto firsToken{tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST>, Error> condition{parseOr()};
@@ -156,7 +156,7 @@ TopDown::parseCase() const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing : of case at " +
                                                tkStream_.current()->locInfo());
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
@@ -170,8 +170,8 @@ TopDown::parseCase() const noexcept {
 
 const std::expected<std::shared_ptr<AST_DEFAULT>, Error>
 TopDown::parseDefault() const noexcept {
-  const auto firsToken{tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
@@ -185,7 +185,7 @@ TopDown::parseDefault() const noexcept {
 
 const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseTernary() const noexcept {
-  const auto firsToken{tkStream_.current()};
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
   // to avoid ambigious situations like (something) being treated like ternary
   if (tkStream_.current()->type() == TokenType::LP and
       tkStream_.isTokenAheadBeforeSemicolon(TokenType::TERNARY)) {
@@ -201,7 +201,7 @@ TopDown::parseTernary() const noexcept {
                          "missing ? of ternary operator at " +
                              tkStream_.current()->locInfo());
     }
-    if (auto res = tryEat(); !res) {
+    if (std::expected<std::monostate, Error> res = tryEat(); !res) {
       return createError(res.error());
     }
     const std::expected<std::shared_ptr<AST>, Error> first{parseOr()};
@@ -214,7 +214,7 @@ TopDown::parseTernary() const noexcept {
                          "missing : of terna operator at " +
                              tkStream_.current()->locInfo());
     }
-    if (auto res = tryEat(); !res) {
+    if (std::expected<std::monostate, Error> res = tryEat(); !res) {
       return createError(res.error());
     }
     const std::expected<std::shared_ptr<AST>, Error> second{parseOr()};
@@ -231,14 +231,14 @@ TopDown::parseTernary() const noexcept {
 
 const std::expected<std::shared_ptr<AST_CONDITION>, Error>
 TopDown::parseCondition(const bool isInsideFor) const noexcept {
-  const auto firsToken{tkStream_.current()};
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
   if (!isInsideFor) {
     if (tkStream_.current()->type() != TokenType::LP) {
       return createError(ERROR_TYPE::SINTAX,
                          "missing left parenthesis at " +
                              tkStream_.current()->locInfo());
     }
-    if (auto res = tryEat(); !res) {
+    if (std::expected<std::monostate, Error> res = tryEat(); !res) {
       return createError(res.error());
     }
     if (tkStream_.current()->type() == TokenType::RP) {
@@ -258,7 +258,7 @@ TopDown::parseCondition(const bool isInsideFor) const noexcept {
                          "missing right parenthesis of condition at " +
                              tkStream_.current()->locInfo());
     }
-    if (auto res = tryEat(); !res) {
+    if (std::expected<std::monostate, Error> res = tryEat(); !res) {
       return createError(res.error());
     }
   }

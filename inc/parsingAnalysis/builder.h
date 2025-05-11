@@ -67,7 +67,6 @@
 
 #include "../errors.h"
 
-#include <cstddef>
 #include <expected>
 #include <memory>
 

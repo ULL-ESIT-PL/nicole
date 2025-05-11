@@ -22,7 +22,7 @@ namespace nicole {
 std::expected<std::string, Error>
 CodeGeneration::nameMangling(const std::shared_ptr<Type> &type) const noexcept {
   std::string mangled{};
-  auto res = nameManglingImpl(type, mangled);
+  std::expected<std::string, Error> res = nameManglingImpl(type, mangled);
   if (!res)
     return res;
   // quitar posible guión bajo inicial
@@ -37,7 +37,8 @@ CodeGeneration::nameManglingImpl(const std::shared_ptr<Type> &type,
   if (!type)
     return createError(ERROR_TYPE::TYPE, "null type in name mangling");
 
-  if (auto bt = std::dynamic_pointer_cast<BasicType>(type)) {
+  if (std::shared_ptr<BasicType> bt =
+          std::dynamic_pointer_cast<BasicType>(type)) {
     result += '_' + bt->toString();
     return result;
   }
@@ -49,41 +50,50 @@ CodeGeneration::nameManglingImpl(const std::shared_ptr<Type> &type,
     result += "_null";
     return result;
   }
-  if (auto pt = std::dynamic_pointer_cast<PointerType>(type)) {
-    auto rec = nameManglingImpl(pt->baseType(), result);
+  if (std::shared_ptr<PointerType> pt =
+          std::dynamic_pointer_cast<PointerType>(type)) {
+    std::expected<std::string, Error> rec =
+        nameManglingImpl(pt->baseType(), result);
     if (!rec)
       return rec;
     result += "_ptr";
     return result;
   }
-  if (auto vt = std::dynamic_pointer_cast<VectorType>(type)) {
-    auto rec = nameManglingImpl(vt->elementType(), result);
+  if (std::shared_ptr<VectorType> vt =
+          std::dynamic_pointer_cast<VectorType>(type)) {
+    std::expected<std::string, Error> rec =
+        nameManglingImpl(vt->elementType(), result);
     if (!rec)
       return rec;
     result += "_vec";
     return result;
   }
-  if (auto ct = std::dynamic_pointer_cast<ConstType>(type)) {
+  if (std::shared_ptr<ConstType> ct =
+          std::dynamic_pointer_cast<ConstType>(type)) {
     result += "_const";
-    auto rec = nameManglingImpl(ct->baseType(), result);
+    std::expected<std::string, Error> rec =
+        nameManglingImpl(ct->baseType(), result);
     if (!rec)
       return rec;
     return result;
   }
-  if (auto et = std::dynamic_pointer_cast<EnumType>(type)) {
+  if (std::shared_ptr<EnumType> et =
+          std::dynamic_pointer_cast<EnumType>(type)) {
     result += '_' + et->name();
     return result;
   }
-  if (auto git = std::dynamic_pointer_cast<GenericInstanceType>(type)) {
+  if (std::shared_ptr<GenericInstanceType> git =
+          std::dynamic_pointer_cast<GenericInstanceType>(type)) {
     result += '_' + git->name();
-    for (auto &arg : git->typeArgs()) {
-      auto rec = nameManglingImpl(arg, result);
+    for (const std::shared_ptr<Type> &arg : git->typeArgs()) {
+      std::expected<std::string, Error> rec = nameManglingImpl(arg, result);
       if (!rec)
         return rec;
     }
     return result;
   }
-  if (auto ut = std::dynamic_pointer_cast<UserType>(type)) {
+  if (std::shared_ptr<UserType> ut =
+          std::dynamic_pointer_cast<UserType>(type)) {
     result += '_' + ut->name();
     return result;
   }
@@ -100,7 +110,8 @@ CodeGeneration::nameManglingFunction(const Function &func,
                                      const std::vector<std::shared_ptr<Type>>
                                          &genericReplacements) const noexcept {
   std::string mangled{"$"};
-  auto res = nameManglingFunctionImpl(func, genericReplacements, mangled);
+  std::expected<std::string, Error> res =
+      nameManglingFunctionImpl(func, genericReplacements, mangled);
   if (!res)
     return res;
   return mangled;
@@ -113,23 +124,24 @@ std::expected<std::string, Error> CodeGeneration::nameManglingFunctionImpl(
   result += '_';
   result += func.id();
 
-  for (const auto &genType : genericReplacements) {
-    auto resType = nameMangling(genType);
+  for (const std::shared_ptr<Type> &genType : genericReplacements) {
+    std::expected<std::string, Error> resType = nameMangling(genType);
     if (!resType)
       return createError(resType.error());
     result += '_';
     result += *resType;
   }
 
-  for (const auto &param : func.params().params()) {
-    auto resParam = nameMangling(param.second);
+  for (const std::pair<std::string, std::shared_ptr<Type>> &param :
+       func.params().params()) {
+    std::expected<std::string, Error> resParam = nameMangling(param.second);
     if (!resParam)
       return createError(resParam.error());
     result += '_';
     result += *resParam;
   }
 
-  auto resRet = nameMangling(func.returnType());
+  std::expected<std::string, Error> resRet = nameMangling(func.returnType());
   if (!resRet)
     return createError(resRet.error());
   result += "_ret_";
@@ -155,12 +167,13 @@ CodeGeneration::emitLValue(const AST *node) const noexcept {
 // EMIT RVALUE: carga una vez la dirección devuelta por emitLValue
 std::expected<llvm::Value *, Error>
 CodeGeneration::emitRValue(const AST *node) const noexcept {
-  auto valOrErr = emitLValue(node);
+  std::expected<llvm::Value *, Error> valOrErr = emitLValue(node);
   if (!valOrErr)
     return createError(valOrErr.error());
   llvm::Value *val = *valOrErr;
 
-  auto tyOrErr = node->returnedFromTypeAnalysis()->llvmVersion(context_);
+  std::expected<llvm::Type *, Error> tyOrErr =
+      node->returnedFromTypeAnalysis()->llvmVersion(context_);
   if (!tyOrErr)
     return createError(tyOrErr.error());
   llvm::Type *llvmTy = *tyOrErr;
@@ -168,7 +181,7 @@ CodeGeneration::emitRValue(const AST *node) const noexcept {
   // Agregados completos…
   if (llvmTy->isAggregateType()) {
     llvm::AllocaInst *tmp = builder_.CreateAlloca(llvmTy, nullptr, "agg_tmp");
-    const auto &DL = module_->getDataLayout();
+    const llvm::DataLayout &DL = module_->getDataLayout();
     builder_.CreateMemCpy(tmp, llvm::MaybeAlign(), val, llvm::MaybeAlign(),
                           DL.getTypeAllocSize(llvmTy));
     return tmp;
@@ -208,8 +221,8 @@ CodeGeneration::visit(const AST_BODY *node) const noexcept {
   llvm::Value *lastValue{nullptr};
 
   // Recorremos todas las sentencias del cuerpo
-  for (const auto &statement : node->body()) {
-    auto res = statement->accept(*this);
+  for (const std::shared_ptr<AST_STATEMENT> &statement : node->body()) {
+    std::expected<llvm::Value *, Error> res = statement->accept(*this);
     if (!res) {
       // Propagamos el error si alguna sentencia falla
       return createError(res.error());
@@ -235,16 +248,17 @@ CodeGeneration::visit(const Tree *tree) const noexcept {
   if (options_.validateTree()) {
     llvm::Type *i32Ty = llvm::Type::getInt32Ty(context_);
     llvm::FunctionType *wrapFT =
-      llvm::FunctionType::get(i32Ty, /*isVarArg=*/false);
+        llvm::FunctionType::get(i32Ty, /*isVarArg=*/false);
     mainFunction_ = llvm::Function::Create(
-      wrapFT, llvm::Function::ExternalLinkage, "main", module_.get());
+        wrapFT, llvm::Function::ExternalLinkage, "main", module_.get());
 
     // Insertamos el bloque de entrada ANTES de generar el cuerpo de usuario
     entry_ = llvm::BasicBlock::Create(context_, "entry", mainFunction_);
     builder_.SetInsertPoint(entry_);
 
     // Ahora generamos TODO el AST de usuario (incluido $_main) ---
-    if (auto res = tree->root()->accept(*this); !res)
+    if (std::expected<llvm::Value *, Error> res = tree->root()->accept(*this);
+        !res)
       return createError(res.error());
 
     // Llamamos a la función del usuario ($_main) y retornamos su i32 ---
@@ -256,8 +270,9 @@ CodeGeneration::visit(const Tree *tree) const noexcept {
     builder_.CreateRet(ret);
   } else {
     std::expected<llvm::Type *, Error> mainType{nullptr};
-    if (const auto isNopropagateType{std::dynamic_pointer_cast<NoPropagateType>(
-            tree->root()->returnedFromTypeAnalysis())}) {
+    if (const std::shared_ptr<NoPropagateType> isNopropagateType{
+            std::dynamic_pointer_cast<NoPropagateType>(
+                tree->root()->returnedFromTypeAnalysis())}) {
       mainType = typeTable_->voidType()->llvmVersion(context_);
     } else {
       mainType =
@@ -272,7 +287,8 @@ CodeGeneration::visit(const Tree *tree) const noexcept {
     entry_ = llvm::BasicBlock::Create(context_, "entry", mainFunction_);
     builder_.SetInsertPoint(entry_);
 
-    const auto result{tree->root()->accept(*this)};
+    const std::expected<llvm::Value *, Error> result{
+        tree->root()->accept(*this)};
     if (!result) {
       return createError(result.error());
     }
@@ -293,7 +309,7 @@ CodeGeneration::visit(const Tree *tree) const noexcept {
     PB.registerLoopAnalyses(LAM);
     PB.crossRegisterProxies(LAM, FAM, CGAM, MAM);
 
-    auto MPM =
+    llvm::ModulePassManager MPM =
         PB.buildPerModuleDefaultPipeline(llvm::OptimizationLevel::O3, true);
     MPM.run(*module_, MAM);
   }

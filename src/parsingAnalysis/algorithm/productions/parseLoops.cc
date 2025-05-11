@@ -4,8 +4,8 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_WHILE>, Error>
 TopDown::parseWhile() const noexcept {
-  const auto firsToken{tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_CONDITION>, Error> condition{
@@ -25,8 +25,8 @@ TopDown::parseWhile() const noexcept {
 
 const std::expected<std::shared_ptr<AST_FOR>, Error>
 TopDown::parseFor() const noexcept {
-  const auto firsToken{tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::LP) {
@@ -34,7 +34,7 @@ TopDown::parseFor() const noexcept {
                        "missing left parenthesis of for at " +
                            tkStream_.current()->locInfo());
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   if (tkStream_.current()->type() == TokenType::RP) {
@@ -53,7 +53,7 @@ TopDown::parseFor() const noexcept {
     }
     init.push_back(*expression);
     if (tkStream_.current()->type() == TokenType::COMMA) {
-      if (auto res = tryEat(); !res) {
+      if (std::expected<std::monostate, Error> res = tryEat(); !res) {
         return createError(res.error());
       }
       continue;
@@ -68,7 +68,7 @@ TopDown::parseFor() const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing ; after init of for at " +
                                                tkStream_.current()->locInfo());
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
 
@@ -88,7 +88,7 @@ TopDown::parseFor() const noexcept {
                        "missing ; after condition of for at " +
                            tkStream_.current()->locInfo());
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   std::vector<std::shared_ptr<AST>> update{};
@@ -103,7 +103,7 @@ TopDown::parseFor() const noexcept {
     }
     update.push_back(*expression);
     if (tkStream_.current()->type() == TokenType::COMMA) {
-      if (auto res = tryEat(); !res) {
+      if (std::expected<std::monostate, Error> res = tryEat(); !res) {
         return createError(res.error());
       }
       continue;
@@ -114,7 +114,7 @@ TopDown::parseFor() const noexcept {
     }
     break;
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
@@ -128,8 +128,8 @@ TopDown::parseFor() const noexcept {
 
 const std::expected<std::shared_ptr<AST_DO_WHILE>, Error>
 TopDown::parseDoWhile() const noexcept {
-  const auto firsToken{tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_BODY>, Error> body{parseBody()};
@@ -142,7 +142,7 @@ TopDown::parseDoWhile() const noexcept {
                        "missing while keyword of do while at " +
                            tkStream_.current()->locInfo());
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   const std::expected<std::shared_ptr<AST_CONDITION>, Error> condition{
@@ -163,8 +163,8 @@ TopDown::parseDoWhile() const noexcept {
 
 const std::expected<std::shared_ptr<AST_PASS>, Error>
 TopDown::parsePass() const noexcept {
-  const auto firsToken{tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::SEMICOLON) {
@@ -176,8 +176,8 @@ TopDown::parsePass() const noexcept {
 
 const std::expected<std::shared_ptr<AST_STOP>, Error>
 TopDown::parseStop() const noexcept {
-  const auto firsToken{tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::SEMICOLON) {

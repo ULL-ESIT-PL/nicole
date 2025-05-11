@@ -7,14 +7,14 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_CHAINED>, Error>
 TopDown::parseChainedExpression() const noexcept {
-  const auto firsToken{tkStream_.current()};
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
   if (tkStream_.current()->type() != TokenType::ID) {
     return createError(ERROR_TYPE::SINTAX, "Expected identifier at " +
                                                tkStream_.current()->locInfo());
   }
 
   const Token baseToken{*tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
 
@@ -26,7 +26,8 @@ TopDown::parseChainedExpression() const noexcept {
   }
 
   if ((tkStream_.current()->type() != TokenType::LP or
-      tkStream_.current()->type() != TokenType::LB) and replacementOfGenerics->size()) {
+       tkStream_.current()->type() != TokenType::LB) and
+      replacementOfGenerics->size()) {
     cannotBeVarCall = true;
   }
 
@@ -40,8 +41,10 @@ TopDown::parseChainedExpression() const noexcept {
     }
 
     // Crear nodo de función
-    auto funcCall = Builder::createFunCall(SourceLocation{*firsToken, *tkStream_.lastRead()},baseToken.raw(),
-                                           *replacementOfGenerics, *arguemnts);
+    std::expected<std::shared_ptr<AST_FUNC_CALL>, Error> funcCall =
+        Builder::createFunCall(
+            SourceLocation{*firsToken, *tkStream_.lastRead()}, baseToken.raw(),
+            *replacementOfGenerics, *arguemnts);
     if (!funcCall || !*funcCall) {
       return createError(
           funcCall ? Error{ERROR_TYPE::NULL_NODE, "Failed to create func call"}
@@ -56,8 +59,10 @@ TopDown::parseChainedExpression() const noexcept {
       return createError(arguemnts.error());
     }
 
-    auto constructorCall = Builder::createConstructorCall(SourceLocation{*firsToken, *tkStream_.lastRead()},
-        baseToken.raw(), *replacementOfGenerics, *arguemnts);
+    std::expected<std::shared_ptr<AST_CONSTRUCTOR_CALL>, Error>
+        constructorCall = Builder::createConstructorCall(
+            SourceLocation{*firsToken, *tkStream_.lastRead()}, baseToken.raw(),
+            *replacementOfGenerics, *arguemnts);
     if (!constructorCall || !*constructorCall) {
       return createError(constructorCall
                              ? Error{ERROR_TYPE::NULL_NODE,
@@ -73,7 +78,9 @@ TopDown::parseChainedExpression() const noexcept {
               tkStream_.lastRead()->locInfo());
     }
     // Variable normal
-    auto varCall = Builder::createVarCall(SourceLocation{*firsToken, *tkStream_.lastRead()},baseToken.raw());
+    std::expected<std::shared_ptr<AST_VAR_CALL>, Error> varCall =
+        Builder::createVarCall(
+            SourceLocation{*firsToken, *tkStream_.lastRead()}, baseToken.raw());
     if (!varCall || !*varCall) {
       return createError(
           varCall ? Error{ERROR_TYPE::NULL_NODE, "Failed to create var call"}
@@ -92,11 +99,11 @@ TopDown::parseChainedExpression() const noexcept {
     // Acceso a índice -> base[index]
     case TokenType::LC: {
       // Consumir '['
-      if (auto res = tryEat(); !res) {
+      if (std::expected<std::monostate, Error> res = tryEat(); !res) {
         return createError(res.error());
       }
       // parseOr() para la expresión de índice
-      auto indexExpr = parseOr();
+      std::expected<std::shared_ptr<AST>, Error> indexExpr = parseOr();
       if (!indexExpr || !*indexExpr) {
         return createError(indexExpr
                                ? Error{ERROR_TYPE::NULL_NODE, "index is null"}
@@ -108,7 +115,9 @@ TopDown::parseChainedExpression() const noexcept {
                            "Missing ']' at " + tkStream_.current()->locInfo());
       }
       // Crear nodo de índice
-      auto indexNode = Builder::createIndex(SourceLocation{*firsToken, *tkStream_.lastRead()},*indexExpr);
+      std::expected<std::shared_ptr<AST_INDEX>, Error> indexNode =
+          Builder::createIndex(
+              SourceLocation{*firsToken, *tkStream_.lastRead()}, *indexExpr);
       if (!indexNode || !*indexNode) {
         return createError(indexNode ? Error{ERROR_TYPE::NULL_NODE,
                                              "Failed to create index node"}
@@ -121,7 +130,7 @@ TopDown::parseChainedExpression() const noexcept {
     // Punto -> base.atributo o base.metodo(...)
     case TokenType::DOT: {
       // Consumir '.'
-      if (auto res = tryEat(); !res) {
+      if (std::expected<std::monostate, Error> res = tryEat(); !res) {
         return createError(res.error());
       }
       if (tkStream_.current()->type() != TokenType::ID) {
@@ -132,7 +141,7 @@ TopDown::parseChainedExpression() const noexcept {
 
       // Leer el nombre del atributo/método
       Token attrToken{*tkStream_.current()};
-      if (auto res = tryEat(); !res) {
+      if (std::expected<std::monostate, Error> res = tryEat(); !res) {
         return createError(res.error());
       }
 
@@ -143,7 +152,8 @@ TopDown::parseChainedExpression() const noexcept {
         return createError(replacementOfGenerics2.error());
       }
 
-      if (tkStream_.current()->type() != TokenType::LP and replacementOfGenerics->size()) {
+      if (tkStream_.current()->type() != TokenType::LP and
+          replacementOfGenerics->size()) {
         cannotBeAttrAccess = true;
       }
 
@@ -156,8 +166,10 @@ TopDown::parseChainedExpression() const noexcept {
           return createError(arguemnts.error());
         }
 
-        auto methodNode = Builder::createMethodCall(SourceLocation{*firsToken, *tkStream_.lastRead()},
-            attrToken.raw(), *replacementOfGenerics2, *arguemnts);
+        std::expected<std::shared_ptr<AST_METHOD_CALL>, Error> methodNode =
+            Builder::createMethodCall(
+                SourceLocation{*firsToken, *tkStream_.lastRead()},
+                attrToken.raw(), *replacementOfGenerics2, *arguemnts);
         if (!methodNode || !*methodNode) {
           return createError(methodNode ? Error{ERROR_TYPE::NULL_NODE,
                                                 "Failed to create method call"}
@@ -172,7 +184,10 @@ TopDown::parseChainedExpression() const noexcept {
                   tkStream_.lastRead()->locInfo());
         }
         // Es un atributo
-        auto attrNode = Builder::createAttrAccess(SourceLocation{*firsToken, *tkStream_.lastRead()},attrToken.raw());
+        std::expected<std::shared_ptr<AST_ATTR_ACCESS>, Error> attrNode =
+            Builder::createAttrAccess(
+                SourceLocation{*firsToken, *tkStream_.lastRead()},
+                attrToken.raw());
         if (!attrNode || !*attrNode) {
           return createError(attrNode
                                  ? Error{ERROR_TYPE::NULL_NODE,
@@ -186,12 +201,15 @@ TopDown::parseChainedExpression() const noexcept {
 
     default:
       // Si ya no es ni '[', ni '.', ni '(', terminamos
-      return Builder::createChained(SourceLocation{*firsToken, *tkStream_.lastRead()},basePtr, operations);
+      return Builder::createChained(
+          SourceLocation{*firsToken, *tkStream_.lastRead()}, basePtr,
+          operations);
     }
   }
 
   // Si se acaban los tokens, retornamos la cadena
-  return Builder::createChained(SourceLocation{*firsToken, *tkStream_.lastRead()},basePtr, operations);
+  return Builder::createChained(
+      SourceLocation{*firsToken, *tkStream_.lastRead()}, basePtr, operations);
 }
 
 } // namespace nicole

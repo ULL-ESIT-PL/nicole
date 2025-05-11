@@ -7,7 +7,7 @@ const std::expected<std::shared_ptr<Tree>, Error>
 TopDown::parse(const std::filesystem::path &entryFile) const noexcept {
   parsedFiles_.insert(entryFile);
 
-  const auto tkStream{lexer_.analyze(entryFile)};
+  const std::expected<TokenStream, Error> tkStream{lexer_.analyze(entryFile)};
 
   if (!tkStream) {
     return createError(tkStream.error());
@@ -26,7 +26,8 @@ TopDown::parse(const std::filesystem::path &entryFile) const noexcept {
                             : root.error());
   }
 
-  const auto tree{Builder::createTree(*root)};
+  const std::expected<std::shared_ptr<Tree>, Error> tree{
+      Builder::createTree(*root)};
 
   if (!tree) {
     return createError(tree.error());
@@ -39,7 +40,7 @@ const std::expected<std::shared_ptr<AST_BODY>, Error>
 TopDown::parseStart() const noexcept {
   std::vector<std::shared_ptr<AST_STATEMENT>> statements{};
 
-  const auto firsToken{tkStream_.current()};
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
 
   while (tkStream_.currentPos() < tkStream_.size()) {
     const std::expected<std::shared_ptr<AST_STATEMENT>, Error> statement{
@@ -69,13 +70,13 @@ TopDown::parseStart() const noexcept {
 const std::expected<std::shared_ptr<AST_BODY>, Error>
 TopDown::parseBody() const noexcept {
 
-  const auto firsToken{tkStream_.current()};
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
 
   if (tkStream_.current()->type() != TokenType::LB) {
     return createError(ERROR_TYPE::SINTAX,
                        "missing { at " + tkStream_.current()->locInfo());
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
 
@@ -100,7 +101,7 @@ TopDown::parseBody() const noexcept {
     return createError(ERROR_TYPE::SINTAX,
                        "missing } at " + tkStream_.current()->locInfo());
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
 
@@ -116,7 +117,7 @@ TopDown::parseBody() const noexcept {
 
 const std::expected<std::shared_ptr<AST_STATEMENT>, Error>
 TopDown::parseStatement() const noexcept {
-  const auto firsToken{tkStream_.current()};
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
   // Función auxiliar para elegir la sentencia a parsear.
   auto parseStmt = [&]() -> std::expected<std::shared_ptr<AST>, Error> {
     // in case that it is an assignment
@@ -162,7 +163,7 @@ TopDown::parseStatement() const noexcept {
     }
   };
 
-  auto statement = parseStmt();
+  std::expected<std::shared_ptr<AST>, Error> statement = parseStmt();
 
   if (!statement || !*statement)
     return createError(statement ? Error{ERROR_TYPE::NULL_NODE, "node is null"}

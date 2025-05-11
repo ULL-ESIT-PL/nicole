@@ -45,7 +45,7 @@ bool TokenStream::isTokenAheadBeforeSemicolon(
     const TokenType type) const noexcept {
   bool foundToken{false};
   for (size_t i{currentPos_}; i < tokens_.size(); ++i) {
-    auto tk{tokens_[i]};
+    Token tk{tokens_[i]};
     if (tk.type() == type) {
       foundToken = true;
       break;

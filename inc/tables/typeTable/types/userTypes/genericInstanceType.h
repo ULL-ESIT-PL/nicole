@@ -61,8 +61,8 @@ public:
     if (origStruct->isOpaque()) {
       std::vector<llvm::Type*> elements;
       elements.reserve(typeArgs_.size());
-      for (const auto &arg : typeArgs_) {
-        auto tyOrErr = arg->llvmVersion(context);
+      for (const std::shared_ptr<nicole::Type> &arg : typeArgs_) {
+        std::expected<llvm::Type *, Error> tyOrErr = arg->llvmVersion(context);
         if (!tyOrErr) {
           return createError(tyOrErr.error());
         }

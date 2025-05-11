@@ -5,9 +5,8 @@
 #include "../../../inc/parsingAnalysis/ast/loops/ast_pass.h"
 #include "../../../inc/parsingAnalysis/ast/loops/ast_stop.h"
 #include "../../../inc/parsingAnalysis/ast/loops/ast_while.h"
-#include <cstddef>
+#include <llvm/IR/BasicBlock.h>
 #include <memory>
-#include <variant>
 
 namespace nicole {
 
@@ -36,7 +35,8 @@ CodeGeneration::visit(const AST_WHILE *node) const noexcept {
   // Condición: branch condicional
   builder_.SetInsertPoint(condBB);
 
-  auto condOrErr = emitRValue(node->condition().get());
+  std::expected<llvm::Value *, Error> condOrErr =
+      emitRValue(node->condition().get());
   if (!condOrErr)
     return createError(condOrErr.error());
   llvm::Value *condVal = *condOrErr; // debe ser un i1
@@ -49,7 +49,9 @@ CodeGeneration::visit(const AST_WHILE *node) const noexcept {
 
   // Cuerpo del while
   builder_.SetInsertPoint(bodyBB);
-  if (auto bodyOrErr = node->body()->accept(*this); !bodyOrErr)
+  if (std::expected<llvm::Value *, Error> bodyOrErr =
+          node->body()->accept(*this);
+      !bodyOrErr)
     return createError(bodyOrErr.error());
   // Si no ya hay terminador (ret, break, continue...), saltamos de vuelta
   if (!builder_.GetInsertBlock()->getTerminator())
@@ -70,8 +72,9 @@ CodeGeneration::visit(const AST_FOR *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_FOR");
   }
   // Emitir las inicializaciones
-  for (const auto &expr : node->init()) {
-    if (auto initOrErr = expr->accept(*this); !initOrErr)
+  for (const std::shared_ptr<AST> &expr : node->init()) {
+    if (std::expected<llvm::Value *, Error> initOrErr = expr->accept(*this);
+        !initOrErr)
       return createError(initOrErr.error());
     // No comprobamos terminator aquí: 'for' init nunca contiene return
   }
@@ -79,18 +82,22 @@ CodeGeneration::visit(const AST_FOR *node) const noexcept {
   // Crear los bloques: cond, body, update, merge
   llvm::Function *parent = builder_.GetInsertBlock()->getParent();
   std::string id = std::to_string(node->nodeId());
-  auto *condBB = llvm::BasicBlock::Create(context_, "for_cond" + id, parent);
-  auto *bodyBB = llvm::BasicBlock::Create(context_, "for_body" + id, parent);
-  auto *updateBB =
+  llvm::BasicBlock *condBB =
+      llvm::BasicBlock::Create(context_, "for_cond" + id, parent);
+  llvm::BasicBlock *bodyBB =
+      llvm::BasicBlock::Create(context_, "for_body" + id, parent);
+  llvm::BasicBlock *updateBB =
       llvm::BasicBlock::Create(context_, "for_update" + id, parent);
-  auto *mergeBB = llvm::BasicBlock::Create(context_, "for_merge" + id, parent);
+  llvm::BasicBlock *mergeBB =
+      llvm::BasicBlock::Create(context_, "for_merge" + id, parent);
 
   // Primer salto a la condición
   builder_.CreateBr(condBB);
 
   // Bloque de condición
   builder_.SetInsertPoint(condBB);
-  auto condOrErr = emitRValue(node->condition().get());
+  std::expected<llvm::Value *, Error> condOrErr =
+      emitRValue(node->condition().get());
   if (!condOrErr)
     return createError(condOrErr.error());
   llvm::Value *condVal = *condOrErr; // debe ser i1
@@ -102,7 +109,9 @@ CodeGeneration::visit(const AST_FOR *node) const noexcept {
 
   // Bloque del cuerpo
   builder_.SetInsertPoint(bodyBB);
-  if (auto bodyOrErr = node->body()->accept(*this); !bodyOrErr)
+  if (std::expected<llvm::Value *, Error> bodyOrErr =
+          node->body()->accept(*this);
+      !bodyOrErr)
     return createError(bodyOrErr.error());
   // tras el body, si no hay terminador (return/break), saltar a update
   if (!builder_.GetInsertBlock()->getTerminator())
@@ -110,8 +119,9 @@ CodeGeneration::visit(const AST_FOR *node) const noexcept {
 
   // Bloque de update
   builder_.SetInsertPoint(updateBB);
-  for (const auto &expr : node->update()) {
-    if (auto updOrErr = expr->accept(*this); !updOrErr)
+  for (const std::shared_ptr<AST> &expr : node->update()) {
+    if (std::expected<llvm::Value *, Error> updOrErr = expr->accept(*this);
+        !updOrErr)
       return createError(updOrErr.error());
   }
   // tras actualizar, si no hay terminador, regresar a condBB
@@ -154,7 +164,9 @@ CodeGeneration::visit(const AST_DO_WHILE *node) const noexcept {
 
   // Body block
   builder_.SetInsertPoint(bodyBB);
-  if (auto bodyOrErr = node->body()->accept(*this); !bodyOrErr)
+  if (std::expected<llvm::Value *, Error> bodyOrErr =
+          node->body()->accept(*this);
+      !bodyOrErr)
     return createError(bodyOrErr.error());
   // Si no hay terminador (p.ej. return), saltar a condBB
   if (!builder_.GetInsertBlock()->getTerminator())
@@ -162,7 +174,8 @@ CodeGeneration::visit(const AST_DO_WHILE *node) const noexcept {
 
   // Condición
   builder_.SetInsertPoint(condBB);
-  auto condOrErr = emitRValue(node->condition().get());
+  std::expected<llvm::Value *, Error> condOrErr =
+      emitRValue(node->condition().get());
   if (!condOrErr)
     return createError(condOrErr.error());
   llvm::Value *condVal = *condOrErr; // debe ser i1
@@ -205,8 +218,7 @@ CodeGeneration::visit(const AST_STOP *node) const noexcept {
                        "break used outside of loop/switch");
   // Saltar al destino de break del bucle o switch actual
   llvm::BasicBlock *brkBB = breakTargets_.top();
-  builder_.CreateBr(
-      brkBB);
+  builder_.CreateBr(brkBB);
   return nullptr;
 }
 

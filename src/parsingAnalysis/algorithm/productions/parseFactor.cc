@@ -4,7 +4,7 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseFactor() const noexcept {
-  const auto firsToken{tkStream_.current()};
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
   const std::string raw{tkStream_.current()->raw()};
   const std::string loc{tkStream_.current()->locInfo()};
   switch (tkStream_.current()->type()) {
@@ -221,7 +221,7 @@ TopDown::parseFactor() const noexcept {
 
 const std::expected<std::shared_ptr<AST_VECTOR>, Error>
 TopDown::parseVector() const noexcept {
-  const auto firsToken{tkStream_.current()};
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
   const std::expected<std::vector<std::shared_ptr<AST>>, Error> arguemnts{
       parseArguments({TokenType::LC, TokenType::RC}, true)};
   if (!arguemnts) {
@@ -239,7 +239,7 @@ TopDown::parseArguments(std::pair<TokenType, TokenType> delimiters,
                        "missing " + tokenTypeToString(delimiters.first) +
                            " at " + tkStream_.current()->locInfo());
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   if (tkStream_.current()->type() == delimiters.second and !canBeEmpty) {
@@ -256,7 +256,7 @@ TopDown::parseArguments(std::pair<TokenType, TokenType> delimiters,
     }
     params.push_back(*param);
     if (tkStream_.current()->type() == TokenType::COMMA) {
-      if (auto res = tryEat(); !res) {
+      if (std::expected<std::monostate, Error> res = tryEat(); !res) {
         return createError(res.error());
       }
       continue;
@@ -274,7 +274,7 @@ TopDown::parseArguments(std::pair<TokenType, TokenType> delimiters,
                            " at " + tkStream_.current()->locInfo() +
                            " found: " + tkStream_.current()->raw());
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   return params;

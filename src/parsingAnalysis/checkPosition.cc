@@ -5,7 +5,7 @@ namespace nicole {
 
 bool CheckPosition::hasAnyAncestorOf(
     const AST *node, const std::unordered_set<AST_TYPE> &possibles) noexcept {
-  auto auxiliar{node};
+  const AST *auxiliar{node};
   while (auxiliar->father()) {
     auxiliar = auxiliar->father().get();
     if (possibles.count(auxiliar->type())) {
@@ -17,7 +17,7 @@ bool CheckPosition::hasAnyAncestorOf(
 
 bool CheckPosition::hasEveryAncestorInOrder(
     const AST *node, const std::vector<AST_TYPE> &possibles) noexcept {
-  auto auxiliar{node};
+  const AST *auxiliar{node};
   size_t index{0};
   while (auxiliar->father() and index < possibles.size()) {
     auxiliar = auxiliar->father().get();
@@ -67,7 +67,7 @@ bool CheckPosition::hasAssigmentOrDeclAncestor(const AST *node) noexcept {
 }
 
 bool CheckPosition::isOutOfScope(const AST *node) noexcept {
-  auto auxiliar{node};
+  const AST *auxiliar{node};
   while (auxiliar->father()) {
     auxiliar = auxiliar->father().get();
     if (auxiliar->type() == AST_TYPE::BODY and auxiliar->father()) {

@@ -10,17 +10,19 @@ CodeGeneration::visit(const AST_AUTO_DECL *node) const noexcept {
   if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_AUTO_DECL");
   // Generar el valor inicial
-  auto initOrErr = emitRValue(node->value().get());
+  std::expected<llvm::Value *, Error> initOrErr =
+      emitRValue(node->value().get());
   if (!initOrErr)
     return createError(initOrErr.error());
   llvm::Value *initVal = *initOrErr;
 
   // Recuperar la Variable existente del scope
-  auto varOrErr = currentScope_->getVariable(node->id());
+  std::expected<std::shared_ptr<Variable>, Error> varOrErr =
+      currentScope_->getVariable(node->id());
   if (!varOrErr)
     return createError(varOrErr.error());
-  auto varPtr = *varOrErr; // shared_ptr<Variable>
-  Variable &var = *varPtr; // referencia al objeto real
+  std::shared_ptr<Variable> varPtr = *varOrErr; // shared_ptr<Variable>
+  Variable &var = *varPtr;                      // referencia al objeto real
 
   // Alloca en entry_ usando builder_
   // Guardamos el punto de inserción actual
@@ -28,7 +30,8 @@ CodeGeneration::visit(const AST_AUTO_DECL *node) const noexcept {
   // Movemos a justo después de la etiqueta 'entry'
   // builder_.SetInsertPoint(entry_, entry_->getFirstInsertionPt());
   // builder_.SetInsertPoint(entry_);
-  auto llvmTyOrErr = var.type()->llvmVersion(context_);
+  std::expected<llvm::Type *, Error> llvmTyOrErr =
+      var.type()->llvmVersion(context_);
   if (!llvmTyOrErr)
     return std::unexpected(llvmTyOrErr.error());
   llvm::Type *llvmTy = *llvmTyOrErr;
@@ -58,20 +61,23 @@ CodeGeneration::visit(const AST_VAR_TYPED_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_TYPED_DECL");
   }
-  auto initOrErr = emitRValue(node->value().get());
+  std::expected<llvm::Value *, Error> initOrErr =
+      emitRValue(node->value().get());
   if (!initOrErr)
     return createError(initOrErr.error());
   llvm::Value *initVal = *initOrErr;
 
-  auto varOrErr = currentScope_->getVariable(node->id());
+  std::expected<std::shared_ptr<Variable>, Error> varOrErr =
+      currentScope_->getVariable(node->id());
   if (!varOrErr)
     return createError(varOrErr.error());
-  auto varPtr = *varOrErr; // shared_ptr<Variable>
-  Variable &var = *varPtr; // referencia al objeto real
+  std::shared_ptr<Variable> varPtr = *varOrErr; // shared_ptr<Variable>
+  Variable &var = *varPtr;                      // referencia al objeto real
 
   llvm::IRBuilder<>::InsertPointGuard guard(builder_);
   // builder_.SetInsertPoint(entry_, entry_->getFirstInsertionPt());
-  auto llvmTyOrErr = node->varType()->llvmVersion(context_);
+  std::expected<llvm::Type *, Error> llvmTyOrErr =
+      node->varType()->llvmVersion(context_);
   if (!llvmTyOrErr)
     return std::unexpected(llvmTyOrErr.error());
   llvm::Type *llvmTy = *llvmTyOrErr;
@@ -100,11 +106,12 @@ CodeGeneration::visit(const AST_VAR_CALL *node) const noexcept {
   if (!node)
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_VAR_CALL");
 
-  auto varOrErr = currentScope_->getVariable(node->id());
+  std::expected<std::shared_ptr<Variable>, Error> varOrErr =
+      currentScope_->getVariable(node->id());
   if (!varOrErr)
     return createError(varOrErr.error());
 
-  auto varPtr = *varOrErr;
+  std::shared_ptr<Variable> varPtr = *varOrErr;
   llvm::AllocaInst *addr = varPtr->address();
   if (!addr)
     return createError(ERROR_TYPE::VALIDATE_TREE, "variable has no address");

@@ -2,7 +2,6 @@
 #define BREAK_TYPE_H
 
 #include "../type.h"
-#include <memory>
 #include <string>
 
 namespace nicole {

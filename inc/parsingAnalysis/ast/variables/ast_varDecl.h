@@ -1,10 +1,8 @@
 #ifndef AST_VAR_DECL_H
 #define AST_VAR_DECL_H
 
-#include "../../../tables/scope/scope.h"
 #include "../ast.h"
 #include <memory>
-#include <variant>
 
 namespace nicole {
 

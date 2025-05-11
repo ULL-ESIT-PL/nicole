@@ -4,7 +4,6 @@
 #include "../../errors.h"
 #include "function.h"
 #include <expected>
-#include <iostream>
 #include <memory>
 #include <string>
 #include <unordered_map>

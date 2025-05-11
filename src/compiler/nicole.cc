@@ -46,7 +46,8 @@ Nicole::compile(const Options &options) const noexcept {
       std::make_shared<nicole::FunctionTable>()};
   const nicole::FillSemanticInfo semanticFiller{functionTable, typeTable,
                                                 options};
-  const auto isTablesFilled{semanticFiller.fill((*tree).get())};
+  const std::expected<std::monostate, Error> isTablesFilled{
+      semanticFiller.fill((*tree).get())};
   if (!isTablesFilled) {
     return createError(isTablesFilled.error());
   }
@@ -67,7 +68,8 @@ Nicole::compile(const Options &options) const noexcept {
   }
 
   const nicole::TypeAnalysis typeAnalysis{functionTable, typeTable};
-  const auto analyzed{typeAnalysis.analyze((*tree).get())};
+  const std::expected<std::shared_ptr<Type>, Error> analyzed{
+      typeAnalysis.analyze((*tree).get())};
   if (!analyzed) {
     return createError(analyzed.error());
   }
@@ -75,7 +77,8 @@ Nicole::compile(const Options &options) const noexcept {
   std::cout << "Finished type analysis\n";
 
   const nicole::Monomorphize monomorphizer{functionTable, typeTable};
-  const auto monomorphized{monomorphizer.transform((*tree).get())};
+  const std::expected<std::monostate, Error> monomorphized{
+      monomorphizer.transform((*tree).get())};
   if (!monomorphized) {
     return createError(monomorphized.error());
   }
@@ -83,14 +86,15 @@ Nicole::compile(const Options &options) const noexcept {
   std::cout << "Finished monomorphization\n";
 
   functionTable->print();
-/*
-  const auto analyzedSecondTime{typeAnalysis.analyze((*tree).get())};
-  if (!analyzedSecondTime) {
-    return createError(analyzedSecondTime.error());
-  }
-*/
+  /*
+    const std::expected<std::shared_ptr<Type>, Error>
+    analyzedSecondTime{typeAnalysis.analyze((*tree).get())}; if
+    (!analyzedSecondTime) { return createError(analyzedSecondTime.error());
+    }
+  */
   const nicole::CodeGeneration codeGenerator{functionTable, typeTable, options};
-  const auto generatedIR{codeGenerator.generate((*tree).get())};
+  const std::expected<llvm::Value *, Error> generatedIR{
+      codeGenerator.generate((*tree).get())};
   if (!generatedIR) {
     return createError(generatedIR.error());
   }

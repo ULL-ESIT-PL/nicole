@@ -10,7 +10,6 @@
 #include "methodTable.h"
 #include <expected>
 #include <memory>
-#include <sstream>
 #include <string>
 #include <variant>
 #include <vector>
@@ -98,14 +97,16 @@ public:
       llvm::SmallVector<llvm::Type *, 4> elems;
       // Herencia: si baseType_ existe, primero su struct
       if (baseType_) {
-        auto baseOrErr = baseType_->llvmVersion(context);
+        std::expected<llvm::Type *, Error> baseOrErr =
+            baseType_->llvmVersion(context);
         if (!baseOrErr)
           return std::unexpected(baseOrErr.error());
         elems.push_back(*baseOrErr);
       }
       // Atributos: recorrer attrTable_ y añadir cada campo
-      for (auto &attr : attrTable_) {
-        auto tyOrErr = attr.second.type()->llvmVersion(context);
+      for (std::pair<const std::string, Attribute> &attr : attrTable_) {
+        std::expected<llvm::Type *, Error> tyOrErr =
+            attr.second.type()->llvmVersion(context);
         if (!tyOrErr)
           return std::unexpected(tyOrErr.error());
         elems.push_back(*tyOrErr);

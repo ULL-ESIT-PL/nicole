@@ -4,8 +4,8 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_IMPORT>, Error>
 TopDown::parseImport() const noexcept {
-  const auto firsToken{tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::STRING) {
@@ -13,7 +13,7 @@ TopDown::parseImport() const noexcept {
                                                tkStream_.current()->locInfo());
   }
   const Token token{*tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   std::filesystem::path currentFilePath{token.location().file()};
@@ -45,8 +45,8 @@ TopDown::parseImport() const noexcept {
 
 const std::expected<std::shared_ptr<AST_PRINT>, Error>
 TopDown::parsePrint() const noexcept {
-  const auto firsToken{tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
 

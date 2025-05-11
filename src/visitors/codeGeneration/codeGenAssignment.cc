@@ -1,9 +1,6 @@
 #include "../../../inc/visitors/codeGeneration/codeGeneration.h"
 
 #include "../../../inc/parsingAnalysis/ast/assignments/ast_assignment.h"
-#include "../../../inc/parsingAnalysis/ast/variables/ast_varCall.h"
-#include "../../../inc/parsingAnalysis/ast/vector/ast_index.h"
-#include "../../../inc/parsingAnalysis/ast/chained/ast_chained.h"
 
 #include <memory>
 
@@ -15,18 +12,18 @@ CodeGeneration::visit(const AST_ASSIGNMENT *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ASSIGNMENT");
 
   // obtener dirección de LHS
-  auto addrOrErr = emitLValue(node->left().get());
+  std::expected<llvm::Value *, Error> addrOrErr = emitLValue(node->left().get());
   if (!addrOrErr) return createError(addrOrErr.error());
   llvm::Value *addr = *addrOrErr;
 
   // generar valor RHS
-  auto valOrErr = emitRValue(node->value().get());
+  std::expected<llvm::Value *, Error> valOrErr = emitRValue(node->value().get());
   if (!valOrErr) return createError(valOrErr.error());
   llvm::Value *val = *valOrErr;
 
   // ajustar tipo según semántica
-  auto semTy = node->left()->returnedFromTypeAnalysis();
-  auto llvmTyOrErr = semTy->llvmVersion(context_);
+  std::shared_ptr<Type> semTy = node->left()->returnedFromTypeAnalysis();
+  std::expected<llvm::Type *, Error> llvmTyOrErr = semTy->llvmVersion(context_);
   if (!llvmTyOrErr) return createError(llvmTyOrErr.error());
   llvm::Type *dstTy = *llvmTyOrErr;
   if (val->getType() != dstTy) {

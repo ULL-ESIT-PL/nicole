@@ -4,8 +4,8 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST>, Error>
 TopDown::parseAssignment(const bool insideFor) const noexcept {
-  const auto firsToken{tkStream_.current()};
-  const auto left{parseOr()};
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
+  const std::expected<std::shared_ptr<AST>, Error> left{parseOr()};
   if (!left || !*left) {
     return createError(left ? Error{ERROR_TYPE::NULL_NODE, "left is null"}
                             : left.error());
@@ -15,10 +15,10 @@ TopDown::parseAssignment(const bool insideFor) const noexcept {
       (token.type() == TokenType::COMMA or token.type() == TokenType::RP)) {
     return left;
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
-  const auto value{parseOr()};
+  const std::expected<std::shared_ptr<AST>, Error> value{parseOr()};
   if (!value || !*value) {
     return createError(value ? Error{ERROR_TYPE::NULL_NODE, "left is null"}
                              : value.error());

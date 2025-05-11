@@ -6,8 +6,8 @@ namespace nicole {
 
 const std::expected<std::shared_ptr<AST_FUNC_DECL>, Error>
 TopDown::parseFuncDecl() const noexcept {
-  const auto firsToken{tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::ID) {
@@ -16,7 +16,7 @@ TopDown::parseFuncDecl() const noexcept {
                            tkStream_.current()->locInfo());
   }
   const Token id{*tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   std::expected<std::vector<GenericParameter>, Error> generics{};
@@ -30,10 +30,10 @@ TopDown::parseFuncDecl() const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing ( of function at " +
                                                tkStream_.current()->locInfo());
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
-  const auto params{parseParams()};
+  const std::expected<Parameters, Error> params{parseParams()};
   if (!params) {
     return createError(params.error());
   }
@@ -41,7 +41,7 @@ TopDown::parseFuncDecl() const noexcept {
     return createError(ERROR_TYPE::SINTAX, "missing ) of function at " +
                                                tkStream_.current()->locInfo());
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   if (tkStream_.current()->type() != TokenType::DOTDOT) {
@@ -50,7 +50,7 @@ TopDown::parseFuncDecl() const noexcept {
                            tkStream_.current()->raw() + " at " +
                            tkStream_.current()->locInfo());
   }
-  if (auto res = tryEat(); !res) {
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   const std::expected<std::shared_ptr<Type>, Error> returnType{parseType()};
@@ -78,7 +78,7 @@ const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {
                              tkStream_.current()->locInfo());
     }
     const Token id{*tkStream_.current()};
-    if (auto res = tryEat(); !res) {
+    if (std::expected<std::monostate, Error> res = tryEat(); !res) {
       return createError(res.error());
     }
     if (tkStream_.current()->type() != TokenType::DOTDOT) {
@@ -87,7 +87,7 @@ const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {
                              tkStream_.current()->raw() + " at " +
                              tkStream_.current()->locInfo());
     }
-    if (auto res = tryEat(); !res) {
+    if (std::expected<std::monostate, Error> res = tryEat(); !res) {
       return createError(res.error());
     }
     const std::expected<std::shared_ptr<Type>, Error> returnType{parseType()};
@@ -96,7 +96,7 @@ const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {
     }
     params.push_back({id.raw(), *returnType});
     if (tkStream_.current()->type() == TokenType::COMMA) {
-      if (auto res = tryEat(); !res) {
+      if (std::expected<std::monostate, Error> res = tryEat(); !res) {
         return createError(res.error());
       }
       continue;
@@ -112,8 +112,8 @@ const std::expected<Parameters, Error> TopDown::parseParams() const noexcept {
 
 const std::expected<std::shared_ptr<AST_RETURN>, Error>
 TopDown::parseReturn() const noexcept {
-  const auto firsToken{tkStream_.current()};
-  if (auto res = tryEat(); !res) {
+  const std::expected<Token, Error> firsToken{tkStream_.current()};
+  if (std::expected<std::monostate, Error> res = tryEat(); !res) {
     return createError(res.error());
   }
   if (tkStream_.current()->type() == TokenType::SEMICOLON) {
@@ -139,11 +139,12 @@ TopDown::parseReplacementOfGenerics() const noexcept {
   if (tkStream_.current()->type() == TokenType::OPERATOR_SMALLER and
       tkStream_.hasMatchingPairBefore(TokenType::OPERATOR_SMALLER,
                                       TokenType::OPERATOR_GREATER)) {
-    auto res = tryEat(); // consume el identificador
+    std::expected<std::monostate, Error> res =
+        tryEat(); // consume el identificador
     if (!res) {
       return createError(res.error());
     }
-    auto argExpected = parseType();
+    std::expected<std::shared_ptr<Type>, Error> argExpected = parseType();
     if (!argExpected) {
       return createError(argExpected.error());
     }

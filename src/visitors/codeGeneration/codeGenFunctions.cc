@@ -4,6 +4,7 @@
 #include "../../../inc/visitors/codeGeneration/codeGeneration.h"
 
 #include <cstddef>
+#include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Value.h>
 #include <memory>
 
@@ -16,8 +17,8 @@ CodeGeneration::visit(const AST_FUNC_CALL *node) const noexcept {
   // 1) Evaluar argumentos
   llvm::SmallVector<llvm::Value *, 8> argValues;
   argValues.reserve(node->parameters().size());
-  for (auto &expr : node->parameters()) {
-    auto valOrErr = emitRValue(expr.get());
+  for (const std::shared_ptr<AST> &expr : node->parameters()) {
+    std::expected<llvm::Value *, Error> valOrErr = emitRValue(expr.get());
     if (!valOrErr)
       return createError(valOrErr.error());
     argValues.push_back(*valOrErr);
@@ -32,7 +33,7 @@ CodeGeneration::visit(const AST_FUNC_CALL *node) const noexcept {
   bool alreadyMangled{false};
   if (node->replaceOfGenerics().size()) {
     alreadyMangled = true;
-    auto monoFunction{visit(decl)};
+    std::expected<llvm::Value *, Error> monoFunction{visit(decl)};
     if (!monoFunction) {
       return createError(monoFunction.error());
     }
@@ -47,7 +48,7 @@ CodeGeneration::visit(const AST_FUNC_CALL *node) const noexcept {
                     decl->returnType(), decl->body()};
 
   // Mangling del nombre de la función
-  auto mNameOrErr =
+  std::expected<std::string, Error> mNameOrErr =
       (alreadyMangled) ? decl->id() : nameManglingFunctionDecl(funcDesc);
   if (!mNameOrErr)
     return createError(mNameOrErr.error());
@@ -61,7 +62,7 @@ CodeGeneration::visit(const AST_FUNC_CALL *node) const noexcept {
 
   // Ajustar y empaquetar argumentos
   llvm::SmallVector<llvm::Value *, 8> callArgs;
-  auto *ft = callee->getFunctionType();
+  llvm::FunctionType *ft = callee->getFunctionType();
   for (size_t i = 0; i < argValues.size(); ++i) {
     llvm::Value *v = argValues[i];
     llvm::Type *paramTy = ft->getParamType(static_cast<unsigned int>(i));
@@ -90,11 +91,10 @@ CodeGeneration::visit(const AST_FUNC_DECL *node) const noexcept {
   if (node->generics().size()) {
     return nullptr;
   }
-  auto parentScope = currentScope_;
+  std::shared_ptr<Scope> parentScope = currentScope_;
   currentScope_ = node->body()->scope();
-  //std::cout << "========  " << node->id() << std::endl;
   // Calcular nombre mangled de la declaración (sin genéricos de llamada)
-  auto mNameOrErr = nameManglingFunctionDecl(
+  std::expected<std::string, Error> mNameOrErr = nameManglingFunctionDecl(
       Function{node->id(), node->generics(), node->parameters(),
                node->returnType(), nullptr});
   if (!mNameOrErr)
@@ -103,27 +103,32 @@ CodeGeneration::visit(const AST_FUNC_DECL *node) const noexcept {
 
   // Crear o recuperar llvm::Function
   llvm::SmallVector<llvm::Type *, 8> paramTys;
-  for (auto &p : node->parameters().params()) {
-    auto tyOrErr = p.second->llvmVersion(context_);
+  for (const std::pair<std::string, std::shared_ptr<Type>> &p :
+       node->parameters().params()) {
+    std::expected<llvm::Type *, Error> tyOrErr =
+        p.second->llvmVersion(context_);
     if (!tyOrErr)
       return createError(tyOrErr.error());
     paramTys.push_back(*tyOrErr);
   }
-  auto retTyOrErr = node->returnType()->llvmVersion(context_);
+  std::expected<llvm::Type *, Error> retTyOrErr =
+      node->returnType()->llvmVersion(context_);
   if (!retTyOrErr)
     return createError(retTyOrErr.error());
-  auto fnTy = llvm::FunctionType::get(*retTyOrErr, paramTys, false);
+  llvm::FunctionType *fnTy =
+      llvm::FunctionType::get(*retTyOrErr, paramTys, false);
 
   llvm::Function *fn = llvm::cast<llvm::Function>(
       module_->getOrInsertFunction(fnName, fnTy).getCallee());
   fn->setLinkage(llvm::GlobalValue::ExternalLinkage);
 
   // Reservar slots para parámetros y registrarlos
-  auto entryBB = llvm::BasicBlock::Create(context_, "entry", fn);
+  llvm::BasicBlock *entryBB = llvm::BasicBlock::Create(context_, "entry", fn);
   entry_ = entryBB;
   llvm::IRBuilder<> entryBuilder(entryBB);
   unsigned idx = 0;
-  for (auto &pr : node->parameters().params()) {
+  for (const std::pair<std::string, std::shared_ptr<Type>> &pr :
+       node->parameters().params()) {
     llvm::Argument &arg = *std::next(fn->arg_begin(), idx);
     arg.setName(pr.first);
 
@@ -133,13 +138,14 @@ CodeGeneration::visit(const AST_FUNC_DECL *node) const noexcept {
     entryBuilder.CreateStore(&arg, slot);
 
     // Variable registra slot y valor inicial
-    //auto varPtr = std::make_shared<Variable>(pr.first, pr.second, nullptr);
-    auto varOrErr{currentScope_->getVariable(pr.first)};
+    // auto varPtr = std::make_shared<Variable>(pr.first, pr.second, nullptr);
+    std::expected<std::shared_ptr<Variable>, Error> varOrErr{
+        currentScope_->getVariable(pr.first)};
     if (!varOrErr) {
       return createError(varOrErr.error());
     }
-    auto varPtr = *varOrErr; // shared_ptr<Variable>
-    Variable &var = *varPtr; // referencia al objeto real
+    std::shared_ptr<Variable> varPtr = *varOrErr; // shared_ptr<Variable>
+    Variable &var = *varPtr;                      // referencia al objeto real
     var.setAddress(slot);
     var.setValue(&arg);
 
@@ -148,7 +154,8 @@ CodeGeneration::visit(const AST_FUNC_DECL *node) const noexcept {
   // Generar el cuerpo
   llvm::IRBuilder<>::InsertPointGuard guard(builder_);
   builder_.SetInsertPoint(entryBB);
-  if (auto bodyErr = node->body()->accept(*this); !bodyErr)
+  if (std::expected<llvm::Value *, Error> bodyErr = node->body()->accept(*this);
+      !bodyErr)
     return createError(bodyErr.error());
   if (!fn->getReturnType()->isVoidTy() && !entryBB->getTerminator())
     builder_.CreateRetVoid();
@@ -164,7 +171,8 @@ CodeGeneration::visit(const AST_RETURN *node) const noexcept {
   if (!node->expression()) {
     return builder_.CreateRetVoid();
   }
-  const auto result{emitRValue(node->expression().get())};
+  const std::expected<llvm::Value *, Error> result{
+      emitRValue(node->expression().get())};
   if (!result) {
     return createError(result.error());
   }
@@ -184,15 +192,18 @@ CodeGeneration::nameManglingFunctionDecl(const Function &func) const noexcept {
   mangled += func.id(); // id() es el nombre base sin parámetros
 
   // Genéricos (si los hay)
-  for (auto &genType : func.generics()) {
+  for (const GenericParameter &genType : func.generics()) {
     mangled += "_";
     mangled += genType.name();
   }
 
   // Parámetros formales
-  for (auto &param : func.params().params()) {
+  for (const std::pair<std::string, std::shared_ptr<Type>> &param :
+       func.params().params()) {
     std::string tmp;
-    if (auto res = nameManglingImpl(param.second, tmp); !res)
+    if (std::expected<std::string, Error> res =
+            nameManglingImpl(param.second, tmp);
+        !res)
       return createError(res.error());
     mangled += "_";
     mangled += tmp;
@@ -201,7 +212,9 @@ CodeGeneration::nameManglingFunctionDecl(const Function &func) const noexcept {
   // Tipo de retorno
   {
     std::string tmp;
-    if (auto res = nameManglingImpl(func.returnType(), tmp); !res)
+    if (std::expected<std::string, Error> res =
+            nameManglingImpl(func.returnType(), tmp);
+        !res)
       return createError(res.error());
     mangled += "_ret_";
     mangled += tmp;

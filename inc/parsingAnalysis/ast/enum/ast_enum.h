@@ -2,7 +2,6 @@
 #define AST_ENUM_H
 
 #include "../ast.h"
-#include <algorithm>
 #include <string>
 #include <vector>
 

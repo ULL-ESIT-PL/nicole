@@ -1,30 +1,29 @@
-#include "../../../inc/visitors/codeGeneration/codeGeneration.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_attrAccess.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_constructorCall.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_methodCall.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_struct.h"
 #include "../../../inc/parsingAnalysis/ast/userTypes/ast_this.h"
-#include <cstddef>
-#include <memory>
-#include <variant>
+#include "../../../inc/visitors/codeGeneration/codeGeneration.h"
 
 namespace nicole {
 
-std::expected<llvm::Value*, Error>
+std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_STRUCT *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_STRUCT");
   }
-  const auto constructor{node->constructor()->accept(*this)};
+  const std::expected<llvm::Value *, Error> constructor{
+      node->constructor()->accept(*this)};
   if (!constructor) {
     return createError(constructor.error());
   }
-  const auto destructor{node->destructor()->accept(*this)};
+  const std::expected<llvm::Value *, Error> destructor{
+      node->destructor()->accept(*this)};
   if (!destructor) {
     return createError(destructor.error());
   }
-  for (const auto &chain : node->methods()) {
-    const auto result{chain->accept(*this)};
+  for (const std::shared_ptr<AST_METHOD_DECL> &chain : node->methods()) {
+    const std::expected<llvm::Value *, Error> result{chain->accept(*this)};
     if (!result) {
       return createError(result.error());
     }
@@ -32,7 +31,7 @@ CodeGeneration::visit(const AST_STRUCT *node) const noexcept {
   return {};
 }
 
-std::expected<llvm::Value*, Error>
+std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_ATTR_ACCESS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_ATTR_ACCESS");
@@ -40,13 +39,13 @@ CodeGeneration::visit(const AST_ATTR_ACCESS *node) const noexcept {
   return {};
 }
 
-std::expected<llvm::Value*, Error>
+std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_METHOD_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_CALL");
   }
-  for (const auto &chain : node->parameters()) {
-    const auto result{chain->accept(*this)};
+  for (const std::shared_ptr<AST> &chain : node->parameters()) {
+    const std::expected<llvm::Value *, Error> result{chain->accept(*this)};
     if (!result) {
       return createError(result.error());
     }
@@ -54,43 +53,44 @@ CodeGeneration::visit(const AST_METHOD_CALL *node) const noexcept {
   return {};
 }
 
-std::expected<llvm::Value*, Error>
+std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_METHOD_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_METHOD_DECL");
   }
-  const auto result{node->body()->accept(*this)};
+  const std::expected<llvm::Value *, Error> result{node->body()->accept(*this)};
   if (!result) {
     return createError(result.error());
   }
   return {};
 }
 
-std::expected<llvm::Value*, Error>
+std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_CONSTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_DECL");
   }
   if (node->super()) {
-    const auto result{node->super()->accept(*this)};
+    const std::expected<llvm::Value *, Error> result{
+        node->super()->accept(*this)};
     if (!result) {
       return createError(result.error());
     }
   }
-  const auto result{node->body()->accept(*this)};
+  const std::expected<llvm::Value *, Error> result{node->body()->accept(*this)};
   if (!result) {
     return createError(result.error());
   }
   return {};
 }
 
-std::expected<llvm::Value*, Error>
+std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_SUPER *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_SUPER");
   }
-  for (const auto &chain : node->arguments()) {
-    const auto result{chain->accept(*this)};
+  for (const std::shared_ptr<AST> &chain : node->arguments()) {
+    const std::expected<llvm::Value *, Error> result{chain->accept(*this)};
     if (!result) {
       return createError(result.error());
     }
@@ -98,19 +98,19 @@ CodeGeneration::visit(const AST_SUPER *node) const noexcept {
   return {};
 }
 
-std::expected<llvm::Value*, Error>
+std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_DESTRUCTOR_DECL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_DESTRUCTOR_DECL");
   }
-  const auto result{node->body()->accept(*this)};
+  const std::expected<llvm::Value *, Error> result{node->body()->accept(*this)};
   if (!result) {
     return createError(result.error());
   }
   return {};
 }
 
-std::expected<llvm::Value*, Error>
+std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_THIS *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_THIS");
@@ -118,13 +118,13 @@ CodeGeneration::visit(const AST_THIS *node) const noexcept {
   return {};
 }
 
-std::expected<llvm::Value*, Error>
+std::expected<llvm::Value *, Error>
 CodeGeneration::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   if (!node) {
     return createError(ERROR_TYPE::NULL_NODE, "Invalid AST_CONSTRUCTOR_CALL");
   }
-  for (const auto &chain : node->parameters()) {
-    const auto result{chain->accept(*this)};
+  for (const std::shared_ptr<AST> &chain : node->parameters()) {
+    const std::expected<llvm::Value *, Error> result{chain->accept(*this)};
     if (!result) {
       return createError(result.error());
     }
@@ -132,4 +132,4 @@ CodeGeneration::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   return {};
 }
 
-}
+} // namespace nicole

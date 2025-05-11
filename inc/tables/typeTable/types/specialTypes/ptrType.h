@@ -26,7 +26,8 @@ public:
   [[nodiscard]] std::expected<llvm::Type *, Error>
   llvmVersion(llvm::LLVMContext &context) const noexcept override {
     // Obtener el tipo LLVM del tipo base
-    auto baseTyOrErr = baseType_->llvmVersion(context);
+    std::expected<llvm::Type *, Error> baseTyOrErr =
+        baseType_->llvmVersion(context);
     if (!baseTyOrErr) {
       return std::unexpected(baseTyOrErr.error());
     }

@@ -1,11 +1,13 @@
 #include "../../../inc/tables/typeTable/types/userTypes/userType.h"
 #include <memory>
+#include <sstream>
 
 namespace nicole {
 
 bool UserType::hasAttribute(const std::string &id) const noexcept {
   if (baseType_) {
-    if (const auto userType = std::dynamic_pointer_cast<UserType>(baseType_)) {
+    if (const std::shared_ptr<UserType> userType =
+            std::dynamic_pointer_cast<UserType>(baseType_)) {
       return userType->hasAttribute(id);
     }
   }
@@ -17,7 +19,8 @@ bool UserType::hasAttribute(const std::string &id) const noexcept {
 
 bool UserType::hasMethod(const Method &id) const noexcept {
   if (baseType_) {
-    if (const auto userType = std::dynamic_pointer_cast<UserType>(baseType_))
+    if (const std::shared_ptr<UserType> userType =
+            std::dynamic_pointer_cast<UserType>(baseType_))
       return userType->hasMethod(id);
   }
   if (methodTable_.getMethods(id.id()).size()) {
@@ -32,7 +35,8 @@ UserType::getAttribute(const std::string &id) const noexcept {
     return attrTable_.getAttribute(id);
   }
   if (baseType_) {
-    if (const auto userType = std::dynamic_pointer_cast<UserType>(baseType_))
+    if (const std::shared_ptr<UserType> userType =
+            std::dynamic_pointer_cast<UserType>(baseType_))
       return userType->getAttribute(id);
   }
   return createError(ERROR_TYPE::ATTR,
@@ -43,14 +47,16 @@ const std::expected<std::vector<Method>, Error>
 UserType::getMethods(const std::string &id) const noexcept {
   std::vector<Method> combinedMethods;
   if (methodTable_.getMethods(id).size()) {
-    auto childRes = methodTable_.getMethods(id);
+    std::vector<Method> childRes = methodTable_.getMethods(id);
     combinedMethods.insert(combinedMethods.end(), childRes.begin(),
                            childRes.end());
   }
   if (baseType_) {
-    if (const auto userType = std::dynamic_pointer_cast<UserType>(baseType_)) {
-      auto parentRes = userType->getMethods(id);
-      for (auto &method : parentRes.value()) {
+    if (const std::shared_ptr<UserType> userType =
+            std::dynamic_pointer_cast<UserType>(baseType_)) {
+      std::expected<std::vector<Method>, Error> parentRes =
+          userType->getMethods(id);
+      for (Method &method : parentRes.value()) {
         method.setInherit(true);
       }
       if (parentRes)
@@ -91,7 +97,7 @@ UserType::setAttribute(const Attribute &attr) const noexcept {
 
 bool UserType::isAboveInHearchy(
     const std::shared_ptr<UserType> &type) const noexcept {
-  auto aux{baseType_};
+  std::shared_ptr<UserType> aux{baseType_};
   while (aux) {
     if (aux->name_ == type->name_) {
       return true;

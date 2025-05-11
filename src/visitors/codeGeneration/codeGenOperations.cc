@@ -1,6 +1,7 @@
 #include "../../../inc/parsingAnalysis/ast/operators/ast_binary.h"
 #include "../../../inc/parsingAnalysis/ast/operators/ast_unary.h"
 #include "../../../inc/visitors/codeGeneration/codeGeneration.h"
+#include <llvm/IR/DerivedTypes.h>
 #include <memory>
 
 namespace nicole {
@@ -12,24 +13,28 @@ CodeGeneration::visit(const AST_BINARY *node) const noexcept {
   }
 
   // Generar subexpresiones
-  auto leftOrErr = emitRValue(node->left().get());
+  std::expected<llvm::Value *, Error> leftOrErr =
+      emitRValue(node->left().get());
   if (!leftOrErr)
     return createError(leftOrErr.error());
   llvm::Value *L = *leftOrErr;
 
-  auto rightOrErr = emitRValue(node->right().get());
+  std::expected<llvm::Value *, Error> rightOrErr =
+      emitRValue(node->right().get());
   if (!rightOrErr)
     return createError(rightOrErr.error());
   llvm::Value *R = *rightOrErr;
 
   // No uso el tipo que devuelve este nodo porque puede darse el caso de double
   // == double y siempre entre por el case de bool
-  auto semTy = node->left()->returnedFromTypeAnalysis();
-  if (auto c = std::dynamic_pointer_cast<ConstType>(semTy))
+  std::shared_ptr<Type> semTy = node->left()->returnedFromTypeAnalysis();
+  if (std::shared_ptr<ConstType> c =
+          std::dynamic_pointer_cast<ConstType>(semTy))
     semTy = c->baseType();
 
   // Si es BasicType, usar operaciones LLVM correspondientes
-  if (auto basic = std::dynamic_pointer_cast<BasicType>(semTy)) {
+  if (std::shared_ptr<BasicType> basic =
+          std::dynamic_pointer_cast<BasicType>(semTy)) {
     // return createError(ERROR_TYPE::PRINT_TREE, basic->toString());
     switch (basic->baseKind()) {
     case BasicKind::Int: {
@@ -121,10 +126,14 @@ CodeGeneration::visit(const AST_BINARY *node) const noexcept {
         llvm::Type *i64Ty = llvm::Type::getInt64Ty(C);
 
         // Declarar strlen y malloc si no existen
-        auto *strlenFT = llvm::FunctionType::get(i64Ty, {i8Ptr}, false);
-        auto *mallocFT = llvm::FunctionType::get(i8Ptr, {i64Ty}, false);
-        auto strlenFn = M.getOrInsertFunction("strlen", strlenFT);
-        auto mallocFn = M.getOrInsertFunction("malloc", mallocFT);
+        llvm::FunctionType *strlenFT =
+            llvm::FunctionType::get(i64Ty, {i8Ptr}, false);
+        llvm::FunctionType *mallocFT =
+            llvm::FunctionType::get(i8Ptr, {i64Ty}, false);
+        llvm::FunctionCallee strlenFn =
+            M.getOrInsertFunction("strlen", strlenFT);
+        llvm::FunctionCallee mallocFn =
+            M.getOrInsertFunction("malloc", mallocFT);
 
         // Calcular longitudes de L y R
         llvm::Value *lenL = builder_.CreateCall(strlenFn, {L}, "lenL");
@@ -169,43 +178,6 @@ CodeGeneration::visit(const AST_BINARY *node) const noexcept {
         builder_.CreateStore(buf, slot);
         return slot;
       }
-      /*
-      llvm::Module &M = *module_;
-      llvm::Type *i8Ty = llvm::Type::getInt8Ty(context_);
-      llvm::PointerType *i8Ptr = i8Ty->getPointerTo();
-      llvm::Type *i32Ty = llvm::Type::getInt32Ty(context_);
-      auto *strcmpFT = llvm::FunctionType::get(i32Ty, {i8Ptr, i8Ptr}, false);
-      M.getOrInsertFunction("strcmp", strcmpFT);
-
-      // Llamar a strcmp(L,R)
-      llvm::Value *cmp =
-          builder_.CreateCall(M.getFunction("strcmp"), {L, R}, "strcmp");
-      // Comparaciones: usaremos constantes cero
-      llvm::Value *zero =
-          llvm::ConstantInt::get(llvm::Type::getInt32Ty(context_), 0);
-      switch (node->op().type()) {
-      case TokenType::EQUAL:
-        // strcmp == 0
-        return builder_.CreateICmpEQ(cmp, zero, "streq");
-      case TokenType::NOTEQUAL:
-        // strcmp != 0
-        return builder_.CreateICmpNE(cmp, zero, "strne");
-      case TokenType::OPERATOR_SMALLER:
-        // strcmp < 0
-        return builder_.CreateICmpSLT(cmp, zero, "strlt");
-      case TokenType::SMALLEREQUAL:
-        // strcmp <= 0
-        return builder_.CreateICmpSLE(cmp, zero, "strle");
-      case TokenType::OPERATOR_GREATER:
-        // strcmp > 0
-        return builder_.CreateICmpSGT(cmp, zero, "strgt");
-      case TokenType::BIGGEREQUAL:
-        // strcmp >= 0
-        return builder_.CreateICmpSGE(cmp, zero, "strge");
-      default:
-        break;
-      }
-      */
       switch (node->op().type()) {
       // Igualdad/Desigualdad por puntero
       case TokenType::EQUAL:
@@ -278,18 +250,21 @@ CodeGeneration::visit(const AST_UNARY *node) const noexcept {
     return createError(ERROR_TYPE::NULL_NODE, "invalid AST_UNARY");
 
   // Generar código del operando
-  auto valOrErr = emitRValue(node->value().get());
+  std::expected<llvm::Value *, Error> valOrErr =
+      emitRValue(node->value().get());
   if (!valOrErr)
     return createError(valOrErr.error());
   llvm::Value *V = *valOrErr;
 
   // Resolver tipo semántico (desenrollar ConstType)
-  auto semTy = node->returnedFromTypeAnalysis();
-  if (auto c = std::dynamic_pointer_cast<ConstType>(semTy))
+  std::shared_ptr<Type> semTy = node->returnedFromTypeAnalysis();
+  if (std::shared_ptr<ConstType> c =
+          std::dynamic_pointer_cast<ConstType>(semTy))
     semTy = c->baseType();
 
   // Unary sobre BasicType
-  if (auto basic = std::dynamic_pointer_cast<BasicType>(semTy)) {
+  if (std::shared_ptr<BasicType> basic =
+          std::dynamic_pointer_cast<BasicType>(semTy)) {
     switch (node->op().type()) {
     // Operador lógico NOT: !v
     case TokenType::OPERATOR_NOT:
@@ -312,7 +287,8 @@ CodeGeneration::visit(const AST_UNARY *node) const noexcept {
       bool isInc = (node->op().type() == TokenType::INCREMENT);
 
       // obtener la dirección de la variable (ptr)
-      auto ptrOrErr = node->value()->accept(*this);
+      std::expected<llvm::Value *, Error> ptrOrErr =
+          node->value()->accept(*this);
       if (!ptrOrErr)
         return createError(ptrOrErr.error());
       llvm::Value *ptr = *ptrOrErr; // debe ser algo tipo i32*
@@ -344,7 +320,8 @@ CodeGeneration::visit(const AST_UNARY *node) const noexcept {
   }
 
   // Unary sobre PointerType
-  if (auto ptrType = std::dynamic_pointer_cast<PointerType>(semTy)) {
+  if (std::shared_ptr<PointerType> ptrType =
+          std::dynamic_pointer_cast<PointerType>(semTy)) {
     switch (node->op().type()) {
     case TokenType::OPERATOR_NOT:
       // v == nullptr
