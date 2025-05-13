@@ -109,6 +109,9 @@ public:
   isCompundEnumType(const std::shared_ptr<Type> &type) const noexcept;
 
   [[nodiscard]] std::expected<std::shared_ptr<Type>, Error>
+  isCompundUserType(const std::shared_ptr<Type> &type) const noexcept;
+
+  [[nodiscard]] std::expected<std::shared_ptr<Type>, Error>
   isCompundGenericType(
       const std::shared_ptr<Type> &type,
       const std::vector<GenericParameter> &list) const noexcept;

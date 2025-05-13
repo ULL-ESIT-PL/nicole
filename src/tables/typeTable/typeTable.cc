@@ -1,7 +1,7 @@
 #include "../../../inc/tables/typeTable/typeTable.h"
+#include <iostream>
 #include <memory>
 #include <vector>
-#include <iostream>
 
 namespace nicole {
 
@@ -188,6 +188,13 @@ TypeTable::isCompundEnumType(const std::shared_ptr<Type> &type) const noexcept {
                          "El tipo encontrado no es un EnumType");
   }
   return createError(ERROR_TYPE::TYPE, "El tipo no es un Enum compuesto");
+}
+
+std::expected<std::shared_ptr<Type>, Error>
+TypeTable::isCompundUserType(const std::shared_ptr<Type> &type) const noexcept {
+  if (type) {
+  }
+  return nullptr;
 }
 
 std::expected<std::shared_ptr<Type>, Error> TypeTable::isCompundGenericType(
