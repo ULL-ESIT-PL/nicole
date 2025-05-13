@@ -186,7 +186,7 @@ CodeGeneration::emitRValue(const AST *node) const noexcept {
                           DL.getTypeAllocSize(llvmTy));
     return tmp;
   }
-  
+
   // Si es puntero:
   if (val->getType()->isPointerTy()) {
     // sólo cargamos si NO es una constante
@@ -198,7 +198,7 @@ CodeGeneration::emitRValue(const AST *node) const noexcept {
     // se dejan tal cual, como i8* apuntando al .rodata
     return val;
   }
-  
+
   // escalar ya cargado (int, float, bool…)
   return val;
 }
@@ -318,7 +318,9 @@ CodeGeneration::visit(const Tree *tree) const noexcept {
 
   llvm::verifyModule(*module_, &llvm::errs());
 
-  module_->print(llvm::outs(), nullptr);
+  if (options_.printIR()) {
+    module_->print(llvm::outs(), nullptr);
+  }
 
   llvm::InitializeNativeTarget();
   llvm::InitializeNativeTargetAsmPrinter();

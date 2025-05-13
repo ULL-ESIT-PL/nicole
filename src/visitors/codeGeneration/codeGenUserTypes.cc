@@ -277,8 +277,8 @@ CodeGeneration::visit(const AST_CONSTRUCTOR_CALL *node) const noexcept {
   llvm::Function *ctorFn = module_->getFunction(ctorName);
   if (!ctorFn)
     return createError(ERROR_TYPE::FUNCTION, "ctor not found: " + ctorName);
-  builder_.CreateCall(ctorFn, callArgs, node->id() + "_ctor");
-
+  //builder_.CreateCall(ctorFn, callArgs, node->id() + "_ctor");
+  builder_.CreateCall(ctorFn, callArgs);
   // Actualizar estado y devolver puntero al objeto
   resultChainedExpression_ = objAlloca;
   currentType = node->returnedFromTypeAnalysis();

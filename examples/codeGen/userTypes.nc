@@ -28,10 +28,11 @@ auto y = 0;
 
 print(x[(++y) + 1]);
 
-
-def foo(): int {
+/*
+def foo(ss: prueba): int {
     return ss.x;
 }
 
 
-foo(cc);
+print(foo(cc));
+*/
